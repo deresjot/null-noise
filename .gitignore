@@ -1,0 +1,16 @@
+.next
+node_modules
+.env.local
+.env*.local
+playwright-report
+test-results
+*.tsbuildinfo
+.DS_Store
+coverage
+dist
+out
+data/ratings.local.json
+data/rating-attempts.local.json
+data/titles.local.json
+data/title-import-attempts.local.json
+.vercel

@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TitleKind {
+  movie
+  series
+}
+
+enum ConfidenceLevel {
+  niedrig
+  mittel
+  hoch
+}
+
+enum AggregateSourceType {
+  editorial_seed
+  community_median
+  mixed
+}
+
+model ExternalTitle {
+  id               String             @id @default(cuid())
+  externalSource   String
+  externalSourceId String
+  slug             String             @unique
+  title            String
+  originalTitle    String?
+  kind             TitleKind
+  releaseYear      Int?
+  synopsis         String
+  runtimeMinutes   Int?
+  languageCode     String             @default("de")
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  aggregate        StimulusAggregate?
+  ratings          CommunityRating[]
+  contentFlags     ContentFlag[]
+
+  @@unique([externalSource, externalSourceId])
+}
+
+model StimulusAggregate {
+  id             String              @id @default(cuid())
+  titleId        String              @unique
+  volumeLevel    Int
+  peakIntensity  Int
+  stimulusDensity Int
+  soothingEffect Int
+  confidenceLevel ConfidenceLevel
+  notes          String
+  ratingCount    Int                 @default(0)
+  sourceType     AggregateSourceType
+  lastReviewedAt DateTime?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  title          ExternalTitle       @relation(fields: [titleId], references: [id], onDelete: Cascade)
+
+  @@index([sourceType, lastReviewedAt])
+}
+
+model CommunityRating {
+  id              String        @id @default(cuid())
+  titleId         String
+  sessionTokenHash String?
+  volumeLevel     Int
+  peakIntensity   Int
+  stimulusDensity Int
+  soothingEffect  Int
+  note            String?
+  createdAt       DateTime      @default(now())
+  expiresAt       DateTime?
+  title           ExternalTitle @relation(fields: [titleId], references: [id], onDelete: Cascade)
+
+  @@index([titleId, createdAt])
+  @@index([sessionTokenHash])
+}
+
+model ContentFlag {
+  id          String        @id @default(cuid())
+  titleId     String
+  flag        String
+  description String?
+  title       ExternalTitle @relation(fields: [titleId], references: [id], onDelete: Cascade)
+
+  @@unique([titleId, flag])
+}

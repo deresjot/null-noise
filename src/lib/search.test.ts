@@ -1,0 +1,52 @@
+import { describe, expect, it } from "vitest";
+
+import { mockTitles } from "./mock-data";
+import { filterTitles, hasSensoryFilters } from "./search";
+
+describe("catalog search", () => {
+  it("matches exact title input for local catalog titles", () => {
+    const results = filterTitles(mockTitles, {
+      q: "Mondfenster",
+      tone: "all",
+      kind: "all",
+      avoidPeaks: false,
+      avoidDensity: false,
+    });
+
+    expect(results[0]?.external.slug).toBe("mondfenster");
+  });
+
+  it("matches typo-tolerant title input for local catalog titles", () => {
+    const results = filterTitles(mockTitles, {
+      q: "Hafn ohne Eile",
+      tone: "all",
+      kind: "all",
+      avoidPeaks: false,
+      avoidDensity: false,
+    });
+
+    expect(results.map((item) => item.external.slug)).toContain("hafen-ohne-eile");
+  });
+
+  it("keeps sensory filters detectable for external fallback decisions", () => {
+    expect(
+      hasSensoryFilters({
+        q: "Arrival",
+        tone: "all",
+        kind: "all",
+        avoidPeaks: false,
+        avoidDensity: false,
+      }),
+    ).toBe(false);
+
+    expect(
+      hasSensoryFilters({
+        q: "Arrival",
+        tone: "calm",
+        kind: "all",
+        avoidPeaks: false,
+        avoidDensity: false,
+      }),
+    ).toBe(true);
+  });
+});
