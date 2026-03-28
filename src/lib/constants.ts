@@ -83,6 +83,7 @@ export const soothingEffectLabels: Record<
 export const sourceTypeLabels: Record<AggregateSourceType, string> = {
   editorial_seed: "redaktioneller Startwert",
   provisional_seed: "vorläufige Startbasis",
+  metadata_inference: "vorläufige Startbasis aus Metadaten",
   community_median: "anonyme Einschätzungen",
   mixed: "gemischter Stand",
 };
@@ -91,21 +92,51 @@ export const stimulusDimensions: Array<{
   key: StimulusScaleKey;
   label: string;
   help: string;
+  rangeLow: string;
+  rangeHigh: string;
+  valueLabels: Record<ScaleValue, string>;
 }> = [
   {
     key: "volumeLevel",
     label: "Grundlautstärke",
     help: "Wie laut der Titel im normalen Grundniveau wirkt.",
+    rangeLow: "leise",
+    rangeHigh: "laut",
+    valueLabels: {
+      0: "sehr leise",
+      1: "eher leise",
+      2: "mittlere Lautstärke",
+      3: "eher laut",
+      4: "sehr laut",
+    },
   },
   {
     key: "peakIntensity",
     label: "Plötzliche Spitzen",
     help: "Wie stark oder häufig abrupte Lautstärkesprünge auftreten.",
+    rangeLow: "ruhig",
+    rangeHigh: "intensiv",
+    valueLabels: {
+      0: "sehr ruhig",
+      1: "eher ruhig",
+      2: "mittlere Intensität",
+      3: "eher intensiv",
+      4: "sehr intensiv",
+    },
   },
   {
     key: "stimulusDensity",
     label: "Belastungsdichte",
     help: "Wie dauerhaft oder dicht die akustische Belastung insgesamt bleibt.",
+    rangeLow: "wenige Reize",
+    rangeHigh: "dicht",
+    valueLabels: {
+      0: "sehr wenige Reize",
+      1: "eher wenige Reize",
+      2: "mittlere Dichte",
+      3: "eher dicht",
+      4: "sehr dicht",
+    },
   },
 ];
 

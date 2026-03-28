@@ -1,5 +1,6 @@
 .next
 node_modules
+.env
 .env.local
 .env*.local
 playwright-report
@@ -13,4 +14,6 @@ data/ratings.local.json
 data/rating-attempts.local.json
 data/titles.local.json
 data/title-import-attempts.local.json
+prisma/*.db
+prisma/*.db-journal
 .vercel

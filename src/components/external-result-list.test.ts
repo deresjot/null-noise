@@ -29,7 +29,11 @@ describe("external result list poster rendering", () => {
     expect(html).toContain('class="poster-thumb-frame"');
     expect(html).toContain('src="/api/poster/tmdb/arrival.jpg"');
     expect(html).toContain('alt="Poster zu Arrival"');
+    expect(html).toContain("Externer Titeldatentreffer");
+    expect(html).toContain("Schnelle Einordnung");
+    expect(html).toContain("noch offen");
     expect(html).toContain("Für null-noise anlegen");
+    expect(html).toContain("vorläufigen Startbasis aus Metadaten");
   });
 
   it("omits the poster frame entirely when no poster path exists", () => {
@@ -79,6 +83,7 @@ describe("external result list poster rendering", () => {
 
     expect(html).toContain('href="/titel/arrival-2016"');
     expect(html).toContain("Bereits lokal angelegt");
+    expect(html).toContain("Details zu Arrival öffnen");
     expect(html).not.toContain("Für null-noise anlegen");
   });
 
@@ -103,6 +108,7 @@ describe("external result list poster rendering", () => {
     );
 
     expect(html).toContain("Auf dieser Beta bleibt die lokale Anlage noch deaktiviert.");
+    expect(html).toContain("Die Skala wird erst sichtbar, wenn in null-noise ein lokales Reizprofil vorliegt.");
     expect(html).not.toContain("Für null-noise anlegen");
     expect(html).not.toContain('action="/api/local-titles"');
   });

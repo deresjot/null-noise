@@ -1,69 +1,82 @@
-import { createTitleExternalLookupKey, listStoredLocalTitleSeeds } from "@/lib/local-titles";
-import { mockTitleSeeds } from "@/lib/mock-data";
-import { buildTitleRecordFromSeed, getStoredRatingsForTitle, listStoredRatings } from "@/lib/ratings";
+import {
+  CatalogStoreUnavailableError,
+  getPersistedLocalTitleLookupByExternalIds,
+  getPersistedTitleBySlug,
+  listPersistedTitleRecords,
+} from "@/lib/catalog-db";
 import { filterTitles } from "@/lib/search";
 import type { SearchFilters, TitleRecord } from "@/lib/types";
 
-async function getHydratedTitles(): Promise<TitleRecord[]> {
-  let storedRatings = [] as Awaited<ReturnType<typeof listStoredRatings>>;
-  let storedLocalTitleSeeds = [] as Awaited<ReturnType<typeof listStoredLocalTitleSeeds>>;
+export type CatalogQueryState<T> = {
+  data: T;
+  unavailable: boolean;
+};
 
+async function safeCatalogQuery<T>(
+  loader: () => Promise<T>,
+  fallback: T,
+): Promise<CatalogQueryState<T>> {
   try {
-    storedRatings = await listStoredRatings();
-  } catch {
-    storedRatings = [];
-  }
+    return {
+      data: await loader(),
+      unavailable: false,
+    };
+  } catch (error) {
+    if (error instanceof CatalogStoreUnavailableError) {
+      return {
+        data: fallback,
+        unavailable: true,
+      };
+    }
 
-  try {
-    storedLocalTitleSeeds = await listStoredLocalTitleSeeds();
-  } catch {
-    storedLocalTitleSeeds = [];
+    throw error;
   }
+}
 
-  return [...mockTitleSeeds, ...storedLocalTitleSeeds].map((seed) =>
-    buildTitleRecordFromSeed(
-      seed,
-      getStoredRatingsForTitle(storedRatings, seed.external.slug),
-    ),
-  );
+export async function getAllTitlesState(): Promise<CatalogQueryState<TitleRecord[]>> {
+  return safeCatalogQuery(() => listPersistedTitleRecords(), []);
+}
+
+export async function getFeaturedTitlesState(): Promise<CatalogQueryState<TitleRecord[]>> {
+  return safeCatalogQuery(async () => (await listPersistedTitleRecords()).slice(0, 3), []);
+}
+
+export async function searchCatalogState(
+  filters: SearchFilters,
+): Promise<CatalogQueryState<TitleRecord[]>> {
+  return safeCatalogQuery(async () => filterTitles(await listPersistedTitleRecords(), filters), []);
+}
+
+export async function getTitleBySlugState(
+  slug: string,
+): Promise<CatalogQueryState<TitleRecord | undefined>> {
+  return safeCatalogQuery(() => getPersistedTitleBySlug(slug), undefined);
+}
+
+export async function getLocalTitleLookupByExternalIdsState(
+  items: Array<{ externalSource: string; sourceId: string | number }>,
+): Promise<CatalogQueryState<Record<string, string>>> {
+  return safeCatalogQuery(() => getPersistedLocalTitleLookupByExternalIds(items), {});
 }
 
 export async function getAllTitles(): Promise<TitleRecord[]> {
-  return getHydratedTitles();
+  return (await getAllTitlesState()).data;
 }
 
 export async function getFeaturedTitles(): Promise<TitleRecord[]> {
-  return (await getHydratedTitles()).slice(0, 3);
+  return (await getFeaturedTitlesState()).data;
 }
 
 export async function searchCatalog(filters: SearchFilters): Promise<TitleRecord[]> {
-  return filterTitles(await getHydratedTitles(), filters);
+  return (await searchCatalogState(filters)).data;
 }
 
 export async function getTitleBySlug(slug: string): Promise<TitleRecord | undefined> {
-  return (await getHydratedTitles()).find((title) => title.external.slug === slug);
+  return (await getTitleBySlugState(slug)).data;
 }
 
 export async function getLocalTitleLookupByExternalIds(
   items: Array<{ externalSource: string; sourceId: string | number }>,
 ): Promise<Record<string, string>> {
-  if (!items.length) {
-    return {};
-  }
-
-  const requestedKeys = new Set(
-    items.map((item) => createTitleExternalLookupKey(item.externalSource, item.sourceId)),
-  );
-
-  return Object.fromEntries(
-    (await getHydratedTitles())
-      .map((title) => [
-        createTitleExternalLookupKey(
-          title.external.externalSource,
-          title.external.externalSourceId,
-        ),
-        title.external.slug,
-      ] as const)
-      .filter(([key]) => requestedKeys.has(key)),
-  );
+  return (await getLocalTitleLookupByExternalIdsState(items)).data;
 }

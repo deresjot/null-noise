@@ -132,6 +132,7 @@ export function SearchQueryField({ defaultValue }: SearchQueryFieldProps) {
 
   function handleChange(nextValue: string) {
     setQuery(nextValue);
+    setIsOpen(true);
 
     if (nextValue.trim().length < MIN_QUERY_LENGTH) {
       setSuggestions([]);

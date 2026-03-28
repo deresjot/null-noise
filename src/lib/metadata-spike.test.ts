@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import {
   createTmdbSearchDiagnostics,
+  getTmdbMetadataDetail,
   getTmdbPosterProxyPath,
   mapImdbSearchPayload,
   mapTmdbSearchPayload,
@@ -140,6 +141,36 @@ describe("metadata spike mapping", () => {
         posterPath: null,
       },
     ]);
+  });
+
+  it("maps TMDb detail genres into the metadata model for later local inference", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          id: 329865,
+          title: "Arrival",
+          original_title: "Arrival",
+          release_date: "2016-11-10",
+          overview: "Eine Linguistin versucht Kontakt mit Fremden aufzunehmen.",
+          poster_path: "/arrival.jpg",
+          genres: [{ name: "Science-Fiction" }, { name: "Thriller" }],
+        }),
+        { status: 200 },
+      ),
+    );
+
+    const result = await getTmdbMetadataDetail("movie", 329865, {
+      accessToken: "token",
+      fetchImpl,
+    });
+
+    expect(result.kind).toBe("success");
+
+    if (result.kind !== "success") {
+      return;
+    }
+
+    expect(result.item.genres).toEqual(["Science-Fiction", "Thriller"]);
   });
 
   it("returns an api_error state when the upstream request fails", async () => {

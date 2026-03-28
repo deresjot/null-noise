@@ -4,11 +4,14 @@
   "private": true,
   "description": "Barrierearmes MVP-Grundgeruest fuer null-noise",
   "scripts": {
+    "db:push": "node --import tsx prisma/init-sqlite.ts",
+    "db:seed": "node --import tsx prisma/seed.ts",
+    "db:bootstrap": "npm run db:push && npm run db:seed",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "test:unit": "vitest run",
+    "test:unit": "DATABASE_URL=file:./prisma/test.db NULL_NOISE_SKIP_LEGACY_IMPORT=true npm run db:push && DATABASE_URL=file:./prisma/test.db NULL_NOISE_SKIP_LEGACY_IMPORT=true vitest run --maxWorkers=1",
     "test:e2e": "playwright test"
   },
   "keywords": [
@@ -21,6 +24,7 @@
   "license": "MIT",
   "dependencies": {
     "@aws-sdk/client-dataexchange": "^3.1014.0",
+    "@prisma/client": "^6.19.2",
     "next": "^16.2.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
@@ -34,6 +38,8 @@
     "@types/react-dom": "^19.2.3",
     "eslint": "^9.39.4",
     "eslint-config-next": "^16.2.1",
+    "prisma": "^6.19.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^4.1.0"
   }

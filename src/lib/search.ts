@@ -197,7 +197,7 @@ export function hasSensoryFilters(filters: SearchFilters): boolean {
   return filters.tone !== "all" || filters.avoidPeaks || filters.avoidDensity;
 }
 
-export function getToneLabel(title: TitleRecord): string {
+export function getToneLabel(title: TitleRecord): "ruhig" | "ausgeglichen" | "intensiv" {
   const value = title.stimulusProfile.stimulusDensity;
 
   if (value <= 1) {

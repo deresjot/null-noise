@@ -6,6 +6,7 @@ export type ConfidenceLevel = "niedrig" | "mittel" | "hoch";
 export type AggregateSourceType =
   | "editorial_seed"
   | "provisional_seed"
+  | "metadata_inference"
   | "community_median"
   | "mixed";
 export type StimulusScaleKey = "volumeLevel" | "peakIntensity" | "stimulusDensity";

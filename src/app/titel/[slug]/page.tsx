@@ -4,16 +4,18 @@ import { ExplanationPanel } from "@/components/explanation-panel";
 import { ProfileScale } from "@/components/profile-scale";
 import { RatingFormGuard } from "@/components/rating-form-guard";
 import { StatusPanel } from "@/components/status-panel";
-import { confidenceLabels, soothingEffectLabels, stimulusDimensions } from "@/lib/constants";
+import { soothingEffectLabels, stimulusDimensions } from "@/lib/constants";
 import {
-  formatConfidenceSummary,
+  getAggregatePresentation,
   formatDate,
   formatKind,
+  formatRatingCount,
   formatSoothingEffect,
   formatSourceType,
+  getConfidencePresentation,
 } from "@/lib/format";
 import { formatScaleLegend, getScaleOptions } from "@/lib/ratings";
-import { getTitleBySlug } from "@/lib/queries";
+import { getTitleBySlugState } from "@/lib/queries";
 import { arePublicWritesEnabled } from "@/lib/runtime-config";
 import { submitTitleRatingAction } from "./actions";
 
@@ -25,8 +27,10 @@ type DetailPageProps = {
 type RatingStatus = {
   title: string;
   text: string;
-  tone: "neutral" | "warning" | "error";
+  tone: "neutral" | "success" | "warning" | "error";
 } | null;
+
+type StimulusDimension = (typeof stimulusDimensions)[number];
 
 function getRatingStatus(value: string | string[] | undefined): RatingStatus {
   const rating = Array.isArray(value) ? value[0] : value;
@@ -35,7 +39,7 @@ function getRatingStatus(value: string | string[] | undefined): RatingStatus {
     return {
       title: "Einschätzung übernommen",
       text: "Danke. Deine Einschätzung wurde übernommen. Das sichtbare Profil wurde serverseitig neu verdichtet und zeigt jetzt den aktuellen Stand.",
-      tone: "neutral",
+      tone: "success",
     };
   }
 
@@ -96,8 +100,8 @@ function getImportStatus(value: string | string[] | undefined): RatingStatus {
   if (status === "created") {
     return {
       title: "Titel lokal angelegt",
-      text: "Dieser Titel hat jetzt in null-noise eine vorläufige Startbasis und kann direkt eingeschätzt werden.",
-      tone: "neutral",
+      text: "Dieser Titel hat jetzt in null-noise eine vorläufige Startbasis aus Metadaten und kann direkt eingeschätzt werden.",
+      tone: "success",
     };
   }
 
@@ -117,23 +121,64 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
   const resolvedSearchParams = (await searchParams) ?? {};
   const importStatus = getImportStatus(resolvedSearchParams.import);
   const ratingStatus = getRatingStatus(resolvedSearchParams.rating);
-  const title = await getTitleBySlug(slug);
+  const { data: title, unavailable: titleUnavailable } = await getTitleBySlugState(slug);
   const writesEnabled = arePublicWritesEnabled();
 
   if (!title) {
+    if (titleUnavailable) {
+      return (
+        <article className="section-stack">
+          <header className="detail-hero">
+            <div>
+              <p className="eyebrow">Lokale Detailseite</p>
+              <h1>Die lokale Titelbasis ist gerade nicht verfügbar</h1>
+              <p className="lead">
+                Dieser Titel konnte gerade nicht aus der lokalen Persistenz geladen werden. Bitte
+                versuche es später noch einmal.
+              </p>
+            </div>
+          </header>
+          <StatusPanel
+            title="Die lokale Titelbasis ist gerade nicht verfügbar"
+            text="Reizprofil, Confidence und Bewertungsformular konnten gerade nicht geladen werden. Die getrennte Metadatenlogik bleibt davon unberührt."
+            tone="warning"
+          />
+          <ExplanationPanel compact />
+        </article>
+      );
+    }
+
     notFound();
   }
 
   const submitRating = submitTitleRatingAction.bind(null, title.external.slug);
   const scaleOptions = getScaleOptions();
+  const aggregatePresentation = getAggregatePresentation(title.aggregation.sourceType);
+  const confidencePresentation = getConfidencePresentation(
+    title.aggregation,
+    aggregatePresentation.state,
+  );
+  const orderedStimulusDimensions = [
+    stimulusDimensions.find((dimension) => dimension.key === "peakIntensity"),
+    stimulusDimensions.find((dimension) => dimension.key === "volumeLevel"),
+    stimulusDimensions.find((dimension) => dimension.key === "stimulusDensity"),
+  ].filter((dimension): dimension is StimulusDimension => Boolean(dimension));
+  const inactiveRatingState: RatingStatus = !writesEnabled
+    ? {
+        title: "Auf dieser Beta bleibt die Bewertungsabgabe noch deaktiviert",
+        text: "Die öffentliche Instanz konzentriert sich vorerst auf Suche, Reizprofile und getrennte Metadaten. Neue Einschätzungen werden erst mit belastbarer Persistenz öffentlich zugeschaltet.",
+        tone: "warning",
+      }
+    : null;
+  const visibleRatingStatus = ratingStatus ?? inactiveRatingState;
 
   return (
     <article className="section-stack">
-      {importStatus ?? ratingStatus ? (
+      {importStatus ? (
         <StatusPanel
-          title={(importStatus ?? ratingStatus)?.title ?? ""}
-          text={(importStatus ?? ratingStatus)?.text ?? ""}
-          tone={(importStatus ?? ratingStatus)?.tone ?? "neutral"}
+          title={importStatus.title}
+          text={importStatus.text}
+          tone={importStatus.tone}
         />
       ) : null}
 
@@ -148,28 +193,55 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
           </p>
         </div>
         <aside className="panel panel-emphasis" aria-labelledby="confidence-heading">
-          <h2 id="confidence-heading">Confidence</h2>
-          <p>{`Confidence: ${formatConfidenceSummary(title.aggregation)}`}</p>
-          <p>{confidenceLabels[title.aggregation.level].description}</p>
+          <h2 id="confidence-heading">Wie belastbar ist die Einschätzung?</h2>
+          <p className="confidence-callout-eyebrow">{confidencePresentation.eyebrow}</p>
+          <p className="confidence-callout-title">{confidencePresentation.title}</p>
+          <p>{confidencePresentation.text}</p>
         </aside>
       </header>
 
       <section className="detail-grid">
-        <section aria-labelledby="profile-heading" className="panel">
-          <h2 id="profile-heading">Reizprofil</h2>
+        <section aria-labelledby="profile-heading" className="panel detail-panel-profile">
+          <h2 id="profile-heading">Einschätzung der Reizintensität</h2>
+          <p className="lead detail-profile-lead">
+            Die drei Werte sind grobe Einschätzungen, keine Messwerte. Besonders wichtig ist hier,
+            wie deutlich plötzliche Spitzen auftreten.
+          </p>
+          <div className="profile-context-grid">
+            <section
+              aria-labelledby="profile-state-heading"
+              className={`profile-context-card profile-context-card-${aggregatePresentation.state}`}
+            >
+              <p className="profile-context-eyebrow">{aggregatePresentation.state === "seed" ? "Vorläufige Basis" : "Aktueller Stand"}</p>
+              <h3 id="profile-state-heading">{aggregatePresentation.label}</h3>
+              <p>{aggregatePresentation.text}</p>
+            </section>
+            <section
+              aria-labelledby="profile-confidence-heading"
+              className={`profile-context-card profile-context-card-${aggregatePresentation.state}`}
+            >
+              <p className="profile-context-eyebrow">{confidencePresentation.eyebrow}</p>
+              <h3 id="profile-confidence-heading">{confidencePresentation.title}</h3>
+              <p>{confidencePresentation.text}</p>
+            </section>
+          </div>
           <div className="scale-grid">
-            {stimulusDimensions.map((dimension) => (
+            {orderedStimulusDimensions.map((dimension) => (
               <ProfileScale
                 key={dimension.key}
+                featured={dimension.key === "peakIntensity"}
                 label={dimension.label}
                 help={dimension.help}
+                rangeHigh={dimension.rangeHigh}
+                rangeLow={dimension.rangeLow}
                 value={title.stimulusProfile[dimension.key]}
+                valueLabel={dimension.valueLabels[title.stimulusProfile[dimension.key]]}
               />
             ))}
           </div>
 
           <section className="subsection effect-summary" aria-labelledby="effect-heading">
-            <h3 id="effect-heading">Zusätzliche subjektive Wirkung</h3>
+            <h3 id="effect-heading">Subjektive Wirkung</h3>
             <p className="effect-value">{`Beruhigende Wirkung: ${formatSoothingEffect(title.soothingEffect)}`}</p>
             <p className="scale-help">{soothingEffectLabels[title.soothingEffect].description}</p>
             <p className="field-note">
@@ -179,16 +251,23 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
           </section>
         </section>
 
-        <section className="panel" aria-labelledby="detail-info-heading">
+        <section className="panel detail-panel-info" aria-labelledby="detail-info-heading">
           <h2 id="detail-info-heading">Transparenz und Einordnung</h2>
+          <StatusPanel
+            className={`profile-origin-panel profile-origin-panel-${aggregatePresentation.state}`}
+            headingAs="h3"
+            text={aggregatePresentation.text}
+            title={aggregatePresentation.label}
+            tone="neutral"
+          />
           <dl className="detail-list">
             <div>
               <dt>Profilgrundlage</dt>
               <dd>{formatSourceType(title.aggregation.sourceType)}</dd>
             </div>
             <div>
-              <dt>Anzahl Einschätzungen</dt>
-              <dd>{title.aggregation.ratingCount}</dd>
+              <dt>Rückmeldungen</dt>
+              <dd>{formatRatingCount(title.aggregation.ratingCount)}</dd>
             </div>
             {title.aggregation.lastReviewedAt ? (
               <div>
@@ -203,9 +282,8 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
           </dl>
           {title.external.externalSource === "tmdb" ? (
             <p className="field-note">
-              Titel, Jahr und Synopsis stammen aus TMDb. Das Reizprofil gehört nicht zu den
-              externen Metadaten, sondern entsteht in null-noise aus einer vorläufigen Startbasis
-              und späteren anonymen Einschätzungen.
+              Titel, Jahr und Synopsis stammen aus TMDb. Das Reizprofil gehört trotzdem nicht zu
+              den externen Metadaten, sondern bleibt eine null-noise-interne Einordnung.
             </p>
           ) : null}
 
@@ -218,7 +296,7 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
             </ul>
           </section>
 
-          <section aria-labelledby="rating-heading" className="subsection">
+          <section aria-labelledby="rating-heading" className="subsection rating-section">
             <h3 id="rating-heading">Bewertung ohne Login</h3>
             <p>
               Die Skala 0 bis 4 ist eine Einschätzung, kein Messwert. Reizprofil und beruhigende
@@ -289,20 +367,30 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
                     Einschätzung speichern
                   </button>
                 </form>
+                {visibleRatingStatus ? (
+                  <StatusPanel
+                    id="rating-feedback"
+                    className="status-panel-inline"
+                    headingAs="h4"
+                    title={visibleRatingStatus.title}
+                    text={visibleRatingStatus.text}
+                    tone={visibleRatingStatus.tone}
+                  />
+                ) : null}
                 <p className="field-note">
                   Die Abgabe bleibt anonym und ohne Konto. Wiederholte Direktabgaben werden kurz und
                   zurückhaltend gebremst.
                 </p>
               </>
             ) : (
-              <div className="status-panel panel" data-tone="warning">
-                <h4>Auf dieser Beta bleibt die Bewertungsabgabe noch deaktiviert</h4>
-                <p>
-                  Die öffentliche Instanz konzentriert sich vorerst auf Suche, Reizprofile und
-                  getrennte Metadaten. Neue Einschätzungen werden erst mit belastbarer Persistenz
-                  öffentlich zugeschaltet.
-                </p>
-              </div>
+              <StatusPanel
+                id="rating-feedback"
+                className="status-panel-inline"
+                headingAs="h4"
+                title={visibleRatingStatus?.title ?? ""}
+                text={visibleRatingStatus?.text ?? ""}
+                tone={visibleRatingStatus?.tone ?? "warning"}
+              />
             )}
           </section>
         </section>

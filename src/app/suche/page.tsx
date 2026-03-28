@@ -3,7 +3,10 @@ import { ResultList } from "@/components/result-list";
 import { SearchForm } from "@/components/search-form";
 import { StatusPanel } from "@/components/status-panel";
 import { searchTmdbMetadata } from "@/lib/metadata-spike";
-import { getLocalTitleLookupByExternalIds, searchCatalog } from "@/lib/queries";
+import {
+  getLocalTitleLookupByExternalIdsState,
+  searchCatalogState,
+} from "@/lib/queries";
 import { arePublicWritesEnabled } from "@/lib/runtime-config";
 import { hasSensoryFilters, parseSearchFilters } from "@/lib/search";
 
@@ -53,7 +56,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const resolvedSearchParams = (await searchParams) ?? {};
   const filters = parseSearchFilters(resolvedSearchParams);
   const importStatus = getImportStatus(resolvedSearchParams.import);
-  const localResults = await searchCatalog(filters);
+  const {
+    data: localResults,
+    unavailable: localCatalogUnavailable,
+  } = await searchCatalogState(filters);
   const writesEnabled = arePublicWritesEnabled();
   const profileOnlyFiltersActive = hasSensoryFilters(filters);
   const shouldTryExternalFallback = Boolean(filters.q) && !profileOnlyFiltersActive && !localResults.length;
@@ -66,9 +72,12 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const externalResultCount = externalResults.length;
   const externalResultsSuppressedByProfileFilters = Boolean(filters.q) && profileOnlyFiltersActive;
   const showMetadataFallback = externalResultCount > 0;
-  const localTitleByExternalKey = showMetadataFallback
-    ? await getLocalTitleLookupByExternalIds(externalResults)
-    : {};
+  const {
+    data: localTitleByExternalKey,
+    unavailable: localTitleLookupUnavailable,
+  } = showMetadataFallback
+    ? await getLocalTitleLookupByExternalIdsState(externalResults)
+    : { data: {}, unavailable: false };
   const showExternalEmptyAfterKindFilter =
     metadataState?.kind === "success" && metadataState.items.length > 0 && !externalResults.length;
   const showExternalCount = metadataState?.kind === "success" && externalResultCount > 0;
@@ -80,7 +89,12 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   let searchStateTone: SearchStateTone = "neutral";
 
   if (!localResults.length && !showMetadataFallback) {
-    if (externalResultsSuppressedByProfileFilters) {
+    if (localCatalogUnavailable) {
+      searchStateTitle = "Die lokale Titelbasis ist gerade nicht verfügbar";
+      searchStateText =
+        "Profilierte Treffer konnten gerade nicht geladen werden. Versuche es später noch einmal oder suche ohne aktive Reizfilter nach ergänzenden Titeldaten.";
+      searchStateTone = "warning";
+    } else if (externalResultsSuppressedByProfileFilters) {
       searchStateTitle = "Mit diesen Filtern bleibt die Suche im Katalog";
       searchStateText =
         "Ton-, Peak- und Dichte-Filter brauchen ein Reizprofil. Entferne sie, wenn du zusätzlich getrennte Titeldaten sehen möchtest.";
@@ -144,13 +158,13 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       </div>
 
       <div className="content-grid">
-        <section className="panel" aria-labelledby="search-form-heading">
+        <section className="panel search-panel search-panel-primary" aria-labelledby="search-form-heading">
           <p className="eyebrow">Suchfeld und Filter</p>
           <h2 id="search-form-heading">Erst filtern, dann bei Bedarf ergänzen</h2>
           <SearchForm action="/suche" filters={filters} />
         </section>
 
-        <section className="panel" aria-labelledby="search-summary-heading">
+        <section className="panel search-panel search-panel-secondary" aria-labelledby="search-summary-heading">
           <p className="eyebrow">Reihenfolge</p>
           <h2 id="search-summary-heading">Lokale Reizprofile bleiben immer zuerst sichtbar</h2>
           <p>
@@ -174,6 +188,12 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               Aktive Reizfilter bleiben bewusst auf den profilierten Katalog beschränkt.
             </p>
           ) : null}
+          {localCatalogUnavailable ? (
+            <p className="field-note">
+              Die lokale Titelbasis ist gerade nicht verfügbar. Externe Titeldaten bleiben davon
+              getrennt nutzbar.
+            </p>
+          ) : null}
           {showExternalUnavailableNote ? (
             <p className="field-note">Ergänzende Titeldaten sind gerade nicht erreichbar.</p>
           ) : null}
@@ -194,6 +214,13 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
         {!localResults.length && showMetadataFallback ? (
           <div className="section-stack">
+            {localCatalogUnavailable ? (
+              <StatusPanel
+                title="Die lokale Titelbasis ist gerade nicht verfügbar"
+                text="Darum erscheinen hier nur getrennte Titeldaten. Sie helfen beim Wiederfinden, ersetzen aber kein Reizprofil."
+                tone="warning"
+              />
+            ) : null}
             <StatusPanel
               title="Im Katalog liegt dazu noch kein Reizprofil vor"
               text="Darum erscheinen darunter nur ergänzende Titeldaten. Sie helfen beim Wiederfinden, ersetzen aber keine Reizeinschätzung."
@@ -213,7 +240,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                 items={externalResults}
                 localTitleByExternalKey={localTitleByExternalKey}
                 query={filters.q}
-                writesEnabled={writesEnabled}
+                writesEnabled={writesEnabled && !localTitleLookupUnavailable}
               />
             </section>
           </div>

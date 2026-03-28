@@ -61,51 +61,59 @@ export async function POST(request: NextRequest) {
     }),
   );
 
-  const existingSeed = findStoredLocalTitleSeedByExternal(
-    await listStoredLocalTitleSeeds(),
-    "tmdb",
-    sourceId,
-  );
-
-  if (existingSeed) {
-    return NextResponse.redirect(
-      buildDetailRedirect(request, existingSeed.external.slug, "exists"),
-      303,
+  try {
+    const existingSeed = findStoredLocalTitleSeedByExternal(
+      await listStoredLocalTitleSeeds(),
+      "tmdb",
+      sourceId,
     );
+
+    if (existingSeed) {
+      return NextResponse.redirect(
+        buildDetailRedirect(request, existingSeed.external.slug, "exists"),
+        303,
+      );
+    }
+  } catch {
+    return NextResponse.redirect(buildSearchRedirect(request, q, "unavailable"), 303);
   }
 
   if (!arePublicWritesEnabled()) {
     return NextResponse.redirect(buildSearchRedirect(request, q, "inactive"), 303);
   }
 
-  const attemptStatus = evaluateTitleImportAttempt({
-    sourceKey,
-    ipHash,
-    recentAttempts: await listStoredTitleImportAttempts(),
-    hasTrustedOrigin: hasTrustedOrigin({
-      origin: request.headers.get("origin"),
-      referer: request.headers.get("referer"),
-      host: request.headers.get("host"),
-      forwardedHost: request.headers.get("x-forwarded-host"),
-      secFetchSite: request.headers.get("sec-fetch-site"),
-    }),
-  });
-
-  if (attemptStatus !== "accepted") {
-    await appendStoredTitleImportAttempt({
+  try {
+    const attemptStatus = evaluateTitleImportAttempt({
       sourceKey,
       ipHash,
-      status: attemptStatus,
+      recentAttempts: await listStoredTitleImportAttempts(),
+      hasTrustedOrigin: hasTrustedOrigin({
+        origin: request.headers.get("origin"),
+        referer: request.headers.get("referer"),
+        host: request.headers.get("host"),
+        forwardedHost: request.headers.get("x-forwarded-host"),
+        secFetchSite: request.headers.get("sec-fetch-site"),
+      }),
     });
 
-    return NextResponse.redirect(
-      buildSearchRedirect(
-        request,
-        q,
-        attemptStatus === "rejected_rate_limited" ? "limited" : "unavailable",
-      ),
-      303,
-    );
+    if (attemptStatus !== "accepted") {
+      await appendStoredTitleImportAttempt({
+        sourceKey,
+        ipHash,
+        status: attemptStatus,
+      });
+
+      return NextResponse.redirect(
+        buildSearchRedirect(
+          request,
+          q,
+          attemptStatus === "rejected_rate_limited" ? "limited" : "unavailable",
+        ),
+        303,
+      );
+    }
+  } catch {
+    return NextResponse.redirect(buildSearchRedirect(request, q, "unavailable"), 303);
   }
 
   const detailState = await getMetadataDetail({
@@ -118,20 +126,24 @@ export async function POST(request: NextRequest) {
     return NextResponse.redirect(buildSearchRedirect(request, q, "unavailable"), 303);
   }
 
-  const { seed, created } = await createOrGetStoredLocalTitleSeed(detailState.item);
-  await appendStoredTitleImportAttempt({
-    sourceKey,
-    ipHash,
-    status: "accepted",
-  });
+  try {
+    const { seed, created } = await createOrGetStoredLocalTitleSeed(detailState.item);
+    await appendStoredTitleImportAttempt({
+      sourceKey,
+      ipHash,
+      status: "accepted",
+    });
 
-  revalidatePath("/suche");
-  revalidatePath(`/titel/${seed.external.slug}`);
-  revalidatePath("/api/titles");
-  revalidatePath(`/api/titles/${seed.external.slug}`);
+    revalidatePath("/suche");
+    revalidatePath(`/titel/${seed.external.slug}`);
+    revalidatePath("/api/titles");
+    revalidatePath(`/api/titles/${seed.external.slug}`);
 
-  return NextResponse.redirect(
-    buildDetailRedirect(request, seed.external.slug, created ? "created" : "exists"),
-    303,
-  );
+    return NextResponse.redirect(
+      buildDetailRedirect(request, seed.external.slug, created ? "created" : "exists"),
+      303,
+    );
+  } catch {
+    return NextResponse.redirect(buildSearchRedirect(request, q, "unavailable"), 303);
+  }
 }

@@ -13,7 +13,7 @@ export function SiteFooter() {
         <section aria-labelledby="privacy-summary-heading">
           <h2 id="privacy-summary-heading">Datenschutz</h2>
           <div className="footer-mascot-row">
-            <MascotMark className="footer-mascot" decorative />
+            <MascotMark className="footer-mascot" decorative variant="compact" />
             <p className="field-note">Ohne Konto, ohne Tracker, ohne versteckte Kennungen.</p>
           </div>
           <p>

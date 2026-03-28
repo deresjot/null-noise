@@ -27,28 +27,32 @@ test("search page exposes a visible results heading", async ({ page }) => {
   await page.goto("/suche?q=mond");
 
   await expect(page.getByRole("heading", { name: "Ergebnisse" })).toBeVisible();
+  await expect(page.locator(".result-card .secondary-button-link").first()).toBeVisible();
 });
 
 test("search page tolerates typos for local catalog titles", async ({ page }) => {
   await page.goto("/suche?q=Hafn%20ohne%20Eile");
 
-  await expect(page.getByRole("link", { name: "Hafen ohne Eile" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Hafen ohne Eile", exact: true })).toBeVisible();
 });
 
 test("detail page explains the three profile axes clearly", async ({ page }) => {
   await page.goto("/titel/mondfenster");
 
+  await expect(page.getByRole("heading", { name: "Einschätzung der Reizintensität" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Grundlautstärke" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Plötzliche Spitzen" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Belastungsdichte" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Zusätzliche subjektive Wirkung" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Subjektive Wirkung" })).toBeVisible();
   await expect(page.getByText("Beruhigende Wirkung: gemischt / neutral")).toBeVisible();
 });
 
 test("detail page keeps low confidence understandable for small data", async ({ page }) => {
   await page.goto("/titel/scherbennacht");
 
-  await expect(page.getByText("Confidence: niedrig (1 Einschätzung)")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Wie belastbar ist die Einschätzung?" })).toBeVisible();
+  await expect(page.locator(".confidence-callout-eyebrow")).toHaveText("Geringe Sicherheit");
+  await expect(page.locator(".confidence-callout-title")).toHaveText("Noch wenige Einschätzungen");
 });
 
 test("detail page exposes the fourth prepared rating question", async ({ page }) => {
@@ -61,7 +65,7 @@ test("detail page exposes the fourth prepared rating question", async ({ page })
 });
 
 test("detail page keeps submit feedback calm when a cooldown is active", async ({ page }) => {
-  await page.goto("/titel/mondfenster?rating=cooldown");
+  await page.goto("/titel/mondfenster?rating=cooldown#rating-feedback");
 
   await expect(
     page.getByRole("heading", { name: "Für diesen Titel liegt gerade schon eine frische Einschätzung vor" }),
@@ -69,6 +73,7 @@ test("detail page keeps submit feedback calm when a cooldown is active", async (
   await expect(
     page.getByText("Für diesen Titel wurde gerade bereits eine Einschätzung abgegeben. Bitte versuche es später noch einmal."),
   ).toBeVisible();
+  await expect(page.locator("#rating-feedback")).toBeVisible();
 });
 
 test("detail page explains a freshly imported title as a local start basis", async ({ page }) => {
@@ -76,7 +81,7 @@ test("detail page explains a freshly imported title as a local start basis", asy
 
   await expect(page.getByRole("heading", { name: "Titel lokal angelegt" })).toBeVisible();
   await expect(
-    page.getByText("Dieser Titel hat jetzt in null-noise eine vorläufige Startbasis und kann direkt eingeschätzt werden."),
+    page.getByText("Dieser Titel hat jetzt in null-noise eine vorläufige Startbasis aus Metadaten und kann direkt eingeschätzt werden."),
   ).toBeVisible();
 });
 

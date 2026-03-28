@@ -23,11 +23,21 @@ export default function DatenschutzPage() {
 
       <div className="content-grid">
         <section className="panel" aria-labelledby="privacy-data-heading">
-          <h2 id="privacy-data-heading">Was aktuell verarbeitet wird</h2>
+          <h2 id="privacy-data-heading">Datensparsame Nutzung</h2>
           <ul className="plain-list">
-            <li>Suchanfragen bleiben auf die gerade benoetigte Serverantwort beschraenkt.</li>
-            <li>Externe Titeldaten werden nur serverseitig von TMDb geholt, wenn der Pfad aktiv ist.</li>
-            <li>Es gibt keine Profile, keine Community-Funktion und kein Tracking ueber mehrere Sitzungen.</li>
+            <li>Diese Website verwendet keine Cookies fuer Tracking oder Profilbildung.</li>
+            <li>Es gibt keine Konten, keine Community-Funktion und keine versteckten Kennungen.</li>
+            <li>Suchanfragen bleiben auf die jeweils benoetigte Serverantwort beschraenkt.</li>
+            <li>Externe Titeldaten werden nur serverseitig von TMDb geholt, wenn dieser Pfad aktiv ist.</li>
+          </ul>
+        </section>
+
+        <section className="panel" aria-labelledby="privacy-tech-heading">
+          <h2 id="privacy-tech-heading">Technische Einbindung</h2>
+          <ul className="plain-list">
+            <li>Schriften bleiben lokal oder als Systemschrift eingebunden.</li>
+            <li>Externe Verweise sind normale Links; Daten werden erst beim aktiven Klick uebertragen.</li>
+            <li>Poster und Titeldaten von TMDb bleiben reiner Metadatenkontext und ersetzen kein Reizprofil.</li>
           </ul>
         </section>
 
@@ -39,8 +49,8 @@ export default function DatenschutzPage() {
               : "Auf dieser Instanz bleiben neue Einschaetzungen und lokale Titelanlage vorerst deaktiviert. Dadurch entfallen auch die funktionalen Schreibpfad-Cookies der Bewertungsabgabe."}
           </p>
           <p className="field-note">
-            Sobald ein produktionsfaehiger Schreibpfad bereitsteht, wird dieser Abschnitt mit dem
-            dann tatsaechlichen Verhalten konkretisiert.
+            Diese Beta bleibt damit bewusst lesbar und datensparsam, auch wenn noch nicht alle
+            spaeteren Funktionen oeffentlich aktiv sind.
           </p>
         </section>
       </div>

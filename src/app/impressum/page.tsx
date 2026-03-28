@@ -13,31 +13,42 @@ export default function ImpressumPage() {
         <p className="eyebrow">Rechtliches</p>
         <h1>Impressum</h1>
         <p>
-          Diese Seite ist als ruhige Live-Basis vorbereitet. Vor einer echten öffentlichen Beta
-          muessen Betreibername, ladungsfaehige Anschrift und direkter Kontakt konkret ergaenzt
-          werden.
+          null-noise bleibt auch im Rechtlichen bewusst knapp. Die Angaben hier orientieren sich am
+          oeffentlich verlinkten Impressum von Sebastian Jansen und setzen die erste Beta nicht
+          groesser in Szene, als sie ist.
         </p>
       </div>
 
       <div className="content-grid">
         <section className="panel" aria-labelledby="impressum-owner-heading">
-          <h2 id="impressum-owner-heading">Betreiberangaben</h2>
+          <h2 id="impressum-owner-heading">Angaben gemaess § 5 TMG</h2>
           <dl className="detail-list">
             <div>
               <dt>Name</dt>
-              <dd>Noch vor der oeffentlichen Beta ergaenzen</dd>
+              <dd>Sebastian Jansen</dd>
             </div>
             <div>
-              <dt>Anschrift</dt>
-              <dd>Noch vor der oeffentlichen Beta ergaenzen</dd>
+              <dt>Taetigkeit</dt>
+              <dd>UX-Professional, Accessibility Consultant, Digital Designer</dd>
             </div>
             <div>
               <dt>Kontakt</dt>
-              <dd>Noch vor der oeffentlichen Beta ergaenzen</dd>
+              <dd>
+                <a href="mailto:mail@sebastianjansen.com">mail [at] sebastianjansen [dot] com</a>
+              </dd>
+            </div>
+            <div>
+              <dt>Web</dt>
+              <dd>
+                <a href="https://www.sebastianjansen.com">www.sebastianjansen.com</a>
+              </dd>
             </div>
           </dl>
+
+          <h3>Verantwortlich fuer den Inhalt</h3>
+          <p>Sebastian Jansen</p>
           <p className="field-note">
-            Die technische Seite ist vorbereitet, ersetzt aber noch keinen fertigen Rechtstext.
+            Anschrift auf Anfrage per Mail erhaeltlich.
           </p>
         </section>
 

@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -20,65 +20,87 @@ enum ConfidenceLevel {
 
 enum AggregateSourceType {
   editorial_seed
+  provisional_seed
+  metadata_inference
   community_median
   mixed
 }
 
+enum RatingSourceType {
+  seed
+  anonymous
+}
+
+enum RatingAttemptStatus {
+  accepted
+  rejected_rate_limited
+  rejected_cooldown
+  rejected_too_fast
+  suspicious
+}
+
+enum TitleImportAttemptStatus {
+  accepted
+  rejected_rate_limited
+  suspicious
+}
+
 model ExternalTitle {
-  id               String             @id @default(cuid())
-  externalSource   String
-  externalSourceId String
-  slug             String             @unique
-  title            String
-  originalTitle    String?
-  kind             TitleKind
-  releaseYear      Int?
-  synopsis         String
-  runtimeMinutes   Int?
-  languageCode     String             @default("de")
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  aggregate        StimulusAggregate?
-  ratings          CommunityRating[]
-  contentFlags     ContentFlag[]
+  id                        String              @id @default(cuid())
+  externalSource            String
+  externalSourceId          String
+  slug                      String              @unique
+  title                     String
+  originalTitle             String?
+  kind                      TitleKind
+  releaseYear               Int?
+  synopsis                  String?
+  runtimeMinutes            Int?
+  posterPath                String?
+  languageCode              String              @default("de")
+  profileNotes              String
+  profileBaseSourceType     AggregateSourceType
+  profileBaseLastReviewedAt DateTime?
+  createdAt                 DateTime            @default(now())
+  updatedAt                 DateTime            @updatedAt
+  aggregate                 StimulusAggregate?
+  ratings                   TitleRating[]
+  contentFlags              ContentFlag[]
 
   @@unique([externalSource, externalSourceId])
 }
 
 model StimulusAggregate {
-  id             String              @id @default(cuid())
-  titleId        String              @unique
-  volumeLevel    Int
-  peakIntensity  Int
-  stimulusDensity Int
-  soothingEffect Int
-  confidenceLevel ConfidenceLevel
-  notes          String
-  ratingCount    Int                 @default(0)
-  sourceType     AggregateSourceType
-  lastReviewedAt DateTime?
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
-  title          ExternalTitle       @relation(fields: [titleId], references: [id], onDelete: Cascade)
-
-  @@index([sourceType, lastReviewedAt])
-}
-
-model CommunityRating {
-  id              String        @id @default(cuid())
-  titleId         String
-  sessionTokenHash String?
+  id              String              @id @default(cuid())
+  titleId         String              @unique
   volumeLevel     Int
   peakIntensity   Int
   stimulusDensity Int
   soothingEffect  Int
-  note            String?
-  createdAt       DateTime      @default(now())
-  expiresAt       DateTime?
-  title           ExternalTitle @relation(fields: [titleId], references: [id], onDelete: Cascade)
+  confidenceLevel ConfidenceLevel
+  ratingCount     Int                 @default(0)
+  sourceType      AggregateSourceType
+  lastReviewedAt  DateTime?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  title           ExternalTitle       @relation(fields: [titleId], references: [id], onDelete: Cascade)
 
-  @@index([titleId, createdAt])
-  @@index([sessionTokenHash])
+  @@index([sourceType, lastReviewedAt])
+}
+
+model TitleRating {
+  id              String           @id @default(cuid())
+  titleId         String
+  sourceType      RatingSourceType
+  volumeLevel     Int
+  peakIntensity   Int
+  stimulusDensity Int
+  soothingEffect  Int
+  submittedAt     DateTime         @default(now())
+  title           ExternalTitle    @relation(fields: [titleId], references: [id], onDelete: Cascade)
+
+  @@index([titleId, submittedAt])
+  @@index([sourceType])
 }
 
 model ContentFlag {
@@ -89,4 +111,26 @@ model ContentFlag {
   title       ExternalTitle @relation(fields: [titleId], references: [id], onDelete: Cascade)
 
   @@unique([titleId, flag])
+}
+
+model RatingAttempt {
+  id          String              @id @default(cuid())
+  titleSlug   String
+  ipHash      String
+  status      RatingAttemptStatus
+  submittedAt DateTime            @default(now())
+
+  @@index([titleSlug, submittedAt])
+  @@index([ipHash, submittedAt])
+}
+
+model TitleImportAttempt {
+  id          String                   @id @default(cuid())
+  sourceKey   String
+  ipHash      String
+  status      TitleImportAttemptStatus
+  submittedAt DateTime                 @default(now())
+
+  @@index([sourceKey, submittedAt])
+  @@index([ipHash, submittedAt])
 }

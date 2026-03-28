@@ -1,6 +1,6 @@
 # null-noise
 
-Erste technische Umsetzungsbasis fuer eine barrierearme Web-App, die Filme und Serien nach ihrer sensorischen Belastung einordnet. Diese Basis verbindet Produktkonzept, Datenmodell und ein ruhiges Next.js-MVP mit Mock-Daten. Audio-Reizprofile werden zunaechst editorial geseedet und koennen lokal durch anonyme Einzelbewertungen serverseitig per Median verdichtet werden. Fuer eine erste öffentliche Beta bleibt die Vercel-Instanz derzeit bewusst lesend, bis ein belastbarer produktiver Schreibpfad vorhanden ist.
+Erste technische Umsetzungsbasis fuer eine barrierearme Web-App, die Filme und Serien nach ihrer sensorischen Belastung einordnet. Diese Basis verbindet Produktkonzept, Datenmodell und ein ruhiges Next.js-MVP mit Seed-Daten. Audio-Reizprofile werden zunaechst editorial geseedet und koennen lokal durch anonyme Einzelbewertungen serverseitig per Median verdichtet werden. Neue lokal angelegte Titel und anonyme Bewertungen landen inzwischen in einer kleinen persistenten SQLite-Datenbank ueber Prisma. Fuer eine erste öffentliche Beta bleibt die Vercel-Instanz derzeit dennoch bewusst lesend, bis auch der produktive Schreibpfad ausserhalb der lokalen Instanz belastbar bereitsteht.
 
 Eine laufend gepflegte Projektzusammenfassung mit Entscheidungen, Iterationen und Gruenden steht in [docs/project-summary.md](./docs/project-summary.md).
 
@@ -79,7 +79,7 @@ MVP-Regeln:
 - Keine objektiven Messwerte behaupten
 - Ein gemeinsames 0-bis-4-Raster fuer alle drei Achsen
 - Freitext nur ergaenzend, nie als alleinige Bewertung
-- `source_type` ausweisen: `editorial_seed`, `community_median`, `mixed`
+- `source_type` ausweisen: `editorial_seed`, `metadata_inference`, `community_median`, `mixed`
 - Confidence bewusst schlicht halten:
   `1` Einschaetzung = `niedrig`, `2` bis `4` = `mittel`, `5+` = `hoch`
 - `rating_count` und `last_reviewed_at` sichtbar halten, wenn sie vorliegen
@@ -160,8 +160,8 @@ Die Auswahlstrategie, Inspirationsquellen und Validierungscheckliste stehen in [
 - TypeScript
 - Server Components fuer lesende Views
 - Route Handlers fuer serverseitige API-Endpunkte
-- PostgreSQL als Ziel-Datenbank
-- Prisma-Schema als Startpunkt fuer relationale Persistenz
+- Prisma als relationale Datenzugriffsschicht
+- SQLite als kleine persistente Basis fuer lokale Seeds, importierte Titel und anonyme Bewertungen
 - Playwright + axe fuer Accessibility-Smoke-Tests
 - Vitest fuer gezielte serverseitige Mapping- und Fehlerfalltests
 - CSS mit Design Tokens statt schwerer UI-Library
@@ -181,10 +181,9 @@ Diese Basis deckt fuer eine erste ehrliche Beta bereits ab:
 
 Vor einem weiter gehenden Produktbetrieb noch offen:
 
-- dateibasierte Bewertungs-Persistenz spaeter in eine echte DB ueberfuehren
 - die bestehende Missbrauchsabwehr weiter haerten, ohne Privacy oder Accessibility zu verwässern
 - Admin- oder Editorial-Seed-Workflow
-- lokale Titeluebernahme aus externen Metadaten weiter absichern und spaeter in eine echte Persistenz ueberfuehren
+- spaetere Hosted-DB fuer oeffentliche Schreibpfade statt lokaler SQLite-Datei
 
 ## Zusatz: aktueller Bewertungsstand
 
@@ -192,7 +191,7 @@ Die Bewertungssektion auf der Detailseite funktioniert lokal serverseitig:
 
 - vier diskrete Fragen ohne Slider
 - anonyme Abgabe ohne Konto
-- serverseitige Speicherung in einer kleinen lokalen JSON-Datei
+- serverseitige Speicherung in einer kleinen SQLite-Datenbank
 - getrennte Median-Aggregation fuer `volumeLevel`, `peakIntensity`, `stimulusDensity` und `soothingEffect`
 - Confidence weiter schlicht ueber die Zahl der Einschatzungen
 - einfache serverseitige Missbrauchsabwehr ueber Origin-Pruefung, Rate-Limit, Titel-Cooldown und eine kleine Zeitplausibilitaet
@@ -201,7 +200,7 @@ Wichtig bleibt:
 
 - `soothingEffect` ersetzt kein Reizprofil
 - externe Titeldaten bleiben weiterhin reiner Metadatenkontext
-- die aktuelle Persistenz ist bewusst klein und lokal, nicht schon die spaetere produktive Datenbankloesung
+- die aktuelle Persistenz ist bewusst klein und lokal, nicht schon die spaetere produktive Hosted-Datenbankloesung
 - fuer eine öffentliche Vercel-Beta bleiben neue Bewertungen deshalb standardmaessig deaktiviert
 - es gibt weiterhin keine Konten, keine Profile und keine Community-Features
 
@@ -211,7 +210,7 @@ Externe TMDb-Titel koennen lokal oder in schreibfaehigen Instanzen kontrolliert 
 
 - TMDb liefert dabei nur Titel, Jahr, Synopsis und optional Posterpfad
 - das Reizprofil kommt nicht aus TMDb
-- lokal angelegte Titel starten mit einer vorlaeufigen Startbasis und niedriger Confidence
+- lokal angelegte Titel starten mit einer vorlaeufigen, metadatenbasierten Startbasis und niedriger Confidence
 - danach verhalten sie sich wie normale lokale Titel: Detailseite, anonyme Bewertung und getrennte Median-Aggregation funktionieren wie gehabt
 
 Wichtig bleibt:
@@ -219,7 +218,8 @@ Wichtig bleibt:
 - die Uebernahme ist ein bewusster Schritt aus der Suchseite heraus
 - ein bereits uebernommener TMDb-Titel wird nicht doppelt angelegt
 - Reizprofil und beruhigende Wirkung bleiben weiterhin null-noise-intern
-- auf der ersten öffentlichen Beta bleibt diese Uebernahme vorerst deaktiviert, solange sie nur dateibasiert speichern wuerde
+- die Startbasis ist kein fertiges Reizprofil, sondern nur eine vorsichtige Orientierung aus Synopsis, Genres und anderen bereits serverseitig verfuegbaren Metadaten
+- auf der ersten öffentlichen Beta bleibt diese Uebernahme vorerst deaktiviert, solange nur die lokale Instanz belastbar schreibt
 
 ## Zusatz: serverseitiger Metadaten-Integrations-Spike
 
@@ -246,17 +246,20 @@ Poster werden derzeit nur testweise und sehr zurueckhaltend bei externen Haupttr
 ### Lokal aktivieren
 
 1. `.env.local` im Projektordner anlegen.
-2. Optional `NEXT_PUBLIC_SITE_URL=http://localhost:3000` setzen.
-3. TMDb als Quelle setzen:
+2. `DATABASE_URL=file:./prisma/null-noise.db` setzen oder aus `.env.example` uebernehmen.
+3. Optional `NEXT_PUBLIC_SITE_URL=http://localhost:3000` setzen.
+4. TMDb als Quelle setzen:
    `METADATA_SPIKE_SOURCE=tmdb`
-4. Optional `TMDB_READ_ACCESS_TOKEN` hinterlegen.
-5. Fuer lokale Schreibtests bei Bedarf `NULL_NOISE_ENABLE_WRITES=true` setzen.
-6. Dev-Server starten.
-7. Den Pfad `/spike/metadaten` aufrufen.
+5. Optional `TMDB_READ_ACCESS_TOKEN` hinterlegen.
+6. Einmal `npm run db:bootstrap` ausfuehren.
+7. Fuer lokale Schreibtests bei Bedarf `NULL_NOISE_ENABLE_WRITES=true` setzen.
+8. Dev-Server starten.
+9. Den Pfad `/spike/metadaten` aufrufen.
 
 Beispiel fuer `.env.local`:
 
 ```bash
+DATABASE_URL=file:./prisma/null-noise.db
 METADATA_SPIKE_SOURCE=tmdb
 TMDB_READ_ACCESS_TOKEN=your_tmdb_read_access_token
 NULL_NOISE_ENABLE_WRITES=true

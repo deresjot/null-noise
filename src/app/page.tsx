@@ -4,12 +4,14 @@ import { ExplanationPanel } from "@/components/explanation-panel";
 import { MascotMark } from "@/components/mascot-mark";
 import { ResultList } from "@/components/result-list";
 import { SearchForm } from "@/components/search-form";
+import { StatusPanel } from "@/components/status-panel";
 import { siteClaim, siteName } from "@/lib/constants";
-import { getFeaturedTitles } from "@/lib/queries";
+import { getFeaturedTitlesState } from "@/lib/queries";
 import { getBetaNoteText } from "@/lib/runtime-config";
 
 export default async function HomePage() {
-  const featuredTitles = await getFeaturedTitles();
+  const { data: featuredTitles, unavailable: featuredTitlesUnavailable } =
+    await getFeaturedTitlesState();
   const betaNote = getBetaNoteText();
 
   return (
@@ -53,9 +55,9 @@ export default async function HomePage() {
             />
           </section>
 
-          <section className="panel hero-mascot-panel" aria-labelledby="quiet-companion-heading">
+          <section className="hero-mascot-panel" aria-labelledby="quiet-companion-heading">
             <div className="mascot-lockup">
-              <MascotMark className="hero-mascot" decorative />
+              <MascotMark className="hero-mascot-frame" imageClassName="hero-mascot" decorative priority />
               <div>
                 <p className="eyebrow">Ruhige Oberfläche</p>
                 <h2 id="quiet-companion-heading">
@@ -96,6 +98,13 @@ export default async function HomePage() {
           <h2 id="featured-heading">Titel mit bereits vorhandenem Reizprofil</h2>
           <p>Diese lokale Basis zeigt, wie Reizprofil, Confidence und Transparenzdaten zusammenkommen.</p>
         </div>
+        {featuredTitlesUnavailable ? (
+          <StatusPanel
+            title="Die lokale Titelbasis ist gerade nicht verfügbar"
+            text="Die Beispieltitel konnten gerade nicht geladen werden. Suche und Erklärungen bleiben weiter nutzbar."
+            tone="warning"
+          />
+        ) : null}
         <ResultList
           titles={featuredTitles}
           emptyTitle="Noch keine Titel hinterlegt"

@@ -234,6 +234,18 @@ Im aktuellen Stand wurde das UI noch einmal neu ausgerichtet, diesmal stärker m
 
 Dabei wurden Startseite, Suchseite, Header, Footer sowie Logo/Icon gemeinsam betrachtet, statt nur einzelne Farben zu tauschen.
 
+### 10.5 Beta-Schärfung der Oberfläche
+
+Für die erste öffentliche Beta wurde die Oberfläche danach noch einmal disziplinierter gezogen, ohne die Produktlogik neu zu bauen. Die wichtigsten sichtbaren Schritte waren:
+
+- deutlich weniger pillige Formen
+- straffere Karten, Buttons, Labels und Formularfelder
+- etwas kräftigere, aber kontrollierte Farbflächen
+- klarere Status- und Hinweisboxen
+- schnellere visuelle Einordnung in Suchtreffern
+
+Wichtig war dabei: Farbe unterstützt jetzt Orientierung stärker, ersetzt aber weiterhin nie die textliche Bedeutung. Lokale Titel, externe Titeldaten, Statusmeldungen und Formularfeedback bleiben auch ohne reine Farbinterpretation verständlich.
+
 ## 11. Marke, Logo und Icon
 
 Auch die Markenfigur wurde mehrfach iteriert. Frühere, verspieltere Richtungen wurden wieder verworfen, weil sie zu laut, zu illustriert oder nicht favicon-tauglich genug wirkten.
@@ -264,23 +276,26 @@ Wichtige Playwright-/Vitest-Schwerpunkte waren bisher:
 - klare leere Zustände
 - TMDb-Vorschläge beim Tippen
 - Trennung von Hauptproduktfluss und technischem Metadatenpfad
+- Feedback direkt an der Bewertungssektion statt verdeckt unter dem Sticky Header
+- schnelle Einordnung in Suchtreffern
+- minimale Live-Basis mit Impressum, Datenschutz und getrennter TMDb-Einordnung
 
 ## 13. Warum viele Dinge bewusst noch offen sind
 
 Mehrere Themen wurden absichtlich nicht „halb fertig“ eingebaut:
 
-- keine Persistenz für Bewertungen
+- keine belastbare produktive Persistenz für öffentliche Schreibpfade
 - keine Accounts
 - keine Community- oder Social-Funktionen
 - keine Umstellung des ganzen Produkts auf externe Metadaten
 - keine Suggestion- oder Ranking-Magie über das Nötige hinaus
 - kein Hosting-Umbau auf klassisches FTP-Setup
 
-Der Grund ist jeweils derselbe: Solange Basissuche, Reizprofil-Logik, Accessibility und klare Zustände nicht belastbar genug sind, wäre zusätzliche Produktlogik eher Scheinfortschritt als echter Fortschritt.
+Der Grund ist jeweils derselbe: Solange Basissuche, Reizprofil-Logik, Accessibility, ehrliche Beta-Grenzen und belastbare Speicherung nicht sauber genug sind, wäre zusätzliche Produktlogik eher Scheinfortschritt als echter Fortschritt.
 
 ## 14. Aktueller Stand in einem Satz
 
-`null-noise` ist heute ein barrierearm gedachtes Next.js-MVP mit ruhiger UI, einem kleinen Drei-Achsen-Reizprofil, sichtbarer Confidence auf Basis weniger Einschätzungen, verifiziertem serverseitigem TMDb-Fallback, TMDb-Vorschlägen beim Tippen, lokal anlegbaren externen Titeln mit vorläufiger Startbasis und einer fuer die erste öffentliche Beta bewusst lesenden Produktkonfiguration.
+`null-noise` ist heute ein barrierearm gedachtes Next.js-MVP mit visuell geschaerfter, ruhiger UI, einem kleinen Drei-Achsen-Reizprofil, sichtbarer Confidence auf Basis weniger Einschätzungen, verifiziertem serverseitigem TMDb-Fallback, TMDb-Vorschlägen beim Tippen, lokal anlegbaren externen Titeln mit vorläufiger Startbasis, schneller Einordnung in Suchtreffern, minimaler Live-Basis mit Impressum und Datenschutz sowie einer fuer die erste öffentliche Beta bewusst lesenden Produktkonfiguration.
 
 ## 15. Nächste sinnvolle Fragen für die weitere Entwicklung
 

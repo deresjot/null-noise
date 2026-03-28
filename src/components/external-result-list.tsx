@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { SearchToneScale } from "@/components/search-tone-scale";
 import { createTitleExternalLookupKey } from "@/lib/local-titles";
 import {
   formatMetadataSpikeSource,
@@ -155,8 +156,12 @@ function ExternalItemAction({
   if (localPath) {
     return (
       <div className="external-card-actions">
-        <Link className="secondary-link" href={localPath}>
-          Lokale Detailseite öffnen
+        <Link
+          aria-label={`Details zu ${item.title} öffnen`}
+          className="secondary-button-link"
+          href={localPath}
+        >
+          {`Details zu ${item.title} öffnen`}
         </Link>
         <p className="field-note">Für diesen Titel gibt es in null-noise bereits eine lokale Startbasis.</p>
       </div>
@@ -183,7 +188,10 @@ function ExternalItemAction({
       <button className="quiet-button" type="submit">
         Für null-noise anlegen
       </button>
-      <p className="field-note">Danach kann der Titel lokal eingeschätzt werden.</p>
+      <p className="field-note">
+        Danach startet der Titel mit einer vorläufigen Startbasis aus Metadaten und kann lokal
+        eingeschätzt werden.
+      </p>
     </form>
   );
 }
@@ -205,12 +213,20 @@ export function ExternalResultList({
 
   return (
     <div className="external-results-stack">
-      <article className="result-card metadata-card metadata-card-primary">
+      <article
+        className="result-card metadata-card metadata-card-primary"
+        data-profile-state={primaryLocalPath ? "rated" : "external"}
+      >
         <div className="card-topline">
           <p className="eyebrow">Naheliegendster Treffer</p>
-          <span className="tone-chip">
-            {primaryLocalPath ? "Bereits lokal angelegt" : "Nur Titeldaten · ohne Reizprofil"}
-          </span>
+          <div className="card-chip-row">
+            <span className="tone-chip" data-tone={primaryLocalPath ? "local" : "external"}>
+              {primaryLocalPath ? "Bereits lokal angelegt" : "Nur Titeldaten · ohne Reizprofil"}
+            </span>
+            <span className="state-chip" data-profile-state={primaryLocalPath ? "rated" : "external"}>
+              {primaryLocalPath ? "Lokal" : "Extern"}
+            </span>
+          </div>
         </div>
         <div
           className={
@@ -246,6 +262,25 @@ export function ExternalResultList({
               </Link>
             </h3>
             <p>{truncateText(primaryItem.synopsis, 240)}</p>
+            <div className="result-card-state" data-profile-state={primaryLocalPath ? "rated" : "external"}>
+              <p className="result-card-state-kicker">
+                {primaryLocalPath ? "Lokale Detailseite bereits vorhanden" : "Externer Titeldatentreffer"}
+              </p>
+              <p className="result-card-state-text">
+                {primaryLocalPath
+                  ? "Dieser Titel wurde in null-noise schon lokal angelegt. Reizprofil und Confidence liegen auf der Detailseite."
+                  : "TMDb hilft hier nur beim Wiederfinden. Ein Reizprofil entsteht erst nach lokaler Anlage in null-noise."}
+              </p>
+            </div>
+            <SearchToneScale
+              mode="pending"
+              note={
+                primaryLocalPath
+                  ? "Der Titel hat bereits eine lokale Startbasis."
+                  : "Die Skala wird erst sichtbar, wenn in null-noise ein lokales Reizprofil vorliegt."
+              }
+              value={null}
+            />
             <dl className="meta-grid result-meta-grid">
               <div>
                 <dt>Reizprofil</dt>
@@ -270,30 +305,46 @@ export function ExternalResultList({
         <details className="disclosure external-results-disclosure">
           <summary>{`Weitere ${secondaryItems.length} ähnliche Titel anzeigen`}</summary>
           <ul className="external-secondary-list">
-            {secondaryItems.map((item) => (
-              <li key={item.externalId}>
-                <article className="compact-result-card">
-                  <p className="result-context-line">{formatMetaLine(item)}</p>
-                  <h4>
-                    <Link
-                      href={
-                        getLocalTitlePath(item, localTitleByExternalKey) ??
-                        `/spike/metadaten/${item.mediaType}/${item.sourceId}`
-                      }
+            {secondaryItems.map((item) => {
+              const secondaryLocalPath = getLocalTitlePath(item, localTitleByExternalKey);
+
+              return (
+                <li key={item.externalId}>
+                  <article
+                    className="compact-result-card"
+                    data-profile-state={secondaryLocalPath ? "rated" : "external"}
+                  >
+                    <p className="result-context-line">{formatMetaLine(item)}</p>
+                    <h4>
+                      <Link
+                        href={
+                          secondaryLocalPath ??
+                          `/spike/metadaten/${item.mediaType}/${item.sourceId}`
+                        }
+                      >
+                        {item.title}
+                      </Link>
+                    </h4>
+                    <p>{truncateText(item.synopsis, 140)}</p>
+                    <span
+                      className="tone-chip tone-chip-inline"
+                      data-tone={secondaryLocalPath ? "local" : "external"}
                     >
-                      {item.title}
-                    </Link>
-                  </h4>
-                  <p>{truncateText(item.synopsis, 140)}</p>
-                  <ExternalItemAction
-                    item={item}
-                    query={query}
-                    localPath={getLocalTitlePath(item, localTitleByExternalKey)}
-                    writesEnabled={writesEnabled}
-                  />
-                </article>
-              </li>
-            ))}
+                      {secondaryLocalPath
+                        ? "Bereits lokal angelegt"
+                        : "Nur Titeldaten · ohne Reizprofil"}
+                    </span>
+                    <SearchToneScale mode="pending" value={null} />
+                    <ExternalItemAction
+                      item={item}
+                      query={query}
+                      localPath={secondaryLocalPath}
+                      writesEnabled={writesEnabled}
+                    />
+                  </article>
+                </li>
+              );
+            })}
           </ul>
         </details>
       ) : null}

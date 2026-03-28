@@ -1,9 +1,13 @@
 import { createHash } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
 
 import { z } from "zod";
 
+import {
+  appendPersistedAnonymousRating,
+  appendPersistedRatingAttempt,
+  listPersistedAnonymousRatings,
+  listPersistedRatingAttempts,
+} from "@/lib/catalog-db";
 import { createAggregatedAssessment } from "@/lib/profile";
 import type {
   AggregateSourceType,
@@ -59,73 +63,8 @@ export const ratingGuardConfig = {
   attemptsRetentionMs: 24 * 60 * 60 * 1000,
 } as const;
 
-const defaultRatingsFilePath = path.join(
-  /* turbopackIgnore: true */ process.cwd(),
-  "data",
-  "ratings.local.json",
-);
-const defaultAttemptsFilePath = path.join(
-  /* turbopackIgnore: true */ process.cwd(),
-  "data",
-  "rating-attempts.local.json",
-);
-
-function getRatingsFilePath(): string {
-  return process.env.NULL_NOISE_RATINGS_FILE ?? defaultRatingsFilePath;
-}
-
-function getAttemptsFilePath(): string {
-  return process.env.NULL_NOISE_RATING_ATTEMPTS_FILE ?? defaultAttemptsFilePath;
-}
-
-async function ensureRatingsFile(): Promise<string> {
-  const filePath = getRatingsFilePath();
-  await mkdir(path.dirname(filePath), { recursive: true });
-
-  try {
-    await readFile(filePath, "utf-8");
-  } catch (error) {
-    const code = (error as NodeJS.ErrnoException).code;
-
-    if (code !== "ENOENT") {
-      throw error;
-    }
-
-    await writeFile(filePath, "[]\n", "utf-8");
-  }
-
-  return filePath;
-}
-
-async function ensureAttemptsFile(): Promise<string> {
-  const filePath = getAttemptsFilePath();
-  await mkdir(path.dirname(filePath), { recursive: true });
-
-  try {
-    await readFile(filePath, "utf-8");
-  } catch (error) {
-    const code = (error as NodeJS.ErrnoException).code;
-
-    if (code !== "ENOENT") {
-      throw error;
-    }
-
-    await writeFile(filePath, "[]\n", "utf-8");
-  }
-
-  return filePath;
-}
-
 export async function listStoredRatings(): Promise<StoredTitleRating[]> {
-  const filePath = await ensureRatingsFile();
-  const contents = await readFile(filePath, "utf-8");
-  const parsed = JSON.parse(contents || "[]");
-  return z.array(storedTitleRatingSchema).parse(parsed);
-}
-
-async function writeStoredRatings(ratings: StoredTitleRating[]): Promise<void> {
-  const filePath = await ensureRatingsFile();
-  await writeFile(filePath, `${JSON.stringify(ratings, null, 2)}\n`, "utf-8");
+  return z.array(storedTitleRatingSchema).parse(await listPersistedAnonymousRatings());
 }
 
 function trimExpiredAttempts(
@@ -138,15 +77,9 @@ function trimExpiredAttempts(
 }
 
 export async function listStoredRatingAttempts(): Promise<StoredRatingAttempt[]> {
-  const filePath = await ensureAttemptsFile();
-  const contents = await readFile(filePath, "utf-8");
-  const parsed = JSON.parse(contents || "[]");
-  return trimExpiredAttempts(z.array(storedRatingAttemptSchema).parse(parsed));
-}
-
-async function writeStoredRatingAttempts(attempts: StoredRatingAttempt[]): Promise<void> {
-  const filePath = await ensureAttemptsFile();
-  await writeFile(filePath, `${JSON.stringify(trimExpiredAttempts(attempts), null, 2)}\n`, "utf-8");
+  return trimExpiredAttempts(
+    z.array(storedRatingAttemptSchema).parse(await listPersistedRatingAttempts()),
+  );
 }
 
 export async function appendStoredRating(input: TitleRatingInput): Promise<StoredTitleRating> {
@@ -154,9 +87,14 @@ export async function appendStoredRating(input: TitleRatingInput): Promise<Store
     ...titleRatingInputSchema.parse(input),
     submittedAt: new Date().toISOString(),
   });
-  const ratings = await listStoredRatings();
-  ratings.push(rating);
-  await writeStoredRatings(ratings);
+  await appendPersistedAnonymousRating({
+    titleSlug: rating.titleId,
+    volumeLevel: rating.volumeLevel,
+    peakIntensity: rating.peakIntensity,
+    stimulusDensity: rating.stimulusDensity,
+    soothingEffect: rating.soothingEffect,
+    submittedAt: rating.submittedAt,
+  });
   return rating;
 }
 
@@ -170,9 +108,7 @@ export async function appendStoredRatingAttempt(input: {
     ...input,
     submittedAt: input.submittedAt ?? new Date().toISOString(),
   });
-  const attempts = await listStoredRatingAttempts();
-  attempts.push(attempt);
-  await writeStoredRatingAttempts(attempts);
+  await appendPersistedRatingAttempt(attempt);
   return attempt;
 }
 
@@ -215,7 +151,11 @@ export function deriveAggregateSourceType(
     return baseSourceType;
   }
 
-  if (baseSourceType === "editorial_seed" || baseSourceType === "provisional_seed") {
+  if (
+    baseSourceType === "editorial_seed" ||
+    baseSourceType === "provisional_seed" ||
+    baseSourceType === "metadata_inference"
+  ) {
     return "mixed";
   }
 

@@ -23,6 +23,7 @@ export interface MetadataSpikeTitle {
   releaseYear: number | null;
   synopsis: string | null;
   posterPath: string | null;
+  genres?: string[];
 }
 
 export interface TmdbSearchDiagnostics {
@@ -243,6 +244,13 @@ const rawMovieDetailSchema = z.object({
   release_date: z.string().nullish(),
   overview: z.string().nullish(),
   poster_path: z.string().nullish(),
+  genres: z
+    .array(
+      z.object({
+        name: z.string().nullish(),
+      }),
+    )
+    .nullish(),
 });
 
 const rawSeriesDetailSchema = z.object({
@@ -252,6 +260,13 @@ const rawSeriesDetailSchema = z.object({
   first_air_date: z.string().nullish(),
   overview: z.string().nullish(),
   poster_path: z.string().nullish(),
+  genres: z
+    .array(
+      z.object({
+        name: z.string().nullish(),
+      }),
+    )
+    .nullish(),
 });
 
 const imdbTitleSchema = z
@@ -339,6 +354,25 @@ function parseYear(value: string | null | undefined): number | null {
   const match = /^\d{4}/.exec(normalized);
 
   return match ? Number(match[0]) : null;
+}
+
+function mapGenreNames(
+  genres:
+    | Array<{
+        name?: string | null;
+      }>
+    | null
+    | undefined,
+): string[] | undefined {
+  const names = genres
+    ?.map((genre) => normalizeText(genre.name))
+    .filter((genre): genre is string => Boolean(genre));
+
+  if (!names?.length) {
+    return undefined;
+  }
+
+  return Array.from(new Set(names));
 }
 
 function getTmdbAccessToken(providedToken?: string): string | null {
@@ -544,6 +578,7 @@ type RankedMetadataItem = {
 
 function mapRawMovieDetail(item: z.infer<typeof rawMovieDetailSchema>): MetadataSpikeTitle {
   const originalTitle = normalizeText(item.original_title);
+  const genres = mapGenreNames(item.genres);
 
   return {
     externalSource: "tmdb",
@@ -555,11 +590,13 @@ function mapRawMovieDetail(item: z.infer<typeof rawMovieDetailSchema>): Metadata
     releaseYear: parseYear(item.release_date),
     synopsis: normalizeText(item.overview),
     posterPath: normalizeText(item.poster_path),
+    ...(genres ? { genres } : {}),
   };
 }
 
 function mapRawSeriesDetail(item: z.infer<typeof rawSeriesDetailSchema>): MetadataSpikeTitle {
   const originalTitle = normalizeText(item.original_name);
+  const genres = mapGenreNames(item.genres);
 
   return {
     externalSource: "tmdb",
@@ -571,6 +608,7 @@ function mapRawSeriesDetail(item: z.infer<typeof rawSeriesDetailSchema>): Metada
     releaseYear: parseYear(item.first_air_date),
     synopsis: normalizeText(item.overview),
     posterPath: normalizeText(item.poster_path),
+    ...(genres ? { genres } : {}),
   };
 }
 

@@ -1,13 +1,10 @@
-import { mkdtemp, readFile, rm } from "node:fs/promises";
-import os from "node:os";
-import path from "node:path";
+import { afterAll, afterEach, describe, expect, it } from "vitest";
 
-import { afterEach, describe, expect, it } from "vitest";
-
+import { disconnectPrisma } from "./prisma";
+import { createAggregatedAssessment } from "./profile";
 import {
   appendStoredRating,
   appendStoredRatingAttempt,
-  buildTitleRecordFromSeed,
   deriveAggregateSourceType,
   evaluateRatingAttempt,
   getStoredRatingsForTitle,
@@ -16,34 +13,18 @@ import {
   listStoredRatings,
   ratingGuardConfig,
 } from "./ratings";
-
-const tempDirectories: string[] = [];
-
-async function withTempRatingsFile(): Promise<string> {
-  const tempDirectory = await mkdtemp(path.join(os.tmpdir(), "null-noise-ratings-"));
-  tempDirectories.push(tempDirectory);
-  process.env.NULL_NOISE_RATINGS_FILE = path.join(tempDirectory, "ratings.json");
-  process.env.NULL_NOISE_RATING_ATTEMPTS_FILE = path.join(tempDirectory, "rating-attempts.json");
-  return process.env.NULL_NOISE_RATINGS_FILE;
-}
+import { resetCatalogStoreForTests } from "./test-db";
 
 afterEach(async () => {
-  delete process.env.NULL_NOISE_RATINGS_FILE;
-  delete process.env.NULL_NOISE_RATING_ATTEMPTS_FILE;
+  await resetCatalogStoreForTests();
+});
 
-  while (tempDirectories.length) {
-    const tempDirectory = tempDirectories.pop();
-
-    if (tempDirectory) {
-      await rm(tempDirectory, { recursive: true, force: true });
-    }
-  }
+afterAll(async () => {
+  await disconnectPrisma();
 });
 
 describe("stored ratings", () => {
   it("persists a submitted rating server-side", async () => {
-    const filePath = await withTempRatingsFile();
-
     await appendStoredRating({
       titleId: "mondfenster",
       volumeLevel: 1,
@@ -52,14 +33,19 @@ describe("stored ratings", () => {
       soothingEffect: 3,
     });
 
-    const fileContents = await readFile(filePath, "utf-8");
-    expect(fileContents).toContain("\"titleId\": \"mondfenster\"");
-    expect(fileContents).toContain("\"soothingEffect\": 3");
+    const ratings = await listStoredRatings();
+
+    expect(ratings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          titleId: "mondfenster",
+          soothingEffect: 3,
+        }),
+      ]),
+    );
   });
 
   it("recalculates the aggregate after a new rating", async () => {
-    await withTempRatingsFile();
-
     const storedRating = await appendStoredRating({
       titleId: "mondfenster",
       volumeLevel: 4,
@@ -70,43 +56,29 @@ describe("stored ratings", () => {
 
     const ratings = await listStoredRatings();
     const titleRatings = getStoredRatingsForTitle(ratings, storedRating.titleId);
-    const title = buildTitleRecordFromSeed(
-      {
-        external: {
-          slug: "mondfenster",
-          title: "Mondfenster",
-          kind: "movie",
-          year: 2024,
-          synopsis: "Test",
-          externalSource: "tmdb_seed",
-          externalSourceId: "mv-001",
-        },
-        ratingSamples: {
-          volumeLevel: [0, 0, 0, 1],
-          peakIntensity: [1, 1, 0, 1],
-          stimulusDensity: [0, 0, 0, 1],
-          soothingEffect: [2, 2, 3, 2],
-        },
-        notes: "Test",
-        contentFlags: [],
-        aggregation: {
-          sourceType: "mixed",
-          lastReviewedAt: "2026-03-18",
-        },
+    const assessment = createAggregatedAssessment({
+      ratings: {
+        volumeLevel: [0, 0, 0, 1, ...titleRatings.map((rating) => rating.volumeLevel)],
+        peakIntensity: [1, 1, 0, 1, ...titleRatings.map((rating) => rating.peakIntensity)],
+        stimulusDensity: [0, 0, 0, 1, ...titleRatings.map((rating) => rating.stimulusDensity)],
+        soothingEffect: [2, 2, 3, 2, ...titleRatings.map((rating) => rating.soothingEffect)],
       },
-      titleRatings,
-    );
+      notes: "Test",
+      sourceType: "mixed",
+      lastReviewedAt: titleRatings.at(-1)?.submittedAt.slice(0, 10),
+    });
 
-    expect(title.stimulusProfile.volumeLevel).toBe(0);
-    expect(title.stimulusProfile.peakIntensity).toBe(1);
-    expect(title.stimulusProfile.stimulusDensity).toBe(0);
-    expect(title.soothingEffect).toBe(2);
-    expect(title.aggregation.ratingCount).toBe(5);
-    expect(title.aggregation.level).toBe("hoch");
+    expect(assessment.stimulusProfile.volumeLevel).toBe(0);
+    expect(assessment.stimulusProfile.peakIntensity).toBe(1);
+    expect(assessment.stimulusProfile.stimulusDensity).toBe(0);
+    expect(assessment.soothingEffect).toBe(2);
+    expect(assessment.aggregation.ratingCount).toBe(5);
+    expect(assessment.aggregation.level).toBe("hoch");
   });
 
   it("keeps soothingEffect separate from the main profile axes", () => {
     expect(deriveAggregateSourceType("editorial_seed", 1)).toBe("mixed");
+    expect(deriveAggregateSourceType("metadata_inference", 1)).toBe("mixed");
     expect(deriveAggregateSourceType("community_median", 2)).toBe("community_median");
   });
 
@@ -181,12 +153,15 @@ describe("stored ratings", () => {
 
   it("rejects global rate-limit bursts per hashed IP", () => {
     const now = Date.parse("2026-03-28T12:00:00.000Z");
-    const recentAttempts = Array.from({ length: ratingGuardConfig.globalRateLimitMaxAttempts }, (_, index) => ({
-      titleId: `title-${index}`,
-      ipHash: "same-ip",
-      status: "accepted" as const,
-      submittedAt: new Date(now - 30_000).toISOString(),
-    }));
+    const recentAttempts = Array.from(
+      { length: ratingGuardConfig.globalRateLimitMaxAttempts },
+      (_, index) => ({
+        titleId: `title-${index}`,
+        ipHash: "same-ip",
+        status: "accepted" as const,
+        submittedAt: new Date(now - 30_000).toISOString(),
+      }),
+    );
 
     expect(
       evaluateRatingAttempt({
@@ -214,8 +189,6 @@ describe("stored ratings", () => {
   });
 
   it("stores attempt statuses without keeping raw IP addresses", async () => {
-    await withTempRatingsFile();
-
     const storedAttempt = await appendStoredRatingAttempt({
       titleId: "mondfenster",
       ipHash: hashClientAddress("127.0.0.1"),

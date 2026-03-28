@@ -17,9 +17,7 @@ export function SiteHeader() {
       <header className="site-header">
         <div className="shell header-inner">
           <Link className="brand" href="/">
-            <span className="brand-mark" aria-hidden="true">
-              <MascotMark decorative />
-            </span>
+            <MascotMark className="brand-mark" decorative variant="compact" />
             <span className="brand-copy">
               <strong>null-noise</strong>
               <span>ruhiger schauen, klarer wählen</span>
