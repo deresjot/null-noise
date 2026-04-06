@@ -2,19 +2,19 @@ import packageJson from "../../package.json";
 
 export const currentBuild = {
   version: packageJson.version,
-  label: "Beta vorbereitet",
-  releasedAt: "2026-03-28",
+  label: "Beta Stabilization Pass",
+  releasedAt: "2026-04-03",
 };
 
 export const releaseNotes = [
   {
     version: packageJson.version,
-    label: "Beta vorbereitet",
-    releasedAt: "2026-03-28",
+    label: "Beta Stabilization Pass",
+    releasedAt: "2026-04-03",
     entries: [
-      "Die öffentliche Beta bleibt jetzt standardmäßig lesend, damit dateibasierte Schreibpfade auf Vercel nicht wie belastbare Produktpersistenz wirken.",
-      "Metadata, Open Graph und Footer verweisen nicht mehr auf localhost, sondern auf eine kleine runtime-gesteuerte Site-URL-Logik und ruhige Beta-Hinweise.",
-      "Impressum, Datenschutz und die getrennte TMDb-Einordnung sind als minimale Live-Basis ergänzt und im Footer verlinkt.",
+      "Home, Suche, Detailseite und Footer wurden von alten Stilresten, doppelten Flächen und zu lauten Übergangsmodulen befreit.",
+      "Die Copy wurde neu geschrieben und näher an Suche, Tendenz, Status und Aktion gesetzt.",
+      "Das sichtbare Branding wurde auf Wortmarke und einfache Form reduziert; dazu kommt ein ruhiger Löschpfad für lokal angelegte Titel.",
     ],
   },
   {

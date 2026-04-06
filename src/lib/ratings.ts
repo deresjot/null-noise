@@ -13,6 +13,7 @@ import type {
   AggregateSourceType,
   RatingSampleSet,
   ScaleValue,
+  StimulusProfile,
   TitleRecord,
   TitleSeedRecord,
 } from "@/lib/types";
@@ -52,6 +53,8 @@ const storedRatingAttemptSchema = z.object({
 
 export type RatingAttemptStatus = z.infer<typeof ratingAttemptStatusSchema>;
 export type StoredRatingAttempt = z.infer<typeof storedRatingAttemptSchema>;
+export const quickFeedbackChoiceSchema = z.enum(["calmer", "match", "stronger"]);
+export type QuickFeedbackChoice = z.infer<typeof quickFeedbackChoiceSchema>;
 
 export const ratingGuardConfig = {
   titleCooldownMs: 12 * 60 * 60 * 1000,
@@ -323,4 +326,36 @@ export function formatScaleLegend(
 
 export function getScaleOptions(): ScaleValue[] {
   return [0, 1, 2, 3, 4];
+}
+
+function clampScaleValue(value: number): ScaleValue {
+  return Math.min(4, Math.max(0, Math.round(value))) as ScaleValue;
+}
+
+export function createQuickFeedbackRatingInput(input: {
+  choice: QuickFeedbackChoice;
+  titleId: string;
+  profile: Pick<StimulusProfile, "volumeLevel" | "peakIntensity" | "stimulusDensity">;
+  soothingEffect: ScaleValue;
+}): TitleRatingInput {
+  if (input.choice === "match") {
+    return {
+      titleId: input.titleId,
+      volumeLevel: input.profile.volumeLevel,
+      peakIntensity: input.profile.peakIntensity,
+      stimulusDensity: input.profile.stimulusDensity,
+      soothingEffect: input.soothingEffect,
+    };
+  }
+
+  const delta = input.choice === "calmer" ? -1 : 1;
+  const soothingDelta = input.choice === "calmer" ? 1 : -1;
+
+  return {
+    titleId: input.titleId,
+    volumeLevel: clampScaleValue(input.profile.volumeLevel + delta),
+    peakIntensity: clampScaleValue(input.profile.peakIntensity + delta),
+    stimulusDensity: clampScaleValue(input.profile.stimulusDensity + delta),
+    soothingEffect: clampScaleValue(input.soothingEffect + soothingDelta),
+  };
 }

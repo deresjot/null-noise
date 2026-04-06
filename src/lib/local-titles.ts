@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import {
   createOrGetPersistedLocalTitleSeed,
+  deletePersistedLocalTitleSeedBySlug,
   getPersistedTitleSeedByExternal,
   listPersistedImportedTitleSeeds,
   listPersistedTitleImportAttempts,
@@ -105,6 +106,12 @@ export async function createOrGetStoredLocalTitleSeed(item: MetadataSpikeTitle):
   }
 
   return createOrGetPersistedLocalTitleSeed(item);
+}
+
+export async function deleteStoredLocalTitleSeedBySlug(slug: string): Promise<{
+  deleted: boolean;
+}> {
+  return deletePersistedLocalTitleSeedBySlug(slug);
 }
 
 export function evaluateTitleImportAttempt(input: {

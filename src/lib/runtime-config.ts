@@ -61,8 +61,8 @@ export function arePublicWritesEnabled(): boolean {
 
 export function getBetaNoteText(): string {
   if (arePublicWritesEnabled()) {
-    return "Beta. Reizprofile, Metadaten und anonyme Einschätzungen werden noch weiter geglättet.";
+    return "Beta. Benutzbar, aber noch nicht fertig.";
   }
 
-  return "Beta. Diese Instanz bleibt vorerst lesend. Suche, Reizprofile und getrennte Titeldaten sind nutzbar; neue Einschätzungen folgen erst mit belastbarer Persistenz.";
+  return "Beta. Diese Instanz bleibt erst mal lesend. Suchen und Lesen gehen schon, Schreiben noch nicht.";
 }

@@ -5,6 +5,7 @@ import { createAggregatedAssessment } from "./profile";
 import {
   appendStoredRating,
   appendStoredRatingAttempt,
+  createQuickFeedbackRatingInput,
   deriveAggregateSourceType,
   evaluateRatingAttempt,
   getStoredRatingsForTitle,
@@ -197,5 +198,45 @@ describe("stored ratings", () => {
 
     expect(storedAttempt.ipHash).not.toBe("127.0.0.1");
     expect(storedAttempt.status).toBe("accepted");
+  });
+
+  it("maps quick feedback choices onto the existing scale axes", () => {
+    expect(
+      createQuickFeedbackRatingInput({
+        choice: "calmer",
+        titleId: "mondfenster",
+        profile: {
+          volumeLevel: 2,
+          peakIntensity: 3,
+          stimulusDensity: 2,
+        },
+        soothingEffect: 1,
+      }),
+    ).toEqual({
+      titleId: "mondfenster",
+      volumeLevel: 1,
+      peakIntensity: 2,
+      stimulusDensity: 1,
+      soothingEffect: 2,
+    });
+
+    expect(
+      createQuickFeedbackRatingInput({
+        choice: "stronger",
+        titleId: "mondfenster",
+        profile: {
+          volumeLevel: 1,
+          peakIntensity: 1,
+          stimulusDensity: 0,
+        },
+        soothingEffect: 4,
+      }),
+    ).toEqual({
+      titleId: "mondfenster",
+      volumeLevel: 2,
+      peakIntensity: 2,
+      stimulusDensity: 1,
+      soothingEffect: 3,
+    });
   });
 });

@@ -2,12 +2,9 @@ export default function BedienungPage() {
   return (
     <section className="section-stack">
       <div className="section-header">
-        <p className="eyebrow">Bedienung</p>
-        <h1>Stressfrei nutzbar auf Tastatur, Screenreader und Mobilgerät</h1>
-        <p>
-          Die Bedienung folgt semantischen HTML-Strukturen, klaren Fokuszuständen und ruhigen
-          Interaktionen ohne Hover-Zwang.
-        </p>
+        <p className="eyebrow">Hilfe</p>
+        <h1>Ruhig benutzbar auf Tastatur, Screenreader und Mobilgerät</h1>
+        <p>Die Oberfläche bleibt absichtlich knapp: klare Labels, sichtbarer Fokus und keine Hover-Fallen.</p>
       </div>
 
       <div className="content-grid">
@@ -15,7 +12,7 @@ export default function BedienungPage() {
           <h2 id="keyboard-heading">Tastatur</h2>
           <ul className="plain-list">
             <li>Ein Skip-Link führt direkt zum Hauptinhalt.</li>
-            <li>Alle Navigationselemente, Filter und Links sind per Tab erreichbar.</li>
+            <li>Navigation, Suche, Filter und Links sind per Tab erreichbar.</li>
             <li>Es gibt keine Fokusfallen und keine hover-abhängigen Informationen.</li>
           </ul>
         </section>

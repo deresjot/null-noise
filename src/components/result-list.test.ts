@@ -23,12 +23,11 @@ describe("result list quick scale", () => {
       }),
     );
 
-    expect(html).toContain("Vorläufige Einschätzung aus Metadaten");
-    expect(html).toContain("Noch geringe Sicherheit.");
-    expect(html).toContain("Vorläufige Einordnung");
-    expect(html).toContain('data-active="true" data-tone="ruhig"');
-    expect(html).toContain("Grundlautstärke");
-    expect(html).toContain("Profilgrundlage: vorläufige Startbasis aus Metadaten");
-    expect(html).toContain(`Details zu ${importedTitle.external.title} ansehen`);
+    expect(html).toContain("Bisher nur grob gelesen");
+    expect(html).toContain("Eigene Rückmeldungen fehlen noch.");
+    expect(html).toContain("eher leise");
+    expect(html).toContain("wenig harte Spitzen");
+    expect(html).toContain('data-tone="ruhig"');
+    expect(html).toContain("Einordnung lesen");
   });
 });

@@ -24,6 +24,8 @@ type SearchSuggestionResponse =
 
 interface SearchQueryFieldProps {
   defaultValue: string;
+  label?: string;
+  placeholder?: string;
 }
 
 const MIN_QUERY_LENGTH = 2;
@@ -34,12 +36,17 @@ function formatMediaType(value: SearchSuggestionItem["mediaType"]): string {
 }
 
 function formatSuggestionMeta(item: SearchSuggestionItem): string {
-  return `${formatMediaType(item.mediaType)} · ${item.releaseYear ?? "Jahr offen"} · TMDb`;
+  return `${formatMediaType(item.mediaType)} · ${item.releaseYear ?? "Jahr offen"}`;
 }
 
-export function SearchQueryField({ defaultValue }: SearchQueryFieldProps) {
+export function SearchQueryField({
+  defaultValue,
+  label = "Titel",
+  placeholder = "z. B. Arrival, The Bear oder Past Lives",
+}: SearchQueryFieldProps) {
   const inputId = useId();
   const statusId = useId();
+  const listId = useId();
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -64,7 +71,7 @@ export function SearchQueryField({ defaultValue }: SearchQueryFieldProps) {
       currentController = controller;
       abortRef.current = controller;
       setStatusKind("loading");
-      setStatusMessage("TMDb-Vorschläge werden geladen.");
+      setStatusMessage("Einen Moment. Nähere Treffer werden gesucht.");
 
       try {
         const searchParams = new URLSearchParams({ q: normalizedQuery });
@@ -78,7 +85,7 @@ export function SearchQueryField({ defaultValue }: SearchQueryFieldProps) {
         if (!response.ok || !payload) {
           setSuggestions([]);
           setStatusKind("error");
-          setStatusMessage("Externe Vorschläge sind gerade nicht verfügbar.");
+          setStatusMessage("Vorschläge fehlen gerade. Die Suche selbst bleibt nutzbar.");
           return;
         }
 
@@ -87,8 +94,8 @@ export function SearchQueryField({ defaultValue }: SearchQueryFieldProps) {
           setStatusKind(payload.items.length ? "idle" : "empty");
           setStatusMessage(
             payload.items.length
-              ? "Vorschläge aus TMDb. Sie ergänzen die Suche, ersetzen aber kein Reizprofil."
-              : "Keine passenden externen Vorschläge gefunden.",
+              ? "Ein paar naheliegende Treffer."
+              : "Gerade nichts Nahes dabei.",
           );
           return;
         }
@@ -97,8 +104,10 @@ export function SearchQueryField({ defaultValue }: SearchQueryFieldProps) {
         setStatusKind(payload.kind === "empty" ? "empty" : "error");
         setStatusMessage(
           payload.kind === "empty"
-            ? "Keine passenden externen Vorschläge gefunden."
-            : "Externe Vorschläge sind gerade nicht verfügbar.",
+            ? "Gerade nichts Nahes dabei."
+            : payload.kind === "disabled"
+              ? "Weitere Vorschläge fehlen gerade. Du kannst direkt suchen."
+              : "Vorschläge fehlen gerade. Du kannst direkt suchen.",
         );
       } catch (error) {
         if (error instanceof DOMException && error.name === "AbortError") {
@@ -107,7 +116,7 @@ export function SearchQueryField({ defaultValue }: SearchQueryFieldProps) {
 
         setSuggestions([]);
         setStatusKind("error");
-        setStatusMessage("Externe Vorschläge sind gerade nicht verfügbar.");
+        setStatusMessage("Vorschläge fehlen gerade. Du kannst direkt suchen.");
       }
     }, DEBOUNCE_MS);
 
@@ -157,31 +166,38 @@ export function SearchQueryField({ defaultValue }: SearchQueryFieldProps) {
       onBlur={handleBlur}
       onFocus={() => setIsOpen(true)}
     >
-      <label htmlFor={inputId}>Film oder Serie suchen</label>
+      <label htmlFor={inputId}>{label}</label>
       <input
         ref={inputRef}
         id={inputId}
         name="q"
         type="search"
         value={query}
-        placeholder="z. B. Arrival, Dark oder ruhiger Film"
+        placeholder={placeholder}
         autoComplete="off"
+        aria-autocomplete="list"
+        aria-controls={shouldShowSuggestions ? listId : undefined}
         aria-describedby={statusMessage ? statusId : undefined}
         onChange={(event) => handleChange(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") {
+            setIsOpen(false);
+          }
+        }}
       />
 
       {shouldShowSuggestions ? (
         <div className="search-suggestions" aria-live="polite">
           {statusMessage ? (
-            <p id={statusId} className="field-note search-suggestions-status">
+            <p id={statusId} className="field-note search-suggestions-status" role="status">
               {statusMessage}
             </p>
           ) : null}
 
           {suggestions.length ? (
             <>
-              <p className="search-suggestions-label">TMDb-Vorschläge</p>
-              <ul className="search-suggestions-list">
+              <p className="search-suggestions-label">Vorschläge</p>
+              <ul className="search-suggestions-list" id={listId}>
                 {suggestions.map((item) => (
                   <li key={item.externalId}>
                     <button

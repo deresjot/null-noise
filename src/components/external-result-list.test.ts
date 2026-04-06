@@ -7,7 +7,7 @@ import { createTitleExternalLookupKey } from "@/lib/local-titles";
 import { ExternalResultList } from "./external-result-list";
 
 describe("external result list poster rendering", () => {
-  it("renders a small poster thumbnail for the featured external result when a poster path exists", () => {
+  it("renders external results as poster tiles with a metadata-based tendency", () => {
     const html = renderToStaticMarkup(
       createElement(ExternalResultList, {
         query: "Arrival",
@@ -26,17 +26,18 @@ describe("external result list poster rendering", () => {
       }),
     );
 
-    expect(html).toContain('class="poster-thumb-frame"');
-    expect(html).toContain('src="/api/poster/tmdb/arrival.jpg"');
-    expect(html).toContain('alt="Poster zu Arrival"');
-    expect(html).toContain("Externer Titeldatentreffer");
-    expect(html).toContain("Schnelle Einordnung");
-    expect(html).toContain("noch offen");
-    expect(html).toContain("Für null-noise anlegen");
-    expect(html).toContain("vorläufigen Startbasis aus Metadaten");
+    expect(html).toContain("Bisher nur grob gelesen");
+    expect(html).toContain("zwischen leise und laut");
+    expect(html).toContain("result-card-reading-block");
+    expect(html).toContain("Eigene Rückmeldungen fehlen noch.");
+    expect(html).toContain("zwischen ruhigeren und dichteren Momenten");
+    expect(html).toContain("poster-thumb-frame");
+    expect(html).toContain("Details");
+    expect(html).toContain("Lokales Anlegen liegt erst auf der Detailseite.");
+    expect(html).not.toContain("Lokal anlegen");
   });
 
-  it("omits the poster frame entirely when no poster path exists", () => {
+  it("renders a fallback poster tile when no poster is available", () => {
     const html = renderToStaticMarkup(
       createElement(ExternalResultList, {
         query: "Arrival",
@@ -55,8 +56,8 @@ describe("external result list poster rendering", () => {
       }),
     );
 
-    expect(html).not.toContain('class="poster-thumb-frame"');
-    expect(html).not.toContain('Poster zu Arrival');
+    expect(html).toContain("Arrival");
+    expect(html).toContain("poster-thumb-fallback");
   });
 
   it("links to the local detail page when the external title already exists locally", () => {
@@ -82,9 +83,9 @@ describe("external result list poster rendering", () => {
     );
 
     expect(html).toContain('href="/titel/arrival-2016"');
-    expect(html).toContain("Bereits lokal angelegt");
-    expect(html).toContain("Details zu Arrival öffnen");
-    expect(html).not.toContain("Für null-noise anlegen");
+    expect(html).toContain("Schon lokal");
+    expect(html).toContain("Einordnung lesen");
+    expect(html).not.toContain("Lokal anlegen");
   });
 
   it("shows a calm read-only note instead of an import button when writes are disabled", () => {
@@ -107,9 +108,10 @@ describe("external result list poster rendering", () => {
       }),
     );
 
-    expect(html).toContain("Auf dieser Beta bleibt die lokale Anlage noch deaktiviert.");
-    expect(html).toContain("Die Skala wird erst sichtbar, wenn in null-noise ein lokales Reizprofil vorliegt.");
-    expect(html).not.toContain("Für null-noise anlegen");
+    expect(html).toContain("Diese Instanz bleibt gerade lesend.");
+    expect(html).toContain("Bisher nur grob gelesen");
+    expect(html).toContain("Details");
+    expect(html).not.toContain("Lokal anlegen");
     expect(html).not.toContain('action="/api/local-titles"');
   });
 });

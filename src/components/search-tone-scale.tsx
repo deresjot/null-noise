@@ -1,44 +1,99 @@
-const toneScaleSteps = ["ruhig", "ausgeglichen", "intensiv"] as const;
-
-type SearchToneScaleValue = (typeof toneScaleSteps)[number] | null;
-type SearchToneScaleMode = "rated" | "seed" | "pending";
+type SearchToneScaleValue = "ruhig" | "ausgeglichen" | "intensiv" | null;
+type SearchToneScaleMode = "rated" | "growing" | "seed" | "pending";
+type SearchToneScaleEmphasis = "default" | "card" | "hero";
+const toneMeterSegments = 12;
 
 interface SearchToneScaleProps {
+  caption?: string;
+  compact?: boolean;
+  endLabel?: string;
+  emphasis?: SearchToneScaleEmphasis;
   mode?: SearchToneScaleMode;
   note?: string;
+  showCaption?: boolean;
+  showValueLabel?: boolean;
+  startLabel?: string;
   value: SearchToneScaleValue;
+  valueLabel?: string;
 }
 
-export function SearchToneScale({ mode, note, value }: SearchToneScaleProps) {
+export function SearchToneScale({
+  caption,
+  compact = false,
+  endLabel = "laut",
+  emphasis = "default",
+  mode,
+  note,
+  showCaption = true,
+  showValueLabel = true,
+  startLabel = "leise",
+  value,
+  valueLabel,
+}: SearchToneScaleProps) {
   const resolvedMode = mode ?? (value ? "rated" : "pending");
-  const currentLabel = value ?? "noch offen";
-  const caption = resolvedMode === "seed" ? "Vorläufige Einordnung" : "Schnelle Einordnung";
+  const currentLabel = valueLabel ?? value ?? "noch offen";
+  const resolvedCaption =
+    caption ??
+    (resolvedMode === "seed"
+      ? "Erste Tendenz"
+      : "Tendenz");
+  const filledSegments =
+    value === "ruhig"
+      ? 3
+      : value === "ausgeglichen"
+        ? 7
+        : value === "intensiv"
+          ? 11
+          : 0;
 
   return (
     <div
+      aria-label={`${resolvedCaption}: ${currentLabel}`}
       className="search-tone-scale"
+      data-compact={compact ? "true" : "false"}
+      data-emphasis={emphasis}
       data-mode={resolvedMode}
+      data-strength={value ?? "pending"}
       data-state={value ? "ready" : "pending"}
+      data-tone={value ?? "pending"}
+      role="group"
     >
-      <div className="search-tone-scale-header">
-        <p className="search-tone-scale-caption">{caption}</p>
-        <p className="search-tone-scale-value">{currentLabel}</p>
+      {showCaption || showValueLabel ? (
+        <div
+          className="search-tone-scale-captionrow"
+          data-solo={showValueLabel ? "false" : "true"}
+        >
+          {showCaption ? <p className="search-tone-scale-caption">{resolvedCaption}</p> : null}
+          {showValueLabel ? <p className="search-tone-scale-value">{currentLabel}</p> : null}
+        </div>
+      ) : null}
+
+      <div className="search-tone-scale-core">
+        <div className="search-tone-scale-signal" aria-hidden="true">
+          <div className="search-tone-scale-bar">
+            {Array.from({ length: toneMeterSegments }, (_, index) => {
+              const zone = index < 4 ? "ruhig" : index < 8 ? "ausgeglichen" : "intensiv";
+              return (
+                <span
+                  key={index}
+                  className="search-tone-scale-segment"
+                  data-active={index < filledSegments ? "true" : "false"}
+                  data-edge={filledSegments > 0 && index === filledSegments - 1 ? "true" : "false"}
+                  data-zone={zone}
+                />
+              );
+            })}
+          </div>
+          {compact ? null : (
+          <div className="search-tone-scale-axis-copy">
+              <span>{startLabel}</span>
+              <span>{endLabel}</span>
+          </div>
+        )}
       </div>
 
-      <div className="search-tone-scale-track">
-        {toneScaleSteps.map((step) => (
-          <span
-            key={step}
-            className="search-tone-scale-step"
-            data-active={value === step}
-            data-tone={step}
-          >
-            {step}
-          </span>
-        ))}
+        {!compact && note ? <p className="field-note search-tone-scale-note">{note}</p> : null}
       </div>
-
-      {note ? <p className="field-note">{note}</p> : null}
     </div>
   );
 }

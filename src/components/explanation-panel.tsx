@@ -5,24 +5,17 @@ interface ExplanationPanelProps {
 export function ExplanationPanel({ compact = false }: ExplanationPanelProps) {
   return (
     <section className="panel" aria-labelledby="explanation-panel-heading">
-      <h2 id="explanation-panel-heading">Was bedeuten die Bewertungen?</h2>
-      <p>
-        null-noise zeigt keine Messwerte. Das Reizprofil ist eine strukturierte Einschätzung
-        entlang von drei klar benannten Audio-Achsen.
-      </p>
+      <h2 id="explanation-panel-heading">Wie diese Lesart gemeint ist</h2>
+      <p>Keine Messwerte, keine Scores, keine falsche Sicherheit. Nur eine grobe Richtung.</p>
       <ul className="plain-list">
-        <li>Grundlautstärke beschreibt das normale Lautstärkeniveau eines Titels.</li>
-        <li>Plötzliche Spitzen meint abrupte laute Momente.</li>
-        <li>Belastungsdichte zeigt, wie dauerhaft die akustische Belastung spürbar bleibt.</li>
-        <li>Beruhigende Wirkung bleibt davon getrennt und beschreibt eine zusätzliche subjektive Einordnung.</li>
-        <li>Die Skala reicht von `0` für sehr ruhig bis `4` für sehr intensiv.</li>
-        <li>Confidence zeigt, wie viele Einschätzungen diese Einordnung aktuell tragen.</li>
+        <li>Grundlautstärke meint das normale Lautstärkeniveau eines Titels.</li>
+        <li>Plötzliche Spitzen meint abrupte laute Momente oder harte Reizwechsel.</li>
+        <li>Belastungsdichte fragt, wie dauerhaft die akustische Last spürbar bleibt.</li>
+        <li>Beruhigende Wirkung bleibt davon getrennt und ist eine eigene subjektive Achse.</li>
+        <li>Vorläufig, wachsend und belastbarer beschreiben den Stand hinter der Tendenz.</li>
       </ul>
       {!compact ? (
-        <p>
-          Externe Titeldaten bleiben davon getrennt. Sie helfen nur beim Wiederfinden eines Titels
-          und ersetzen kein Reizprofil.
-        </p>
+        <p>Ein Titel kann anstrengend sein und trotzdem beruhigend wirken. Genau deshalb bleibt diese zweite Achse separat.</p>
       ) : null}
     </section>
   );

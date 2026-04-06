@@ -6,9 +6,9 @@ import type {
 } from "@/lib/types";
 
 export const siteName = "null-noise";
-export const siteClaim = "Lass dich in deiner Freizeit nicht anschreien.";
+export const siteClaim = "Du musst dich nicht auch noch in der Freizeit anschreien lassen.";
 export const siteDescription =
-  "Öffentliche Beta für erklärte Reizprofile bei Filmen und Serien, damit sich ruhiger einschätzen lässt, was dich unnötig belasten könnte.";
+  "null-noise hilft beim Finden von Filmen und Serien und zeigt eine grobe Reizrichtung mit dem Stand dahinter: vorläufig, wachsend oder belastbarer.";
 
 export const scaleLabels: Record<
   ScaleValue,
@@ -81,11 +81,11 @@ export const soothingEffectLabels: Record<
 };
 
 export const sourceTypeLabels: Record<AggregateSourceType, string> = {
-  editorial_seed: "redaktioneller Startwert",
+  editorial_seed: "redaktionelle Startbasis",
   provisional_seed: "vorläufige Startbasis",
-  metadata_inference: "vorläufige Startbasis aus Metadaten",
-  community_median: "anonyme Einschätzungen",
-  mixed: "gemischter Stand",
+  metadata_inference: "erste Lesart aus Basisdaten",
+  community_median: "anonyme Rückmeldungen",
+  mixed: "Startbasis und Rückmeldungen",
 };
 
 export const stimulusDimensions: Array<{
@@ -141,8 +141,8 @@ export const stimulusDimensions: Array<{
 ];
 
 export const featureHighlights = [
-  "Kein Login-Zwang im MVP",
-  "Erklärte Einschätzungen statt objektiv klingender Scheinwerte",
-  "Ruhige, tastaturfreundliche Oberfläche",
-  "Privacy by Design ohne Tracker oder Fingerprinting",
+  "Titel finden ohne Konto",
+  "Grobe Tendenzen statt falscher Genauigkeit",
+  "Ruhige Oberfläche mit klaren Fokuszuständen",
+  "Keine Tracker und kein Profiling",
 ];

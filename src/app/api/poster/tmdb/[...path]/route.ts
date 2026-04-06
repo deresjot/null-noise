@@ -1,20 +1,44 @@
 import { NextResponse } from "next/server";
 
-import { getTmdbPosterUrl } from "@/lib/metadata-spike";
+import { getTmdbPosterUrl, tmdbPosterSizes, type TmdbPosterSize } from "@/lib/metadata-spike";
 
 type PosterRouteProps = {
   params: Promise<{ path?: string[] }>;
 };
 
-export async function GET(_request: Request, { params }: PosterRouteProps) {
-  const resolvedParams = await params;
-  const joinedPath = resolvedParams.path?.join("/");
+function resolvePosterRequest(pathSegments: string[]): {
+  posterPath: string;
+  size: TmdbPosterSize;
+} | null {
+  if (!pathSegments.length) {
+    return null;
+  }
+
+  const firstSegment = pathSegments[0];
+  const hasExplicitSize = tmdbPosterSizes.includes(firstSegment as TmdbPosterSize);
+  const size = hasExplicitSize ? (firstSegment as TmdbPosterSize) : "w342";
+  const posterSegments = hasExplicitSize ? pathSegments.slice(1) : pathSegments;
+  const joinedPath = posterSegments.join("/");
 
   if (!joinedPath || joinedPath.includes("..")) {
+    return null;
+  }
+
+  return {
+    posterPath: joinedPath,
+    size,
+  };
+}
+
+export async function GET(_request: Request, { params }: PosterRouteProps) {
+  const resolvedParams = await params;
+  const resolvedRequest = resolvePosterRequest(resolvedParams.path ?? []);
+
+  if (!resolvedRequest) {
     return new NextResponse("ungueltiger_poster_pfad", { status: 400 });
   }
 
-  const upstreamUrl = getTmdbPosterUrl(joinedPath);
+  const upstreamUrl = getTmdbPosterUrl(resolvedRequest.posterPath, resolvedRequest.size);
 
   if (!upstreamUrl) {
     return new NextResponse("ungueltiger_poster_pfad", { status: 400 });

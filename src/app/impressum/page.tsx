@@ -14,21 +14,21 @@ export default function ImpressumPage() {
         <h1>Impressum</h1>
         <p>
           null-noise bleibt auch im Rechtlichen bewusst knapp. Die Angaben hier orientieren sich am
-          oeffentlich verlinkten Impressum von Sebastian Jansen und setzen die erste Beta nicht
-          groesser in Szene, als sie ist.
+          öffentlich verlinkten Impressum von Sebastian Jansen und setzen die erste Beta nicht
+          größer in Szene, als sie ist.
         </p>
       </div>
 
       <div className="content-grid">
         <section className="panel" aria-labelledby="impressum-owner-heading">
-          <h2 id="impressum-owner-heading">Angaben gemaess § 5 TMG</h2>
+          <h2 id="impressum-owner-heading">Angaben gemäß § 5 TMG</h2>
           <dl className="detail-list">
             <div>
               <dt>Name</dt>
               <dd>Sebastian Jansen</dd>
             </div>
             <div>
-              <dt>Taetigkeit</dt>
+              <dt>Tätigkeit</dt>
               <dd>UX-Professional, Accessibility Consultant, Digital Designer</dd>
             </div>
             <div>
@@ -45,10 +45,10 @@ export default function ImpressumPage() {
             </div>
           </dl>
 
-          <h3>Verantwortlich fuer den Inhalt</h3>
+          <h3>Verantwortlich für den Inhalt</h3>
           <p>Sebastian Jansen</p>
           <p className="field-note">
-            Anschrift auf Anfrage per Mail erhaeltlich.
+            Anschrift auf Anfrage per Mail erhältlich.
           </p>
         </section>
 
@@ -59,7 +59,7 @@ export default function ImpressumPage() {
             getrennt und serverseitig aus TMDb. Daraus entsteht aber kein automatisches Reizprofil.
           </p>
           <p className="field-note">
-            null-noise wird dadurch nicht von TMDb unterstuetzt oder zertifiziert. Reizprofile,
+            null-noise wird dadurch nicht von TMDb unterstützt oder zertifiziert. Reizprofile,
             Wirkung und Confidence bleiben null-noise-intern.
           </p>
         </section>

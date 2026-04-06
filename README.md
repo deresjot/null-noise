@@ -246,17 +246,18 @@ Poster werden derzeit nur testweise und sehr zurueckhaltend bei externen Haupttr
 ### Lokal aktivieren
 
 1. `.env.local` im Projektordner anlegen.
-2. `DATABASE_URL=file:./prisma/null-noise.db` setzen oder aus `.env.example` uebernehmen.
+2. `TMDB_READ_ACCESS_TOKEN` hinterlegen.
 3. Optional `NEXT_PUBLIC_SITE_URL=http://localhost:3000` setzen.
-4. TMDb als Quelle setzen:
+4. Wenn lokaler Katalog, Seed-Daten oder Schreibpfade gebraucht werden:
+   `DATABASE_URL=file:./prisma/null-noise.db`
+5. TMDb als Quelle setzen:
    `METADATA_SPIKE_SOURCE=tmdb`
-5. Optional `TMDB_READ_ACCESS_TOKEN` hinterlegen.
-6. Einmal `npm run db:bootstrap` ausfuehren.
-7. Fuer lokale Schreibtests bei Bedarf `NULL_NOISE_ENABLE_WRITES=true` setzen.
+6. Nur mit `DATABASE_URL`: einmal `npm run db:bootstrap` ausführen.
+7. Für lokale Schreibtests bei Bedarf `NULL_NOISE_ENABLE_WRITES=true` setzen.
 8. Dev-Server starten.
 9. Den Pfad `/spike/metadaten` aufrufen.
 
-Beispiel fuer `.env.local`:
+Beispiel für `.env.local`:
 
 ```bash
 DATABASE_URL=file:./prisma/null-noise.db
@@ -269,16 +270,18 @@ Alternativ liegt ein Startpunkt in [.env.example](./.env.example).
 
 ### Vercel / erste Beta
 
-Fuer einen ersten ehrlichen Vercel-Deploy gilt bewusst:
+Für einen ersten ehrlichen Vercel-Deploy gilt bewusst:
 
 - Root Directory in Vercel: `null-noise`
 - Build Command: Standard-Next.js (`npm run build`)
 - Start Command: Standard-Next.js (`npm run start`)
-- ohne `TMDB_READ_ACCESS_TOKEN` bleibt die App weiter nutzbar, zeigt dann aber nur lokalen Katalog und keine externen TMDb-Titeldaten
-- `NEXT_PUBLIC_SITE_URL` sollte auf die spaetere öffentliche URL zeigen, damit Metadata und Open Graph nicht auf localhost zurueckfallen
-- `NULL_NOISE_ENABLE_WRITES` sollte fuer die erste öffentliche Beta nicht gesetzt oder explizit `false` sein
+- erforderlich für den öffentlichen MVP: `TMDB_READ_ACCESS_TOKEN`
+- empfohlen: `NEXT_PUBLIC_SITE_URL`, damit Metadata und Open Graph auf eine feste URL zeigen; ohne diese Variable fällt der Code auf die von Vercel gesetzten Host-Variablen zurück
+- optional: `DATABASE_URL`, wenn lokaler Katalog, Seed-Daten oder spätere Schreibpfade wirklich gebraucht werden
+- ohne `DATABASE_URL` bleibt die Instanz bewusst read-only und stützt sich für Suche und Detail auf den externen TMDb-Pfad
+- `NULL_NOISE_ENABLE_WRITES` sollte für die erste öffentliche Beta nicht gesetzt oder explizit `false` sein
 
-Damit bleiben Startseite, Suche, Erklärung, Bedienhinweise, lokale Detailseiten und getrennte externe Titeldaten live lesbar, waehrend Bewertungsabgabe und lokale Titeluebernahme erst mit echter Persistenz öffentlich aktiviert werden.
+Damit bleiben Startseite, Suche, Erklärung, Bedienhinweise und getrennte externe Titeldaten live lesbar, während lokale Titelseiten, Bewertungen und Titelübernahme erst mit echter Persistenz öffentlich aktiviert werden.
 
 Spaetere Option:
 

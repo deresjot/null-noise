@@ -1,7 +1,9 @@
 import { DataExchangeClient, SendApiAssetCommand } from "@aws-sdk/client-dataexchange";
 import { z } from "zod";
 
+import { createMetadataInferencePreview } from "./metadata-inference";
 import { getTextMatchScore, normalizeSearchText } from "./search";
+import type { SearchFilters } from "./types";
 
 export type MetadataSpikeSource = "imdb" | "tmdb";
 export type MetadataSpikeMediaType = "movie" | "series";
@@ -24,6 +26,7 @@ export interface MetadataSpikeTitle {
   synopsis: string | null;
   posterPath: string | null;
   genres?: string[];
+  keywords?: string[];
 }
 
 export interface TmdbSearchDiagnostics {
@@ -82,6 +85,43 @@ export type MetadataSpikeSearchState =
       items: MetadataSpikeTitle[];
     };
 
+export type MetadataSpikeBrowseSectionId = "quiet" | "loud";
+
+export interface MetadataSpikeBrowseSection {
+  id: MetadataSpikeBrowseSectionId;
+  title: string;
+  description: string;
+  items: MetadataSpikeTitle[];
+}
+
+export type MetadataSpikeBrowseState =
+  | {
+      kind: "disabled";
+      source: "tmdb";
+      message: string;
+      items: [];
+    }
+  | {
+      kind: "error";
+      source: "tmdb";
+      reason: MetadataSpikeErrorReason;
+      message: string;
+      items: [];
+    }
+  | {
+      kind: "empty";
+      source: "tmdb";
+      message: string;
+      items: [];
+    }
+  | {
+      kind: "success";
+      source: "tmdb";
+      message: string;
+      items: MetadataSpikeTitle[];
+      sections: MetadataSpikeBrowseSection[];
+    };
+
 export type MetadataSpikeDetailState =
   | {
       kind: "disabled";
@@ -99,6 +139,52 @@ export type MetadataSpikeDetailState =
       source: MetadataSpikeSource;
       item: MetadataSpikeTitle;
       message: string;
+    };
+
+export type MetadataWatchProviderGroupKey = "flatrate" | "free" | "rent" | "buy";
+
+export interface MetadataWatchProvider {
+  id: number;
+  name: string;
+  offerUrl: string | null;
+  offerMode: "direct" | "listing";
+  format: string | null;
+  price: number | null;
+}
+
+export interface MetadataWatchProviderGroup {
+  id: MetadataWatchProviderGroupKey;
+  label: string;
+  providers: MetadataWatchProvider[];
+}
+
+export type MetadataWatchProviderState =
+  | {
+      kind: "disabled";
+      source: "tmdb" | "watchmode";
+      region: string;
+      message: string;
+    }
+  | {
+      kind: "error";
+      source: "tmdb" | "watchmode";
+      region: string;
+      message: string;
+    }
+  | {
+      kind: "empty";
+      source: "tmdb" | "watchmode";
+      region: string;
+      link: string | null;
+      message: string;
+    }
+  | {
+      kind: "success";
+      source: "tmdb" | "watchmode";
+      region: string;
+      link: string | null;
+      groups: MetadataWatchProviderGroup[];
+      attribution: string;
     };
 
 type ImdbMetadataSpikeConfig = {
@@ -125,8 +211,11 @@ interface ImdbSendInput {
 
 interface MetadataSpikeDependencies {
   accessToken?: string;
+  watchmodeApiKey?: string;
   fetchImpl?: typeof fetch;
   timeoutMs?: number;
+  cacheMode?: RequestCache;
+  revalidateSeconds?: number;
   source?: MetadataSpikeSource;
   tmdbDiagnostics?: TmdbSearchDiagnostics;
   imdbConfig?: ImdbMetadataSpikeConfig;
@@ -145,8 +234,19 @@ type ImdbDetailMapping =
   | { kind: "invalid" };
 
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
-const TMDB_POSTER_BASE_URL = "https://image.tmdb.org/t/p/w185";
+const WATCHMODE_BASE_URL = "https://api.watchmode.com/v1";
+export const tmdbPosterSizes = ["w185", "w342", "w500", "w780", "original"] as const;
+
+export type TmdbPosterSize = (typeof tmdbPosterSizes)[number];
+
+const TMDB_POSTER_BASE_URL = "https://image.tmdb.org/t/p";
+const DEFAULT_TMDB_POSTER_SIZE: TmdbPosterSize = "w342";
 const DEFAULT_TIMEOUT_MS = 4_000;
+const DEFAULT_TMDB_WATCH_REGION = "DE";
+const WATCHMODE_WATCH_REVALIDATE_SECONDS = 10_800;
+const TMDB_DISCOVER_REVALIDATE_SECONDS = 1_800;
+const TMDB_DETAIL_REVALIDATE_SECONDS = 21_600;
+const TMDB_WATCH_REVALIDATE_SECONDS = 10_800;
 const IMDB_API_PATH = "/v1";
 
 const IMDB_SEARCH_QUERY = `
@@ -230,11 +330,16 @@ const rawSearchItemSchema = z.object({
   first_air_date: z.string().nullish(),
   overview: z.string().nullish(),
   poster_path: z.string().nullish(),
+  genre_ids: z.array(z.number().int()).nullish(),
   popularity: z.number().nullish(),
 });
 
 const rawSearchResponseSchema = z.object({
   results: z.array(rawSearchItemSchema),
+});
+
+const rawDiscoverResponseSchema = z.object({
+  results: z.array(rawSearchItemSchema.omit({ media_type: true })),
 });
 
 const rawMovieDetailSchema = z.object({
@@ -250,6 +355,17 @@ const rawMovieDetailSchema = z.object({
         name: z.string().nullish(),
       }),
     )
+    .nullish(),
+  keywords: z
+    .object({
+      keywords: z
+        .array(
+          z.object({
+            name: z.string().nullish(),
+          }),
+        )
+        .nullish(),
+    })
     .nullish(),
 });
 
@@ -267,7 +383,48 @@ const rawSeriesDetailSchema = z.object({
       }),
     )
     .nullish(),
+  keywords: z
+    .object({
+      results: z
+        .array(
+          z.object({
+            name: z.string().nullish(),
+          }),
+        )
+        .nullish(),
+    })
+    .nullish(),
 });
+
+const rawWatchProviderSchema = z.object({
+  provider_id: z.number().int().nonnegative(),
+  provider_name: z.string().nullish(),
+  display_priority: z.number().int().nullish(),
+});
+
+const rawWatchProviderRegionSchema = z.object({
+  link: z.string().nullish(),
+  flatrate: z.array(rawWatchProviderSchema).nullish(),
+  free: z.array(rawWatchProviderSchema).nullish(),
+  rent: z.array(rawWatchProviderSchema).nullish(),
+  buy: z.array(rawWatchProviderSchema).nullish(),
+});
+
+const rawWatchProviderResponseSchema = z.object({
+  results: z.record(z.string(), rawWatchProviderRegionSchema).default({}),
+});
+
+const rawWatchmodeSourceSchema = z.object({
+  source_id: z.number().int().nonnegative(),
+  name: z.string().nullish(),
+  type: z.enum(["sub", "rent", "buy", "free", "tve"]).nullish(),
+  region: z.string().nullish(),
+  web_url: z.string().nullish(),
+  format: z.string().nullish(),
+  price: z.number().nullish(),
+});
+
+const rawWatchmodeSourceResponseSchema = z.array(rawWatchmodeSourceSchema);
 
 const imdbTitleSchema = z
   .object({
@@ -310,6 +467,47 @@ const imdbTitleSchema = z
   })
   .passthrough();
 
+const tmdbMovieGenreNames: Record<number, string> = {
+  12: "Adventure",
+  14: "Fantasy",
+  16: "Animation",
+  18: "Drama",
+  27: "Horror",
+  28: "Action",
+  35: "Comedy",
+  36: "History",
+  37: "Western",
+  53: "Thriller",
+  80: "Crime",
+  878: "Science Fiction",
+  9648: "Mystery",
+  99: "Documentary",
+  10402: "Music",
+  10749: "Romance",
+  10751: "Family",
+  10752: "War",
+  10770: "TV Movie",
+};
+
+const tmdbSeriesGenreNames: Record<number, string> = {
+  16: "Animation",
+  18: "Drama",
+  35: "Comedy",
+  37: "Western",
+  80: "Crime",
+  99: "Documentary",
+  9648: "Mystery",
+  10751: "Family",
+  10759: "Action & Adventure",
+  10762: "Kids",
+  10763: "News",
+  10764: "Reality",
+  10765: "Science Fiction & Fantasy",
+  10766: "Soap",
+  10767: "Talk",
+  10768: "War & Politics",
+};
+
 function normalizeQuery(value: string): string {
   return value.trim().replace(/\s+/g, " ").slice(0, 80);
 }
@@ -320,7 +518,10 @@ function normalizeText(value: string | null | undefined): string | null {
   return normalized ? normalized : null;
 }
 
-export function getTmdbPosterUrl(posterPath: string | null | undefined): string | null {
+export function getTmdbPosterUrl(
+  posterPath: string | null | undefined,
+  size: TmdbPosterSize = DEFAULT_TMDB_POSTER_SIZE,
+): string | null {
   const normalized = normalizeText(posterPath);
 
   if (!normalized) {
@@ -329,10 +530,13 @@ export function getTmdbPosterUrl(posterPath: string | null | undefined): string 
 
   const path = normalized.startsWith("/") ? normalized : `/${normalized}`;
 
-  return `${TMDB_POSTER_BASE_URL}${path}`;
+  return `${TMDB_POSTER_BASE_URL}/${size}${path}`;
 }
 
-export function getTmdbPosterProxyPath(posterPath: string | null | undefined): string | null {
+export function getTmdbPosterProxyPath(
+  posterPath: string | null | undefined,
+  size: TmdbPosterSize = DEFAULT_TMDB_POSTER_SIZE,
+): string | null {
   const normalized = normalizeText(posterPath);
 
   if (!normalized) {
@@ -341,7 +545,11 @@ export function getTmdbPosterProxyPath(posterPath: string | null | undefined): s
 
   const path = normalized.startsWith("/") ? normalized : `/${normalized}`;
 
-  return `/api/poster/tmdb${path}`;
+  if (size === DEFAULT_TMDB_POSTER_SIZE) {
+    return `/api/poster/tmdb${path}`;
+  }
+
+  return `/api/poster/tmdb/${size}${path}`;
 }
 
 function parseYear(value: string | null | undefined): number | null {
@@ -375,8 +583,253 @@ function mapGenreNames(
   return Array.from(new Set(names));
 }
 
+function mapKeywordNames(
+  keywords:
+    | Array<{
+        name?: string | null;
+      }>
+    | null
+    | undefined,
+): string[] | undefined {
+  const names = keywords
+    ?.map((keyword) => normalizeText(keyword.name))
+    .filter((keyword): keyword is string => Boolean(keyword));
+
+  if (!names?.length) {
+    return undefined;
+  }
+
+  return Array.from(new Set(names));
+}
+
+function mapGenreIds(
+  genreIds: number[] | null | undefined,
+  mediaType: MetadataSpikeMediaType,
+): string[] | undefined {
+  if (!genreIds?.length) {
+    return undefined;
+  }
+
+  const dictionary = mediaType === "movie" ? tmdbMovieGenreNames : tmdbSeriesGenreNames;
+  const names = genreIds
+    .map((genreId) => dictionary[genreId])
+    .filter((genreName): genreName is string => Boolean(genreName));
+
+  if (!names.length) {
+    return undefined;
+  }
+
+  return Array.from(new Set(names));
+}
+
+function mapWatchProviders(
+  providers:
+    | Array<{
+        provider_id: number;
+        provider_name?: string | null;
+        display_priority?: number | null;
+      }>
+    | null
+    | undefined,
+  offerUrl: string | null,
+): MetadataWatchProvider[] {
+  if (!providers?.length) {
+    return [];
+  }
+
+  const deduplicatedProviders = new Map<
+    number,
+    { name: string; displayPriority: number; providerId: number; offerUrl: string | null }
+  >();
+
+  for (const provider of providers) {
+    const name = normalizeText(provider.provider_name);
+
+    if (!name) {
+      continue;
+    }
+
+    deduplicatedProviders.set(provider.provider_id, {
+      name,
+      displayPriority: provider.display_priority ?? Number.MAX_SAFE_INTEGER,
+      providerId: provider.provider_id,
+      offerUrl,
+    });
+  }
+
+  return [...deduplicatedProviders.values()]
+    .sort((left, right) => {
+      if (left.displayPriority !== right.displayPriority) {
+        return left.displayPriority - right.displayPriority;
+      }
+
+      return left.name.localeCompare(right.name, "de");
+    })
+    .map((provider) => ({
+      id: provider.providerId,
+      name: provider.name,
+      offerUrl: provider.offerUrl,
+      offerMode: provider.offerUrl ? "listing" : "listing",
+      format: null,
+      price: null,
+    }));
+}
+
+function mapWatchProviderGroups(
+  regionData: z.infer<typeof rawWatchProviderRegionSchema>,
+): MetadataWatchProviderGroup[] {
+  const sharedOfferUrl = normalizeText(regionData.link);
+  const groupDefinitions: Array<{ id: MetadataWatchProviderGroupKey; label: string }> = [
+    { id: "flatrate", label: "Im Abo" },
+    { id: "free", label: "Kostenlos" },
+    { id: "rent", label: "Leihen" },
+    { id: "buy", label: "Kaufen" },
+  ];
+
+  return groupDefinitions
+    .map((group) => ({
+      id: group.id,
+      label: group.label,
+      providers: mapWatchProviders(regionData[group.id], sharedOfferUrl),
+    }))
+    .filter((group) => group.providers.length > 0);
+}
+
+function toWatchmodeTitleId(
+  mediaType: MetadataSpikeMediaType,
+  externalId: number,
+): string {
+  return `${toTmdbMediaType(mediaType)}-${externalId}`;
+}
+
+function normalizeOfferUrl(value: string | null | undefined): string | null {
+  const normalized = normalizeText(value);
+
+  if (!normalized || !/^https?:\/\//i.test(normalized)) {
+    return null;
+  }
+
+  return normalized;
+}
+
+function mapWatchmodeGroupId(
+  sourceType: z.infer<typeof rawWatchmodeSourceSchema>["type"],
+): MetadataWatchProviderGroupKey | null {
+  if (sourceType === "sub") {
+    return "flatrate";
+  }
+
+  if (sourceType === "free") {
+    return "free";
+  }
+
+  if (sourceType === "rent") {
+    return "rent";
+  }
+
+  if (sourceType === "buy") {
+    return "buy";
+  }
+
+  return null;
+}
+
+function mapWatchmodeProviderGroups(
+  sources: z.infer<typeof rawWatchmodeSourceResponseSchema>,
+  region: string,
+): MetadataWatchProviderGroup[] {
+  const groupedProviders = new Map<
+    MetadataWatchProviderGroupKey,
+    Map<number, MetadataWatchProvider>
+  >();
+
+  for (const source of sources) {
+    const groupId = mapWatchmodeGroupId(source.type);
+    const name = normalizeText(source.name);
+    const sourceRegion = normalizeText(source.region)?.toUpperCase();
+
+    if (!groupId || !name || !sourceRegion || sourceRegion !== region) {
+      continue;
+    }
+
+    if (!groupedProviders.has(groupId)) {
+      groupedProviders.set(groupId, new Map());
+    }
+
+    const targetGroup = groupedProviders.get(groupId);
+
+    if (!targetGroup) {
+      continue;
+    }
+
+    const nextProvider: MetadataWatchProvider = {
+      id: source.source_id,
+      name,
+      offerUrl: normalizeOfferUrl(source.web_url),
+      offerMode: "direct",
+      format: normalizeText(source.format),
+      price: typeof source.price === "number" ? source.price : null,
+    };
+    const existingProvider = targetGroup.get(source.source_id);
+
+    if (!existingProvider) {
+      targetGroup.set(source.source_id, nextProvider);
+      continue;
+    }
+
+    const nextHasBetterUrl = !existingProvider.offerUrl && nextProvider.offerUrl;
+    const nextHasCheaperPrice =
+      typeof nextProvider.price === "number" &&
+      (existingProvider.price === null || nextProvider.price < existingProvider.price);
+    const nextHasFormat = !existingProvider.format && nextProvider.format;
+
+    if (nextHasBetterUrl || nextHasCheaperPrice || nextHasFormat) {
+      targetGroup.set(source.source_id, {
+        ...existingProvider,
+        offerUrl: nextHasBetterUrl ? nextProvider.offerUrl : existingProvider.offerUrl,
+        price: nextHasCheaperPrice ? nextProvider.price : existingProvider.price,
+        format: nextHasFormat ? nextProvider.format : existingProvider.format,
+      });
+    }
+  }
+
+  const groupDefinitions: Array<{ id: MetadataWatchProviderGroupKey; label: string }> = [
+    { id: "flatrate", label: "Im Abo" },
+    { id: "free", label: "Kostenlos" },
+    { id: "rent", label: "Leihen" },
+    { id: "buy", label: "Kaufen" },
+  ];
+
+  return groupDefinitions
+    .map((group) => {
+      const providers = [...(groupedProviders.get(group.id)?.values() ?? [])].sort((left, right) => {
+        const leftPrice = left.price ?? Number.POSITIVE_INFINITY;
+        const rightPrice = right.price ?? Number.POSITIVE_INFINITY;
+
+        if (leftPrice !== rightPrice) {
+          return leftPrice - rightPrice;
+        }
+
+        return left.name.localeCompare(right.name, "de");
+      });
+
+      return {
+        id: group.id,
+        label: group.label,
+        providers,
+      };
+    })
+    .filter((group) => group.providers.length > 0);
+}
+
 function getTmdbAccessToken(providedToken?: string): string | null {
   const normalized = normalizeText(providedToken ?? process.env.TMDB_READ_ACCESS_TOKEN);
+
+  return normalized ?? null;
+}
+
+function getWatchmodeApiKey(providedApiKey?: string): string | null {
+  const normalized = normalizeText(providedApiKey ?? process.env.WATCHMODE_API_KEY);
 
   return normalized ?? null;
 }
@@ -554,6 +1007,7 @@ function mapRawSearchItem(item: z.infer<typeof rawSearchItemSchema>): MetadataSp
   );
   const releaseYear =
     mediaType === "movie" ? parseYear(item.release_date) : parseYear(item.first_air_date);
+  const genres = mapGenreIds(item.genre_ids, mediaType);
 
   return {
     externalSource: "tmdb",
@@ -565,7 +1019,28 @@ function mapRawSearchItem(item: z.infer<typeof rawSearchItemSchema>): MetadataSp
     releaseYear,
     synopsis: normalizeText(item.overview),
     posterPath: normalizeText(item.poster_path),
+    ...(genres ? { genres } : {}),
   };
+}
+
+function mapRawDiscoverItems(
+  payload: unknown,
+  mediaType: MetadataSpikeMediaType,
+): MetadataSpikeTitle[] | null {
+  const parsed = rawDiscoverResponseSchema.safeParse(payload);
+
+  if (!parsed.success) {
+    return null;
+  }
+
+  return parsed.data.results
+    .map((item) =>
+      mapRawSearchItem({
+        ...item,
+        media_type: mediaType === "movie" ? "movie" : "tv",
+      }),
+    )
+    .filter((item): item is MetadataSpikeTitle => item !== null);
 }
 
 type RankedMetadataItem = {
@@ -579,6 +1054,7 @@ type RankedMetadataItem = {
 function mapRawMovieDetail(item: z.infer<typeof rawMovieDetailSchema>): MetadataSpikeTitle {
   const originalTitle = normalizeText(item.original_title);
   const genres = mapGenreNames(item.genres);
+  const keywords = mapKeywordNames(item.keywords?.keywords);
 
   return {
     externalSource: "tmdb",
@@ -591,12 +1067,14 @@ function mapRawMovieDetail(item: z.infer<typeof rawMovieDetailSchema>): Metadata
     synopsis: normalizeText(item.overview),
     posterPath: normalizeText(item.poster_path),
     ...(genres ? { genres } : {}),
+    ...(keywords ? { keywords } : {}),
   };
 }
 
 function mapRawSeriesDetail(item: z.infer<typeof rawSeriesDetailSchema>): MetadataSpikeTitle {
   const originalTitle = normalizeText(item.original_name);
   const genres = mapGenreNames(item.genres);
+  const keywords = mapKeywordNames(item.keywords?.results);
 
   return {
     externalSource: "tmdb",
@@ -609,11 +1087,12 @@ function mapRawSeriesDetail(item: z.infer<typeof rawSeriesDetailSchema>): Metada
     synopsis: normalizeText(item.overview),
     posterPath: normalizeText(item.poster_path),
     ...(genres ? { genres } : {}),
+    ...(keywords ? { keywords } : {}),
   };
 }
 
 function getMetadataMatchScore(item: MetadataSpikeTitle, query: string): number {
-  return getTextMatchScore([item.title], [item.synopsis ?? ""], query);
+  return getTextMatchScore([item.title, item.originalTitle], [item.synopsis ?? ""], query);
 }
 
 function getEditDistance(a: string, b: string): number {
@@ -679,14 +1158,23 @@ function getPopularityBonus(popularity: number): number {
 
 function getTmdbMetadataRanking(item: MetadataSpikeTitle, query: string, popularity: number): RankedMetadataItem {
   const normalizedTitle = normalizeSearchText(item.title);
+  const normalizedOriginalTitle = normalizeSearchText(item.originalTitle ?? "");
   const normalizedQuery = normalizeSearchText(query);
   const titleDistance = getTitleDistance(item.title, query);
-  const exactTitle = normalizedTitle === normalizedQuery;
+  const exactTitle = normalizedTitle === normalizedQuery || normalizedOriginalTitle === normalizedQuery;
   const titleStartsWithQuery =
-    Boolean(normalizedTitle && normalizedQuery) &&
-    (normalizedTitle.startsWith(normalizedQuery) || normalizedQuery.startsWith(normalizedTitle));
+    Boolean(normalizedQuery) &&
+    [normalizedTitle, normalizedOriginalTitle]
+      .filter(Boolean)
+      .some(
+        (titleVariant) =>
+          titleVariant.startsWith(normalizedQuery) || normalizedQuery.startsWith(titleVariant),
+      );
   const titleContainsQuery =
-    Boolean(normalizedTitle && normalizedQuery) && normalizedTitle.includes(normalizedQuery);
+    Boolean(normalizedQuery) &&
+    [normalizedTitle, normalizedOriginalTitle]
+      .filter(Boolean)
+      .some((titleVariant) => titleVariant.includes(normalizedQuery));
   const prefixLengthDelta =
     titleStartsWithQuery && normalizedTitle && normalizedQuery
       ? Math.max(normalizedTitle.length - normalizedQuery.length, 0)
@@ -839,6 +1327,252 @@ function sortRankedMetadataItems(items: RankedMetadataItem[]): RankedMetadataIte
   });
 }
 
+function hashBrowseSeed(value: string): number {
+  let hash = 2166136261;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  return hash >>> 0;
+}
+
+function getBrowsePages(seed: string): number[] {
+  const pageRange = 10;
+  const first = (hashBrowseSeed(seed) % pageRange) + 1;
+  let second = (hashBrowseSeed(`${seed}:next`) % pageRange) + 1;
+
+  if (second === first) {
+    second = (second % pageRange) + 1;
+  }
+
+  return [first, second];
+}
+
+function getBrowseGenreBias(
+  mediaType: MetadataSpikeMediaType,
+  tone: SearchFilters["tone"],
+): string | null {
+  if (tone === "calm") {
+    return mediaType === "movie" ? "99|16|10749|10751|18" : "99|16|35|10751|18";
+  }
+
+  if (tone === "intense") {
+    return mediaType === "movie" ? "28|27|53|80|10752|878" : "80|10759|10765|10768";
+  }
+
+  return null;
+}
+
+function getBrowseSectionTone(
+  filters: SearchFilters,
+  sectionId: MetadataSpikeBrowseSectionId,
+): SearchFilters["tone"] {
+  if (filters.tone === "calm") {
+    return sectionId === "quiet" ? "calm" : "balanced";
+  }
+
+  if (filters.tone === "intense") {
+    return sectionId === "quiet" ? "balanced" : "intense";
+  }
+
+  return sectionId === "quiet" ? "calm" : "intense";
+}
+
+function matchesBrowseFilters(item: MetadataSpikeTitle, filters: SearchFilters): boolean {
+  const preview = createMetadataInferencePreview(item);
+  const profile = preview.stimulusProfile;
+
+  if (filters.avoidPeaks && profile.peakIntensity > 1) {
+    return false;
+  }
+
+  if (filters.avoidDensity && profile.stimulusDensity > 1) {
+    return false;
+  }
+
+  return true;
+}
+
+type BrowseCandidate = {
+  item: MetadataSpikeTitle;
+  score: number;
+};
+
+function getBrowseIntensityScore(item: MetadataSpikeTitle): number {
+  const profile = createMetadataInferencePreview(item).stimulusProfile;
+
+  return profile.peakIntensity * 0.55 + profile.stimulusDensity * 0.3 + profile.volumeLevel * 0.15;
+}
+
+function isPreferredBrowseSectionMatch(
+  score: number,
+  sectionId: MetadataSpikeBrowseSectionId,
+): boolean {
+  if (sectionId === "quiet") {
+    return score <= 1.95;
+  }
+
+  return score >= 2.65;
+}
+
+function isFallbackBrowseSectionMatch(
+  score: number,
+  sectionId: MetadataSpikeBrowseSectionId,
+): boolean {
+  if (sectionId === "quiet") {
+    return score <= 2.3;
+  }
+
+  return score >= 2.2;
+}
+
+function sortBrowseCandidates(
+  items: BrowseCandidate[],
+  sectionId: MetadataSpikeBrowseSectionId,
+  mix: string,
+): BrowseCandidate[] {
+  return [...items].sort((left, right) => {
+    if (left.score !== right.score) {
+      return sectionId === "quiet" ? left.score - right.score : right.score - left.score;
+    }
+
+    const leftPosterBonus = left.item.posterPath ? 1 : 0;
+    const rightPosterBonus = right.item.posterPath ? 1 : 0;
+
+    if (leftPosterBonus !== rightPosterBonus) {
+      return rightPosterBonus - leftPosterBonus;
+    }
+
+    const leftHash = hashBrowseSeed(`${mix}:${sectionId}:${left.item.externalId}`);
+    const rightHash = hashBrowseSeed(`${mix}:${sectionId}:${right.item.externalId}`);
+
+    if (leftHash !== rightHash) {
+      return leftHash - rightHash;
+    }
+
+    return left.item.title.localeCompare(right.item.title, "de");
+  });
+}
+
+function pickDistributedBrowseItems(
+  items: BrowseCandidate[],
+  limit: number,
+  mix: string,
+): BrowseCandidate[] {
+  const byMediaType: Record<MetadataSpikeMediaType, BrowseCandidate[]> = {
+    movie: items.filter((item) => item.item.mediaType === "movie"),
+    series: items.filter((item) => item.item.mediaType === "series"),
+  };
+  const preferredOrder =
+    hashBrowseSeed(`${mix}:media-order`) % 2 === 0
+      ? (["movie", "series"] as const)
+      : (["series", "movie"] as const);
+  const cursors: Record<MetadataSpikeMediaType, number> = {
+    movie: 0,
+    series: 0,
+  };
+  const selected: BrowseCandidate[] = [];
+  const seen = new Set<string>();
+
+  while (selected.length < limit) {
+    let progressed = false;
+
+    for (const mediaType of preferredOrder) {
+      const candidate = byMediaType[mediaType][cursors[mediaType]];
+
+      if (!candidate) {
+        continue;
+      }
+
+      cursors[mediaType] += 1;
+
+      if (seen.has(candidate.item.externalId)) {
+        continue;
+      }
+
+      seen.add(candidate.item.externalId);
+      selected.push(candidate);
+      progressed = true;
+
+      if (selected.length >= limit) {
+        break;
+      }
+    }
+
+    if (!progressed) {
+      break;
+    }
+  }
+
+  if (selected.length >= limit) {
+    return selected;
+  }
+
+  for (const candidate of items) {
+    if (selected.length >= limit) {
+      break;
+    }
+
+    if (seen.has(candidate.item.externalId)) {
+      continue;
+    }
+
+    seen.add(candidate.item.externalId);
+    selected.push(candidate);
+  }
+
+  return selected;
+}
+
+function pickBrowseSectionItems(
+  items: MetadataSpikeTitle[],
+  sectionId: MetadataSpikeBrowseSectionId,
+  mix: string,
+  excludedIds: Set<string>,
+  limit = 5,
+): MetadataSpikeTitle[] {
+  const scored = items
+    .filter((item) => !excludedIds.has(item.externalId))
+    .map((item) => ({
+      item,
+      score: getBrowseIntensityScore(item),
+    }));
+  const preferred = sortBrowseCandidates(
+    scored.filter((candidate) => isPreferredBrowseSectionMatch(candidate.score, sectionId)),
+    sectionId,
+    `${mix}:${sectionId}:preferred`,
+  );
+  const fallback = sortBrowseCandidates(
+    scored.filter((candidate) => !isPreferredBrowseSectionMatch(candidate.score, sectionId)),
+    sectionId,
+    `${mix}:${sectionId}:fallback`,
+  ).filter((candidate) => isFallbackBrowseSectionMatch(candidate.score, sectionId));
+  const selected = pickDistributedBrowseItems(
+    [...preferred, ...fallback],
+    limit,
+    `${mix}:${sectionId}:distributed`,
+  );
+
+  return selected.map((candidate) => candidate.item);
+}
+
+function dedupeMetadataItemsByTitle(items: MetadataSpikeTitle[]): MetadataSpikeTitle[] {
+  const seen = new Set<string>();
+
+  return items.filter((item) => {
+    const key = normalizeSearchText([item.title, item.mediaType, String(item.releaseYear ?? "")].join("::"));
+
+    if (!key || seen.has(key)) {
+      return false;
+    }
+
+    seen.add(key);
+    return true;
+  });
+}
+
 function buildRelaxedTmdbQueries(query: string): string[] {
   const words = normalizeQuery(query)
     .split(" ")
@@ -932,6 +1666,12 @@ async function fetchTmdb(
   const accessToken = getTmdbAccessToken(dependencies.accessToken);
   const fetchImpl = dependencies.fetchImpl ?? fetch;
   const timeoutMs = dependencies.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+  const cacheMode =
+    dependencies.cacheMode ??
+    (dependencies.revalidateSeconds ? "force-cache" : "no-store");
+  const nextOptions = dependencies.revalidateSeconds
+    ? { revalidate: dependencies.revalidateSeconds }
+    : undefined;
 
   if (!accessToken) {
     throw new Error("TMDB_NOT_CONFIGURED");
@@ -939,11 +1679,43 @@ async function fetchTmdb(
 
   return fetchImpl(`${TMDB_BASE_URL}${path}`, {
     method: "GET",
-    cache: "no-store",
     headers: {
       accept: "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
+    cache: cacheMode,
+    ...(nextOptions ? { next: nextOptions } : {}),
+    signal: AbortSignal.timeout(timeoutMs),
+  });
+}
+
+async function fetchWatchmode(
+  path: string,
+  dependencies: MetadataSpikeDependencies = {},
+): Promise<Response> {
+  const apiKey = getWatchmodeApiKey(dependencies.watchmodeApiKey);
+  const fetchImpl = dependencies.fetchImpl ?? fetch;
+  const timeoutMs = dependencies.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+  const cacheMode =
+    dependencies.cacheMode ??
+    (dependencies.revalidateSeconds ? "force-cache" : "no-store");
+  const nextOptions = dependencies.revalidateSeconds
+    ? { revalidate: dependencies.revalidateSeconds }
+    : undefined;
+
+  if (!apiKey) {
+    throw new Error("WATCHMODE_NOT_CONFIGURED");
+  }
+
+  const separator = path.includes("?") ? "&" : "?";
+
+  return fetchImpl(`${WATCHMODE_BASE_URL}${path}${separator}apiKey=${encodeURIComponent(apiKey)}`, {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+    },
+    cache: cacheMode,
+    ...(nextOptions ? { next: nextOptions } : {}),
     signal: AbortSignal.timeout(timeoutMs),
   });
 }
@@ -1193,7 +1965,7 @@ export async function searchTmdbMetadata(
       query: normalizedQuery,
       source: "tmdb",
       message:
-        "Ergaenzende Titeldaten sind lokal noch nicht verfuegbar. Auf dem Server fehlt noch ein gueltiger TMDb-Zugang.",
+        "Ergänzende Titeldaten sind lokal gerade nicht verfügbar. Auf dem Server fehlt noch ein gültiger TMDb-Zugang.",
       items: [],
     };
   }
@@ -1233,7 +2005,7 @@ export async function searchTmdbMetadata(
               kind: "error" as const,
               reason: "misconfigured" as const,
               message:
-                "Ergaenzende Titeldaten sind gerade nicht verfuegbar. Der Serverzugang zu TMDb muss geprueft werden.",
+                "Ergänzende Titeldaten sind gerade nicht verfügbar. Der Serverzugang zu TMDb muss geprüft werden.",
               items: [] as MetadataSpikeTitle[],
             };
           }
@@ -1243,7 +2015,7 @@ export async function searchTmdbMetadata(
               kind: "error" as const,
               reason: "not_found" as const,
               message:
-                "Die ergaenzende Titelsuche konnte gerade keine verwendbaren Daten abrufen.",
+                "Die ergänzende Titelsuche konnte gerade keine verwendbaren Daten abrufen.",
               items: [] as MetadataSpikeTitle[],
             };
           }
@@ -1252,7 +2024,7 @@ export async function searchTmdbMetadata(
             kind: "error" as const,
             reason: "api_error" as const,
             message:
-              "Ergaenzende Titeldaten konnten gerade nicht geladen werden. Bitte spaeter noch einmal versuchen.",
+              "Ergänzende Titeldaten konnten gerade nicht geladen werden. Versuch es später noch einmal.",
             items: [] as MetadataSpikeTitle[],
           };
         }
@@ -1270,7 +2042,7 @@ export async function searchTmdbMetadata(
             kind: "error" as const,
             reason: "invalid_response" as const,
             message:
-              "Ergaenzende Titeldaten waren gerade nicht in einer nutzbaren Form verfuegbar.",
+              "Ergänzende Titeldaten waren gerade nicht in einer nutzbaren Form verfügbar.",
             items: [] as MetadataSpikeTitle[],
           };
         }
@@ -1314,7 +2086,7 @@ export async function searchTmdbMetadata(
         query: normalizedQuery,
         source: "tmdb",
         message:
-          "Die zusaetzlichen Treffer zeigen nur Titeldaten. Ein Reizprofil liegt dafuer noch nicht vor.",
+          "Die zusätzlichen Treffer zeigen nur Titeldaten. Eine Erstlesart liegt dafür noch nicht vor.",
         items: relevantPrimaryItems,
       };
     }
@@ -1346,7 +2118,7 @@ export async function searchTmdbMetadata(
           query: normalizedQuery,
           source: "tmdb",
           message:
-            "Die zusaetzlichen Treffer stammen aus einer fehlertoleranten Suche. Ein Reizprofil liegt dafuer noch nicht vor.",
+            "Die zusätzlichen Treffer stammen aus einer fehlertoleranten Suche. Eine Erstlesart liegt dafür noch nicht vor.",
           items: relevantRetryItems,
         };
       }
@@ -1359,7 +2131,7 @@ export async function searchTmdbMetadata(
         query: normalizedQuery,
         source: "tmdb",
         message:
-          "Die zusaetzlichen Treffer zeigen nur Titeldaten. Ein Reizprofil liegt dafuer noch nicht vor.",
+          "Die zusätzlichen Treffer zeigen nur Titeldaten. Eine Erstlesart liegt dafür noch nicht vor.",
         items: relevantPrimaryItems,
       };
     }
@@ -1370,7 +2142,7 @@ export async function searchTmdbMetadata(
       query: normalizedQuery,
       source: "tmdb",
       message:
-        "Zu dieser Suche wurden auch in den ergaenzenden Titeldaten keine passenden Filme oder Serien gefunden.",
+        "Zu dieser Suche wurden auch in den ergänzenden Titeldaten keine passenden Filme oder Serien gefunden.",
       items: [],
     };
   } catch (error) {
@@ -1381,7 +2153,7 @@ export async function searchTmdbMetadata(
         query: normalizedQuery,
         source: "tmdb",
         message:
-          "Ergaenzende Titeldaten sind lokal noch nicht verfuegbar. Auf dem Server fehlt noch ein gueltiger TMDb-Zugang.",
+          "Ergänzende Titeldaten sind lokal gerade nicht verfügbar. Auf dem Server fehlt noch ein gültiger TMDb-Zugang.",
         items: [],
       };
     }
@@ -1394,7 +2166,7 @@ export async function searchTmdbMetadata(
         source: "tmdb",
         reason: "timeout",
         message:
-          "Ergaenzende Titeldaten antworten gerade zu langsam. Bitte spaeter noch einmal versuchen.",
+          "Ergänzende Titeldaten antworten gerade zu langsam. Versuch es später noch einmal.",
         items: [],
       };
     }
@@ -1406,7 +2178,219 @@ export async function searchTmdbMetadata(
       source: "tmdb",
       reason: "api_error",
       message:
-        "Ergaenzende Titeldaten konnten gerade nicht erreicht werden. Die Suche im Katalog bleibt davon unberuehrt.",
+        "Ergänzende Titeldaten konnten gerade nicht erreicht werden. Die Suche im Katalog bleibt davon unberührt.",
+      items: [],
+    };
+  }
+}
+
+export async function browseTmdbMetadata(
+  filters: SearchFilters,
+  mix: string,
+  dependencies: MetadataSpikeDependencies = {},
+): Promise<MetadataSpikeBrowseState> {
+  const accessToken = getTmdbAccessToken(dependencies.accessToken);
+  const browseLimit = 5;
+  const sectionDefinitions: Array<{
+    description: string;
+    id: MetadataSpikeBrowseSectionId;
+    title: string;
+  }> = [
+    {
+      id: "quiet",
+      title: "Eher leise",
+      description: "Ruhigerer Einstieg, weniger harte Spitzen.",
+    },
+    {
+      id: "loud",
+      title: "Eher laut",
+      description: "Dichter oder spürbarer, aber noch im selben Rahmen.",
+    },
+  ];
+
+  if (!accessToken) {
+    return {
+      kind: "disabled",
+      source: "tmdb",
+      message: "Externe Titelseiten sind gerade nicht erreichbar.",
+      items: [],
+    };
+  }
+
+  const mediaTypes: MetadataSpikeMediaType[] =
+    filters.kind === "all" ? ["movie", "series"] : [filters.kind];
+
+  const requestConfigs = mediaTypes.flatMap((mediaType) => {
+    return sectionDefinitions.flatMap((section) => {
+      const resolvedTone = getBrowseSectionTone(filters, section.id);
+      const pages = getBrowsePages(
+        [
+          mix,
+          section.id,
+          resolvedTone,
+          mediaType,
+          filters.kind,
+          String(filters.avoidPeaks),
+          String(filters.avoidDensity),
+        ].join(":"),
+      );
+      const genreBias = getBrowseGenreBias(mediaType, resolvedTone);
+
+      return pages.map((page) => ({
+        genreBias,
+        mediaType,
+        page,
+        resolvedTone,
+        sectionId: section.id,
+      }));
+    });
+  });
+
+  try {
+    const settledResponses = await Promise.all(
+      requestConfigs.map(async ({ mediaType, page, genreBias, sectionId }) => {
+        const searchParams = new URLSearchParams({
+          language: "de-DE",
+          include_adult: "false",
+          sort_by: "popularity.desc",
+          page: String(page),
+          "vote_count.gte": "40",
+        });
+
+        if (mediaType === "movie") {
+          searchParams.set("include_video", "false");
+        }
+
+        if (genreBias) {
+          searchParams.set("with_genres", genreBias);
+        }
+
+        const response = await fetchTmdb(`/discover/${toTmdbMediaType(mediaType)}?${searchParams.toString()}`, {
+          ...dependencies,
+          accessToken,
+          revalidateSeconds: dependencies.revalidateSeconds ?? TMDB_DISCOVER_REVALIDATE_SECONDS,
+        });
+
+        return {
+          mediaType,
+          response,
+          sectionId,
+        };
+      }),
+    );
+
+    const successfulPayloads: Record<MetadataSpikeBrowseSectionId, MetadataSpikeTitle[]> = {
+      loud: [],
+      quiet: [],
+    };
+    let sawInvalidPayload = false;
+
+    for (const { mediaType, response, sectionId } of settledResponses) {
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          return {
+            kind: "error",
+            source: "tmdb",
+            reason: "misconfigured",
+            message: "Externe Titelseiten lassen sich gerade nicht belastbar laden.",
+            items: [],
+          };
+        }
+
+        continue;
+      }
+
+      const payload = await safeJson(response);
+      const mappedItems = mapRawDiscoverItems(payload, mediaType);
+
+      if (!mappedItems) {
+        sawInvalidPayload = true;
+        continue;
+      }
+
+      successfulPayloads[sectionId].push(...mappedItems);
+    }
+
+    const usedIds = new Set<string>();
+    const sections = sectionDefinitions.map((section) => {
+      const resolvedTone = getBrowseSectionTone(filters, section.id);
+      const sectionFilters: SearchFilters = {
+        ...filters,
+        tone: resolvedTone,
+      };
+      const pool = dedupeMetadataItemsByTitle(dedupeMetadataItems(successfulPayloads[section.id]))
+        .filter((item) => item.posterPath)
+        .filter((item) => matchesBrowseFilters(item, sectionFilters));
+      const items = pickBrowseSectionItems(pool, section.id, mix, usedIds, browseLimit);
+
+      for (const item of items) {
+        usedIds.add(item.externalId);
+      }
+
+      return {
+        description: section.description,
+        id: section.id,
+        items,
+        title: section.title,
+      };
+    });
+    const visibleItems = sections.flatMap((section) => section.items);
+
+    if (visibleItems.length) {
+      return {
+        kind: "success",
+        source: "tmdb",
+        message: "Grob nach Reizrichtung aus externen Titeln gezogen.",
+        items: visibleItems,
+        sections,
+      };
+    }
+
+    if (
+      sawInvalidPayload &&
+      !successfulPayloads.quiet.length &&
+      !successfulPayloads.loud.length
+    ) {
+      return {
+        kind: "error",
+        source: "tmdb",
+        reason: "invalid_response",
+        message: "Externe Titelseiten waren gerade nicht in einer nutzbaren Form da.",
+        items: [],
+      };
+    }
+
+    return {
+      kind: "empty",
+      source: "tmdb",
+      message: "Mit diesem Profil blieb extern gerade nichts Greifbares übrig.",
+      items: [],
+    };
+  } catch (error) {
+    if (error instanceof Error && error.message === "TMDB_NOT_CONFIGURED") {
+      return {
+        kind: "disabled",
+        source: "tmdb",
+        message: "Externe Titelseiten sind gerade nicht erreichbar.",
+        items: [],
+      };
+    }
+
+    if (error instanceof Error && error.name === "TimeoutError") {
+      return {
+        kind: "error",
+        source: "tmdb",
+        reason: "timeout",
+        message: "Externe Titelseiten antworten gerade zu langsam.",
+        items: [],
+      };
+    }
+
+    return {
+      kind: "error",
+      source: "tmdb",
+      reason: "api_error",
+      message: "Externe Titelseiten konnten gerade nicht geladen werden.",
       items: [],
     };
   }
@@ -1540,8 +2524,15 @@ export async function getTmdbMetadataDetail(
   }
 
   try {
-    const endpoint = `/${toTmdbMediaType(mediaType)}/${externalId}?language=de-DE`;
-    const response = await fetchTmdb(endpoint, dependencies);
+    const searchParams = new URLSearchParams({
+      language: "de-DE",
+      append_to_response: "keywords",
+    });
+    const endpoint = `/${toTmdbMediaType(mediaType)}/${externalId}?${searchParams.toString()}`;
+    const response = await fetchTmdb(endpoint, {
+      ...dependencies,
+      revalidateSeconds: dependencies.revalidateSeconds ?? TMDB_DETAIL_REVALIDATE_SECONDS,
+    });
 
     if (response.status === 404) {
       return {
@@ -1579,15 +2570,17 @@ export async function getTmdbMetadataDetail(
       };
     }
 
+    const item =
+      mediaType === "movie"
+        ? mapRawMovieDetail(parsed.data as z.infer<typeof rawMovieDetailSchema>)
+        : mapRawSeriesDetail(parsed.data as z.infer<typeof rawSeriesDetailSchema>);
+
     return {
       kind: "success",
       source: "tmdb",
-      item:
-        mediaType === "movie"
-          ? mapRawMovieDetail(parsed.data)
-          : mapRawSeriesDetail(parsed.data),
+      item,
       message:
-        "Auch die Detailansicht zeigt nur externe Metadaten. Reizprofile oder Bewertungen werden daraus nicht berechnet.",
+        "Basisdaten von TMDb. null-noise liest daraus vorläufig eine erste Reizrichtung.",
     };
   } catch (error) {
     if (error instanceof Error && error.name === "TimeoutError") {
@@ -1605,6 +2598,179 @@ export async function getTmdbMetadataDetail(
       source: "tmdb",
       reason: "api_error",
       message: "Die Detaildaten konnten serverseitig nicht geladen werden.",
+    };
+  }
+}
+
+async function getWatchmodeWatchProviders(
+  mediaType: MetadataSpikeMediaType,
+  externalId: number,
+  dependencies: MetadataSpikeDependencies = {},
+  region = DEFAULT_TMDB_WATCH_REGION,
+): Promise<MetadataWatchProviderState | null> {
+  const normalizedRegion = normalizeText(region)?.toUpperCase() ?? DEFAULT_TMDB_WATCH_REGION;
+
+  if (!getWatchmodeApiKey(dependencies.watchmodeApiKey)) {
+    return null;
+  }
+
+  try {
+    const titleId = toWatchmodeTitleId(mediaType, externalId);
+    const response = await fetchWatchmode(`/title/${titleId}/sources/?regions=${normalizedRegion}`, {
+      ...dependencies,
+      revalidateSeconds: dependencies.revalidateSeconds ?? WATCHMODE_WATCH_REVALIDATE_SECONDS,
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const payload = await safeJson(response);
+    const parsed = rawWatchmodeSourceResponseSchema.safeParse(payload);
+
+    if (!parsed.success) {
+      return null;
+    }
+
+    const groups = mapWatchmodeProviderGroups(parsed.data, normalizedRegion);
+
+    if (!groups.length) {
+      return {
+        kind: "empty",
+        source: "watchmode",
+        region: normalizedRegion,
+        link: null,
+        message: `Für ${normalizedRegion} liefert Watchmode gerade keine belastbaren Direktlinks.`,
+      };
+    }
+
+    return {
+      kind: "success",
+      source: "watchmode",
+      region: normalizedRegion,
+      link: null,
+      groups,
+      attribution: "Direktlinks, Formate und Preise von Watchmode.",
+    };
+  } catch {
+    return null;
+  }
+}
+
+export async function getTmdbWatchProviders(
+  mediaType: MetadataSpikeMediaType,
+  externalId: number,
+  dependencies: MetadataSpikeDependencies = {},
+  region = DEFAULT_TMDB_WATCH_REGION,
+): Promise<MetadataWatchProviderState> {
+  const normalizedRegion = normalizeText(region)?.toUpperCase() ?? DEFAULT_TMDB_WATCH_REGION;
+
+  if (!getTmdbAccessToken(dependencies.accessToken)) {
+    return {
+      kind: "disabled",
+      source: "tmdb",
+      region: normalizedRegion,
+      message:
+        "Die Anbieteransicht braucht dieselbe TMDb-Verbindung wie die übrigen Basisdaten. Die ist hier gerade nicht aktiv.",
+    };
+  }
+
+  try {
+    const endpoint = `/${toTmdbMediaType(mediaType)}/${externalId}/watch/providers`;
+    const response = await fetchTmdb(endpoint, {
+      ...dependencies,
+      revalidateSeconds: dependencies.revalidateSeconds ?? TMDB_WATCH_REVALIDATE_SECONDS,
+    });
+
+    if (!response.ok) {
+      return {
+        kind: "error",
+        source: "tmdb",
+        region: normalizedRegion,
+        message: "Die Anbieteransicht konnte gerade nicht von TMDb geladen werden.",
+      };
+    }
+
+    const payload = await safeJson(response);
+    const parsed = rawWatchProviderResponseSchema.safeParse(payload);
+
+    if (!parsed.success) {
+      return {
+        kind: "error",
+        source: "tmdb",
+        region: normalizedRegion,
+        message: "TMDb hat die Anbieteransicht in einem unerwarteten Format zurückgegeben.",
+      };
+    }
+
+    const regionData = parsed.data.results[normalizedRegion];
+    const fallbackLink = normalizeText(regionData?.link);
+    const watchmodeState = await getWatchmodeWatchProviders(
+      mediaType,
+      externalId,
+      {
+        ...dependencies,
+        revalidateSeconds: dependencies.revalidateSeconds ?? WATCHMODE_WATCH_REVALIDATE_SECONDS,
+      },
+      normalizedRegion,
+    );
+
+    if (watchmodeState?.kind === "success") {
+      return {
+        ...watchmodeState,
+        link: fallbackLink,
+        attribution: fallbackLink
+          ? "Direktlinks, Formate und Preise von Watchmode. Falls ein Weg fehlt, bleibt die gemeinsame Angebotsseite von TMDb als Fallback."
+          : watchmodeState.attribution,
+      };
+    }
+
+    if (!regionData) {
+      return {
+        kind: "empty",
+        source: watchmodeState?.source ?? "tmdb",
+        region: normalizedRegion,
+        link: null,
+        message: `Für ${normalizedRegion} liegt gerade kein Anbieterhinweis vor.`,
+      };
+    }
+
+    const groups = mapWatchProviderGroups(regionData);
+    const link = fallbackLink;
+
+    if (!groups.length) {
+      return {
+        kind: "empty",
+        source: "tmdb",
+        region: normalizedRegion,
+        link,
+        message: `Für ${normalizedRegion} liegt gerade kein nutzbarer Anbieterhinweis vor.`,
+      };
+    }
+
+    return {
+      kind: "success",
+      source: "tmdb",
+      region: normalizedRegion,
+      link,
+      groups,
+      attribution: "Anbieterhinweise von JustWatch via TMDb.",
+    };
+  } catch (error) {
+    if (error instanceof Error && error.name === "TimeoutError") {
+      return {
+        kind: "error",
+        source: "tmdb",
+        region: normalizedRegion,
+        message: "Die Anbieteransicht hat gerade zu lange gebraucht und wurde abgebrochen.",
+      };
+    }
+
+    return {
+      kind: "error",
+      source: "tmdb",
+      region: normalizedRegion,
+      message: "Die Anbieteransicht konnte serverseitig nicht geladen werden.",
     };
   }
 }

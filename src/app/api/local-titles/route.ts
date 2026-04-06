@@ -20,6 +20,7 @@ const createLocalTitleSchema = z.object({
   mediaType: z.enum(["movie", "series"]),
   sourceId: z.coerce.number().int().positive(),
   q: z.string().trim().max(80).catch(""),
+  returnPath: z.string().trim().max(240).catch(""),
 });
 
 function buildSearchRedirect(request: NextRequest, query: string, status: string): URL {
@@ -31,6 +32,21 @@ function buildSearchRedirect(request: NextRequest, query: string, status: string
 
   url.searchParams.set("import", status);
   return url;
+}
+
+function buildReturnRedirect(
+  request: NextRequest,
+  query: string,
+  status: string,
+  returnPath: string,
+): URL {
+  if (returnPath.startsWith("/") && !returnPath.startsWith("//")) {
+    const url = new URL(returnPath, request.url);
+    url.searchParams.set("import", status);
+    return url;
+  }
+
+  return buildSearchRedirect(request, query, status);
 }
 
 function buildDetailRedirect(request: NextRequest, slug: string, status: string): URL {
@@ -46,13 +62,14 @@ export async function POST(request: NextRequest) {
     mediaType: formData.get("mediaType"),
     sourceId: formData.get("sourceId"),
     q: formData.get("q"),
+    returnPath: formData.get("returnPath"),
   });
 
   if (!parsed.success) {
     return NextResponse.redirect(buildSearchRedirect(request, "", "unavailable"), 303);
   }
 
-  const { mediaType, q, sourceId } = parsed.data;
+  const { mediaType, q, returnPath, sourceId } = parsed.data;
   const sourceKey = createTitleExternalLookupKey("tmdb", sourceId);
   const ipHash = hashClientAddress(
     extractClientAddress({
@@ -75,11 +92,11 @@ export async function POST(request: NextRequest) {
       );
     }
   } catch {
-    return NextResponse.redirect(buildSearchRedirect(request, q, "unavailable"), 303);
+    return NextResponse.redirect(buildReturnRedirect(request, q, "unavailable", returnPath), 303);
   }
 
   if (!arePublicWritesEnabled()) {
-    return NextResponse.redirect(buildSearchRedirect(request, q, "inactive"), 303);
+    return NextResponse.redirect(buildReturnRedirect(request, q, "inactive", returnPath), 303);
   }
 
   try {
@@ -104,16 +121,17 @@ export async function POST(request: NextRequest) {
       });
 
       return NextResponse.redirect(
-        buildSearchRedirect(
+        buildReturnRedirect(
           request,
           q,
           attemptStatus === "rejected_rate_limited" ? "limited" : "unavailable",
+          returnPath,
         ),
         303,
       );
     }
   } catch {
-    return NextResponse.redirect(buildSearchRedirect(request, q, "unavailable"), 303);
+    return NextResponse.redirect(buildReturnRedirect(request, q, "unavailable", returnPath), 303);
   }
 
   const detailState = await getMetadataDetail({
@@ -123,7 +141,7 @@ export async function POST(request: NextRequest) {
   });
 
   if (detailState.kind !== "success") {
-    return NextResponse.redirect(buildSearchRedirect(request, q, "unavailable"), 303);
+    return NextResponse.redirect(buildReturnRedirect(request, q, "unavailable", returnPath), 303);
   }
 
   try {
@@ -144,6 +162,6 @@ export async function POST(request: NextRequest) {
       303,
     );
   } catch {
-    return NextResponse.redirect(buildSearchRedirect(request, q, "unavailable"), 303);
+    return NextResponse.redirect(buildReturnRedirect(request, q, "unavailable", returnPath), 303);
   }
 }

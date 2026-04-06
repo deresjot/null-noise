@@ -16,9 +16,9 @@ export default function OpenGraphImage() {
           display: "flex",
           width: "100%",
           height: "100%",
-          background: "#f7f3ec",
-          color: "#191714",
-          fontFamily: '"Segoe UI", "Helvetica Neue", sans-serif',
+          background: "linear-gradient(180deg, #f8f5ef 0%, #efe8dd 100%)",
+          color: "#222636",
+          fontFamily: '"Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif',
         }}
       >
         <div
@@ -28,49 +28,59 @@ export default function OpenGraphImage() {
             padding: "62px",
             justifyContent: "space-between",
             alignItems: "center",
-            gap: "52px",
+            gap: "56px",
           }}
         >
           <div style={{ display: "flex", flexDirection: "column", maxWidth: 640 }}>
             <div
               style={{
                 display: "flex",
+                alignItems: "center",
+                gap: 14,
                 fontSize: 20,
                 fontWeight: 700,
-                color: "#7b756d",
+                color: "#69706d",
                 textTransform: "uppercase",
                 letterSpacing: 1.1,
-                fontFamily: '"SFMono-Regular", Menlo, Consolas, monospace',
+                fontFamily: '"Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif',
               }}
             >
+              <div
+                style={{
+                  width: 16,
+                  height: 16,
+                  borderRadius: 5,
+                  background: "linear-gradient(180deg, #7b9085 0%, #60756c 100%)",
+                }}
+              />
               null-noise
             </div>
             <div
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: "8px",
-                fontSize: 78,
+                gap: "10px",
+                fontSize: 74,
                 fontWeight: 700,
-                lineHeight: 0.92,
-                letterSpacing: -3.2,
-                marginTop: 26,
+                lineHeight: 0.94,
+                letterSpacing: -2.8,
+                marginTop: 28,
                 fontFamily: '"Iowan Old Style", "Palatino Linotype", Georgia, serif',
               }}
             >
-              <div style={{ display: "flex" }}>Vor dem Schauen</div>
-              <div style={{ display: "flex" }}>ruhiger entscheiden.</div>
+              <div style={{ display: "flex" }}>Titel finden.</div>
+              <div style={{ display: "flex" }}>Reiz grob einschätzen.</div>
             </div>
             <div
               style={{
-                marginTop: 24,
+                marginTop: 26,
                 fontSize: 28,
-                lineHeight: 1.42,
+                lineHeight: 1.4,
                 maxWidth: 560,
-                color: "#5e5951",
+                color: "#5b625f",
               }}
             >
-              {`${siteClaim} Reizprofil, Metadaten und Unsicherheit bleiben klar getrennt.`}
+              {`${siteClaim} Keine Scores, nur eine erste Tendenz und den Stand dahinter.`}
             </div>
           </div>
 
@@ -79,23 +89,21 @@ export default function OpenGraphImage() {
               display: "flex",
               width: 360,
               height: 360,
-              border: "1px solid #d8d1c5",
-              background: "rgba(255,255,255,0.78)",
-              borderRadius: 36,
-              padding: 34,
-              alignItems: "center",
-              justifyContent: "center",
+              border: "1px solid rgba(84, 89, 96, 0.14)",
+              background: "rgba(255,253,249,0.88)",
+              borderRadius: 34,
+              padding: 36,
+              alignItems: "flex-start",
               flexDirection: "column",
-              gap: 18,
+              gap: 22,
+              boxShadow: "0 18px 48px rgba(47,53,60,0.08)",
             }}
           >
             <div
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: 6,
-                alignItems: "center",
-                textAlign: "center",
+                gap: 10,
               }}
             >
               <div
@@ -103,43 +111,81 @@ export default function OpenGraphImage() {
                   display: "flex",
                   fontSize: 18,
                   fontWeight: 700,
-                  color: "#7b756d",
-                  fontFamily: '"SFMono-Regular", Menlo, Consolas, monospace',
+                  color: "#69706d",
+                  fontFamily: '"Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif',
                   textTransform: "uppercase",
+                  letterSpacing: 1.1,
                 }}
               >
-                ruhiger lesen
+                so sieht es aus
               </div>
               <div
                 style={{
                   display: "flex",
-                  fontSize: 36,
+                  fontSize: 34,
                   fontWeight: 700,
                   lineHeight: 1,
-                  letterSpacing: -1.3,
+                  letterSpacing: -1.2,
                   fontFamily: '"Iowan Old Style", "Palatino Linotype", Georgia, serif',
                 }}
               >
-                leiser, klarer, erklärbar
+                Vorläufig. Wachsend. Belastbarer.
               </div>
             </div>
-
-            <svg viewBox="0 0 128 128" width="176" height="176" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="64" cy="64" r="41" fill="#E4E1DC" />
-              <circle cx="64" cy="64" r="41" fill="none" stroke="#B8B1A8" strokeWidth="2.2" />
-              <circle cx="50" cy="57" r="3.8" fill="#8F877E" />
-              <circle cx="78" cy="57" r="3.8" fill="#8F877E" />
-              <circle cx="42" cy="72" r="4.5" fill="#F1ECE5" />
-              <circle cx="86" cy="72" r="4.5" fill="#F1ECE5" />
-              <path
-                d="M57 72c2.5 3 4.9 3 7.2 0 2.5 3 4.9 3 7.2 0"
-                fill="none"
-                stroke="#8F877E"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2.4"
-              />
-            </svg>
+            <div
+              style={{
+                display: "flex",
+                width: "100%",
+                flexDirection: "column",
+                gap: 18,
+                marginTop: 8,
+              }}
+            >
+              {[
+                { label: "ruhig", color: "#7b9085" },
+                { label: "ausgeglichen", color: "#a88f67" },
+                { label: "intensiv", color: "#916c6a" },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 8,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      fontSize: 20,
+                      color: "#5b625f",
+                    }}
+                  >
+                    <span>{item.label}</span>
+                    <span>sichtbar benannt</span>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      width: "100%",
+                      height: 18,
+                      borderRadius: 999,
+                      background: "#e7e1d5",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        width: item.label === "ausgeglichen" ? "66%" : "42%",
+                        background: item.color,
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

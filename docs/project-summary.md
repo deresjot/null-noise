@@ -1,6 +1,235 @@
 # null-noise: Projektzusammenfassung
 
-Stand: Version `0.8.3` am 28. März 2026
+Stand: Version `0.8.3` am 5. April 2026
+
+## Aktueller Hinweis
+
+Die jüngste Runde war ein mehrstufiger Produkt- und UI-Ausbau auf dem bestehenden Stand:
+
+- Finaler Deploy-Readiness-Pass auf dem aktuellen Stand:
+  - der Launch-Scope wurde noch einmal auf die belastbaren Kernpfade reduziert: Home, Suche, kurze Queries, Detailseite, Erstlesart, `Passt das gerade?` und ehrliche Fallbacks
+  - instabilere Zusatzpfade bleiben defensiv:
+    - Letterboxd erscheint nur bei erfolgreichem Abruf
+    - Watchmode bleibt optional, sonst läuft `Verfügbar bei` ehrlich über die Angebotsseite
+    - Vergleichs-, Kipp- und Followup-Blöcke werden bei dünner Datenlage weiter lieber klein gehalten oder weggelassen
+  - der bekannte Root-Hydration-Fall wurde ohne `suppressHydrationWarning` bereinigt:
+    - `<html>` wird vor der Hydration gezielt auf den erwarteten stabilen Zustand normalisiert
+    - lokale Browserzustände wie `Merken`, `Schon gesehen` und das lokale Shelf übernehmen jetzt früher und ohne sichtbaren ersten Sprung
+  - Build, Unit-Tests, Playwright und ein echter lokaler Production-Check über `npm run start` liefen auf den Kernpfaden sauber
+  - die Runtime-Erwartung ist für Vercel jetzt klarer gezogen:
+    - für den öffentlichen read-only MVP erforderlich: `TMDB_READ_ACCESS_TOKEN`
+    - empfohlen: `NEXT_PUBLIC_SITE_URL` für eine feste kanonische URL; ohne diese Variable greift der Code auf `VERCEL_PROJECT_PRODUCTION_URL` oder `VERCEL_URL` zurück
+    - optional: `DATABASE_URL` für lokalen Katalog, Seed-Daten und spätere Schreibpfade
+    - optional: `WATCHMODE_API_KEY`, `LETTERBOXD_CLIENT_ID`, `LETTERBOXD_CLIENT_SECRET`
+    - Schreibpfade bleiben ohne explizite Freigabe read-only
+  - der Production-Check lief zusätzlich auch ohne `DATABASE_URL`, aber mit gesetztem TMDb-Token sauber durch; der öffentliche MVP kann also ohne lokale SQLite-Datei starten
+  - für den echten Vercel-Deploy ist lokal noch kein Projekt-Link im Repo hinterlegt; der Stand ist build-ready, aber `vercel link` bzw. die Projektverknüpfung gehört erst in den eigentlichen Deploy-Schritt
+- Launch-Pass auf dem aktuellen Stand:
+  - Scope wurde auf stabile Kernpfade begrenzt: Suche, Detail, Erstlesart, Entscheidungshilfe und ehrliche Fallbacks
+  - ein ruhiger Launch-Hinweis `Früher Prototyp. Einschätzungen sind vorläufig.` ist jetzt sichtbar im Footer
+  - Rechtsseiten und `.env.example` wurden in den angefassten Bereichen auf sauberes UTF-8 gebracht
+  - `Datenschutz` nennt jetzt ausdrücklich LocalStorage für `Merken` / `Schon gesehen` und den Verzicht auf Tracking-Tools
+  - der optionale Letterboxd-Zusatzblick wird im UI nur noch gezeigt, wenn wirklich belastbare Daten da sind
+  - der Root-`scroll-behavior` ist jetzt Next-konform markiert, damit der Produktionsbrowsercheck ohne diese Warnung durchläuft
+- Entscheidungsreife-Pass auf dem aktuellen Stand:
+  - Detailseiten lesen sich jetzt stärker als Entscheidungshilfe statt nur als Analysefläche
+  - direkt bei der Erstlesart sitzt ein kleiner Block `Passt das gerade?`
+  - dazu kommen relative Orientierung über `Im Vergleich zu …` und kleine negative Hinweise `Könnte kippen, weil …`
+  - lokale und externe Detailseiten ziehen Folgeempfehlung, Entlastung, Feedback und `Verfügbar bei` jetzt sichtbarer in dieselbe innere Logik
+  - Suche und Browse sprechen konsistenter in Alltagssprache statt in Systemlabels
+  - direkt angefasste UI- und Doku-Texte wurden weiter auf sauberes UTF-8 mit echten Umlauten und ß nachgezogen
+- Produktreife-Pass auf dem aktuellen Stand:
+  - Fehler- und Statusmeldungen wurden in Suche, Detailseiten, Followups und `Verfügbar bei` klarer und ruhiger gefasst
+  - lokale Aktionen wie `Merken`, `Schon gesehen`, Reset und `Andere zeigen` geben jetzt knappes Inline-Microfeedback statt still zu springen
+  - der lokale Bereich auf `/suche` hat leere und aktive Zustände jetzt produktischer formuliert, inklusive klarer Reset-Aktionen
+  - Browse-Texte und kleine Situationshinweise erklären auf `/suche` besser, warum der aktuelle Rahmen gerade hilft
+  - sichtbare Texte in den neu angefassten UI- und Doku-Bereichen wurden auf sauberes UTF-8 mit echten Umlauten und ß nachgezogen
+- Systemrobustheit nachgezogen:
+  - der Feedback-Stempel läuft jetzt über einen kleinen Client-Guard statt über `Date.now()` im Renderpfad
+  - Suggestion-Antworten werden sauber dedupliziert und bleiben auf TMDb-Titel beschränkt
+  - lokale Browserzustände bleiben in den neuen Shelf-/Pocket-Pfaden stiller und robuster
+
+- Nutzwert-Pass auf dem aktuellen Stand:
+  - Detailseiten führen jetzt weiter:
+    - kleiner Bereich `Dazu passt auch …` für Titel in ähnlicher Reizlage
+    - bei intensiveren Titeln zusätzlich ein ruhiger Entlastungsblock `Wenn du etwas Ruhigeres suchst`
+  - beide Bereiche bleiben klein, defensiv formuliert und arbeiten mit derselben Tile-Sprache wie Suche und Browse
+- Lokales `Merken` und `Schon gesehen` ohne Konto:
+  - Titel können jetzt auf Such-/Browse-Tiles und auf Detailseiten lokal im Browser gemerkt oder als gesehen markiert werden
+  - auf `/suche` erscheint dafür ein kleiner Abschnitt `Für später und schon gesehen`
+  - gesehen markierte Titel können dort optional ausgeblendet werden, ohne dass daraus eine Watchlist- oder Tracking-Logik wird
+- Browse nützlicher gemacht:
+  - Tiles tragen jetzt kurze Begründungszeilen wie `eher ruhiger Einstieg` oder `wenig harte Spitzen`
+  - der leere Suchzustand führt dadurch nicht nur in Titel, sondern auch in eine kurze alltagssprachliche Einordnung
+- Unsicherheit noch sichtbarer:
+  - bei dünner Datenlage klingen Erstlesart und Status jetzt sichtbar vorsichtiger, z. B. `Kaum Hinweise`
+  - die UI unterscheidet klarer zwischen erster Lesart und belastbarerem Rückhalt
+- Feedback rückkanalfest gemacht:
+  - der anonyme Detailseiten-Feedbackblock bleibt klein, kann den sichtbaren Stand eines Titels aber jetzt später mittragen
+  - die Rückmeldung bleibt still, nicht sozial und ohne Bewertungsoptik
+- Performance ruhig gehalten:
+  - Merken/Gesehen arbeitet nur lokal im Browser
+  - Browse-Folgeempfehlungen nutzen bestehende TMDb-/Inference-Pfade statt neuer schwerer Empfehlungslogik
+  - der Browse-Mix bleibt pro Filtersatz stabil und springt nur bei bewusstem Wechsel
+
+- Vertrauen/Confidence-System geschärft:
+  - die sichtbaren Zustände rund um die Erstlesart wurden sprachlich ehrlicher und nützlicher gefasst
+  - statt grober Restkategorien tauchen jetzt ruhigere Hinweise wie `Bisher nur grob gelesen`, `Dafür gibt es erste Rückmeldungen` oder `Das wirkt inzwischen stimmiger` auf
+  - direkt am Erstlesart-Block steht jetzt zusätzlich eine knappe Basiszeile wie `Bisher spricht vor allem die Basis dafür`
+- Erstlesart erklärbarer gemacht:
+  - auf lokalen und externen Detailseiten gibt es jetzt einen nativen Disclosure-Bereich `Worauf basiert das?`
+  - dort werden Genres, Keywords, Kurzbeschreibung und vorhandene Rückmeldungen knapp und nachvollziehbar aufgeführt
+  - die Hauptaussage bleibt kurz, die Vertiefung wandert bewusst in `details/summary`
+- Minimalen Feedback-Flow ergänzt:
+  - Detailseiten haben jetzt einen kleinen anonymen Rückkanal `War das für dich eher …`
+  - Optionen: `ruhiger als erwartet`, `ungefähr passend`, `intensiver als erwartet`
+  - keine Konten, keine soziale Sichtbarkeit, kein Bewertungs-Spektakel
+  - nach Abgabe erscheint ein ruhiger Erfolgszustand direkt im selben Bereich
+- Browse auf `/suche` produktischer gemacht:
+  - der leere Suchzustand bleibt bei `Eher leise` und `Eher laut`, erklärt die Auswahl jetzt aber nützlicher
+  - Tiles tragen eine kurze Begründungszeile wie `wenig harte Spitzen` oder `eher ruhiger Einstieg`
+  - `Andere zeigen` variiert den Pool sichtbar, während der Ausgangszustand pro Filtersatz ruhiger und session-stabil bleibt
+- Provider-Nutzwert verbessert:
+  - `Verfügbar bei` ordnet Gruppen jetzt stabil als `Im Abo`, `Kostenlos`, `Leihen`, `Kaufen`
+  - Preis-/Formatdetails werden nur gezeigt, wenn Watchmode sie belastbar komplett liefert
+  - Links bleiben klar getrennt zwischen `Direkt zum Angebot` und `Zur Angebotsseite`
+- Suchqualität gezielt nachgezogen:
+  - kürzere Queries profitieren jetzt etwas stärker von `originalTitle` und robusteren Exakt-/StartsWith-Treffern
+  - dadurch gehen Titel wie `Arrival`, `Frozen` oder ähnliche Varianten weniger schnell in Seitentreffern unter
+- Performance ruhig gehalten:
+  - Browse-Mix bleibt ohne explizites `Andere zeigen` stabil
+  - Feedback läuft über eine einfache Server-Route statt über schwere Client-Logik
+  - Detailseiten laden Erklär- und Zusatzblöcke nachgeordnet, ohne die Kernseite in neue Widget-Komplexität zu kippen
+
+- Neubau der Browse-/Trefferdarstellung: die Suchseite arbeitet nicht mehr primär mit schmalen, hohen Kacheln, sondern mit breiteren Tile-Artikeln; Poster und Erstlesart sind als erste und zweite Hauptaussage klar getrennt.
+- Erstlesart als zweite Hauptaussage: Browse- und Trefferobjekte haben jetzt eine eigene Lesezone mit Kicker, großer Tendenzzeile, breiterer `leise ↔ laut`-Achse und verdichtetem Statussatz vor dem CTA.
+- Abkehr vom alten Kartenmuster: CTA und Nebenhinweise sitzen jetzt in eigener Nachzone statt als dominanter Kartenfuß, das Suchraster ist breiter und editorialer angelegt.
+- Suchseite und Detailseiten folgen jetzt sichtbarer demselben Hierarchieprinzip: Poster, Titel, Erstlesart, dann Aktion und Rest.
+- Erstlesart gestärkt: lokale und externe Detailseiten gewichten Tendenz, Status und Achse jetzt deutlich stärker; die horizontale `leise ↔ laut`-Achse sitzt direkter unter der großen Tendenz und spielt visuell fast auf Poster-Niveau mit.
+- Browse-Zustand auf `/suche` ausgebaut: bei leerem `q` erscheint jetzt direkt ein echter Browse-Zustand mit zwei klar getrennten Bereichen `Eher leise` und `Eher laut` statt einer leeren Suchfläche.
+- Externe Vorschläge verfeinert: der Browse-Zustand zieht jetzt echte TMDb-Discover-Titel, mischt sie über `mix` sichtbar durch und trennt Browse sauber von normalen Suchtreffern.
+- TMDb-/Inference-Pfad verfeinert: externe Detaildaten ziehen jetzt Keywords mit ein; die vorläufige Erstlesart kann damit Genres, Synopsis und TMDb-Keywords etwas belastbarer lesen, bleibt aber ausdrücklich eine vorsichtige Startbasis.
+- Poster-/Provider-/Performance-Nachzug: große Detailposter laufen jetzt konsistenter über die große TMDb-Variante, TMDb-Detail- und Watch-Requests werden sinnvoller gepuffert, und `Verfügbar bei` bleibt textbasiert, gruppiert und ehrlich verlinkt.
+- Letterboxd bleibt sekundär: als Zusatzblick auf Detailseiten, aber nicht als Primärquelle für Suche, Poster oder Stammdaten.
+- Anbieterlinks können jetzt optional direkt werden: wenn `WATCHMODE_API_KEY` gesetzt ist, nutzt `Verfügbar bei` Watchmode als nachgeordnete Zusatzquelle für direkte Angebotslinks, Formate und Preise; ohne Key bleibt der bisherige TMDb-/JustWatch-Weg als Fallback aktiv.
+- Das Header-Logo wurde zuletzt noch einmal stabilisiert: die Gesichtsform arbeitet jetzt nicht mehr mit einer festen weißen Outline, sondern mit einer berechneten Kontrastwirkung über die gemischten Farbflächen; die drei Blobs dürfen sich zusätzlich in engem Rahmen organisch verformen, ohne die Marke unruhig zu machen.
+
+Die vorherige Runde war ein gerichteter Hero-/Ergebnis-/Detail-Umbau auf dem bestehenden Produkt:
+
+- UI-/CSS-Cleanup: die Oberfläche wurde von paneligen Zwischenständen auf eine klarere, hero-getriebene Struktur umgebaut.
+- Copy-Reset: Home, Search, Detailseite, Statuszeilen, CTA-Texte, Hilfe- und Footer-Texte wurden neu geschrieben.
+- Branding-Vereinfachung: sichtbares Maskottchen bleibt raus, Wortmarke und reduzierte Form tragen die Oberfläche.
+- Entfernen alter UI-Reste: Search-Feature-Cards, Posterbühnen, Badge-Logik und Box-in-Box-Reste wurden zurückgebaut.
+- Neue Löschfunktion: lokal angelegte Titel können ruhig und bestätigt wieder entfernt werden.
+- Tendenzachse neu gefasst: die Tendenz erscheint jetzt vor allem auf der Detailseite als ruhige horizontale Bar statt als laute Rasterinszenierung.
+- Home danach noch einmal visuell nachgeschärft: farbigerer Hero, organischere Formen und trockenere Copy.
+- Kontrollierter Style-Rebuild danach: globale Flächen wurden wieder neutralisiert, Home trägt die bunte 2D-Flat-Bildsprache jetzt über eigene Wrapper-Klassen, Search und Detail bleiben bewusst ruhig.
+- Search danach noch einmal praktisch justiert: Suchtreffer wieder als Poster-Kacheln, `NUR ANSEHEN` als Primär-CTA, lokales Anlegen aus der Trefferliste auf die externe Detailansicht verlagert und ausklappbare Boxen nicht mehr durch zu enge Container abgeschnitten.
+- Danach wurde die Suchoberfläche noch einmal sichtbarer an die Hero-Sprache gezogen: transparente Sticky-Navigation, vollflächiger grüner Hintergrund, Form-Logo aus den Produktfarben, kompakte Tendenzbar direkt in den Suchkacheln und überarbeitete Icons auf Basis derselben Formen.
+- Danach folgte ein gezielter Component-Fix ohne neue Stilrunde:
+  - Suchvorschläge auf Home und `/suche` wurden aus `overflow`- und `z-index`-Konflikten befreit und bleiben jetzt sauber scrollbar statt nach wenigen Einträgen abgeschnitten.
+  - Home-Suche und Search-Stage teilen sich jetzt ein klareres gemeinsames Search-Surface-System mit gleicherer Input- und Buttonlogik.
+  - Große Poster auf Detailseiten ziehen für TMDb-Titel jetzt eine größere Proxy-Variante statt der kleineren Kachelgröße.
+  - Der Einordnungsblock auf Detailseiten wurde typografisch und räumlich verdichtet, damit Tendenz und Stand klarer als primäre Lesart erscheinen.
+- Danach kam ein kleiner Detailausbau:
+  - TMDb-basierte Detailseiten zeigen jetzt zusätzlich eine nachgeordnete `Verfügbar bei`-Ansicht.
+  - Die Anbieter werden gruppiert nach `Im Abo`, `Kostenlos`, `Leihen` und `Kaufen` ausgegeben.
+  - Die Anzeige bleibt textbasiert, regionsgebunden auf `DE` und ausdrücklich nachgeordnet hinter Tendenz und Einordnung.
+  - Anbieterzeilen sind jetzt klickbar und führen über die offizielle TMDb-/Watch-Seite weiter zum Angebotsweg.
+  - Für TMDb-basierte Filme hängt jetzt zusätzlich ein Letterboxd-Zusatzblick an der Detailseite:
+    - immer mit Website-Link über TMDb-ID
+    - optional mit API-Details wie Durchschnitt und Top-250-Position, wenn Letterboxd-Zugangsdaten gesetzt sind.
+
+Die Produktlogik blieb dabei unverändert: TMDb liefert reale Titel und Basisdaten, `null-noise` ergänzt Reizprofil, Wirkung und Wachstumsstand.
+
+## Projektstand für einen neuen Chat
+
+Wenn ein neuer Chat den aktuellen Stand übernehmen soll, ist das hier der kürzeste belastbare Einstieg:
+
+- `null-noise` ist aktuell eine Next.js-App zum Finden und vorsichtigen Einordnen von Filmen und Serien nach vermuteter Reizwirkung.
+- Reale Titel und Basisdaten kommen primär aus `TMDb`.
+- `null-noise` legt darüber eine eigene, ausdrücklich vorläufige Erstlesart:
+  - `eher leise`
+  - `eher laut`
+  - dazu Status wie `Vorläufig`, `Wachsend`, `Belastbarer`
+- Es gibt keine Scores, Prozentwerte oder KPI-Darstellung.
+- Lokale Titel existieren weiter für Profil-/Produktlogik, aber nicht mehr als primäre sichtbare Quelle im Hauptfluss.
+
+### Wichtige Produktpfade
+
+- `/`
+  - Hero-getriebene Startseite mit großer Suche
+  - bunte, organische Art-Direction nur hier deutlich sichtbar
+- `/suche`
+  - `q` leer: echter Browse-Zustand mit zwei sichtbaren Bereichen:
+    - `Eher leise`
+    - `Eher laut`
+  - `q` gesetzt: normale Suchtreffer
+  - keine Mischliste aus Browse und Suche
+- `/spike/metadaten/[mediaType]/[externalId]`
+  - externe Detailseite für TMDb-Titel
+  - dient aktuell als primärer externer Detailpfad
+- `/titel/[slug]`
+  - lokale Detailseite für angelegte/angereicherte Titel
+
+### Datenquellen und Rollen
+
+- `TMDb`
+  - Primärquelle für Suche, Poster, Basisdaten, Discover/Browse und externe Detailseiten
+- `Letterboxd`
+  - sekundärer Zusatzblick auf Detailseiten
+  - nicht primär für Suche, Poster, Stammdaten oder Provider
+- `Watchmode`
+  - optionale Zusatzquelle nur für `Verfügbar bei`
+  - soll direkte Angebotslinks, Formate und Preise liefern
+  - greift nur, wenn `WATCHMODE_API_KEY` gesetzt ist
+  - ohne Key bleibt der TMDb-/JustWatch-Fallback aktiv
+
+### Sichtbare UI-Prinzipien
+
+- Browse-/Trefferdarstellung auf `/suche`
+  - alte schmale Karten wurden bewusst verlassen
+  - stattdessen breitere Tile-Artikel mit klaren Zonen:
+    - Poster
+    - Titel
+    - Erstlesart
+    - CTA
+    - Sekundärinfos
+- Die Erstlesart ist die zweite Hauptaussage nach dem Poster.
+- Die `leise ↔ laut`-Anzeige ist keine Slider-Optik mehr, sondern eine passive Pegelanzeige.
+- Detailseiten folgen demselben Hierarchieprinzip, nur größer und stärker.
+- `Verfügbar bei` ist auf externen Detailseiten inzwischen wichtiger als rohe Metadaten-Listen wie `Basisdaten im Blick`.
+
+### Branding und Header
+
+- sichtbares Maskottchen bleibt aus der Produktführung raus
+- Wortmarke plus organische Farbformen bleiben das aktuelle Interim-Branding
+- das Header-Logo:
+  - darf sich ruhig bewegen
+  - respektiert `prefers-reduced-motion`
+  - kontrastiert im Gesicht nicht mehr über eine feste Outline, sondern über berechnete Kontrastwirkung auf den gemischten Formen
+
+### Was aktuell bewusst nicht gemacht wird
+
+- keine Konten
+- keine Social- oder Community-Mechaniken
+- keine Audioanalyse an realen Inhalten
+- keine objektive Lautheitsbehauptung
+- keine Anbieter als primaere Produktlogik
+
+### Wichtige Env-Flags
+
+- `TMDB_READ_ACCESS_TOKEN`
+- `LETTERBOXD_CLIENT_ID`
+- `LETTERBOXD_CLIENT_SECRET`
+- `WATCHMODE_API_KEY`
+
+### Bekannte offene Punkte
+
+- Browse-Vorschläge bleiben eine vorsichtige Metadaten-Erstlesart, keine belastbare Wirkungsmessung.
+- Watchmode ist code-seitig vorbereitet, lokal aber nur dann sichtbar, wenn `WATCHMODE_API_KEY` wirklich gesetzt ist.
+- Provider-/Watch-Daten bleiben regionsabhängig und können sich kurzfristig ändern.
+- Einige externe Titelpfade laufen noch sichtbar über `/spike/...`; das ist funktional okay, aber produktsprachlich noch kein finaler Endzustand.
 
 ## 1. Ausgangspunkt und Produktidee
 
@@ -201,6 +430,45 @@ Später kamen serverseitige Vorschläge direkt im Suchfeld dazu. Sie bleiben bew
 - keine große, komplexe Combobox-Inszenierung
 - Vorschläge helfen beim Titeltext, ersetzen aber kein Reizprofil
 
+### 9.6 Bootstrapping über vorläufige Einschätzungen
+
+Mit wachsender TMDb-Integration wurde klar, dass `null-noise` nicht auf einen schon großen internen Katalog warten kann. Deshalb wurde die Such- und Produktlogik weiter verschoben:
+
+- externe Titel bleiben klar als metadatenbasiert markiert
+- sie wirken aber nicht mehr wie leere Fälle
+- stattdessen zeigt die Suche jetzt schon eine vorsichtige erste Einordnung aus Metadaten
+- lokale Anlage und spätere anonyme Rückmeldungen verdichten diesen Startpunkt weiter
+
+Wichtig bleibt dabei:
+
+- TMDb liefert weiter nur Metadaten
+- die erste Einordnung bleibt eine null-noise-interne Heuristik
+- der Zustand wird bewusst als vorläufig benannt
+- belastbarere Profile entstehen erst aus Rückmeldungen
+
+### 9.7 Lokale Titel auch wieder entfernbar
+
+Mit der jüngsten Stabilisierung kam bewusst kein Admin- oder Listenmanagement dazu, aber eine normale Produktaktion:
+
+- lokal angelegte Titel können wieder entfernt werden
+- die Aktion ist absichtlich zweistufig
+- sie hängt am Ergebnis- und Detailfluss statt an einer versteckten Verwaltung
+- gelöscht wird nur der lokale `null-noise`-Stand, nicht der reale Titel selbst
+
+### 9.8 Hero-Einstieg oben, Einordnung darunter
+
+Mit der danach folgenden UI-Runde wurde die sichtbare Produktstruktur deutlicher getrennt:
+
+- Home ist jetzt eine große Einstiegsebene mit Suchfokus
+- Suchergebnisse leben als eigene ruhige Listenansicht unterhalb der Suche
+- die eigentliche Einordnung sitzt auf der Detailseite
+- die Ergebnisliste zeigt nur noch Titel, Tendenz, Status und knappe Meta
+- die Tendenzachse wurde auf der Detailseite zu einer progress-bar-artigen, aber bewusst groben Lesart umgebaut
+
+Das war kein Produktlogik-Wechsel, sondern eine gezielte Neugewichtung der Oberfläche.
+
+Damit bleibt der Produktkern gleich: Titel finden, grob einschätzen, bei Bedarf lokal weiterführen und notfalls auch wieder zurücknehmen.
+
 ## 10. UI-Entwicklung und gestalterische Iterationen
 
 Die Oberfläche hat mehrere sichtbare Iterationen durchlaufen. Das war kein Selbstzweck, sondern eine Suche nach einer Form, die zugleich ruhig, zugänglich, glaubwürdig und testbar ist.
@@ -246,18 +514,86 @@ Für die erste öffentliche Beta wurde die Oberfläche danach noch einmal diszip
 
 Wichtig war dabei: Farbe unterstützt jetzt Orientierung stärker, ersetzt aber weiterhin nie die textliche Bedeutung. Lokale Titel, externe Titeldaten, Statusmeldungen und Formularfeedback bleiben auch ohne reine Farbinterpretation verständlich.
 
+### 10.6 Sichtbare Wachstumslogik im Produkt
+
+In einer weiteren Runde wurde die Oberfläche gezielt auf den frühen Produktzustand angepasst:
+
+- Suchtreffer unterscheiden jetzt klar zwischen vorläufiger Startbasis, ersten Rückmeldungen und belastbarerem Stand
+- externe Treffer zeigen eine erste Einordnung aus Metadaten statt bloßer leerer Titeldaten
+- die Suchergebnisseite ist jetzt klarer als Results-first-Seite aufgebaut: Ergebnisse zuerst, Suche als kompakte Verfeinerung
+- die Suchkarten priorisieren die erste Einordnung jetzt sichtbar vor Synopsis und Detailtiefe
+- jede Karte trägt eine kurze Grundtendenz als diskrete Kurzmetrik statt nur verstreuter Einzelwerte
+- Detailseiten priorisieren jetzt zuerst eine grobe Grundtendenz und erst danach die drei Einzelachsen
+- `peakIntensity` führt visuell stärker
+- `soothingEffect` bleibt als eigene subjektive Wirkung getrennt
+- das Branding wurde auf eine einfache, ruhigere Form zurückgenommen und stört den Produktfluss weniger
+
+Dadurch wirkt `null-noise` weniger wie eine App mit wenigen Sonderfällen und mehr wie ein Produkt, das sichtbar von externer Metadatenbasis zu interner, wachsender Einschätzung übergeht.
+
+Gleichzeitig wurde die metadatenbasierte Startbasis noch robuster gemacht:
+
+- TMDb-Suchtreffer können jetzt vorhandene Genre-IDs direkt in die vorsichtige Ersteinschätzung einfließen lassen
+- die serverseitige Heuristik ist in nachvollziehbare Signalgruppen aufgeteilt: Genres, Konflikt-/Intensitätshinweise, Keywords, beruhigende Signale und Textur
+- auch dünne externe Treffer bleiben defensiv, wirken aber nicht mehr ganz so generisch wie ein rein neutraler `2/2/2`-Eindruck
+
+### 10.7 TMDb-First als sichtbares Produktmodell
+
+Mit dem nächsten Reifeschritt wurde `null-noise` deutlicher als das gerahmt, was es in der Praxis bereits ist:
+
+- TMDb ist die reale Primärquelle für Titel und Basisdaten
+- `null-noise` legt darüber eine eigene zweite Ebene aus Reizprofil, `soothingEffect`, vorläufiger Einordnung und späteren Rückmeldungen
+- die Suchseite ist nicht mehr nur ein Katalogfilter, sondern der eigentliche Haupteinstieg ins Produkt
+
+Das hatte mehrere sichtbare Folgen:
+
+- die Suchergebnisseite zeigt jetzt gleichzeitig bereits lokal angereicherte Titel und weitere reale TMDb-Titel
+- externe Treffer erscheinen nicht mehr bloß als Notfall-Fallback, sondern als normaler Startpunkt für vorläufige Einschätzungen
+- die Karten wurden luftiger, scanbarer und offener gebaut: mehr Weißraum, klarere Reihenfolge, größere Aktionszonen
+- die Kurzmetrik und Grundtendenz sitzen früher und sichtbarer im Kartenaufbau
+- erklärende Fließtexte wurden zurückgenommen zugunsten kurzer Kontextzeilen und klarerer Gruppenüberschriften
+- Mock- oder Fantasie-Titel wurden nicht zerstörerisch aus der Datenhaltung entfernt, aber sichtbar aus der primären Produktbühne zurückgenommen
+
+Dadurch wirkt `null-noise` weniger wie ein MVP mit internem Beispielkatalog und stärker wie ein System, das reale Titel über TMDb findet und innerhalb von `null-noise` schrittweise um eigene Reizprofile anreichert.
+
+### 10.8 Suchfokus statt Mini-Katalog
+
+Im nächsten Schritt wurde die Start- und Suchlogik noch konsequenter auf die reale Primärnutzung gezogen:
+
+- die Startseite ist jetzt kein Showcase für bereits angereicherte Titel mehr, sondern ein ruhiger Einstieg direkt in die Suche
+- der Block `Bereits in null-noise angereichert ...` wurde vollständig entfernt
+- die Startseite erklärt das Produktmodell jetzt nur noch knapp: TMDb findet reale Titel, `null-noise` ergänzt die Reizebene darüber
+- die Suchergebnisseite trägt dadurch noch klarer den eigentlichen Produktkern
+- jede Suchkarte zeigt jetzt eine deutlich sichtbarere, farblich unterstützte Kurzmetrik mit textlicher Grundtendenz
+- die Karten sind heller, luftiger und offener gebaut: mehr Weißraum, weniger enge Mikrozonen, klarere CTA-Flächen
+- Zustands- und Herkunftshinweise sitzen jetzt früher und offener im Kartenaufbau statt als nachgeschobene Fußnote
+- die Typografie wurde vorsichtig über eine geometrischere, lokal verfügbare Heading-Richtung geschärft, aber bewusst auf größere Überschriften begrenzt
+
+Wichtig bleibt dabei: Auch die farblich stärkere Kurzmetrik bleibt bewusst diskret, nutzt keine Prozentwerte, keine KPI-Optik und keine Scheingenauigkeit.
+
+### 10.9 Reset auf ein belastbares Oberflächensystem
+
+In der jüngsten Runde wurde die Oberfläche nicht weiter zugespitzt, sondern bewusst zurückgesetzt und beruhigt:
+
+- die frühere Varianten- und Blob-Erzählung wird in der aktiven UI nicht mehr weitergeführt
+- Home, Search, Detailseite und Footer wurden auf eine einzige ruhigere Richtung zusammengezogen
+- die Search-Oberkante arbeitet weniger als Bühne und mehr als funktionaler Produktfluss
+- Karten und Statuslogik wurden vereinfacht: weniger Untercontainer, weniger gleich laute Module, weniger Schildcharakter
+- die Kurzmetrik bleibt wichtig, wirkt aber ruhiger und weniger überinszeniert
+- Texte wurden nicht nur neu geschrieben, sondern an mehreren Stellen neu platziert
+- Branding wurde auf Wortmarke plus einfache Form zurückgenommen, damit es nicht mehr als Sonderfall mitläuft
+
+Damit fühlt sich `null-noise` im aktuellen Stand eher nach einem belastbaren Beta-Produkt an als nach einem Design-Experiment mit wechselnder Leitidee.
+
 ## 11. Marke, Logo und Icon
 
-Auch die Markenfigur wurde mehrfach iteriert. Frühere, verspieltere Richtungen wurden wieder verworfen, weil sie zu laut, zu illustriert oder nicht favicon-tauglich genug wirkten.
+Die sichtbare Markenführung wurde in der jüngsten Runde stark vereinfacht:
 
-Der aktuelle Stand ist bewusst ein Platzhalter mit reduziertem kawaii Gesicht:
+- Header primär als Wortmarke
+- keine Badge-Anmutung
+- keine sichtbare Blob-Figur mehr in der Produktoberfläche
+- Favicon und App-Icon weiter aus einer kleinen organischen Form
 
-- einfacher
-- ruhiger
-- technisch robuster
-- leichter mit dem UI zu harmonisieren
-
-Wichtig war hier die bewusste Entscheidung, lieber einen stillen Platzhalter zu haben als ein zu früh „fertig“ designtes Maskottchen, das sich später wieder als falsch anfühlt.
+Das Ziel war dabei nicht eine besonders laute Markenidee, sondern eine Marke, die die Oberfläche nicht mehr aus dem Tritt bringt.
 
 ## 12. Testing und Qualitätssicherung
 
@@ -279,6 +615,16 @@ Wichtige Playwright-/Vitest-Schwerpunkte waren bisher:
 - Feedback direkt an der Bewertungssektion statt verdeckt unter dem Sticky Header
 - schnelle Einordnung in Suchtreffern
 - minimale Live-Basis mit Impressum, Datenschutz und getrennter TMDb-Einordnung
+- sichtbare vorläufige Einschätzungen aus Metadaten auf Suche und Detailseite
+- explizite Detail-CTAs statt rein impliziter Titel-Links
+- Suchergebnisse zuerst, Verfeinerung danach statt gleichgewichtiger Einstiegs-/Ergebnislogik
+- starke Kurzmetrik und Grundtendenz direkt in den Suchkarten statt erst nach längerer Lektüre
+- durchgehender heller Content-Rahmen gegen visuelle Background-Glitches hinter Main und Footer
+- luftigerer Spike-Detailkopf mit mehr Innenraum statt zu engem Textblock
+- farbigere, klarere Funktions-CTAs mit Hover-Lift und stärkeren Übergängen
+- danach wieder vollflächiger Seitenlauf ohne inneren Rahmen, bei gleichzeitiger Beibehaltung der Körperformen im Hintergrund
+- offenere Laufweite in den Display-Headlines statt zu enger Wortmarken- und Hero-Typografie
+- Adobe-Fonts-Webprojekt für die Wortmarke eingebunden, damit `Omnes` auf der Brand-Wordmark lokal und in Browsern mit Netz verfügbar ist
 
 ## 13. Warum viele Dinge bewusst noch offen sind
 
@@ -287,7 +633,7 @@ Mehrere Themen wurden absichtlich nicht „halb fertig“ eingebaut:
 - keine belastbare produktive Persistenz für öffentliche Schreibpfade
 - keine Accounts
 - keine Community- oder Social-Funktionen
-- keine Umstellung des ganzen Produkts auf externe Metadaten
+- keine automatische Gleichsetzung von TMDb-Metadaten mit fertigen Reizprofilen
 - keine Suggestion- oder Ranking-Magie über das Nötige hinaus
 - kein Hosting-Umbau auf klassisches FTP-Setup
 
@@ -295,7 +641,7 @@ Der Grund ist jeweils derselbe: Solange Basissuche, Reizprofil-Logik, Accessibil
 
 ## 14. Aktueller Stand in einem Satz
 
-`null-noise` ist heute ein barrierearm gedachtes Next.js-MVP mit visuell geschaerfter, ruhiger UI, einem kleinen Drei-Achsen-Reizprofil, sichtbarer Confidence auf Basis weniger Einschätzungen, verifiziertem serverseitigem TMDb-Fallback, TMDb-Vorschlägen beim Tippen, lokal anlegbaren externen Titeln mit vorläufiger Startbasis, schneller Einordnung in Suchtreffern, minimaler Live-Basis mit Impressum und Datenschutz sowie einer fuer die erste öffentliche Beta bewusst lesenden Produktkonfiguration.
+`null-noise` ist heute ein barrierearm gedachtes Next.js-MVP mit suchfokussierter Startseite, TMDb als sichtbarer realer Primärquelle, einer results-first Suchseite als Haupteinstieg, sichtbar farblich unterstützter Kurzmetrik pro Suchtreffer, vorläufigen Einschätzungen aus Metadaten, wachsendem Profilstatus zwischen Startbasis und Rückmeldungen, getrenntem Reizprofil und `soothingEffect` sowie einer für die erste öffentliche Beta bewusst vorsichtigen, klar lesenden Produktkonfiguration.
 
 ## 15. Nächste sinnvolle Fragen für die weitere Entwicklung
 

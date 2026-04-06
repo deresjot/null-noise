@@ -1,11 +1,9 @@
 import Link from "next/link";
 
-import { MascotMark } from "@/components/mascot-mark";
-
 const navigationItems = [
   { href: "/suche", label: "Suche" },
-  { href: "/erklaerung", label: "Was bedeutet das?" },
-  { href: "/bedienung", label: "So funktioniert die Bedienung" },
+  { href: "/erklaerung", label: "Lesart" },
+  { href: "/bedienung", label: "Hilfe" },
 ];
 
 export function SiteHeader() {
@@ -16,12 +14,18 @@ export function SiteHeader() {
       </a>
       <header className="site-header">
         <div className="shell header-inner">
-          <Link className="brand" href="/">
-            <MascotMark className="brand-mark" decorative variant="compact" />
-            <span className="brand-copy">
-              <strong>null-noise</strong>
-              <span>ruhiger schauen, klarer wählen</span>
+          <Link aria-label="null-noise Startseite" className="brand" href="/">
+            <span aria-hidden="true" className="brand-mark">
+              <span className="brand-mark-shape brand-mark-shape-blue" />
+              <span className="brand-mark-shape brand-mark-shape-yellow" />
+              <span className="brand-mark-shape brand-mark-shape-coral" />
+              <span className="brand-mark-face">
+                <span className="brand-mark-eye brand-mark-eye-left" />
+                <span className="brand-mark-eye brand-mark-eye-right" />
+                <span className="brand-mark-mouth" />
+              </span>
             </span>
+            <span className="brand-wordmark">null-noise</span>
           </Link>
           <nav aria-label="Hauptnavigation">
             <ul className="nav-list">

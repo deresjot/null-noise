@@ -25,10 +25,11 @@ export default function DatenschutzPage() {
         <section className="panel" aria-labelledby="privacy-data-heading">
           <h2 id="privacy-data-heading">Datensparsame Nutzung</h2>
           <ul className="plain-list">
-            <li>Diese Website verwendet keine Cookies fuer Tracking oder Profilbildung.</li>
+            <li>Diese Website verwendet keine Cookies für Tracking oder Profilbildung.</li>
             <li>Es gibt keine Konten, keine Community-Funktion und keine versteckten Kennungen.</li>
-            <li>Suchanfragen bleiben auf die jeweils benoetigte Serverantwort beschraenkt.</li>
+            <li>Suchanfragen bleiben auf die jeweils benötigte Serverantwort beschränkt.</li>
             <li>Externe Titeldaten werden nur serverseitig von TMDb geholt, wenn dieser Pfad aktiv ist.</li>
+            <li>Lokale Merkliste und „Schon gesehen“ werden nur im LocalStorage dieses Browsers gehalten.</li>
           </ul>
         </section>
 
@@ -36,8 +37,9 @@ export default function DatenschutzPage() {
           <h2 id="privacy-tech-heading">Technische Einbindung</h2>
           <ul className="plain-list">
             <li>Schriften bleiben lokal oder als Systemschrift eingebunden.</li>
-            <li>Externe Verweise sind normale Links; Daten werden erst beim aktiven Klick uebertragen.</li>
+            <li>Externe Verweise sind normale Links; Daten werden erst beim aktiven Klick übertragen.</li>
             <li>Poster und Titeldaten von TMDb bleiben reiner Metadatenkontext und ersetzen kein Reizprofil.</li>
+            <li>Es kommen keine Tracking-Tools, Analyse-Skripte oder Werbe-Cookies zum Einsatz.</li>
           </ul>
         </section>
 
@@ -45,12 +47,12 @@ export default function DatenschutzPage() {
           <h2 id="privacy-beta-heading">Stand der Beta</h2>
           <p>
             {writesEnabled
-              ? "Auf dieser Instanz koennen anonyme Einschaetzungen lokal gespeichert werden. Dafuer wird nur ein kurzer funktionaler Cooldown-Cookie gesetzt, und IP-Adressen werden nicht roh gespeichert."
-              : "Auf dieser Instanz bleiben neue Einschaetzungen und lokale Titelanlage vorerst deaktiviert. Dadurch entfallen auch die funktionalen Schreibpfad-Cookies der Bewertungsabgabe."}
+              ? "Auf dieser Instanz können anonyme Einschätzungen lokal gespeichert werden. Dafür wird nur ein kurzer funktionaler Cooldown-Cookie gesetzt, und IP-Adressen werden nicht roh gespeichert."
+              : "Auf dieser Instanz bleiben neue Einschätzungen und lokale Titelanlage vorerst deaktiviert. Dadurch entfallen auch die funktionalen Schreibpfad-Cookies der Bewertungsabgabe."}
           </p>
           <p className="field-note">
             Diese Beta bleibt damit bewusst lesbar und datensparsam, auch wenn noch nicht alle
-            spaeteren Funktionen oeffentlich aktiv sind.
+            späteren Funktionen öffentlich aktiv sind.
           </p>
         </section>
       </div>

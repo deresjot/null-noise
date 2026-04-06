@@ -4,6 +4,7 @@ import type { PrismaClient } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { createAggregatedAssessment } from "@/lib/profile";
 import { readLegacyWriteStore } from "@/lib/legacy-json";
+import { deriveMetadataInferenceAssessment } from "@/lib/metadata-inference";
 import { mockTitleSeeds } from "@/lib/mock-data";
 import { normalizeSearchText } from "@/lib/search";
 import type { MetadataSpikeTitle } from "@/lib/metadata-spike";
@@ -37,189 +38,6 @@ type PersistedTitleSeed = Prisma.ExternalTitleGetPayload<{
 }>;
 
 type CatalogTransaction = Prisma.TransactionClient;
-
-type MetadataSeedSignal = "calm" | "intense";
-type MetadataSeedAxis = "volumeLevel" | "peakIntensity" | "stimulusDensity" | "soothingEffect";
-type MetadataSeedScores = Record<MetadataSeedAxis, number>;
-type MetadataSeedRule = {
-  needles: string[];
-  signal: MetadataSeedSignal;
-  deltas: Partial<Record<MetadataSeedAxis, number>>;
-};
-
-const metadataGenreRules: MetadataSeedRule[] = [
-  {
-    needles: ["action"],
-    signal: "intense",
-    deltas: {
-      volumeLevel: 0.7,
-      peakIntensity: 0.6,
-      stimulusDensity: 0.6,
-      soothingEffect: -0.3,
-    },
-  },
-  {
-    needles: ["horror"],
-    signal: "intense",
-    deltas: {
-      peakIntensity: 0.8,
-      stimulusDensity: 0.6,
-      soothingEffect: -0.6,
-    },
-  },
-  {
-    needles: ["thriller"],
-    signal: "intense",
-    deltas: {
-      peakIntensity: 0.4,
-      stimulusDensity: 0.4,
-      soothingEffect: -0.3,
-    },
-  },
-  {
-    needles: ["krieg", "war"],
-    signal: "intense",
-    deltas: {
-      volumeLevel: 0.8,
-      peakIntensity: 0.7,
-      stimulusDensity: 0.7,
-      soothingEffect: -0.5,
-    },
-  },
-  {
-    needles: ["krimi", "crime"],
-    signal: "intense",
-    deltas: {
-      stimulusDensity: 0.4,
-      soothingEffect: -0.3,
-    },
-  },
-  {
-    needles: ["mystery", "mysterium"],
-    signal: "intense",
-    deltas: {
-      stimulusDensity: 0.2,
-      soothingEffect: -0.2,
-    },
-  },
-  {
-    needles: ["dokumentarfilm", "documentary"],
-    signal: "calm",
-    deltas: {
-      volumeLevel: -0.4,
-      peakIntensity: -0.5,
-      stimulusDensity: -0.3,
-      soothingEffect: 0.4,
-    },
-  },
-  {
-    needles: ["familie", "family"],
-    signal: "calm",
-    deltas: {
-      peakIntensity: -0.3,
-      stimulusDensity: -0.3,
-      soothingEffect: 0.3,
-    },
-  },
-  {
-    needles: ["animation"],
-    signal: "calm",
-    deltas: {
-      peakIntensity: -0.2,
-      stimulusDensity: -0.2,
-      soothingEffect: 0.2,
-    },
-  },
-];
-
-const metadataTextRules: MetadataSeedRule[] = [
-  {
-    needles: [
-      "explosion",
-      "explosionen",
-      "sirene",
-      "sirenen",
-      "alarm",
-      "angriff",
-      "attack",
-      "anschlag",
-      "verfolg",
-      "jagd",
-      "krieg",
-      "war",
-      "survival",
-      "uberleben",
-      "terror",
-      "panik",
-      "panic",
-      "chaos",
-      "kampf",
-    ],
-    signal: "intense",
-    deltas: {
-      volumeLevel: 0.3,
-      peakIntensity: 0.8,
-      stimulusDensity: 0.5,
-      soothingEffect: -0.4,
-    },
-  },
-  {
-    needles: [
-      "horror",
-      "mord",
-      "murder",
-      "killer",
-      "gewalt",
-      "violent",
-      "bedroh",
-      "duster",
-      "dusteren",
-      "dystop",
-      "spannung",
-      "spannungs",
-    ],
-    signal: "intense",
-    deltas: {
-      peakIntensity: 0.4,
-      stimulusDensity: 0.4,
-      soothingEffect: -0.5,
-    },
-  },
-  {
-    needles: [
-      "ruhig",
-      "stille",
-      "still",
-      "sanft",
-      "meditativ",
-      "kontemplativ",
-      "beobacht",
-      "natur",
-      "landschaft",
-      "meer",
-      "hafen",
-      "wald",
-      "reise",
-      "reisen",
-      "planetarium",
-      "quiet",
-      "gentle",
-      "calm",
-      "meditative",
-      "contemplative",
-      "nature",
-      "travel",
-      "observation",
-    ],
-    signal: "calm",
-    deltas: {
-      volumeLevel: -0.6,
-      peakIntensity: -0.7,
-      stimulusDensity: -0.5,
-      soothingEffect: 0.6,
-    },
-  },
-];
 
 let bootstrapPromise: Promise<void> | null = null;
 let bootstrapCompleted = false;
@@ -357,90 +175,12 @@ function createUniqueSlug(title: string, year: number | null, existingSlugs: Set
   return `${baseSlug}-${suffix}`;
 }
 
-function createMetadataSeedScores(): MetadataSeedScores {
-  return {
-    volumeLevel: 0,
-    peakIntensity: 0,
-    stimulusDensity: 0,
-    soothingEffect: 0,
-  };
-}
-
-function matchesMetadataRule(haystack: string, needles: string[]): boolean {
-  return needles.some((needle) => haystack.includes(needle));
-}
-
-function applyMetadataRule(scores: MetadataSeedScores, rule: MetadataSeedRule): void {
-  for (const [key, value] of Object.entries(rule.deltas) as Array<[MetadataSeedAxis, number]>) {
-    scores[key] += value;
-  }
-}
-
-function clampMetadataSeedValue(value: number): ScaleValue {
-  return Math.min(3, Math.max(1, Math.round(value))) as ScaleValue;
-}
-
-function createMetadataInferenceProfile(item: MetadataSpikeTitle): {
-  ratingSamples: RatingSampleSet;
-  notes: string;
-} {
-  const scores = createMetadataSeedScores();
-  const signalCounts: Record<MetadataSeedSignal, number> = {
-    calm: 0,
-    intense: 0,
-  };
-  const textHaystack = normalizeSearchText(
-    [item.title, item.originalTitle, item.synopsis].filter(Boolean).join(" "),
-  );
-  const genreHaystack = normalizeSearchText(item.genres?.join(" ") ?? "");
-
-  for (const rule of metadataGenreRules) {
-    if (!genreHaystack || !matchesMetadataRule(genreHaystack, rule.needles)) {
-      continue;
-    }
-
-    applyMetadataRule(scores, rule);
-    signalCounts[rule.signal] += 1;
-  }
-
-  for (const rule of metadataTextRules) {
-    if (!textHaystack || !matchesMetadataRule(textHaystack, rule.needles)) {
-      continue;
-    }
-
-    applyMetadataRule(scores, rule);
-    signalCounts[rule.signal] += 1;
-  }
-
-  const noteIntro = "Vorläufige Startbasis aus Metadaten.";
-  const noteBasis =
-    signalCounts.calm > 0 && signalCounts.intense > 0
-      ? "Synopsis oder Genres deuten zugleich auf Spannung und auf ruhigere Momente hin."
-      : signalCounts.intense > 0
-        ? "Synopsis oder Genres deuten eher auf Spannung, Konflikt oder dichtere Reize hin."
-        : signalCounts.calm > 0
-          ? "Synopsis oder Genres deuten eher auf eine zurückhaltende, ruhigere Inszenierung hin."
-          : "Die vorhandenen Metadaten geben noch keine klaren Hinweise für mehr als eine neutrale Startbasis."
-  const noteOutro =
-    "Reizprofil und Wirkung werden erst durch erste anonyme Einschätzungen belastbarer.";
-
-  return {
-    ratingSamples: {
-      volumeLevel: [clampMetadataSeedValue(2 + scores.volumeLevel)],
-      peakIntensity: [clampMetadataSeedValue(2 + scores.peakIntensity)],
-      stimulusDensity: [clampMetadataSeedValue(2 + scores.stimulusDensity)],
-      soothingEffect: [clampMetadataSeedValue(2 + scores.soothingEffect)],
-    },
-    notes: `${noteIntro} ${noteBasis} ${noteOutro}`,
-  };
-}
-
 export function buildImportedTitleSeedFromMetadata(
   item: MetadataSpikeTitle,
   existingSlugs: Set<string>,
 ): TitleSeedRecord {
   const today = new Date().toISOString().slice(0, 10);
-  const inferredProfile = createMetadataInferenceProfile(item);
+  const inferredProfile = deriveMetadataInferenceAssessment(item);
 
   return {
     external: {
@@ -935,6 +675,43 @@ export async function persistLocalTitleSeedRecord(seed: TitleSeedRecord): Promis
   });
 
   return seed;
+}
+
+export async function deletePersistedLocalTitleSeedBySlug(slug: string): Promise<{
+  deleted: boolean;
+}> {
+  await ensureCatalogBootstrapped();
+
+  const existing = await prisma.externalTitle.findUnique({
+    where: { slug },
+    select: {
+      id: true,
+      externalSource: true,
+      externalSourceId: true,
+    },
+  });
+
+  if (!existing || existing.externalSource === "tmdb_seed") {
+    return { deleted: false };
+  }
+
+  const sourceKey = `${existing.externalSource}:${existing.externalSourceId}`;
+
+  await prisma.$transaction(async (tx) => {
+    await tx.externalTitle.delete({
+      where: { id: existing.id },
+    });
+
+    await tx.ratingAttempt.deleteMany({
+      where: { titleSlug: slug },
+    });
+
+    await tx.titleImportAttempt.deleteMany({
+      where: { sourceKey },
+    });
+  });
+
+  return { deleted: true };
 }
 
 export async function appendPersistedAnonymousRating(input: {

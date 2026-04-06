@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { searchTmdbMetadata } from "@/lib/metadata-spike";
+import { normalizeSearchText } from "@/lib/search";
 
 const querySchema = z.object({
   q: z.string().trim().min(2).max(80),
@@ -25,6 +26,29 @@ function getStatusCode(result: Awaited<ReturnType<typeof searchTmdbMetadata>>): 
   }
 
   return 502;
+}
+
+function dedupeSuggestionItems(
+  items: Array<{
+    externalId: string;
+    mediaType: "movie" | "series";
+    releaseYear: number | null;
+    source: "tmdb";
+    title: string;
+  }>,
+) {
+  const seen = new Set<string>();
+
+  return items.filter((item) => {
+    const key = `${normalizeSearchText(item.title)}:${item.mediaType}:${item.releaseYear ?? "open"}`;
+
+    if (seen.has(key)) {
+      return false;
+    }
+
+    seen.add(key);
+    return true;
+  });
 }
 
 export async function GET(request: NextRequest) {
@@ -53,13 +77,17 @@ export async function GET(request: NextRequest) {
       ? {
           kind: "success",
           message: result.message,
-          items: result.items.slice(0, 6).map((item) => ({
-            externalId: item.externalId,
-            title: item.title,
-            mediaType: item.mediaType,
-            releaseYear: item.releaseYear,
-            source: item.externalSource,
-          })),
+          items: dedupeSuggestionItems(
+            result.items
+              .filter((item) => item.externalSource === "tmdb")
+              .map((item) => ({
+                externalId: item.externalId,
+                title: item.title,
+                mediaType: item.mediaType,
+                releaseYear: item.releaseYear,
+                source: "tmdb" as const,
+              })),
+          ).slice(0, 6),
         }
       : {
           kind: result.kind,

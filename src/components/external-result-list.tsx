@@ -1,14 +1,19 @@
-import Image from "next/image";
 import Link from "next/link";
 
-import { SearchToneScale } from "@/components/search-tone-scale";
-import { createTitleExternalLookupKey } from "@/lib/local-titles";
 import {
-  formatMetadataSpikeSource,
-  getTmdbPosterProxyPath,
-  type MetadataSpikeTitle,
-} from "@/lib/metadata-spike";
+  getCompactProfileTendencyLabel,
+  getReadingReasonLine,
+  getSearchAggregatePresentation,
+  getProfileTendency,
+} from "@/lib/format";
+import { createTitleExternalLookupKey } from "@/lib/local-titles";
+import { createMetadataInferencePreview } from "@/lib/metadata-inference";
+import { getTmdbPosterProxyPath, type MetadataSpikeTitle } from "@/lib/metadata-spike";
 import { normalizeSearchText } from "@/lib/search";
+import { buildTitlePocketEntryFromMetadata } from "@/lib/title-pocket";
+import { ResultPoster } from "./result-poster";
+import { SearchToneScale } from "./search-tone-scale";
+import { TitlePocketActions } from "./title-pocket-actions";
 
 interface ExternalResultListProps {
   items: MetadataSpikeTitle[];
@@ -21,25 +26,8 @@ function formatMediaType(value: MetadataSpikeTitle["mediaType"]): string {
   return value === "movie" ? "Film" : "Serie";
 }
 
-function truncateText(value: string | null, maxLength: number): string {
-  const normalized = value?.trim();
-
-  if (!normalized) {
-    return "Zu diesem Titel liegt gerade nur ein knapper externer Metadatentreffer vor.";
-  }
-
-  if (normalized.length <= maxLength) {
-    return normalized;
-  }
-
-  const shortened = normalized.slice(0, maxLength).trimEnd();
-  const safeCut = shortened.lastIndexOf(" ");
-
-  return `${(safeCut > 72 ? shortened.slice(0, safeCut) : shortened).trimEnd()}…`;
-}
-
 function formatMetaLine(item: MetadataSpikeTitle): string {
-  return `${formatMediaType(item.mediaType)} · ${item.releaseYear ?? "Jahr offen"} · ${formatMetadataSpikeSource(item.externalSource)}`;
+  return `${formatMediaType(item.mediaType)} · ${item.releaseYear ?? "Jahr offen"}`;
 }
 
 function getEditDistance(a: string, b: string): number {
@@ -107,18 +95,14 @@ function getFeaturedScore(item: MetadataSpikeTitle, query: string): number {
     score += Math.min(Math.round(item.synopsis.length / 8), 120);
   }
 
-  if (item.posterPath) {
-    score += 16;
-  }
-
-  if (item.title === item.title.toLocaleLowerCase("de")) {
-    score -= 140;
-  }
-
   return score;
 }
 
-function pickFeaturedItem(items: MetadataSpikeTitle[], query: string): MetadataSpikeTitle {
+function getSortedItems(items: MetadataSpikeTitle[], query: string): MetadataSpikeTitle[] {
+  if (!normalizeSearchText(query)) {
+    return [...items];
+  }
+
   return [...items].sort((left, right) => {
     const leftScore = getFeaturedScore(left, query);
     const rightScore = getFeaturedScore(right, query);
@@ -128,7 +112,7 @@ function pickFeaturedItem(items: MetadataSpikeTitle[], query: string): MetadataS
     }
 
     return items.indexOf(left) - items.indexOf(right);
-  })[0];
+  });
 }
 
 function getLocalTitlePath(
@@ -140,6 +124,19 @@ function getLocalTitlePath(
   ];
 
   return slug ? `/titel/${slug}` : null;
+}
+
+function getExternalDetailPath(item: MetadataSpikeTitle, query: string): string {
+  const searchParams = new URLSearchParams();
+
+  if (query) {
+    searchParams.set("q", query);
+  }
+
+  const queryString = searchParams.toString();
+  const path = `/spike/metadaten/${item.mediaType}/${item.sourceId}`;
+
+  return queryString ? `${path}?${queryString}` : path;
 }
 
 function ExternalItemAction({
@@ -155,44 +152,57 @@ function ExternalItemAction({
 }) {
   if (localPath) {
     return (
-      <div className="external-card-actions">
-        <Link
-          aria-label={`Details zu ${item.title} öffnen`}
-          className="secondary-button-link"
-          href={localPath}
-        >
-          {`Details zu ${item.title} öffnen`}
-        </Link>
-        <p className="field-note">Für diesen Titel gibt es in null-noise bereits eine lokale Startbasis.</p>
-      </div>
+      <>
+        <div className="result-card-cta-zone">
+          <Link
+            aria-label={`Einordnung zu ${item.title} öffnen`}
+            className="secondary-button-link result-card-cta-button"
+            href={localPath}
+          >
+            Einordnung lesen
+          </Link>
+        </div>
+        <div className="result-card-note-zone">
+          <p className="result-card-note">Hier liegt schon eine eigene Seite bereit.</p>
+        </div>
+      </>
     );
   }
 
   if (!writesEnabled) {
     return (
-      <div className="external-card-actions">
-        <p className="field-note">
-          Auf dieser Beta bleibt die lokale Anlage noch deaktiviert. Die Titeldaten helfen hier
-          nur beim Wiederfinden.
-        </p>
-      </div>
+      <>
+        <div className="result-card-cta-zone">
+          <Link
+            aria-label={`Titeldaten zu ${item.title} öffnen`}
+            className="secondary-button-link result-card-action-link result-card-cta-button"
+            href={getExternalDetailPath(item, query)}
+          >
+            Details
+          </Link>
+        </div>
+        <div className="result-card-note-zone">
+          <p className="result-card-note">Diese Instanz bleibt gerade lesend.</p>
+        </div>
+      </>
     );
   }
 
   return (
-    <form action="/api/local-titles" className="external-import-form" method="post">
-      <input type="hidden" name="source" value={item.externalSource} />
-      <input type="hidden" name="mediaType" value={item.mediaType} />
-      <input type="hidden" name="sourceId" value={String(item.sourceId)} />
-      <input type="hidden" name="q" value={query} />
-      <button className="quiet-button" type="submit">
-        Für null-noise anlegen
-      </button>
-      <p className="field-note">
-        Danach startet der Titel mit einer vorläufigen Startbasis aus Metadaten und kann lokal
-        eingeschätzt werden.
-      </p>
-    </form>
+    <>
+      <div className="result-card-cta-zone">
+        <Link
+          aria-label={`Titeldaten zu ${item.title} öffnen`}
+          className="secondary-button-link result-card-action-link result-card-cta-button"
+          href={getExternalDetailPath(item, query)}
+        >
+          Details
+        </Link>
+      </div>
+      <div className="result-card-note-zone">
+        <p className="result-card-note">Lokales Anlegen liegt erst auf der Detailseite.</p>
+      </div>
+    </>
   );
 }
 
@@ -206,148 +216,97 @@ export function ExternalResultList({
     return null;
   }
 
-  const primaryItem = pickFeaturedItem(items, query);
-  const secondaryItems = items.filter((item) => item.externalId !== primaryItem.externalId);
-  const primaryPosterPath = getTmdbPosterProxyPath(primaryItem.posterPath);
-  const primaryLocalPath = getLocalTitlePath(primaryItem, localTitleByExternalKey);
+  const sortedItems = getSortedItems(items, query);
 
   return (
-    <div className="external-results-stack">
-      <article
-        className="result-card metadata-card metadata-card-primary"
-        data-profile-state={primaryLocalPath ? "rated" : "external"}
-      >
-        <div className="card-topline">
-          <p className="eyebrow">Naheliegendster Treffer</p>
-          <div className="card-chip-row">
-            <span className="tone-chip" data-tone={primaryLocalPath ? "local" : "external"}>
-              {primaryLocalPath ? "Bereits lokal angelegt" : "Nur Titeldaten · ohne Reizprofil"}
-            </span>
-            <span className="state-chip" data-profile-state={primaryLocalPath ? "rated" : "external"}>
-              {primaryLocalPath ? "Lokal" : "Extern"}
-            </span>
-          </div>
-        </div>
-        <div
-          className={
-            primaryPosterPath
-              ? "external-primary-layout external-primary-layout-with-poster"
-              : "external-primary-layout"
-          }
-        >
-          {primaryPosterPath ? (
-            <div className="poster-thumb-frame">
-              <Image
-                alt={`Poster zu ${primaryItem.title}`}
-                className="poster-thumb-image"
-                height="126"
-                loading="lazy"
-                src={primaryPosterPath}
-                unoptimized
-                width="84"
-              />
-            </div>
-          ) : null}
+    <ul className="result-grid result-grid-external">
+      {sortedItems.map((item) => {
+        const preview = createMetadataInferencePreview(item);
+        const tendency = getProfileTendency(preview.stimulusProfile);
+        const aggregatePresentation = getSearchAggregatePresentation(preview.aggregation);
+        const localPath = getLocalTitlePath(item, localTitleByExternalKey);
+        const detailPath = localPath ?? getExternalDetailPath(item, query);
+        const pocketEntry = buildTitlePocketEntryFromMetadata(item, {
+          href: detailPath,
+          profile: preview.stimulusProfile,
+        });
 
-          <div className="external-primary-copy">
-            <p className="result-context-line">{formatMetaLine(primaryItem)}</p>
-            <h3>
+        return (
+          <li key={item.externalId}>
+            <article
+              className="result-card metadata-card"
+              data-profile-state={localPath ? "rated" : "seed"}
+              data-title-pocket-key={pocketEntry.key}
+              data-tone={tendency.tone}
+            >
               <Link
-                href={
-                  primaryLocalPath ??
-                  `/spike/metadaten/${primaryItem.mediaType}/${primaryItem.sourceId}`
-                }
+                aria-label={`Poster und Details zu ${item.title} öffnen`}
+                className="poster-thumb-link"
+                href={detailPath}
               >
-                {primaryItem.title}
+                <ResultPoster
+                  sizes="(max-width: 980px) min(100vw - 2rem, 32rem), 15rem"
+                  src={getTmdbPosterProxyPath(item.posterPath)}
+                  title={item.title}
+                />
               </Link>
-            </h3>
-            <p>{truncateText(primaryItem.synopsis, 240)}</p>
-            <div className="result-card-state" data-profile-state={primaryLocalPath ? "rated" : "external"}>
-              <p className="result-card-state-kicker">
-                {primaryLocalPath ? "Lokale Detailseite bereits vorhanden" : "Externer Titeldatentreffer"}
-              </p>
-              <p className="result-card-state-text">
-                {primaryLocalPath
-                  ? "Dieser Titel wurde in null-noise schon lokal angelegt. Reizprofil und Confidence liegen auf der Detailseite."
-                  : "TMDb hilft hier nur beim Wiederfinden. Ein Reizprofil entsteht erst nach lokaler Anlage in null-noise."}
-              </p>
-            </div>
-            <SearchToneScale
-              mode="pending"
-              note={
-                primaryLocalPath
-                  ? "Der Titel hat bereits eine lokale Startbasis."
-                  : "Die Skala wird erst sichtbar, wenn in null-noise ein lokales Reizprofil vorliegt."
-              }
-              value={null}
-            />
-            <dl className="meta-grid result-meta-grid">
-              <div>
-                <dt>Reizprofil</dt>
-                <dd>{primaryLocalPath ? "Lokal vorhanden" : "Noch nicht vorhanden"}</dd>
-              </div>
-              <div>
-                <dt>Quelle</dt>
-                <dd>{formatMetadataSpikeSource(primaryItem.externalSource)}</dd>
-              </div>
-            </dl>
-            <ExternalItemAction
-              item={primaryItem}
-              query={query}
-              localPath={primaryLocalPath}
-              writesEnabled={writesEnabled}
-            />
-          </div>
-        </div>
-      </article>
 
-      {secondaryItems.length ? (
-        <details className="disclosure external-results-disclosure">
-          <summary>{`Weitere ${secondaryItems.length} ähnliche Titel anzeigen`}</summary>
-          <ul className="external-secondary-list">
-            {secondaryItems.map((item) => {
-              const secondaryLocalPath = getLocalTitlePath(item, localTitleByExternalKey);
+              <header className="result-card-title-zone">
+                <p className="card-topline">{formatMetaLine(item)}</p>
+                <h3 className="card-title">
+                  {localPath ? (
+                    <Link href={localPath}>{item.title}</Link>
+                  ) : (
+                    <Link href={detailPath}>{item.title}</Link>
+                  )}
+                </h3>
+              </header>
 
-              return (
-                <li key={item.externalId}>
-                  <article
-                    className="compact-result-card"
-                    data-profile-state={secondaryLocalPath ? "rated" : "external"}
-                  >
-                    <p className="result-context-line">{formatMetaLine(item)}</p>
-                    <h4>
-                      <Link
-                        href={
-                          secondaryLocalPath ??
-                          `/spike/metadaten/${item.mediaType}/${item.sourceId}`
-                        }
-                      >
-                        {item.title}
-                      </Link>
-                    </h4>
-                    <p>{truncateText(item.synopsis, 140)}</p>
-                    <span
-                      className="tone-chip tone-chip-inline"
-                      data-tone={secondaryLocalPath ? "local" : "external"}
-                    >
-                      {secondaryLocalPath
-                        ? "Bereits lokal angelegt"
-                        : "Nur Titeldaten · ohne Reizprofil"}
-                    </span>
-                    <SearchToneScale mode="pending" value={null} />
-                    <ExternalItemAction
-                      item={item}
-                      query={query}
-                      localPath={secondaryLocalPath}
-                      writesEnabled={writesEnabled}
-                    />
-                  </article>
-                </li>
-              );
-            })}
-          </ul>
-        </details>
-      ) : null}
-    </div>
+              <section
+                className="result-card-reading-block"
+                aria-label={localPath ? "Einordnung" : "Erstlesart"}
+              >
+                <p className="result-card-reading-kicker">{localPath ? "Einordnung" : "Erstlesart"}</p>
+                <p className="result-card-reading-value">
+                  {getCompactProfileTendencyLabel(tendency.tone)}
+                </p>
+                <SearchToneScale
+                  caption={localPath ? "Einordnung" : "Erstlesart"}
+                  emphasis="card"
+                  mode={aggregatePresentation.state}
+                  showCaption={false}
+                  showValueLabel={false}
+                  value={tendency.tone}
+                  valueLabel={getCompactProfileTendencyLabel(tendency.tone)}
+                />
+                <p className="result-card-reading-reason">
+                  {getReadingReasonLine(preview.stimulusProfile)}
+                </p>
+                <p className="result-card-reading-status">
+                  <strong>{localPath ? "Schon lokal" : aggregatePresentation.label}</strong>
+                  <span>
+                    {localPath
+                      ? "Dafür gibt es hier schon einen eigenen Stand."
+                      : aggregatePresentation.text}
+                  </span>
+                </p>
+              </section>
+
+              <footer className="result-card-footer-zone">
+                <ExternalItemAction
+                  item={item}
+                  localPath={localPath}
+                  query={query}
+                  writesEnabled={writesEnabled}
+                />
+                <div className="result-card-memory-zone">
+                  <TitlePocketActions entry={pocketEntry} variant="tile" />
+                </div>
+              </footer>
+            </article>
+          </li>
+        );
+      })}
+    </ul>
   );
 }

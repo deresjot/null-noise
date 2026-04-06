@@ -38,7 +38,10 @@ export async function getAllTitlesState(): Promise<CatalogQueryState<TitleRecord
 }
 
 export async function getFeaturedTitlesState(): Promise<CatalogQueryState<TitleRecord[]>> {
-  return safeCatalogQuery(async () => (await listPersistedTitleRecords()).slice(0, 3), []);
+  return safeCatalogQuery(async () => {
+    const titles = await listPersistedTitleRecords();
+    return titles.filter((title) => title.external.externalSource !== "tmdb_seed").slice(0, 3);
+  }, []);
 }
 
 export async function searchCatalogState(
