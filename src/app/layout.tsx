@@ -14,6 +14,9 @@ const headingFont = Fredoka({
   variable: "--font-heading-display",
 });
 
+const metadataBase = getMetadataBase();
+const shareImageUrl = new URL("/og/og-null-noise-launch-v2.png", metadataBase).toString();
+
 const rootHydrationGuardScript = `
 (() => {
   const root = document.documentElement;
@@ -34,7 +37,7 @@ const rootHydrationGuardScript = `
 `;
 
 export const metadata: Metadata = {
-  metadataBase: getMetadataBase(),
+  metadataBase,
   title: siteName,
   description: `${siteClaim} ${siteDescription}`,
   icons: {
@@ -45,13 +48,20 @@ export const metadata: Metadata = {
   openGraph: {
     title: siteName,
     description: `${siteClaim} ${siteDescription}`,
-    images: ["/opengraph-image"],
+    images: [
+      {
+        url: shareImageUrl,
+        width: 1200,
+        height: 630,
+        alt: "null-noise – Filme ruhiger schauen. Klarer wählen.",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: siteName,
     description: `${siteClaim} ${siteDescription}`,
-    images: ["/opengraph-image"],
+    images: [shareImageUrl],
   },
 };
 
