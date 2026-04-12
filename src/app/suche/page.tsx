@@ -12,7 +12,7 @@ import {
   searchCatalogState,
 } from "@/lib/queries";
 import { arePublicWritesEnabled } from "@/lib/runtime-config";
-import { hasSensoryFilters, parseSearchFilters } from "@/lib/search";
+import { parseSearchFilters } from "@/lib/search";
 import type { SearchFilters } from "@/lib/types";
 
 type SearchPageProps = {
@@ -191,10 +191,14 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     unavailable: localCatalogUnavailable,
   } = await searchCatalogState(filters);
   const writesEnabled = arePublicWritesEnabled();
-  const profileOnlyFiltersActive = hasSensoryFilters(filters);
   const browseMetadataState = showBrowseState ? await browseTmdbMetadata(filters, browseMix) : null;
-  const shouldLoadExternalResults = Boolean(filters.q) && !profileOnlyFiltersActive;
-  const metadataState = shouldLoadExternalResults ? await searchTmdbMetadata(filters.q) : null;
+  const shouldLoadExternalResults = Boolean(filters.q);
+  const metadataState = shouldLoadExternalResults
+    ? await searchTmdbMetadata(filters.q, {}, {
+        avoidDensity: filters.avoidDensity,
+        avoidPeaks: filters.avoidPeaks,
+      })
+    : null;
   const visibleLocalExternalKeys = new Set(
     localResults
       .filter((title) => title.external.externalSource !== "tmdb_seed")
@@ -215,7 +219,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       : [];
   const localResultCount = localResults.length;
   const externalResultCount = externalResults.length;
-  const externalResultsSuppressedByProfileFilters = Boolean(filters.q) && profileOnlyFiltersActive;
   const showExternalResults = externalResultCount > 0;
   const showLocalResults = localResultCount > 0;
   const showExternalGroupHeader = showLocalResults;
@@ -254,10 +257,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     if (localCatalogUnavailable) {
       searchStateTitle = "Der lokale Stand fehlt gerade";
       searchStateText = "Die Suche läuft weiter, nur eben ohne eigene Seiten.";
-      searchStateTone = "warning";
-    } else if (externalResultsSuppressedByProfileFilters) {
-      searchStateTitle = "Mit diesen Filtern bleibt die Suche beim vorhandenen Stand";
-      searchStateText = "Für ungeprüfte Treffer greifen die Reizfilter noch nicht.";
       searchStateTone = "warning";
     } else if (showExternalEmptyAfterKindFilter) {
       searchStateTitle = "Gefunden, nur im anderen Format";
@@ -458,11 +457,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                 ) : null}
 
                 <div className="search-results-notes">
-                  {externalResultsSuppressedByProfileFilters ? (
-                    <p className="field-note">
-                      Aktive Reizfilter bleiben bewusst auf den vorhandenen Stand beschränkt.
-                    </p>
-                  ) : null}
                   {localCatalogUnavailable ? (
                     <StatusPanel
                       title="Der lokale Stand fehlt gerade"

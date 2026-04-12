@@ -2,7 +2,7 @@ import { DataExchangeClient, SendApiAssetCommand } from "@aws-sdk/client-dataexc
 import { z } from "zod";
 
 import { createMetadataInferencePreview } from "./metadata-inference";
-import { getTextMatchScore, normalizeSearchText } from "./search";
+import { getTextMatchScore, matchesAvoidanceFilters, normalizeSearchText } from "./search";
 import type { SearchFilters } from "./types";
 
 export type MetadataSpikeSource = "imdb" | "tmdb";
@@ -1382,17 +1382,7 @@ function getBrowseSectionTone(
 
 function matchesBrowseFilters(item: MetadataSpikeTitle, filters: SearchFilters): boolean {
   const preview = createMetadataInferencePreview(item);
-  const profile = preview.stimulusProfile;
-
-  if (filters.avoidPeaks && profile.peakIntensity > 1) {
-    return false;
-  }
-
-  if (filters.avoidDensity && profile.stimulusDensity > 1) {
-    return false;
-  }
-
-  return true;
+  return matchesAvoidanceFilters(preview.stimulusProfile, filters);
 }
 
 type BrowseCandidate = {
@@ -1929,6 +1919,7 @@ export async function searchMetadata(
 export async function searchTmdbMetadata(
   query: string,
   dependencies: MetadataSpikeDependencies = {},
+  filters?: Pick<SearchFilters, "avoidPeaks" | "avoidDensity">,
 ): Promise<MetadataSpikeSearchState> {
   const normalizedQuery = normalizeQuery(query);
   const accessToken = getTmdbAccessToken(dependencies.accessToken);
@@ -2077,7 +2068,12 @@ export async function searchTmdbMetadata(
       };
     }
 
-    const relevantPrimaryItems = primaryResult.items;
+    const relevantPrimaryItems = primaryResult.items.filter((item) =>
+      matchesAvoidanceFilters(createMetadataInferencePreview(item).stimulusProfile, {
+        avoidDensity: filters?.avoidDensity ?? false,
+        avoidPeaks: filters?.avoidPeaks ?? false,
+      }),
+    );
 
     if (relevantPrimaryItems.length && hasStrongMetadataMatch(relevantPrimaryItems, normalizedQuery)) {
       finalizeTmdbDiagnostics(diagnostics, "success");
@@ -2109,6 +2105,11 @@ export async function searchTmdbMetadata(
       const relevantRetryItems = rankMappedMetadataItems(
         dedupeMetadataItems([...relevantPrimaryItems, ...retryResult.items]),
         normalizedQuery,
+      ).filter((item) =>
+        matchesAvoidanceFilters(createMetadataInferencePreview(item).stimulusProfile, {
+          avoidDensity: filters?.avoidDensity ?? false,
+          avoidPeaks: filters?.avoidPeaks ?? false,
+        }),
       );
 
       if (relevantRetryItems.length && hasStrongMetadataMatch(relevantRetryItems, normalizedQuery)) {

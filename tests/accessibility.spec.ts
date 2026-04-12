@@ -293,12 +293,10 @@ test("search field explains when external suggestions are unavailable", async ({
   await expect(page.getByText("Vorschläge fehlen gerade.")).toBeVisible();
 });
 
-test("search page shows one clear empty state when profile filters exclude external fallback", async ({ page }) => {
+test("search page keeps one clear empty state when strict filters still return no match", async ({ page }) => {
   await page.goto("/suche?q=Qwxz987&tone=intense");
 
-  await expect(
-    page.getByRole("heading", { name: "Mit diesen Filtern bleibt die Suche beim vorhandenen Stand" }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Gerade nichts Passendes" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Keine passenden Titel gefunden" })).toHaveCount(0);
 });
 

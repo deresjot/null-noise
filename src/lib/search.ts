@@ -197,6 +197,21 @@ export function hasSensoryFilters(filters: SearchFilters): boolean {
   return filters.tone !== "all" || filters.avoidPeaks || filters.avoidDensity;
 }
 
+export function matchesAvoidanceFilters(
+  profile: Pick<TitleRecord["stimulusProfile"], "peakIntensity" | "stimulusDensity">,
+  filters: Pick<SearchFilters, "avoidPeaks" | "avoidDensity">,
+): boolean {
+  if (filters.avoidPeaks && profile.peakIntensity >= 3) {
+    return false;
+  }
+
+  if (filters.avoidDensity && profile.stimulusDensity >= 3) {
+    return false;
+  }
+
+  return true;
+}
+
 export function getToneLabel(title: TitleRecord): "ruhig" | "ausgeglichen" | "intensiv" {
   const value = title.stimulusProfile.stimulusDensity;
 
@@ -253,7 +268,6 @@ export function filterTitles(titles: TitleRecord[], filters: SearchFilters): Tit
     .filter((title) => matchesQuery(title, filters.q))
     .filter((title) => matchesTone(title, filters.tone))
     .filter((title) => filters.kind === "all" || title.external.kind === filters.kind)
-    .filter((title) => !filters.avoidPeaks || title.stimulusProfile.peakIntensity <= 1)
-    .filter((title) => !filters.avoidDensity || title.stimulusProfile.stimulusDensity <= 1)
+    .filter((title) => matchesAvoidanceFilters(title.stimulusProfile, filters))
     .sort((a, b) => sortByQueryRelevance(a, b, filters.q));
 }

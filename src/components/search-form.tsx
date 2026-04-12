@@ -9,7 +9,7 @@ interface SearchFormProps {
   submitLabel?: string;
 }
 
-const toneLegend = "Optional eingrenzen";
+const toneLegend = "Eher vermeiden";
 const avoidPeaksLabel = "Möglichst ohne harte Spitzen";
 const avoidDensityLabel = "Dichte Klangflächen vermeiden";
 const titlePlaceholder = "z. B. Arrival, The Bear oder Past Lives";
