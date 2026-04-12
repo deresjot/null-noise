@@ -108,6 +108,22 @@ function createStableBrowseMix(filters: SearchFilters): string {
   ].join(":");
 }
 
+function getAvoidanceStatusLine(filters: SearchFilters): string | null {
+  if (filters.avoidPeaks && filters.avoidDensity) {
+    return "Gefiltert mit Vermeidung harter Spitzen und dichter Klangflächen.";
+  }
+
+  if (filters.avoidPeaks) {
+    return "Gefiltert mit Vermeidung harter Spitzen.";
+  }
+
+  if (filters.avoidDensity) {
+    return "Gefiltert mit Vermeidung dichter Klangflächen.";
+  }
+
+  return null;
+}
+
 function getImportStatus(value: string | string[] | undefined): SearchNotice {
   const status = Array.isArray(value) ? value[0] : value;
 
@@ -249,6 +265,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   );
   const showBrowseRefresh = browseMetadataState?.kind === "success" && browseSuggestionCount > 0;
   const browseOrientation = getBrowseOrientation(filters);
+  const avoidanceStatusLine = getAvoidanceStatusLine(filters);
   let searchStateTitle = "";
   let searchStateText = "";
   let searchStateTone: SearchStateTone = "neutral";
@@ -326,6 +343,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                       <p className="field-note search-results-context search-browse-orientation">
                         {browseOrientation}
                       </p>
+                    ) : null}
+                    {avoidanceStatusLine ? (
+                      <p className="search-filter-note" role="status">{avoidanceStatusLine}</p>
                     ) : null}
                   </div>
                   <div className="search-results-group-actions">
@@ -408,6 +428,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                 <p className="field-note search-results-context">
                   Erst grob lesen, dann entscheiden.
                 </p>
+                {avoidanceStatusLine ? <p className="search-filter-note" role="status">{avoidanceStatusLine}</p> : null}
               </header>
 
               <section className="search-results-stack">

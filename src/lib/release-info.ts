@@ -3,7 +3,7 @@ import packageJson from "../../package.json";
 export const currentBuild = {
   version: packageJson.version,
   label: "Reference Refinement Pass",
-  releasedAt: "2026-04-11 · 14:30 CET",
+  releasedAt: "2026-04-12 · 16:39 CET",
 };
 
 export const releaseNotes = [
@@ -13,6 +13,7 @@ export const releaseNotes = [
     releasedAt: "2026-04-12",
     entries: [
       "Die Such-/Filter-Sprache auf `/suche` wurde gestrafft und nutzt jetzt ruhigere, direktere Begriffe.",
+      "Die Vermeidungsfilter auf `/suche` greifen jetzt sichtbar über lokale und externe Treffer: hohe Spitzen und dichte Klangflächen werden konsequenter ausgeschlossen, statt nur leicht umsortiert.",
       "Die Karten-Erstlesart arbeitet jetzt mit drei festen Segmenten statt einer kleinen Achse; Fokus und Skiplinks wurden robuster vereinheitlicht.",
       "Das `brand-mark` bewegt sich enger um das Gesicht und bleibt in der Mischwirkung näher an der Wortmarke.",
       "Die Detailseiten-Spacings wurden nachgeschärft: mehr Innenabstand in den Boxen, ruhigerer Blockaufbau, Erstlesart klarer hervorgehoben, `Verfügbar bei` vor den weiteren Vorschlägen einsortiert sowie Breiten und Container zwischen lokaler und Spike-Detailseite weiter angeglichen.",

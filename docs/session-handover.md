@@ -1,6 +1,6 @@
 # null-noise: Session-Handover
 
-Stand: 11. April 2026
+Stand: 12. April 2026
 
 ## Aktueller Git-Stand
 
@@ -12,6 +12,13 @@ Stand: 11. April 2026
 ## Projektstand für einen neuen Chat
 
 Wenn ein neuer Chat ohne weiteren Kontext übernehmen soll, ist das hier der aktuelle Arbeitsstand in knapper, aber belastbarer Form:
+
+- Neu in dieser Runde (12. April 2026, 16:39 CET):
+  - Die Vermeidungsfilter auf `/suche` sind jetzt sichtbar wirksam statt nur leicht umsortierend.
+  - `avoidPeaks` und `avoidDensity` greifen konsequenter und gelten auf lokale wie externe Treffer.
+  - Aktive Filterzustände sind im Suchblock klarer sichtbar.
+  - Bei aktiven Filtern erscheint eine knappe Ergebnisrückmeldung (`Gefiltert mit ...`), damit der Zustand ohne Zusatzdialoge nachvollziehbar bleibt.
+  - Auch im Browse-Zustand ohne Suchbegriff ist die sichtbare Trefferauswahl bei aktiven Filtern klarer verändert.
 
 - Neuester Konsolidierungsstand (12. April 2026):
   - Startseite ruhiger gewichtet, Suchdeck klarer primär, Footer stärker als Abschlusszone getrennt

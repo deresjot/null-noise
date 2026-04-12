@@ -1,8 +1,18 @@
 # null-noise: Projektzusammenfassung
 
-Stand: Version `0.8.3` am 11. April 2026
+Stand: Version `0.8.3` am 12. April 2026
 
 ## Aktueller Hinweis
+
+Heute (12. April 2026, 16:39 CET) wurde der Such-/Filterbereich auf `/suche` gezielt finalisiert:
+
+- Vermeidungsfilter sind jetzt sichtbar wirksam statt nur subtiler Sortierung:
+  - `Möglichst ohne harte Spitzen` schließt Titel mit höherer `peakIntensity` konsequenter aus.
+  - `Dichte Klangflächen vermeiden` schließt Titel mit höherer `stimulusDensity` konsequenter aus.
+  - beide Filter greifen kombiniert auf lokale und externe Treffer.
+- aktive Filterzustände sind im Suchblock klarer erkennbar, ohne neue UI-Komplexität.
+- im Ergebnisbereich erscheint bei aktiven Vermeidungsfiltern eine knappe Statuszeile, damit die laufende Filterung direkt nachvollziehbar bleibt.
+- auch im Browse-Zustand ohne Suchbegriff ist die Filterwirkung sichtbarer, weil die Auswahl bei aktiven Vermeidungsfiltern strenger ausgedünnt wird.
 
 Konsolidierungs- und Release-Pass (12. April 2026):
 

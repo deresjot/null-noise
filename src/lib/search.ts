@@ -1,6 +1,7 @@
 import type { SearchFilters, TitleRecord, ToneFilter } from "@/lib/types";
 
 const toneValues: ToneFilter[] = ["all", "calm", "balanced", "intense"];
+const AVOIDANCE_EXCLUDE_FROM_LEVEL = 2;
 
 function isToneFilter(value: string): value is ToneFilter {
   return toneValues.includes(value as ToneFilter);
@@ -201,11 +202,11 @@ export function matchesAvoidanceFilters(
   profile: Pick<TitleRecord["stimulusProfile"], "peakIntensity" | "stimulusDensity">,
   filters: Pick<SearchFilters, "avoidPeaks" | "avoidDensity">,
 ): boolean {
-  if (filters.avoidPeaks && profile.peakIntensity >= 3) {
+  if (filters.avoidPeaks && profile.peakIntensity >= AVOIDANCE_EXCLUDE_FROM_LEVEL) {
     return false;
   }
 
-  if (filters.avoidDensity && profile.stimulusDensity >= 3) {
+  if (filters.avoidDensity && profile.stimulusDensity >= AVOIDANCE_EXCLUDE_FROM_LEVEL) {
     return false;
   }
 

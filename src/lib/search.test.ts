@@ -49,4 +49,28 @@ describe("catalog search", () => {
       }),
     ).toBe(true);
   });
+
+  it("filters stronger when peak avoidance is active", () => {
+    const results = filterTitles(mockTitles, {
+      q: "",
+      tone: "all",
+      kind: "all",
+      avoidPeaks: true,
+      avoidDensity: false,
+    });
+
+    expect(results.every((item) => item.stimulusProfile.peakIntensity <= 1)).toBe(true);
+  });
+
+  it("filters stronger when density avoidance is active", () => {
+    const results = filterTitles(mockTitles, {
+      q: "",
+      tone: "all",
+      kind: "all",
+      avoidPeaks: false,
+      avoidDensity: true,
+    });
+
+    expect(results.every((item) => item.stimulusProfile.stimulusDensity <= 1)).toBe(true);
+  });
 });

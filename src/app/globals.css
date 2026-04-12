@@ -980,6 +980,20 @@ code {
   gap: 0.55rem;
   margin-right: 1rem;
   color: var(--ink);
+  padding: 0.2rem 0.45rem 0.2rem 0.35rem;
+  border: 1px solid transparent;
+  border-radius: 0.65rem;
+}
+
+.checkbox-group[data-has-active="true"] label.is-active {
+  border-color: rgba(39, 48, 112, 0.24);
+  background: rgba(240, 244, 255, 0.78);
+  color: var(--ink-heading);
+  font-weight: 600;
+}
+
+.checkbox-group[data-has-active="true"] label.is-active input {
+  accent-color: #24338f;
 }
 
 .checkbox-group input {
@@ -1341,6 +1355,13 @@ code {
   font-family: var(--font-heading);
   font-size: clamp(1.6rem, 2.8vw, 2.2rem);
   letter-spacing: -0.015em;
+}
+
+.search-filter-note {
+  margin: 0;
+  color: var(--ink-soft-strong);
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .search-command-stage-sticky {

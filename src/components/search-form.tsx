@@ -87,9 +87,12 @@ export function SearchForm({
             </select>
           </div>
 
-          <fieldset className="checkbox-group checkbox-group-compact checkbox-group-compact-filters">
+          <fieldset
+            className="checkbox-group checkbox-group-compact checkbox-group-compact-filters"
+            data-has-active={filters.avoidPeaks || filters.avoidDensity ? "true" : "false"}
+          >
             <legend>{toneLegend}</legend>
-            <label>
+            <label className={filters.avoidPeaks ? "is-active" : undefined}>
               <input
                 type="checkbox"
                 name="avoidPeaks"
@@ -98,7 +101,7 @@ export function SearchForm({
               />
               {avoidPeaksLabel}
             </label>
-            <label>
+            <label className={filters.avoidDensity ? "is-active" : undefined}>
               <input
                 type="checkbox"
                 name="avoidDensity"
@@ -149,9 +152,12 @@ export function SearchForm({
             </select>
           </div>
 
-          <fieldset className="checkbox-group checkbox-group-compact checkbox-group-compact-filters">
+          <fieldset
+            className="checkbox-group checkbox-group-compact checkbox-group-compact-filters"
+            data-has-active={filters.avoidPeaks || filters.avoidDensity ? "true" : "false"}
+          >
             <legend>{toneLegend}</legend>
-            <label>
+            <label className={filters.avoidPeaks ? "is-active" : undefined}>
               <input
                 type="checkbox"
                 name="avoidPeaks"
@@ -160,7 +166,7 @@ export function SearchForm({
               />
               {avoidPeaksLabel}
             </label>
-            <label>
+            <label className={filters.avoidDensity ? "is-active" : undefined}>
               <input
                 type="checkbox"
                 name="avoidDensity"
@@ -209,9 +215,12 @@ export function SearchForm({
         </div>
       </div>
 
-      <fieldset className="checkbox-group">
+      <fieldset
+        className="checkbox-group"
+        data-has-active={filters.avoidPeaks || filters.avoidDensity ? "true" : "false"}
+      >
         <legend>{toneLegend}</legend>
-        <label>
+        <label className={filters.avoidPeaks ? "is-active" : undefined}>
           <input
             type="checkbox"
             name="avoidPeaks"
@@ -220,7 +229,7 @@ export function SearchForm({
           />
           {avoidPeaksLabel}
         </label>
-        <label>
+        <label className={filters.avoidDensity ? "is-active" : undefined}>
           <input
             type="checkbox"
             name="avoidDensity"
