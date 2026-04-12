@@ -1907,7 +1907,7 @@ code {
 }
 
 .detail-page {
-  gap: 2.35rem;
+  gap: 2.75rem;
   width: min(1080px, 100%);
   margin-inline: auto;
 }
@@ -1930,7 +1930,8 @@ code {
 .detail-hero-copy {
   position: relative;
   display: grid;
-  gap: 1rem;
+  gap: 1.15rem;
+  padding: 0.3rem 0.7rem 0.4rem 1.1rem;
 }
 
 .detail-reading-block {
@@ -1952,7 +1953,7 @@ code {
 }
 
 .metadata-detail-page {
-  gap: 2.6rem;
+  gap: 2.95rem;
 }
 
 .metadata-detail-page .detail-hero {
@@ -1962,8 +1963,8 @@ code {
 }
 
 .metadata-detail-page .detail-hero-copy {
-  gap: 1.2rem;
-  padding: 0.2rem 0.25rem 0.2rem 0;
+  gap: 1.28rem;
+  padding: 0.35rem 0.7rem 0.45rem 1.1rem;
   max-width: 44rem;
 }
 
@@ -2002,13 +2003,13 @@ code {
 
 .detail-reading-followups {
   display: grid;
-  gap: 0.95rem;
+  gap: 1.15rem;
   max-width: 42rem;
   margin-top: 0;
 }
 
 .metadata-detail-page .detail-reading-followups {
-  gap: 1.2rem;
+  gap: 1.3rem;
 }
 
 .reading-support-stack {
@@ -2019,7 +2020,7 @@ code {
 .reading-support-card {
   display: grid;
   gap: 0.42rem;
-  padding: 1rem 1.05rem 1.05rem;
+  padding: 1.15rem 1.2rem 1.2rem;
   border: 1px solid rgba(31, 34, 44, 0.08);
   border-radius: 1rem;
   background: rgba(255, 251, 245, 0.82);
@@ -2095,11 +2096,11 @@ code {
 
 .detail-followups-stack {
   display: grid;
-  gap: 1.35rem;
+  gap: 1.7rem;
 }
 
 .metadata-detail-page .detail-followups-stack {
-  gap: 1.6rem;
+  gap: 1.9rem;
 }
 
 .detail-followup-section,
@@ -2114,9 +2115,9 @@ code {
 
 .detail-callout-panel {
   display: grid;
-  gap: 1.05rem;
+  gap: 1.25rem;
   align-content: start;
-  padding: 1.75rem;
+  padding: 2rem 2.05rem;
   border: 1px solid rgba(31, 34, 44, 0.1);
   border-radius: 1.52rem 1.18rem 1.8rem 1.22rem / 1.15rem 1.6rem 1.28rem 1.74rem;
   background: linear-gradient(180deg, rgba(250, 244, 235, 0.92), rgba(247, 241, 233, 0.88));
@@ -2127,7 +2128,17 @@ code {
 
 .detail-callout-panel .poster-thumb-frame-detail {
   min-height: clamp(18rem, 31vw, 27rem);
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.35rem;
+}
+
+.detail-callout-panel h2,
+.detail-callout-panel p,
+.detail-callout-panel dl {
+  margin: 0;
+}
+
+.detail-callout-panel .detail-list {
+  margin-top: 0.2rem;
 }
 
 .confidence-callout-eyebrow {
@@ -2470,7 +2481,8 @@ code {
 
 .detail-list div {
   display: grid;
-  gap: 0.15rem;
+  gap: 0.3rem;
+  padding-block: 0.2rem;
 }
 
 .detail-list dt {
@@ -2493,7 +2505,7 @@ code {
 
 .watch-provider-panel[data-prominence="featured"] {
   gap: 1.25rem;
-  padding: 1.75rem 1.9rem 1.9rem;
+  padding: 2rem 2.05rem 2.1rem;
   border: 1px solid rgba(31, 34, 44, 0.1);
   border-radius: var(--radius-lg);
   background: rgba(255, 250, 244, 0.94);
@@ -2516,8 +2528,8 @@ code {
 
 .watch-provider-summary {
   display: grid;
-  gap: 0.7rem;
-  padding: 0.15rem 0 0.1rem;
+  gap: 0.8rem;
+  padding: 0.25rem 0 0.2rem;
 }
 
 .watch-provider-summary-region {
@@ -2559,7 +2571,7 @@ code {
 }
 
 .watch-provider-panel[data-prominence="featured"] .watch-provider-grid {
-  gap: 0.95rem;
+  gap: 1.1rem;
   grid-template-columns: repeat(auto-fit, minmax(14.5rem, 1fr));
 }
 
@@ -2573,8 +2585,8 @@ code {
 }
 
 .watch-provider-panel[data-prominence="featured"] .watch-provider-group {
-  gap: 0.55rem;
-  padding: 1rem 1.05rem;
+  gap: 0.65rem;
+  padding: 1.15rem 1.2rem;
   background: rgba(255, 252, 248, 0.9);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86);
 }
@@ -3201,6 +3213,11 @@ code {
 
   .metadata-detail-page {
     gap: 2.15rem;
+  }
+
+  .detail-hero-copy,
+  .metadata-detail-page .detail-hero-copy {
+    padding: 0.15rem 0.35rem 0.3rem 0.5rem;
   }
 
   .detail-reading-block {

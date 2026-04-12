@@ -594,32 +594,6 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
         </aside>
       </header>
 
-      {followupSections.sections.length || followupSections.notices.length ? (
-        <section className="detail-followups-stack" aria-label="Weiterführende Titel">
-          {followupSections.sections.map((section) => (
-            <DetailFollowupSection
-              key={section.id}
-              eyebrow={section.eyebrow}
-              heading={section.title}
-              intro={section.intro}
-              items={section.items}
-              localTitleByExternalKey={followupLocalLookupState.data}
-              writesEnabled={writesEnabled && !followupLocalLookupState.unavailable}
-            />
-          ))}
-          {followupSections.notices.map((notice) => (
-            <StatusPanel
-              key={`followup-${notice.id}`}
-              className="status-panel-inline"
-              headingAs="h3"
-              title={notice.title}
-              text={notice.text}
-              tone={notice.tone}
-            />
-          ))}
-        </section>
-      ) : null}
-
       <section className="detail-grid">
         <section aria-labelledby="profile-heading" className="panel detail-panel-profile">
           <h2 id="profile-heading">Die Einordnung</h2>
@@ -806,6 +780,32 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
           ) : null}
         </section>
       </section>
+
+      {followupSections.sections.length || followupSections.notices.length ? (
+        <section className="detail-followups-stack" aria-label="Weiterführende Titel">
+          {followupSections.sections.map((section) => (
+            <DetailFollowupSection
+              key={section.id}
+              eyebrow={section.eyebrow}
+              heading={section.title}
+              intro={section.intro}
+              items={section.items}
+              localTitleByExternalKey={followupLocalLookupState.data}
+              writesEnabled={writesEnabled && !followupLocalLookupState.unavailable}
+            />
+          ))}
+          {followupSections.notices.map((notice) => (
+            <StatusPanel
+              key={`followup-${notice.id}`}
+              className="status-panel-inline"
+              headingAs="h3"
+              title={notice.title}
+              text={notice.text}
+              tone={notice.tone}
+            />
+          ))}
+        </section>
+      ) : null}
 
       <ExplanationPanel compact />
     </article>

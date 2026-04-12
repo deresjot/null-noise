@@ -502,6 +502,14 @@ export default async function MetadataSpikeDetailPage({
         </aside>
       </header>
 
+      {watchProviderState ? (
+        <WatchProvidersPanel
+          headingLevel="h2"
+          prominence="featured"
+          state={watchProviderState}
+        />
+      ) : null}
+
       {followupState.sections.length || followupState.notices.length ? (
         <section className="detail-followups-stack" aria-label="Weiterführende Titel">
           {followupState.sections.map((section) => (
@@ -526,14 +534,6 @@ export default async function MetadataSpikeDetailPage({
             />
           ))}
         </section>
-      ) : null}
-
-      {watchProviderState ? (
-        <WatchProvidersPanel
-          headingLevel="h2"
-          prominence="featured"
-          state={watchProviderState}
-        />
       ) : null}
 
       {letterboxdState?.kind === "success" ? <LetterboxdPanel state={letterboxdState} /> : null}
