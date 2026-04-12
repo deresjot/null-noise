@@ -12,6 +12,8 @@
     "start": "next start",
     "lint": "eslint .",
     "test:unit": "DATABASE_URL=file:./prisma/test.db NULL_NOISE_SKIP_LEGACY_IMPORT=true npm run db:push && DATABASE_URL=file:./prisma/test.db NULL_NOISE_SKIP_LEGACY_IMPORT=true vitest run --maxWorkers=1",
+    "test:a11y": "playwright test tests/accessibility.spec.ts tests/axe-core-direct.spec.ts",
+    "test:axe-core": "playwright test tests/axe-core-direct.spec.ts",
     "test:e2e": "playwright test"
   },
   "keywords": [
@@ -36,6 +38,7 @@
     "@types/node": "^25.5.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "axe-core": "^4.11.2",
     "eslint": "^9.39.4",
     "eslint-config-next": "^16.2.1",
     "prisma": "^6.19.2",

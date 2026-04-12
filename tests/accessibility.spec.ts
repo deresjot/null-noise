@@ -1,12 +1,118 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { type Page, expect, test } from "@playwright/test";
 
-test("homepage has no detectable axe violations", async ({ page }) => {
-  await page.goto("/");
+type AxeImpact = "critical" | "serious" | "moderate" | "minor";
+
+const emptyImpactCounts: Record<AxeImpact, number> = {
+  critical: 0,
+  serious: 0,
+  moderate: 0,
+  minor: 0,
+};
+
+function summarizeViolations(
+  violations: Awaited<ReturnType<AxeBuilder["analyze"]>>["violations"],
+) {
+  const impactCounts = { ...emptyImpactCounts };
+
+  for (const violation of violations) {
+    const impact = violation.impact;
+
+    if (impact && impact in impactCounts) {
+      impactCounts[impact as AxeImpact] += 1;
+    }
+  }
+
+  return impactCounts;
+}
+
+function formatViolationReport(
+  routeLabel: string,
+  violations: Awaited<ReturnType<AxeBuilder["analyze"]>>["violations"],
+) {
+  const impactCounts = summarizeViolations(violations);
+  const details = violations
+    .map((violation) => {
+      const nodeTargets = violation.nodes
+        .map((node) => node.target.join(" "))
+        .filter(Boolean)
+        .slice(0, 3)
+        .join(" | ");
+
+      return `- ${violation.id} [${violation.impact ?? "unknown"}] ${nodeTargets}`;
+    })
+    .join("\n");
+
+  return [
+    `Axe-Fundstellen auf ${routeLabel}:`,
+    `critical=${impactCounts.critical}, serious=${impactCounts.serious}, moderate=${impactCounts.moderate}, minor=${impactCounts.minor}`,
+    details,
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+async function expectNoAxeViolations(
+  page: Page,
+  path: string,
+  routeLabel: string,
+  readyCheck?: () => Promise<void>,
+) {
+  await page.goto(path);
+  await readyCheck?.();
 
   const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
+  const impactCounts = summarizeViolations(accessibilityScanResults.violations);
 
-  expect(accessibilityScanResults.violations).toEqual([]);
+  await test.info().attach(`axe-${routeLabel}.json`, {
+    body: JSON.stringify(
+      {
+        path,
+        impactCounts,
+        violations: accessibilityScanResults.violations.map((violation) => ({
+          id: violation.id,
+          impact: violation.impact,
+          nodes: violation.nodes.map((node) => node.target),
+        })),
+      },
+      null,
+      2,
+    ),
+    contentType: "application/json",
+  });
+
+  expect(
+    accessibilityScanResults.violations,
+    formatViolationReport(routeLabel, accessibilityScanResults.violations),
+  ).toEqual([]);
+}
+
+test("homepage has no detectable axe violations", async ({ page }) => {
+  await expectNoAxeViolations(page, "/", "home", async () => {
+    await expect(
+      page.getByRole("heading", {
+        name: "Du musst dich nicht auch noch in der Freizeit anschreien lassen.",
+      }),
+    ).toBeVisible();
+  });
+});
+
+test("search page browse state has no detectable axe violations", async ({ page }) => {
+  await expectNoAxeViolations(page, "/suche", "search-browse", async () => {
+    await expect(page.getByRole("heading", { name: "Noch kein Titel im Kopf?" })).toBeVisible();
+  });
+});
+
+test("search page query state has no detectable axe violations", async ({ page }) => {
+  await expectNoAxeViolations(page, "/suche?q=Arrival", "search-arrival", async () => {
+    await expect(page.getByRole("heading", { name: 'Treffer zu „Arrival“' })).toBeVisible();
+  });
+});
+
+test("detail page has no detectable axe violations", async ({ page }) => {
+  await expectNoAxeViolations(page, "/titel/mondfenster", "detail-mondfenster", async () => {
+    await expect(page.getByRole("heading", { name: "Mondfenster" })).toBeVisible();
+  });
 });
 
 test("homepage renders the claim as the main heading", async ({ page }) => {
@@ -124,6 +230,40 @@ test("search field can show TMDb-based suggestions while typing", async ({ page 
   await expect(page.getByRole("button", { name: /Arrival/ })).toBeVisible();
 });
 
+test("search suggestions stay keyboard-reachable without combobox-only behavior", async ({
+  page,
+}) => {
+  await page.route("**/api/search/suggestions?*", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        kind: "success",
+        message: "Vorschläge aus TMDb.",
+        items: [
+          {
+            externalId: "tmdb:movie:329865",
+            title: "Arrival",
+            mediaType: "movie",
+            releaseYear: 2016,
+            source: "tmdb",
+          },
+        ],
+      }),
+    });
+  });
+
+  await page.goto("/");
+
+  const input = page.getByRole("searchbox", { name: "Film oder Serie" });
+  await input.focus();
+  await input.fill("Arr");
+  await expect(page.getByRole("button", { name: /Arrival/ })).toBeVisible();
+
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("button", { name: /Arrival/ })).toBeFocused();
+});
+
 test("search field explains when external suggestions are unavailable", async ({ page }) => {
   let resolveSuggestionsHit: (() => void) | null = null;
   const suggestionsHit = new Promise<void>((resolve) => {
@@ -167,12 +307,30 @@ test("keyboard users can reach and use the skip link", async ({ page }) => {
 
   await page.keyboard.press("Tab");
 
-  const skipLink = page.getByRole("link", { name: "Zum Inhalt springen" });
-  await expect(skipLink).toBeVisible();
-  await expect(skipLink).toBeFocused();
+  const topMenuLink = page.getByRole("link", { name: "Zum Top-Menü springen" });
+  const contentLink = page.getByRole("link", { name: "Zum Inhalt springen" });
+  const footerLink = page.getByRole("link", { name: "Zum Footer springen" });
+
+  await expect(topMenuLink).toBeVisible();
+  await expect(topMenuLink).toBeFocused();
+  await expect(contentLink).toBeVisible();
+  await expect(footerLink).toBeVisible();
+
+  await page.keyboard.press("Tab");
+  await expect(contentLink).toBeFocused();
 
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/#main-content$/);
+
+  await page.goto("/");
+
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Tab");
+  await expect(footerLink).toBeFocused();
+
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/#site-footer$/);
 });
 
 test("explanation page uses native disclosure for deeper help", async ({ page }) => {
@@ -213,8 +371,69 @@ test("footer exposes the current build version and changelog", async ({ page }) 
 test("footer links to the minimal legal pages", async ({ page }) => {
   await page.goto("/");
 
+  await expect(page.getByRole("link", { name: "Barrierefreiheit" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Datenschutz" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Impressum" })).toBeVisible();
+});
+
+test("accessibility page is reachable and explains the current testing scope", async ({ page }) => {
+  await page.goto("/barrierefreiheit");
+  const pageHeader = page.locator(".section-header");
+  const scopePanel = page
+    .locator("section.panel")
+    .filter({ has: page.getByRole("heading", { name: "Wofür diese Erklärung gilt" }) });
+  const statusPanel = page
+    .locator("section.panel")
+    .filter({ has: page.getByRole("heading", { name: "Aktueller Stand" }) });
+  const contactPanel = page
+    .locator("section.panel")
+    .filter({ has: page.getByRole("heading", { name: "Hinweise und Kontakt" }) });
+
+  await expect(page.locator("main h1")).toHaveText("Barrierefreiheit in null-noise");
+  await expect(page.getByRole("heading", { name: "Was automatisiert geprüft wird" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Was manuell geprüft wird" })).toBeVisible();
+  await expect(scopePanel).toContainText("zentralen Nutzungsbereiche");
+  await expect(scopePanel.locator(".field-note")).toContainText("Drittanbietern");
+  await expect(statusPanel).toContainText("BITV-Testverfahrens");
+  await expect(contactPanel).toContainText("mail@sebastianjansen.com");
+  await expect(pageHeader).toContainText("keine formale Konformitätserklärung");
+});
+
+test("core routes avoid horizontal overflow at 320 CSS pixels", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 900 });
+
+  const routes = [
+    {
+      path: "/",
+      ready: () =>
+        page.getByRole("heading", {
+          name: "Du musst dich nicht auch noch in der Freizeit anschreien lassen.",
+        }),
+    },
+    {
+      path: "/suche",
+      ready: () => page.getByRole("heading", { name: "Noch kein Titel im Kopf?" }),
+    },
+    {
+      path: "/suche?q=Arrival",
+      ready: () => page.getByRole("heading", { name: 'Treffer zu „Arrival“' }),
+    },
+    {
+      path: "/titel/mondfenster",
+      ready: () => page.getByRole("heading", { name: "Mondfenster" }),
+    },
+  ];
+
+  for (const route of routes) {
+    await page.goto(route.path);
+    await expect(route.ready()).toBeVisible();
+
+    const overflow = await page.evaluate(() => {
+      return document.documentElement.scrollWidth - document.documentElement.clientWidth;
+    });
+
+    expect(overflow, `${route.path} overflows at 320 CSS pixels`).toBeLessThanOrEqual(1);
+  }
 });
 
 test("legal pages are reachable and keep TMDb attribution separate from the profile logic", async ({

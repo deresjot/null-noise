@@ -2,19 +2,19 @@ import packageJson from "../../package.json";
 
 export const currentBuild = {
   version: packageJson.version,
-  label: "Beta Stabilization Pass",
-  releasedAt: "2026-04-03",
+  label: "Reference Refinement Pass",
+  releasedAt: "2026-04-11",
 };
 
 export const releaseNotes = [
   {
     version: packageJson.version,
-    label: "Beta Stabilization Pass",
-    releasedAt: "2026-04-03",
+    label: "Reference Refinement Pass",
+    releasedAt: "2026-04-11",
     entries: [
-      "Home, Suche, Detailseite und Footer wurden von alten Stilresten, doppelten Flächen und zu lauten Übergangsmodulen befreit.",
-      "Die Copy wurde neu geschrieben und näher an Suche, Tendenz, Status und Aktion gesetzt.",
-      "Das sichtbare Branding wurde auf Wortmarke und einfache Form reduziert; dazu kommt ein ruhiger Löschpfad für lokal angelegte Titel.",
+      "Die Such-/Filter-Sprache auf `/suche` wurde gestrafft und nutzt jetzt ruhigere, direktere Begriffe.",
+      "Die Karten-Erstlesart arbeitet jetzt mit drei festen Segmenten statt einer kleinen Achse; Fokus und Skiplinks wurden robuster vereinheitlicht.",
+      "Das `brand-mark` bewegt sich enger um das Gesicht und bleibt in der Mischwirkung näher an der Wortmarke.",
     ],
   },
   {

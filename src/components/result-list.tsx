@@ -1,9 +1,8 @@
 import Link from "next/link";
 
 import {
+  getCardReadingStatus,
   formatKind,
-  getCompactProfileTendencyLabel,
-  getReadingReasonLine,
   getSearchAggregatePresentation,
   getProfileTendency,
 } from "@/lib/format";
@@ -69,6 +68,7 @@ export function ResultList({
       {titles.map((title) => {
         const tendency = getProfileTendency(title.stimulusProfile);
         const aggregatePresentation = getSearchAggregatePresentation(title.aggregation);
+        const cardReadingStatus = getCardReadingStatus(title.aggregation);
         const localDetailPath = `/titel/${title.external.slug}`;
         const externalDetailPath = getExternalDetailPath(title);
         const detailPath =
@@ -110,36 +110,31 @@ export function ResultList({
                 </h3>
               </header>
 
-              <section className="result-card-reading-block" aria-label="Einordnung">
-                <p className="result-card-reading-kicker">Einordnung</p>
-                <p className="result-card-reading-value">
-                  {getCompactProfileTendencyLabel(tendency.tone)}
-                </p>
+              <div className="result-card-reading-block">
+                <p className="result-card-reading-kicker">Erstlesart</p>
                 <SearchToneScale
-                  caption="Einschätzung"
+                  caption="Erstlesart"
                   emphasis="card"
                   mode={aggregatePresentation.state}
                   showCaption={false}
-                  showValueLabel={false}
+                  showValueLabel
+                  startLabel="ruhiger"
+                  endLabel="intensiver"
                   value={tendency.tone}
-                  valueLabel={getCompactProfileTendencyLabel(tendency.tone)}
+                  valueLabel={tendency.label}
                 />
-                <p className="result-card-reading-reason">{getReadingReasonLine(title.stimulusProfile)}</p>
-                <p className="result-card-reading-status">
-                  <strong>{aggregatePresentation.label}</strong>
-                  <span>{aggregatePresentation.text}</span>
-                </p>
-              </section>
+                <p className="result-card-reading-status">{cardReadingStatus}</p>
+              </div>
 
               <footer className="result-card-footer-zone">
                 <div className="result-card-cta-zone">
-                <Link
-                  aria-label={`${actionLabel === "Details" ? "Titeldaten" : "Einordnung"} zu ${title.external.title} öffnen`}
-                  className={`${actionClassName} result-card-cta-button`}
-                  href={detailPath}
-                >
-                  {actionLabel}
-                </Link>
+                  <Link
+                    aria-label={`${actionLabel === "Details" ? "Titeldaten" : "Einordnung"} zu ${title.external.title} öffnen`}
+                    className={`${actionClassName} result-card-cta-button`}
+                    href={detailPath}
+                  >
+                    {actionLabel}
+                  </Link>
                 </div>
 
                 {showDeleteAction ? (

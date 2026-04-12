@@ -66,8 +66,8 @@ export function getConfidencePresentation(
   if (state === "seed") {
     return {
       eyebrow: "Stand heute",
-      title: "Das ist noch ziemlich offen",
-      text: "Bisher ist das eher eine erste Lesart aus Basisdaten als etwas, das schon trägt.",
+      title: "Kaum Hinweise",
+      text: "Das ist noch eine erste Einschätzung aus Basisdaten. Mehr trägt das gerade nicht.",
     };
   }
 
@@ -105,8 +105,8 @@ export function getConfidencePresentation(
 
   return {
     eyebrow: "Stand heute",
-    title: "Dafür gibt es noch wenig",
-    text: "Bisher gibt es dazu nur sehr wenig, worauf sich das stützen kann.",
+    title: "Kaum Hinweise",
+    text: "Bisher gibt es dazu nur wenig, worauf sich das stützen kann.",
   };
 }
 
@@ -127,8 +127,8 @@ export function getAggregatePresentation(aggregate: RatingAggregate): {
 } {
   if (aggregate.sourceType === "metadata_inference") {
     return {
-      label: "Bisher nur grob gelesen",
-      text: "Bisher sprechen hier nur Basisdaten dafür. Das kann noch deutlich kippen.",
+      label: "Erste Einschätzung",
+      text: "Kaum Hinweise außer Basisdaten. Das kann noch deutlich kippen.",
       chip: "Vorläufig",
       state: "seed",
       basis: "Bisher spricht vor allem die Basis dafür.",
@@ -193,8 +193,8 @@ export function getSearchAggregatePresentation(aggregate: RatingAggregate): {
 } {
   if (aggregate.sourceType === "metadata_inference") {
     return {
-      label: "Bisher nur grob gelesen",
-      text: "Bisher sprechen nur Basisdaten dafür. Eigene Rückmeldungen fehlen noch.",
+      label: "Erste Einschätzung",
+      text: "Kaum Hinweise außer Basisdaten. Eigene Rückmeldungen fehlen noch.",
       chip: "Vorläufig",
       state: "seed",
       basis: "Bisher spricht vor allem die Basis dafür.",
@@ -298,7 +298,7 @@ export function getDecisionPresentation(input: {
     if (input.state === "rated") {
       return {
         title: "Passt gerade gut.",
-        text: "Bisher spricht eher für einen ruhigeren Abend oder einen sanften Einstieg.",
+        text: "Eher ruhig. Das wirkt passend, wenn du gerade wenig Reibung willst.",
         tone: "steady",
       };
     }
@@ -306,14 +306,14 @@ export function getDecisionPresentation(input: {
     if (input.state === "growing") {
       return {
         title: "Kann gut passen.",
-        text: "Wirkt eher ruhig, auch wenn das noch nicht ganz fest ist.",
+        text: "Eher ruhig. Das ist aber noch keine feste Einordnung.",
         tone: "steady",
       };
     }
 
     return {
       title: "Kann gut gehen.",
-      text: "Spricht eher für einen ruhigen Abend, bleibt aber noch ziemlich vorläufig.",
+      text: "Erste Einschätzung: eher ruhig.",
       tone: "steady",
     };
   }
@@ -322,7 +322,7 @@ export function getDecisionPresentation(input: {
     if (input.state === "rated") {
       return {
         title: "Kommt auf die Reserve an.",
-        text: "Nicht ganz leise, aber bisher auch nicht klar zu viel.",
+        text: "Nicht ganz ruhig. Das kann passen, wenn heute etwas Wechsel okay ist.",
         tone: "caution",
       };
     }
@@ -330,14 +330,14 @@ export function getDecisionPresentation(input: {
     if (input.state === "growing") {
       return {
         title: "Könnte passen.",
-        text: "Kann gut gehen, wenn heute etwas Wechsel oder Druck okay ist.",
+        text: "Nicht ganz ruhig. Wenn du wenig Reserve hast, kann das schnell zu viel werden.",
         tone: "caution",
       };
     }
 
     return {
       title: "Lieber mit etwas Reserve.",
-      text: "Hier wäre alles andere zu sicher formuliert. Ruhig ist das eher nicht durchgehend.",
+      text: "Erste Einschätzung: nicht durchgehend ruhig.",
       tone: "caution",
     };
   }
@@ -345,7 +345,7 @@ export function getDecisionPresentation(input: {
   if (input.state === "rated") {
     return {
       title: "Eher nichts für einen ruhigen Abend.",
-      text: "Bisher spricht einiges für dichte oder spitze Momente.",
+      text: "Dicht oder spitz. Das kann schnell zu viel werden.",
       tone: "risk",
     };
   }
@@ -360,7 +360,7 @@ export function getDecisionPresentation(input: {
 
   return {
     title: "Lieber mit etwas Reserve.",
-    text: "Die Startbasis wirkt eher dicht oder spitz. Für einen ruhigen Abend eher riskant.",
+    text: "Erste Einschätzung: eher intensiv. Das kann schnell zu viel werden.",
     tone: "risk",
   };
 }
@@ -404,6 +404,14 @@ export function getCompactProfileTendencyLabel(tone: "ruhig" | "ausgeglichen" | 
   }
 
   return "eher laut";
+}
+
+export function getCardReadingStatus(aggregate: RatingAggregate): string {
+  if (aggregate.sourceType === "metadata_inference" || aggregate.ratingCount === 0) {
+    return "Noch ohne Rückmeldungen";
+  }
+
+  return "Erste Einschätzung";
 }
 
 export function getReadingReasonLine(

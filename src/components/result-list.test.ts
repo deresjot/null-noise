@@ -23,11 +23,14 @@ describe("result list quick scale", () => {
       }),
     );
 
-    expect(html).toContain("Bisher nur grob gelesen");
-    expect(html).toContain("Eigene Rückmeldungen fehlen noch.");
-    expect(html).toContain("eher leise");
-    expect(html).toContain("wenig harte Spitzen");
+    expect(html).toContain("Erstlesart");
+    expect(html).toContain("Noch ohne Rückmeldungen");
+    expect(html).toContain("search-tone-scale-triad");
+    expect(html).toContain("ruhiger");
+    expect(html).toContain("mittig");
+    expect(html).toContain("intensiver");
     expect(html).toContain('data-tone="ruhig"');
     expect(html).toContain("Einordnung lesen");
+    expect(html).not.toContain("wenig harte Spitzen");
   });
 });

@@ -103,10 +103,7 @@ export function TitlePocketActions({
   }
 
   return (
-    <section
-      className={`title-pocket-actions title-pocket-actions-${variant}`}
-      aria-label="Lokal merken"
-    >
+    <div className={`title-pocket-actions title-pocket-actions-${variant}`}>
       {variant === "detail" ? (
         <p className="field-note title-pocket-note">
           Nur in diesem Browser. Ohne Konto und ohne Wolke.
@@ -143,6 +140,6 @@ export function TitlePocketActions({
           {feedback.text}
         </p>
       ) : null}
-    </section>
+    </div>
   );
 }

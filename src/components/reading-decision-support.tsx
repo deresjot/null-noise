@@ -27,9 +27,9 @@ export function ReadingDecisionSupport({
     <section className="reading-support-stack" aria-label="Entscheidungshilfe">
       <section className="reading-support-card" data-tone={decision.tone} aria-labelledby="reading-decision-heading">
         <p className="reading-support-kicker">Passt das gerade?</p>
-        <h3 id="reading-decision-heading" className="reading-support-title">
+        <h2 id="reading-decision-heading" className="reading-support-title">
           {decision.title}
-        </h3>
+        </h2>
         <p className="reading-support-text">{decision.text}</p>
       </section>
 

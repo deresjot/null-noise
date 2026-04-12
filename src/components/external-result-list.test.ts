@@ -26,15 +26,18 @@ describe("external result list poster rendering", () => {
       }),
     );
 
-    expect(html).toContain("Bisher nur grob gelesen");
-    expect(html).toContain("zwischen leise und laut");
+    expect(html).toContain("Erstlesart");
+    expect(html).toContain("Noch ohne Rückmeldungen");
     expect(html).toContain("result-card-reading-block");
-    expect(html).toContain("Eigene Rückmeldungen fehlen noch.");
-    expect(html).toContain("zwischen ruhigeren und dichteren Momenten");
+    expect(html).toContain("search-tone-scale-triad");
+    expect(html).toContain("ruhiger");
+    expect(html).toContain("mittig");
+    expect(html).toContain("intensiver");
     expect(html).toContain("poster-thumb-frame");
     expect(html).toContain("Details");
     expect(html).toContain("Lokales Anlegen liegt erst auf der Detailseite.");
     expect(html).not.toContain("Lokal anlegen");
+    expect(html).not.toContain("zwischen ruhigeren und dichteren Momenten");
   });
 
   it("renders a fallback poster tile when no poster is available", () => {
@@ -83,7 +86,7 @@ describe("external result list poster rendering", () => {
     );
 
     expect(html).toContain('href="/titel/arrival-2016"');
-    expect(html).toContain("Schon lokal");
+    expect(html).toContain("Erste Einschätzung");
     expect(html).toContain("Einordnung lesen");
     expect(html).not.toContain("Lokal anlegen");
   });
@@ -109,7 +112,7 @@ describe("external result list poster rendering", () => {
     );
 
     expect(html).toContain("Diese Instanz bleibt gerade lesend.");
-    expect(html).toContain("Bisher nur grob gelesen");
+    expect(html).toContain("Noch ohne Rückmeldungen");
     expect(html).toContain("Details");
     expect(html).not.toContain("Lokal anlegen");
     expect(html).not.toContain('action="/api/local-titles"');

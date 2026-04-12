@@ -9,6 +9,11 @@ interface SearchFormProps {
   submitLabel?: string;
 }
 
+const toneLegend = "Optional eingrenzen";
+const avoidPeaksLabel = "Möglichst ohne harte Spitzen";
+const avoidDensityLabel = "Dichte Klangflächen vermeiden";
+const titlePlaceholder = "z. B. Arrival, The Bear oder Past Lives";
+
 export function SearchForm({
   action,
   filters,
@@ -28,7 +33,7 @@ export function SearchForm({
           defaultValue={filters.q}
           key={`search-query-${filters.q}`}
           label="Film oder Serie"
-          placeholder="z. B. Arrival, The Bear oder Past Lives"
+          placeholder={titlePlaceholder}
         />
         <input type="hidden" name="tone" value={filters.tone} />
         <input type="hidden" name="kind" value={filters.kind} />
@@ -55,7 +60,7 @@ export function SearchForm({
             defaultValue={filters.q}
             key={`search-query-${filters.q}`}
             label="Titel"
-            placeholder="z. B. Arrival, The Bear oder Past Lives"
+            placeholder={titlePlaceholder}
           />
           <button className="primary-button search-submit-button" type="submit">
             {submitLabel}
@@ -83,7 +88,7 @@ export function SearchForm({
           </div>
 
           <fieldset className="checkbox-group checkbox-group-compact checkbox-group-compact-filters">
-            <legend>Möglichst ohne</legend>
+            <legend>{toneLegend}</legend>
             <label>
               <input
                 type="checkbox"
@@ -91,7 +96,7 @@ export function SearchForm({
                 value="true"
                 defaultChecked={filters.avoidPeaks}
               />
-              Harte Spitzen
+              {avoidPeaksLabel}
             </label>
             <label>
               <input
@@ -100,7 +105,7 @@ export function SearchForm({
                 value="true"
                 defaultChecked={filters.avoidDensity}
               />
-              Dichte Klangflächen
+              {avoidDensityLabel}
             </label>
           </fieldset>
         </div>
@@ -122,7 +127,7 @@ export function SearchForm({
             defaultValue={filters.q}
             key={`search-query-${filters.q}`}
             label="Titel"
-            placeholder="Titel ändern"
+            placeholder={titlePlaceholder}
           />
 
           <div className="field-group field-group-tone">
@@ -145,7 +150,7 @@ export function SearchForm({
           </div>
 
           <fieldset className="checkbox-group checkbox-group-compact checkbox-group-compact-filters">
-            <legend>Möglichst ohne</legend>
+            <legend>{toneLegend}</legend>
             <label>
               <input
                 type="checkbox"
@@ -153,7 +158,7 @@ export function SearchForm({
                 value="true"
                 defaultChecked={filters.avoidPeaks}
               />
-              Harte Spitzen
+              {avoidPeaksLabel}
             </label>
             <label>
               <input
@@ -162,7 +167,7 @@ export function SearchForm({
                 value="true"
                 defaultChecked={filters.avoidDensity}
               />
-              Dichte Klangflächen
+              {avoidDensityLabel}
             </label>
           </fieldset>
 
@@ -180,6 +185,7 @@ export function SearchForm({
         defaultValue={filters.q}
         key={`search-query-${filters.q}`}
         label="Titel"
+        placeholder={titlePlaceholder}
       />
 
       <div className="field-row">
@@ -204,7 +210,7 @@ export function SearchForm({
       </div>
 
       <fieldset className="checkbox-group">
-        <legend>Möglichst ohne</legend>
+        <legend>{toneLegend}</legend>
         <label>
           <input
             type="checkbox"
@@ -212,7 +218,7 @@ export function SearchForm({
             value="true"
             defaultChecked={filters.avoidPeaks}
           />
-          Harte Spitzen
+          {avoidPeaksLabel}
         </label>
         <label>
           <input
@@ -221,7 +227,7 @@ export function SearchForm({
             value="true"
             defaultChecked={filters.avoidDensity}
           />
-          Dichte Klangflächen
+          {avoidDensityLabel}
         </label>
       </fieldset>
 

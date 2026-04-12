@@ -4,7 +4,7 @@ import { currentBuild, releaseNotes } from "@/lib/release-info";
 
 export function SiteFooter() {
   return (
-    <footer className="site-footer">
+    <footer className="site-footer" id="site-footer">
       <div className="shell footer-stage">
         <section className="footer-atmosphere" aria-labelledby="privacy-summary-heading">
           <div className="footer-signoff">
@@ -20,6 +20,7 @@ export function SiteFooter() {
             <Link href="/suche">Suche</Link>
             <Link href="/erklaerung">Lesart</Link>
             <Link href="/bedienung">Hilfe</Link>
+            <Link href="/barrierefreiheit">Barrierefreiheit</Link>
             <Link href="/datenschutz">Datenschutz</Link>
             <Link href="/impressum">Impressum</Link>
           </div>

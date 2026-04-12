@@ -36,7 +36,8 @@ export default function DatenschutzPage() {
         <section className="panel" aria-labelledby="privacy-tech-heading">
           <h2 id="privacy-tech-heading">Technische Einbindung</h2>
           <ul className="plain-list">
-            <li>Schriften bleiben lokal oder als Systemschrift eingebunden.</li>
+            <li>Es werden keine Tracking- oder Analyse-Skripte eingebunden.</li>
+            <li>Für die Wortmarke kann zusätzlich ein externes Schrift-Stylesheet geladen werden; die Nutzung bleibt auch ohne diese Schrift möglich.</li>
             <li>Externe Verweise sind normale Links; Daten werden erst beim aktiven Klick übertragen.</li>
             <li>Poster und Titeldaten von TMDb bleiben reiner Metadatenkontext und ersetzen kein Reizprofil.</li>
             <li>Es kommen keine Tracking-Tools, Analyse-Skripte oder Werbe-Cookies zum Einsatz.</li>

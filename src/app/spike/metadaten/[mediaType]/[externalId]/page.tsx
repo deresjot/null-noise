@@ -13,7 +13,9 @@ import { WatchProvidersPanel } from "@/components/watch-providers-panel";
 import {
   getAggregatePresentation,
   getCautionHints,
+  getConfidencePresentation,
   getDecisionPresentation,
+  formatRatingCount,
   getSearchAggregatePresentation,
   getProfileTendency,
 } from "@/lib/format";
@@ -263,6 +265,13 @@ export default async function MetadataSpikeDetailPage({
   const aggregatePresentation = localTitle
     ? getAggregatePresentation(localTitle.aggregation)
     : getSearchAggregatePresentation(preview.aggregation);
+  const confidencePresentation = localTitle
+    ? getConfidencePresentation(localTitle.aggregation, aggregatePresentation.state)
+    : {
+        eyebrow: "Stand heute",
+        title: "Kaum Hinweise",
+        text: "Das ruht hier erst auf Basisdaten und einer vorsichtigen Erstlesart. Eine eigene Seite kommt erst danach.",
+      };
   const activeProfile = localTitle ? localTitle.stimulusProfile : preview.stimulusProfile;
   const tendency = getProfileTendency(activeProfile);
   const decision = getDecisionPresentation({
@@ -274,6 +283,7 @@ export default async function MetadataSpikeDetailPage({
     ? `/spike/metadaten/${item.mediaType}/${item.sourceId}?q=${encodeURIComponent(query)}`
     : `/spike/metadaten/${item.mediaType}/${item.sourceId}`;
   const canonicalDetailPath = `/spike/metadaten/${item.mediaType}/${item.sourceId}`;
+  const localDetailPath = localTitleSlug ? `/titel/${localTitleSlug}` : null;
   const titlePocketEntry = buildTitlePocketEntryFromMetadata(item, {
     href: canonicalDetailPath,
     profile: activeProfile,
@@ -424,26 +434,58 @@ export default async function MetadataSpikeDetailPage({
           </p>
         </div>
 
-        <aside
-          className="panel panel-emphasis detail-callout-panel"
-          aria-labelledby="detail-spike-heading"
-        >
-          <h2 id="detail-spike-heading">Nur ansehen, dann entscheiden</h2>
+        <aside className="detail-callout-panel" aria-labelledby="detail-spike-heading">
           <ResultPoster
             priority
             src={getTmdbPosterProxyPath(item.posterPath, "original")}
             title={item.title}
             variant="detail"
           />
-          <p>{state.message}</p>
-          {canCreateLocalTitle ? (
-            <form action="/api/local-titles" className="external-import-form" method="post">
+          <p className="eyebrow">Stand heute</p>
+          <h2 id="detail-spike-heading">Worauf das gerade ruht</h2>
+          <p className="confidence-callout-eyebrow">{confidencePresentation.eyebrow}</p>
+          <p className="confidence-callout-title">{confidencePresentation.title}</p>
+          <p>{confidencePresentation.text}</p>
+
+          <dl className="detail-list">
+            <div>
+              <dt>Status</dt>
+              <dd>{aggregatePresentation.label}</dd>
+            </div>
+            <div>
+              <dt>Grundlage</dt>
+              <dd>{localTitle ? "Eigene Seite plus vorhandene Rückmeldungen" : "Erstlesart aus Basisdaten"}</dd>
+            </div>
+            <div>
+              <dt>Quelle</dt>
+              <dd>{formatMetadataSpikeSource(item.externalSource)}</dd>
+            </div>
+            <div>
+              <dt>Rückmeldungen</dt>
+              <dd>
+                {localTitle ? formatRatingCount(localTitle.aggregation.ratingCount) : "Noch keine eigene Seite"}
+              </dd>
+            </div>
+          </dl>
+
+          {localDetailPath ? (
+            <p className="detail-callout-action">
+              <Link className="secondary-button-link" href={localDetailPath}>
+                Zur eigenen Seite
+              </Link>
+            </p>
+          ) : canCreateLocalTitle ? (
+            <form
+              action="/api/local-titles"
+              className="external-import-form detail-callout-action"
+              method="post"
+            >
               <input type="hidden" name="source" value={item.externalSource} />
               <input type="hidden" name="mediaType" value={item.mediaType} />
               <input type="hidden" name="sourceId" value={String(item.sourceId)} />
               <input type="hidden" name="q" value={query} />
               <input type="hidden" name="returnPath" value={returnPath} />
-              <button className="primary-button result-card-action-link" type="submit">
+              <button className="secondary-button-link result-card-action-link" type="submit">
                 Lokal anlegen
               </button>
             </form>
@@ -452,6 +494,7 @@ export default async function MetadataSpikeDetailPage({
           ) : (
             <p className="field-note">Diese Instanz bleibt gerade lesend. Nur ansehen geht trotzdem.</p>
           )}
+          <p className="field-note">{state.message}</p>
           <p className="field-note">
             Basisdaten von {formatMetadataSpikeSource(item.externalSource)}. Die lokale Seite kommt
             erst danach.

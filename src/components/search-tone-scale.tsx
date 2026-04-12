@@ -2,6 +2,11 @@ type SearchToneScaleValue = "ruhig" | "ausgeglichen" | "intensiv" | null;
 type SearchToneScaleMode = "rated" | "growing" | "seed" | "pending";
 type SearchToneScaleEmphasis = "default" | "card" | "hero";
 const toneMeterSegments = 12;
+const cardToneSegments = [
+  { key: "ruhig", label: "ruhiger" },
+  { key: "ausgeglichen", label: "mittig" },
+  { key: "intensiv", label: "intensiver" },
+] as const;
 
 interface SearchToneScaleProps {
   caption?: string;
@@ -70,27 +75,42 @@ export function SearchToneScale({
 
       <div className="search-tone-scale-core">
         <div className="search-tone-scale-signal" aria-hidden="true">
-          <div className="search-tone-scale-bar">
-            {Array.from({ length: toneMeterSegments }, (_, index) => {
-              const zone = index < 4 ? "ruhig" : index < 8 ? "ausgeglichen" : "intensiv";
-              return (
+          {emphasis === "card" ? (
+            <div className="search-tone-scale-triad" data-tone={value ?? "pending"}>
+              {cardToneSegments.map((segment) => (
                 <span
-                  key={index}
-                  className="search-tone-scale-segment"
-                  data-active={index < filledSegments ? "true" : "false"}
-                  data-edge={filledSegments > 0 && index === filledSegments - 1 ? "true" : "false"}
-                  data-zone={zone}
-                />
-              );
-            })}
-          </div>
-          {compact ? null : (
-          <div className="search-tone-scale-axis-copy">
+                  key={segment.key}
+                  className="search-tone-scale-triad-segment"
+                  data-active={value === segment.key ? "true" : "false"}
+                  data-tone={segment.key}
+                >
+                  {segment.label}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <div className="search-tone-scale-bar">
+              {Array.from({ length: toneMeterSegments }, (_, index) => {
+                const zone = index < 4 ? "ruhig" : index < 8 ? "ausgeglichen" : "intensiv";
+                return (
+                  <span
+                    key={index}
+                    className="search-tone-scale-segment"
+                    data-active={index < filledSegments ? "true" : "false"}
+                    data-edge={filledSegments > 0 && index === filledSegments - 1 ? "true" : "false"}
+                    data-zone={zone}
+                  />
+                );
+              })}
+            </div>
+          )}
+          {compact || emphasis === "card" ? null : (
+            <div className="search-tone-scale-axis-copy">
               <span>{startLabel}</span>
               <span>{endLabel}</span>
-          </div>
-        )}
-      </div>
+            </div>
+          )}
+        </div>
 
         {!compact && note ? <p className="field-note search-tone-scale-note">{note}</p> : null}
       </div>

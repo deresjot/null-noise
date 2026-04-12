@@ -326,7 +326,7 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
     if (titleUnavailable) {
       return (
         <article className="section-stack">
-          <header className="detail-hero page-bleed">
+          <header className="detail-hero">
             <div className="detail-hero-copy">
               <p className="eyebrow">Lokaler Stand</p>
               <h1>Der lokale Titelstand ist gerade nicht erreichbar</h1>
@@ -479,14 +479,14 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
         />
       ) : null}
 
-      <header className="detail-hero page-bleed">
+      <header className="detail-hero">
         <div className="detail-hero-copy">
           <p className="eyebrow">
             {`${formatKind(title.external.kind)} · ${title.external.year ?? "Jahr offen"}`}
           </p>
           <h1>{title.external.title}</h1>
-          <section className="detail-reading-block" aria-label="Einordnung">
-            <p className="detail-reading-kicker">Einordnung</p>
+          <section className="detail-reading-block" aria-label="Erstlesart">
+            <p className="detail-reading-kicker">Erstlesart</p>
             <p className="detail-hero-tendency">{profileTendency.label}</p>
             <SearchToneScale
               caption="Leise bis laut"

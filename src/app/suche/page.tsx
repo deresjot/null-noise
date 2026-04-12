@@ -311,7 +311,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       ) : null}
 
       <section className="search-results-layout">
-        <section aria-labelledby="results-heading" className="search-results-main">
+        <div className="search-results-main">
           {showBrowseState ? (
             <section className="search-browse-state" aria-labelledby="results-heading">
               <header className="search-results-overview search-browse-intro">
@@ -477,9 +477,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               </section>
             </>
           )}
-        </section>
+        </div>
 
-        <aside className="search-sidebar">
+        <div className="search-sidebar">
           <section
             className="search-command-stage search-command-stage-sticky search-module-surface"
             aria-labelledby="search-refinement-heading"
@@ -487,13 +487,11 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             <div className="search-stage-copy">
               <p className="eyebrow">Suche ändern</p>
               <h2 id="search-refinement-heading">Suche und Filter</h2>
-              <p className="field-note search-results-context">
-                Ein Titelfeld, zwei Auswahlen, zwei Häkchen. Mehr wird es hier nicht.
-              </p>
+              <p className="field-note search-results-context">Finde etwas, das gerade passt.</p>
             </div>
             <SearchForm action="/suche" filters={filters} submitLabel="Suchen" variant="stage" />
           </section>
-        </aside>
+        </div>
       </section>
     </section>
   );

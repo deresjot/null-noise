@@ -2,6 +2,16 @@
 
 Diese Datei ergänzt das MVP-Konzept um eine belastbare Auswahl- und Validierungslogik für barrierearme UI-Bausteine. Grundsatz für `null-noise`: Wir übernehmen keine Bibliothek als Ganzes, sondern orientieren uns an guten, dokumentierten Mustern und setzen im MVP bevorzugt native HTML-Semantik mit dünnen lokalen Komponenten um.
 
+Die Prüfung dieser Bausteine orientiert sich an WCAG 2.2 und an den öffentlich dokumentierten Prüfansätzen des BITV-Testverfahrens. Automatisierung ist dabei nur ein Teil der Absicherung.
+
+Seit dem Accessibility-Härtungspass vom 11. April 2026 wird diese Datei durch vier ergänzende Referenzdokumente flankiert:
+
+- [a11y-principles.md](./a11y-principles.md)
+- [a11y-testing.md](./a11y-testing.md)
+- [ux-principles.md](./ux-principles.md)
+- [product-principles.md](./product-principles.md)
+- [reference-goals.md](./reference-goals.md)
+
 ## Zielbild
 
 Die UI soll ruhig, verständlich und funktional sein. Sie darf nicht wie ein aus Einzelteilen zusammengesetztes Framework wirken und keine versteckten Interaktionsmuster mitbringen. Komponenten müssen für die konkrete Nutzung in `null-noise` geeignet sein, nicht nur auf Demo-Seiten gut aussehen.
@@ -34,6 +44,11 @@ Inclusive Components ist für `null-noise` vor allem eine Pattern-Referenz. Die 
 - Menüs: Seitennavigation bleibt eine Liste von Links und wird nicht als ARIA-Menu nachgebaut
 - Hilfen: Wenn Zusatzhilfe später punktuell gebraucht wird, ist ein explizites Toggletip-Muster denkbar; klassische Tooltip-Muster auf Hover-Basis sind für `null-noise` ausgeschlossen
 
+Praktische Präzisierung seit dieser Runde:
+
+- `details` und `summary` sind für `null-noise` nicht nur ein semantischer, sondern auch ein Testbarkeitsvorteil
+- Hover- und Fokus-Popups bleiben bewusst die Ausnahme, weil sie schneller in Konflikt mit Vorhersehbarkeit, Vergrößerung und WCAG-1.4.13-Anforderungen geraten
+
 Diese Ableitungen helfen uns, "moderne" UI-Abkürzungen zu vermeiden, wenn sie Orientierung, Semantik oder Tastaturbedienung verschlechtern würden.
 
 ## Ableitung für das MVP
@@ -46,6 +61,12 @@ Entscheidung für Phase 1 und 2:
 - Server-rendered Interaktion, damit Kernfunktionen auch ohne clientseitiges JavaScript sinnvoll bleiben
 
 Das ist kein Dogma. Es ist eine Produktentscheidung für ein ruhiges, erklärbares MVP mit möglichst wenig versteckter Komplexität.
+
+Zusätzlich gilt seit dieser Runde:
+
+- kein separater HTML-Sondermodus als Paralleloberfläche
+- die Standard-UI selbst ist der barrierearme Primärpfad
+- Reduktion wird zuerst im bestehenden Muster gesucht, nicht in einer zweiten Oberfläche
 
 ## Komponenten-Policy
 
@@ -105,7 +126,8 @@ Jede übernommene oder inspirierte Komponente wird nicht nur optisch, sondern fu
 
 Automatisierung in dieser Basis:
 
-- `axe-core` via Playwright für schnelle Accessibility-Smoke-Checks
+- `@axe-core/playwright` für wiederholbare Accessibility-Smoke-Checks auf den Kernrouten `/`, `/suche`, `/suche?q=Arrival` und `/titel/mondfenster`
+- zusätzlicher direkter `axe-core`-Lauf mit injiziertem `axe.min.js`, damit der Engine-Pfad auch ohne den Playwright-Wrapper prüfbar bleibt
 - Build- und Lint-Prüfung für strukturelle Regressionen
 
 Manuell verpflichtend vor Ausbau komplexerer Widgets:
@@ -123,7 +145,7 @@ Die erste Basis folgt dieser Strategie bereits:
 - `SearchPage` im leeren Zustand: zwei semantisch getrennte Browse-Bereiche mit echten Listen statt Carousel- oder Mischlogik
 - `ResultList`: semantische Trefferliste mit breiteren Tile-Artikeln statt schmalen App-Karten; Poster, Titelzone, Erstlesart und Aktionen sind als getrennte Leseblöcke aufgebaut
 - `ExternalResultList`: dieselbe Tile-Sprache für externe TMDb-Titel, klar getrennt vom lokalen Stand und ohne Mischliste aus Browse und Suche
-- `SearchToneScale`: gemeinsame, textlich beschriftete `leise ↔ laut`-Achse für Karten und Detailseiten als passive Pegelanzeige statt gauge-, KPI- oder sliderartiger Spezialwidgets
+- `SearchToneScale`: Detailseiten nutzen weiter eine textlich beschriftete ruhige Pegelanzeige; Karten arbeiten dagegen reduzierter mit Achse und Marker als Vorschau statt mit zweiter Erklärungsebene
 - `ProfileScale`: textlich beschriebene Skalen plus visuelle Hilfsanzeige
 - `ExplanationPanel`: direkt sichtbare Erklärung statt versteckter Tooltip-Mechanik
 - `ReadingEvidenceDetails`: nativer `details`-/`summary`-Block für die Frage `Worauf basiert das?`, damit Vertiefung im Produkt erklärbar bleibt, ohne neue Custom-Accordion-Logik aufzubauen

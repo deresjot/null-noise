@@ -1,10 +1,94 @@
 # null-noise: Projektzusammenfassung
 
-Stand: Version `0.8.3` am 5. April 2026
+Stand: Version `0.8.3` am 11. April 2026
 
 ## Aktueller Hinweis
 
-Die jüngste Runde war ein mehrstufiger Produkt- und UI-Ausbau auf dem bestehenden Stand:
+Konsolidierungs- und Release-Pass (12. April 2026):
+
+- Startseite und Sucheinstieg wurden visuell beruhigt und klarer gewichtet, der Eingabebereich wurde als Primäraktion lesbarer gemacht.
+- Instabile Bewegungswirkung wurde reduziert: kein layoutverändernder Hero-Shift mehr bei Fokus, ruhigere Flächen ohne Scroll-Jitter.
+- `brand-mark` wurde wieder präsenter gemacht, mit klarerer Gesichtslesbarkeit und kleiner Bewegungsreichweite.
+- Erstlesart in Suchkarten bleibt jetzt eindeutig Anzeige statt scheinbares Control; Kartenabstände und Innenräume wurden entzerrt.
+- Lokale und Spike-Detailseite wurden über Breite/Zonierung vereinheitlicht (kein `page-bleed` mehr im Detail-Hero).
+- `/barrierefreiheit` wurde inhaltlich gestrafft und neutralisiert, Tests dafür wurden auf die bereinigte Struktur angepasst.
+
+Die aktuelle Runde war ein kleiner UI-/UX-Pass auf dem vorhandenen Referenzstand:
+
+- Such-/Filter-Block geschärft:
+  - die Sidebar auf `/suche` spricht jetzt knapper und nutzungsorientierter
+  - technisch klingende Erklärzeilen wurden entfernt
+  - Filtertexte wurden auf `Optional eingrenzen`, `Möglichst ohne harte Spitzen` und `Dichte Klangflächen vermeiden` umgestellt
+- Karten-Erstlesart sichtbar neu gefasst:
+  - statt der schwachen Achse nutzen Karten jetzt eine ruhige segmentierte 3er-Logik
+  - `ruhiger`, `mittig` und `intensiver` sind direkt auf der Vorschau lesbar
+  - die Statuszeile bleibt kurz bei `Erste Einschätzung` oder `Noch ohne Rückmeldungen`
+- Fokus und Skiplinks vereinheitlicht:
+  - globaler doppelter Fokusstil aus heller und dunkler Linie
+  - drei Skiplinks für Top-Menü, Inhalt und Footer
+  - Fokuszustände greifen jetzt konsistenter über Links, Buttons, Felder und Summary-Elemente
+- `brand-mark` weiter beruhigt:
+  - die Shapes driften weniger weit
+  - ein Shape bleibt stärker bei den Augen, eines beim Mund, nur eines bleibt freier
+  - die Mischwirkung bleibt näher an der Wortmarke
+
+Die aktuelle Runde war ein gezielter Konsolidierungs- und Referenzpass auf dem vorhandenen Stand:
+
+- manuelle Accessibility jetzt expliziter:
+  - der manuelle Prüfpfad für `/`, `/suche`, `/suche?q=Arrival` und `/titel/mondfenster` ist jetzt dokumentiert und fester Teil der Referenzdoku
+  - die Trennung zwischen automatisiert belastbar und bewusst manuell zu prüfen ist klarer beschrieben
+- eigene Seite `Barrierefreiheit` ergänzt:
+  - erreichbar über den Footer unter `/barrierefreiheit`
+  - beschreibt Geltungsbereich, aktuellen Stand, automatisierte und manuelle Prüfung, Grenzen und Kontaktweg
+  - formuliert bewusst keine ungesicherte BFSG-Vollbehauptung
+- Kontrast- und Reflow-Nachzug:
+  - kleine Home-Hero-Texte auf grünem Grund wurden kontraststärker gemacht
+  - horizontales Overflow auf Kernseiten bei `320 CSS-Pixeln` wurde bereinigt
+  - ein kleiner Reflow-Smoke-Test deckt diese Regression jetzt zusätzlich automatisiert ab
+- Referenzcharakter geschärft:
+  - neue Datei `docs/reference-goals.md`
+  - die Entscheidung gegen einen separaten HTML-Sondermodus ist jetzt ausdrücklich dokumentiert
+
+Wichtige zusätzliche Referenzpunkte:
+
+- [docs/reference-goals.md](./reference-goals.md)
+- [src/app/barrierefreiheit/page.tsx](../src/app/barrierefreiheit/page.tsx)
+
+Die jüngste Runde war kein Feature-Ausbau, sondern ein gezielter Accessibility- und UX-Härtungspass auf dem bestehenden Stand:
+
+- Accessibility systematisiert:
+  - `@axe-core/playwright` prüft jetzt die vier Kernrouten `/`, `/suche`, `/suche?q=Arrival` und `/titel/mondfenster`
+  - zusätzlich läuft ein direkter `axe-core`-Pfad, der `axe.min.js` injiziert und `axe.run()` ohne Playwright-Wrapper gegen dieselben Routen ausführt
+  - die Testausgabe wird strukturiert nach `critical`, `serious`, `moderate`, `minor` erfasst
+  - zusätzlich gibt es einen kleinen Keyboard-Smoke-Test für erreichbare Suchvorschläge
+- direkte A11y-Fixes aus dem Browser-Audit:
+  - Landmark-Dopplungen in Suche und Kartenstruktur wurden entfernt
+  - der Skip-Link liegt jetzt innerhalb des Header-Landmarks
+  - die Heading-Reihenfolge auf der Detailseite wurde bereinigt
+  - kleine Kontrastprobleme in Browse-, Followup- und Detail-Metatexten wurden nachgezogen
+  - übergriffige ARIA am Suchfeld wurde vereinfacht, damit die Oberfläche kein komplexeres Combobox-Verhalten behauptet als sie tatsächlich bietet
+- UX für schnelle Überforderung geschärft:
+  - die Detailseite benennt die primäre Aussage jetzt konsequent als `Erstlesart`
+  - `Passt das gerade?` wurde textlich auf kurze, direktere Entscheidungssätze reduziert
+  - Unsicherheit wird deutlicher und alltagssprachlicher markiert, etwa über `Erste Einschätzung` und `Kaum Hinweise`
+- Referenz-Doku ausgebaut:
+  - neue Dateien:
+    - `docs/a11y-principles.md`
+    - `docs/a11y-testing.md`
+    - `docs/ux-principles.md`
+    - `docs/product-principles.md`
+    - `docs/reference-goals.md`
+  - bestehende Doku-Dateien wurden auf diesen Stand nachgezogen
+
+Wichtige neue Referenzpunkte:
+
+- [docs/a11y-principles.md](./a11y-principles.md)
+- [docs/a11y-testing.md](./a11y-testing.md)
+- [docs/ux-principles.md](./ux-principles.md)
+- [docs/product-principles.md](./product-principles.md)
+- [docs/reference-goals.md](./reference-goals.md)
+
+Die vorherige größere Phase war ein mehrstufiger Produkt- und UI-Ausbau auf dem bestehenden Stand:
 
 - Finaler Deploy-Readiness-Pass auf dem aktuellen Stand:
   - der Launch-Scope wurde noch einmal auf die belastbaren Kernpfade reduziert: Home, Suche, kurze Queries, Detailseite, Erstlesart, `Passt das gerade?` und ehrliche Fallbacks

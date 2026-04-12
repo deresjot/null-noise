@@ -46,7 +46,6 @@ export function SearchQueryField({
 }: SearchQueryFieldProps) {
   const inputId = useId();
   const statusId = useId();
-  const listId = useId();
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -175,8 +174,6 @@ export function SearchQueryField({
         value={query}
         placeholder={placeholder}
         autoComplete="off"
-        aria-autocomplete="list"
-        aria-controls={shouldShowSuggestions ? listId : undefined}
         aria-describedby={statusMessage ? statusId : undefined}
         onChange={(event) => handleChange(event.target.value)}
         onKeyDown={(event) => {
@@ -197,7 +194,7 @@ export function SearchQueryField({
           {suggestions.length ? (
             <>
               <p className="search-suggestions-label">Vorschläge</p>
-              <ul className="search-suggestions-list" id={listId}>
+              <ul className="search-suggestions-list">
                 {suggestions.map((item) => (
                   <li key={item.externalId}>
                     <button

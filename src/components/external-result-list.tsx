@@ -1,8 +1,7 @@
 import Link from "next/link";
 
 import {
-  getCompactProfileTendencyLabel,
-  getReadingReasonLine,
+  getCardReadingStatus,
   getSearchAggregatePresentation,
   getProfileTendency,
 } from "@/lib/format";
@@ -225,6 +224,9 @@ export function ExternalResultList({
         const tendency = getProfileTendency(preview.stimulusProfile);
         const aggregatePresentation = getSearchAggregatePresentation(preview.aggregation);
         const localPath = getLocalTitlePath(item, localTitleByExternalKey);
+        const cardReadingStatus = localPath
+          ? "Erste Einschätzung"
+          : getCardReadingStatus(preview.aggregation);
         const detailPath = localPath ?? getExternalDetailPath(item, query);
         const pocketEntry = buildTitlePocketEntryFromMetadata(item, {
           href: detailPath,
@@ -262,35 +264,21 @@ export function ExternalResultList({
                 </h3>
               </header>
 
-              <section
-                className="result-card-reading-block"
-                aria-label={localPath ? "Einordnung" : "Erstlesart"}
-              >
-                <p className="result-card-reading-kicker">{localPath ? "Einordnung" : "Erstlesart"}</p>
-                <p className="result-card-reading-value">
-                  {getCompactProfileTendencyLabel(tendency.tone)}
-                </p>
+              <div className="result-card-reading-block">
+                <p className="result-card-reading-kicker">Erstlesart</p>
                 <SearchToneScale
-                  caption={localPath ? "Einordnung" : "Erstlesart"}
+                  caption="Erstlesart"
                   emphasis="card"
                   mode={aggregatePresentation.state}
                   showCaption={false}
-                  showValueLabel={false}
+                  showValueLabel
+                  startLabel="ruhiger"
+                  endLabel="intensiver"
                   value={tendency.tone}
-                  valueLabel={getCompactProfileTendencyLabel(tendency.tone)}
+                  valueLabel={tendency.label}
                 />
-                <p className="result-card-reading-reason">
-                  {getReadingReasonLine(preview.stimulusProfile)}
-                </p>
-                <p className="result-card-reading-status">
-                  <strong>{localPath ? "Schon lokal" : aggregatePresentation.label}</strong>
-                  <span>
-                    {localPath
-                      ? "Dafür gibt es hier schon einen eigenen Stand."
-                      : aggregatePresentation.text}
-                  </span>
-                </p>
-              </section>
+                <p className="result-card-reading-status">{cardReadingStatus}</p>
+              </div>
 
               <footer className="result-card-footer-zone">
                 <ExternalItemAction

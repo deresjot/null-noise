@@ -1,23 +1,115 @@
 # null-noise: Session-Handover
 
-Stand: 5. April 2026
+Stand: 11. April 2026
 
 ## Aktueller Git-Stand
 
-- Branch: `beta-ui-polish`
-- Letzter gepushter Commit: `a0f9508` – `Add session handover for next null-noise round`
+- Branch: `master`
+- Letzter Commit vor dieser lokalen Runde: `7802fc3` – `Refresh social preview image for launch`
 - Aktuelle Runde: lokaler Arbeitsstand wurde weitergeführt, aber nicht gepusht
-- Remote-Branch: `origin/beta-ui-polish`
+- Remote-Branch: vor dieser Runde nicht neu abgeglichen
 
 ## Projektstand für einen neuen Chat
 
 Wenn ein neuer Chat ohne weiteren Kontext übernehmen soll, ist das hier der aktuelle Arbeitsstand in knapper, aber belastbarer Form:
+
+- Neuester Konsolidierungsstand (12. April 2026):
+  - Startseite ruhiger gewichtet, Suchdeck klarer primär, Footer stärker als Abschlusszone getrennt
+  - `brand-mark` wieder präsenter, aber weiter kontrolliert und reduced-motion-kompatibel
+  - Karten auf `/suche` entzerrt; Erstlesart eindeutig Anzeigecharakter ohne Control-Anmutung
+  - lokale und Spike-Detailseiten in Breite und Hierarchie enger angeglichen
+  - `/barrierefreiheit` neutral bereinigt; zugehörige A11y-Tests auf die neue Struktur nachgezogen
 
 - `null-noise` ist derzeit ein produktiver Prototyp zum Finden und vorsichtigen Einordnen von Filmen und Serien nach vermuteter Reizwirkung.
 - `TMDb` ist die reale Primärquelle für Titel, Suche, Poster, Browse und externe Detaildaten.
 - `null-noise` ergänzt darüber eigene Erstlesart, Status und spätere Wachstumslogik.
 - Es gibt weiter keine Scores, keine Prozentwerte und keine KPI-Optik.
 - Lokale Titel existieren weiter, aber nicht mehr als primärer sichtbarer Einstieg im Hauptfluss.
+
+## Neu in dieser Runde: Kleiner UI-/UX-Pass auf Suche, Karten und Fokus
+
+- Der Such-/Filter-Block auf `/suche` wurde sprachlich gestrafft:
+  - `Suche ändern`
+  - `Suche und Filter`
+  - `Finde etwas, das gerade passt.`
+  - Filtergruppe jetzt als `Optional eingrenzen`
+- Die Karten-Erstlesart wurde noch einmal umgebaut:
+  - keine freie kleine Achse mehr
+  - stattdessen drei feste Segmente `ruhiger`, `mittig`, `intensiver`
+  - Status darunter bleibt kurz
+- Fokuszustände wurden vereinheitlicht:
+  - globaler doppelter Fokusstil mit heller und dunkler Linie
+  - gilt konsistenter für Links, Buttons, Inputs, Selects und Summary
+  - Skiplinks springen jetzt gezielt zu Top-Menü, Inhalt und Footer
+- Das `brand-mark` wurde weiter beruhigt:
+  - kleinere Drift
+  - stabileres Gesicht
+  - Mischwirkung näher an `brand-wordmark`
+- Die externen Detailseiten `/spike/metadaten/...` wurden nur geprüft:
+  - sie bleiben sichtbar als separater, vorläufigerer Spike-Pfad
+  - für die dortige Erstlesart und Gesamthierarchie ist später ein eigener Pass sinnvoll
+
+## Neu in dieser Runde: Manuelle Accessibility und Referenzklarheit
+
+- Fokus dieser Runde war Konsolidierung statt Ausbau:
+  - manuellen Prüfpfad explizit machen
+  - eigene Seite `Barrierefreiheit` ergänzen
+  - Kontrast und Reflow auf den Kernseiten gezielt nachziehen
+  - Referenzcharakter der Produktentscheidungen klarer begründen
+- Neue Seite im Produkt:
+  - `/barrierefreiheit`
+  - im Footer direkt verlinkt
+  - beschreibt Geltungsbereich, aktuellen Stand, automatisierte und manuelle Prüfung, Grenzen und Kontakt
+- Kleine direkte UI-Fixes dieser Runde:
+  - kleine Home-Hero-Texte auf grünem Grund kontraststärker
+  - horizontales Overflow bei `320 CSS-Pixeln` auf Kernseiten bereinigt
+- Neue kleine Testergänzungen:
+  - Footer-Link auf `Barrierefreiheit`
+  - Reflow-Smoke-Test auf den Kernrouten bei `320 CSS-Pixeln`
+- Entscheidung dieser Runde:
+  - kein separater HTML- oder Sondermodus umgesetzt
+  - stattdessen klar dokumentiert, warum die Standardoberfläche selbst der barrierearme Primärpfad bleiben soll
+
+## Neu in dieser Runde: Accessibility- und Referenzstandard
+
+- Fokus dieser Runde war nicht Feature-Ausbau, sondern Systematik:
+  - Accessibility prüfbar machen
+  - UX für schnelle Überforderung schärfen
+  - Doku als Referenzstandard aufbauen
+- Die Accessibility-Suite prüft jetzt die Kernrouten:
+  - `/`
+  - `/suche`
+  - `/suche?q=Arrival`
+  - `/titel/mondfenster`
+- Die automatisierte A11y-Prüfung läuft jetzt über zwei Pfade:
+  - `@axe-core/playwright`
+  - direkter `axe-core`-Lauf mit injiziertem `axe.min.js` und `axe.run()`
+- Die Axe-Ausgabe wird nach `critical`, `serious`, `moderate`, `minor` strukturiert erfasst.
+- Der aktuelle Stand auf diesen Routen ist nach dem Fix-Pass ohne axe-Fundstellen.
+- Behobene Punkte dieser Runde:
+  - Landmark-Dopplungen in Suche und Kartenstruktur entfernt
+  - Skip-Link in Landmarke gezogen
+  - Heading-Reihenfolge auf der Detailseite bereinigt
+  - Kontrast kleiner Meta- und Orientierungstexte verbessert
+  - Suchfeld-ARIA vereinfacht, damit keine unnötige Combobox-Semantik behauptet wird
+- UX-seitig wurde vor allem die Detailseite geschärft:
+  - die primäre Aussage heißt jetzt sichtbarer `Erstlesart`
+  - `Passt das gerade?` ist knapper und direkter formuliert
+  - Unsicherheit wird sichtbarer über Formulierungen wie `Erste Einschätzung` und `Kaum Hinweise`
+
+## Neue Referenzdokumente
+
+- `docs/a11y-principles.md`
+- `docs/a11y-testing.md`
+- `docs/ux-principles.md`
+- `docs/product-principles.md`
+- `docs/reference-goals.md`
+
+Bestehende Doku, die in dieser Runde ebenfalls nachgezogen wurde:
+
+- `docs/project-summary.md`
+- `docs/session-handover.md`
+- `docs/ui-component-strategy.md`
 
 ### Relevante Seiten und Zustände
 
@@ -49,10 +141,10 @@ Wenn ein neuer Chat ohne weiteren Kontext übernehmen soll, ist das hier der akt
 - Die Erstlesart ist die zweite Hauptaussage nach dem Poster.
 - Sie arbeitet mit:
   - Kicker `Erstlesart`
-  - großer Tendenzzeile wie `eher leise` oder `eher laut`
-  - passiver `leise ↔ laut`-Pegelanzeige
+  - auf Karten einer segmentierten 3er-Vorschau `ruhiger`, `mittig`, `intensiver`
+  - auf Detailseiten weiter einer größeren passiven Skalenlesart
   - verdichtetem Statussatz
-- Die Pegelanzeige soll sichtbar sein, aber nicht wie ein Slider oder Range-Control wirken.
+- Die Vorschau soll sichtbar sein, aber nicht wie ein Slider oder Range-Control wirken.
 - Detailseiten nutzen dieselbe Logik in größerer, stärkerer Form.
 
 ### Browse-Logik auf /suche

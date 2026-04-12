@@ -15,6 +15,7 @@ describe("format decision helpers", () => {
 
     expect(decision.tone).toBe("steady");
     expect(decision.title).toBe("Kann gut gehen.");
+    expect(decision.text).toBe("Erste Einschätzung: eher ruhig.");
   });
 
   it("adds caution hints for denser, louder profiles", () => {
