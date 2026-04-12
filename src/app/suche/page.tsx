@@ -110,15 +110,15 @@ function createStableBrowseMix(filters: SearchFilters): string {
 
 function getAvoidanceStatusLine(filters: SearchFilters): string | null {
   if (filters.avoidPeaks && filters.avoidDensity) {
-    return "Gefiltert mit Vermeidung harter Spitzen und dichter Klangflächen.";
+    return "Aktiv: harte Spitzen raus, dichte Klangflächen raus.";
   }
 
   if (filters.avoidPeaks) {
-    return "Gefiltert mit Vermeidung harter Spitzen.";
+    return "Aktiv: harte Spitzen raus.";
   }
 
   if (filters.avoidDensity) {
-    return "Gefiltert mit Vermeidung dichter Klangflächen.";
+    return "Aktiv: dichte Klangflächen raus.";
   }
 
   return null;

@@ -13,12 +13,12 @@ Stand: 12. April 2026
 
 Wenn ein neuer Chat ohne weiteren Kontext übernehmen soll, ist das hier der aktuelle Arbeitsstand in knapper, aber belastbarer Form:
 
-- Neu in dieser Runde (12. April 2026, 16:39 CET):
-  - Die Vermeidungsfilter auf `/suche` sind jetzt sichtbar wirksam statt nur leicht umsortierend.
-  - `avoidPeaks` und `avoidDensity` greifen konsequenter und gelten auf lokale wie externe Treffer.
-  - Aktive Filterzustände sind im Suchblock klarer sichtbar.
-  - Bei aktiven Filtern erscheint eine knappe Ergebnisrückmeldung (`Gefiltert mit ...`), damit der Zustand ohne Zusatzdialoge nachvollziehbar bleibt.
-  - Auch im Browse-Zustand ohne Suchbegriff ist die sichtbare Trefferauswahl bei aktiven Filtern klarer verändert.
+- Neu in dieser Runde (12. April 2026, 17:26 CET):
+  - Der alte passive Checkbox-Block auf `/suche` wurde als Primärlösung ersetzt.
+  - Stattdessen gibt es jetzt einen aktiven Filtermodus mit zwei klaren Eingriffen: `Harte Spitzen raus` und `Dichte Klangflächen raus`.
+  - Die Umschaltung wirkt direkt über die URL-Navigation und greift damit ohne Zusatz-Submit unmittelbar auf die Trefferliste.
+  - `avoidPeaks` und `avoidDensity` laufen als harte Ausschlüsse über lokale und externe Treffer.
+  - Bei aktiven Filtern steht im Ergebnisbereich eine knappe Statuszeile (`Aktiv: ...`); im Browse-Zustand wird die Auswahl sichtbar stärker ausgedünnt.
 
 - Neuester Konsolidierungsstand (12. April 2026):
   - Startseite ruhiger gewichtet, Suchdeck klarer primär, Footer stärker als Abschlusszone getrennt

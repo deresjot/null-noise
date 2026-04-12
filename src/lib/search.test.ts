@@ -59,7 +59,7 @@ describe("catalog search", () => {
       avoidDensity: false,
     });
 
-    expect(results.every((item) => item.stimulusProfile.peakIntensity <= 1)).toBe(true);
+    expect(results.every((item) => item.stimulusProfile.peakIntensity <= 0)).toBe(true);
   });
 
   it("filters stronger when density avoidance is active", () => {
@@ -71,6 +71,6 @@ describe("catalog search", () => {
       avoidDensity: true,
     });
 
-    expect(results.every((item) => item.stimulusProfile.stimulusDensity <= 1)).toBe(true);
+    expect(results.every((item) => item.stimulusProfile.stimulusDensity <= 0)).toBe(true);
   });
 });

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import type { SearchFilters } from "@/lib/types";
 
 import { SearchQueryField } from "./search-query-field";
@@ -9,10 +11,78 @@ interface SearchFormProps {
   submitLabel?: string;
 }
 
-const toneLegend = "Eher vermeiden";
-const avoidPeaksLabel = "Möglichst ohne harte Spitzen";
-const avoidDensityLabel = "Dichte Klangflächen vermeiden";
+const filterModeLabel = "Konsequent rausnehmen";
+const avoidPeaksLabel = "Harte Spitzen raus";
+const avoidDensityLabel = "Dichte Klangflächen raus";
 const titlePlaceholder = "z. B. Arrival, The Bear oder Past Lives";
+
+function buildSearchPath(filters: SearchFilters): string {
+  const searchParams = new URLSearchParams();
+
+  if (filters.q) {
+    searchParams.set("q", filters.q);
+  }
+
+  if (filters.tone !== "all") {
+    searchParams.set("tone", filters.tone);
+  }
+
+  if (filters.kind !== "all") {
+    searchParams.set("kind", filters.kind);
+  }
+
+  if (filters.avoidPeaks) {
+    searchParams.set("avoidPeaks", "true");
+  }
+
+  if (filters.avoidDensity) {
+    searchParams.set("avoidDensity", "true");
+  }
+
+  const queryString = searchParams.toString();
+  return queryString ? `/suche?${queryString}` : "/suche";
+}
+
+function ActiveFilterMode({ filters }: { filters: SearchFilters }) {
+  const peaksPath = buildSearchPath({
+    ...filters,
+    avoidPeaks: !filters.avoidPeaks,
+  });
+  const densityPath = buildSearchPath({
+    ...filters,
+    avoidDensity: !filters.avoidDensity,
+  });
+  const hasActiveFilters = filters.avoidPeaks || filters.avoidDensity;
+
+  return (
+    <section className="active-filter-mode" aria-label="Aktiver Filtermodus">
+      <p className="active-filter-mode-label">{filterModeLabel}</p>
+      <div className="active-filter-mode-controls">
+        <Link
+          className="search-filter-toggle"
+          data-active={filters.avoidPeaks ? "true" : "false"}
+          href={peaksPath}
+        >
+          <span className="search-filter-toggle-state">{filters.avoidPeaks ? "Aktiv" : "Aus"}</span>
+          <span>{avoidPeaksLabel}</span>
+        </Link>
+        <Link
+          className="search-filter-toggle"
+          data-active={filters.avoidDensity ? "true" : "false"}
+          href={densityPath}
+        >
+          <span className="search-filter-toggle-state">
+            {filters.avoidDensity ? "Aktiv" : "Aus"}
+          </span>
+          <span>{avoidDensityLabel}</span>
+        </Link>
+      </div>
+      {hasActiveFilters ? (
+        <p className="active-filter-mode-note">Filter greifen sofort auf die Trefferliste.</p>
+      ) : null}
+    </section>
+  );
+}
 
 export function SearchForm({
   action,
@@ -87,31 +157,10 @@ export function SearchForm({
             </select>
           </div>
 
-          <fieldset
-            className="checkbox-group checkbox-group-compact checkbox-group-compact-filters"
-            data-has-active={filters.avoidPeaks || filters.avoidDensity ? "true" : "false"}
-          >
-            <legend>{toneLegend}</legend>
-            <label className={filters.avoidPeaks ? "is-active" : undefined}>
-              <input
-                type="checkbox"
-                name="avoidPeaks"
-                value="true"
-                defaultChecked={filters.avoidPeaks}
-              />
-              {avoidPeaksLabel}
-            </label>
-            <label className={filters.avoidDensity ? "is-active" : undefined}>
-              <input
-                type="checkbox"
-                name="avoidDensity"
-                value="true"
-                defaultChecked={filters.avoidDensity}
-              />
-              {avoidDensityLabel}
-            </label>
-          </fieldset>
+          <ActiveFilterMode filters={filters} />
         </div>
+        {filters.avoidPeaks ? <input type="hidden" name="avoidPeaks" value="true" /> : null}
+        {filters.avoidDensity ? <input type="hidden" name="avoidDensity" value="true" /> : null}
       </form>
     );
   }
@@ -152,35 +201,14 @@ export function SearchForm({
             </select>
           </div>
 
-          <fieldset
-            className="checkbox-group checkbox-group-compact checkbox-group-compact-filters"
-            data-has-active={filters.avoidPeaks || filters.avoidDensity ? "true" : "false"}
-          >
-            <legend>{toneLegend}</legend>
-            <label className={filters.avoidPeaks ? "is-active" : undefined}>
-              <input
-                type="checkbox"
-                name="avoidPeaks"
-                value="true"
-                defaultChecked={filters.avoidPeaks}
-              />
-              {avoidPeaksLabel}
-            </label>
-            <label className={filters.avoidDensity ? "is-active" : undefined}>
-              <input
-                type="checkbox"
-                name="avoidDensity"
-                value="true"
-                defaultChecked={filters.avoidDensity}
-              />
-              {avoidDensityLabel}
-            </label>
-          </fieldset>
+          <ActiveFilterMode filters={filters} />
 
           <button className="primary-button search-submit-button" type="submit">
             {submitLabel}
           </button>
         </div>
+        {filters.avoidPeaks ? <input type="hidden" name="avoidPeaks" value="true" /> : null}
+        {filters.avoidDensity ? <input type="hidden" name="avoidDensity" value="true" /> : null}
       </form>
     );
   }
@@ -215,30 +243,9 @@ export function SearchForm({
         </div>
       </div>
 
-      <fieldset
-        className="checkbox-group"
-        data-has-active={filters.avoidPeaks || filters.avoidDensity ? "true" : "false"}
-      >
-        <legend>{toneLegend}</legend>
-        <label className={filters.avoidPeaks ? "is-active" : undefined}>
-          <input
-            type="checkbox"
-            name="avoidPeaks"
-            value="true"
-            defaultChecked={filters.avoidPeaks}
-          />
-          {avoidPeaksLabel}
-        </label>
-        <label className={filters.avoidDensity ? "is-active" : undefined}>
-          <input
-            type="checkbox"
-            name="avoidDensity"
-            value="true"
-            defaultChecked={filters.avoidDensity}
-          />
-          {avoidDensityLabel}
-        </label>
-      </fieldset>
+      <ActiveFilterMode filters={filters} />
+      {filters.avoidPeaks ? <input type="hidden" name="avoidPeaks" value="true" /> : null}
+      {filters.avoidDensity ? <input type="hidden" name="avoidDensity" value="true" /> : null}
 
       <button className="primary-button" type="submit">
         {submitLabel}

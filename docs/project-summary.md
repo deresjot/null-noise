@@ -4,15 +4,16 @@ Stand: Version `0.8.3` am 12. April 2026
 
 ## Aktueller Hinweis
 
-Heute (12. April 2026, 16:39 CET) wurde der Such-/Filterbereich auf `/suche` gezielt finalisiert:
+Heute (12. April 2026, 17:26 CET) wurde der Such-/Filterbereich auf `/suche` in einer härteren V3-Fassung geschärft:
 
-- Vermeidungsfilter sind jetzt sichtbar wirksam statt nur subtiler Sortierung:
-  - `Möglichst ohne harte Spitzen` schließt Titel mit höherer `peakIntensity` konsequenter aus.
-  - `Dichte Klangflächen vermeiden` schließt Titel mit höherer `stimulusDensity` konsequenter aus.
-  - beide Filter greifen kombiniert auf lokale und externe Treffer.
-- aktive Filterzustände sind im Suchblock klarer erkennbar, ohne neue UI-Komplexität.
-- im Ergebnisbereich erscheint bei aktiven Vermeidungsfiltern eine knappe Statuszeile, damit die laufende Filterung direkt nachvollziehbar bleibt.
-- auch im Browse-Zustand ohne Suchbegriff ist die Filterwirkung sichtbarer, weil die Auswahl bei aktiven Vermeidungsfiltern strenger ausgedünnt wird.
+- die passive Checkbox-Anmutung wurde durch einen aktiven Filtermodus mit zwei klaren Umschaltern ersetzt:
+  - `Harte Spitzen raus`
+  - `Dichte Klangflächen raus`
+- die Filter greifen jetzt als harte Ausschlüsse statt milder Umsortierung:
+  - `peakIntensity` und `stimulusDensity` werden ab erhöhter Stufe konsequent entfernt
+  - beide Regeln greifen kombiniert über lokale und externe Treffer
+- im Ergebnisbereich erscheint bei aktiven Filtern eine knappe aktive Rückmeldung (`Aktiv: ...`).
+- im Browse-Zustand ohne Suchbegriff wird bei aktiven Filtern sichtbar stärker ausgedünnt; leere Gruppen bleiben dabei bewusst ehrlich sichtbar.
 
 Konsolidierungs- und Release-Pass (12. April 2026):
 

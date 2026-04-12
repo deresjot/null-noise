@@ -1,7 +1,7 @@
 import type { SearchFilters, TitleRecord, ToneFilter } from "@/lib/types";
 
 const toneValues: ToneFilter[] = ["all", "calm", "balanced", "intense"];
-const AVOIDANCE_EXCLUDE_FROM_LEVEL = 2;
+const AVOIDANCE_EXCLUDE_FROM_LEVEL = 1;
 
 function isToneFilter(value: string): value is ToneFilter {
   return toneValues.includes(value as ToneFilter);

@@ -2191,7 +2191,8 @@ export async function browseTmdbMetadata(
   dependencies: MetadataSpikeDependencies = {},
 ): Promise<MetadataSpikeBrowseState> {
   const accessToken = getTmdbAccessToken(dependencies.accessToken);
-  const browseLimit = filters.avoidPeaks || filters.avoidDensity ? 4 : 5;
+  const browseLimit =
+    filters.avoidPeaks && filters.avoidDensity ? 2 : filters.avoidPeaks || filters.avoidDensity ? 3 : 5;
   const sectionDefinitions: Array<{
     description: string;
     id: MetadataSpikeBrowseSectionId;
