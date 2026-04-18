@@ -2,22 +2,21 @@ import packageJson from "../../package.json";
 
 export const currentBuild = {
   version: packageJson.version,
-  label: "Reference Refinement Pass",
-  releasedAt: "2026-04-12 · 17:26 CET",
+  label: "Spike Layout Stabilization Pass",
+  releasedAt: "2026-04-18 · 20:40 CET",
 };
 
 export const releaseNotes = [
   {
     version: packageJson.version,
-    label: "Reference Refinement Pass",
-    releasedAt: "2026-04-12",
+    label: "Spike Layout Stabilization Pass",
+    releasedAt: "2026-04-18",
     entries: [
-      "Die Such-/Filter-Sprache auf `/suche` wurde gestrafft und nutzt jetzt ruhigere, direktere Begriffe.",
-      "Der Filterbereich auf `/suche` wurde als aktiver Modus geschärft: statt passiver Checkbox-Zeilen gibt es jetzt zwei klar erkennbare Eingriffe (`Harte Spitzen raus`, `Dichte Klangflächen raus`) mit direkter Umschaltung.",
-      "Die Vermeidungsfilter greifen jetzt als harte Ausschlüsse über lokale und externe Treffer; aktive Zustände werden im Ergebnisbereich knapp als `Aktiv: ...` gespiegelt.",
-      "Die Karten-Erstlesart arbeitet jetzt mit drei festen Segmenten statt einer kleinen Achse; Fokus und Skiplinks wurden robuster vereinheitlicht.",
-      "Das `brand-mark` bewegt sich enger um das Gesicht und bleibt in der Mischwirkung näher an der Wortmarke.",
-      "Die Detailseiten-Spacings wurden nachgeschärft: mehr Innenabstand in den Boxen, ruhigerer Blockaufbau, Erstlesart klarer hervorgehoben, `Verfügbar bei` vor den weiteren Vorschlägen einsortiert sowie Breiten und Container zwischen lokaler und Spike-Detailseite weiter angeglichen.",
+      "Die Spike-Detailseite wurde visuell beruhigt: linke Hauptspalte klarer priorisiert, rechte Infospalte flacher und weniger kapselartig.",
+      "Empfehlungskarten unter `Dazu passt auch …` wurden verdichtet: kompaktere Kartenhöhe, geringere Scrolllast, Erstlesart bleibt vollständig sichtbar.",
+      "Der Bereich `Verfügbar bei` wurde rhythmisch ruhiger eingebunden und als nachgeordneter Abschnitt klarer lesbar gemacht.",
+      "Auf `/suche` wurde `search-direct-starts` als responsive Kachelreihe geschärft, inklusive stabiler Fokus- und Klickflächen.",
+      "Der linke Artefaktrand in Browse-Gruppen wurde bereinigt, indem die doppelte linke Kante aus Wrapper- und Gruppenrahmung entfernt wurde.",
     ],
   },
   {

@@ -154,6 +154,7 @@ Die erste Basis folgt dieser Strategie bereits:
 - `DetailFollowupSection`: kleiner Folgeempfehlungsbereich auf Detailseiten mit normaler Überschrift und derselben Tile-Sprache wie in Suche/Browse statt neuer Empfehlungs-Widgetlogik
 - `TitlePocketActions`: lokales `Merken` und `Schon gesehen` über echte Buttons mit sichtbarem Text statt Icon-only-Merken oder impliziter Watchlist-Mimik
 - `SearchLocalShelf`: kleiner lokaler Abschnitt auf `/suche` für gemerkte und gesehene Titel; bleibt semantische Listen- und Formularstruktur statt Client-seitiger Board- oder Drawer-Mechanik
+- Spike-Detailseiten: visuelle Beruhigung wurde über Hierarchie und Verdichtung gelöst (Spaltengewichtung, kompaktere Followup-Karten, ruhigere Provider-Einbindung) statt über neue Widgets, zusätzliche Interaktionsmodi oder zweite Darstellungssysteme
 - `Inline-Status statt Toast`: kleine Rückmeldungen wie `Für später gemerkt.` oder `Neue Auswahl, gleicher Rahmen.` bleiben direkt am betroffenen Bereich und werden nicht als globale Notification-Mechanik aufgebaut
 - `Erklärungsseite`: native Disclosure-Muster für vertiefende Informationen statt Custom-Accordion
 

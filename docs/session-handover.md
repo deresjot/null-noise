@@ -13,6 +13,32 @@ Stand: 12. April 2026
 
 Wenn ein neuer Chat ohne weiteren Kontext übernehmen soll, ist das hier der aktuelle Arbeitsstand in knapper, aber belastbarer Form:
 
+- Neu in dieser lokalen Runde (18. April 2026, Spike-Fokuspass):
+  - Spike-Detailseiten (`/spike/metadaten/...`) visuell beruhigt, ohne Daten- oder Logikänderung
+  - rechte Infospalte (`Worauf das gerade ruht`) flacher und weniger dicht; Aktionsbereich klarer nachgeordnet
+  - linke Hauptspalte klarer gewichtet: Erstlesart + Entscheidungsblock bleiben visuelle Primärachse
+  - Followup-Karten (`Dazu passt auch …`) kompakter: geringere Kartenhöhe, reduzierte Scrolllast
+  - Provider-Abschnitt (`Verfügbar bei`) ruhiger in den Seitenrhythmus integriert, nicht mehr wie separater Fremdblock
+  - Reflow auf `/spike/metadaten/series/1855` und `/spike/metadaten/movie/278` lokal geprüft
+
+- Neu in dieser lokalen Runde (18. April 2026, späterer Pass):
+  - `search-direct-starts` als responsive Kachelreihe geschärft (nebeneinander mit Umbruch statt nur gestapelt)
+  - linker Browse-Artefaktrand bereinigt (doppelte linke Kante durch Wrapper+Gruppe entfernt)
+  - Suchseite visuell entstapelt (ruhigere Flächen- und Radiushierarchie)
+  - Spike-Hero defensiv gegen Layout-Ausbrüche stabilisiert (`min-width: 0` für Hero-Kinder, Followups, Callout)
+  - geprüft auf `/spike/metadaten/series/1855` und `/spike/metadaten/movie/278`
+
+- Neu in dieser lokalen Runde (18. April 2026):
+  - kleiner Such-UI-Pass ohne Refactor und ohne neue Produktlogik
+  - linker Artefaktrand in den Browse-Gruppen bereinigt
+  - Bereichstrennung `ruhig` / `durchwachsen` / `intensiv` visuell klarer, aber ruhig gehalten
+  - `search-tone-scale-triad` gegen Label-Überlauf stabilisiert
+  - `search-direct-starts` als Sekundärzone klarer gefasst
+  - Standardlayout auf `/suche` verdichtet (mehr Treffer pro Viewport bei gleicher Kerninfo)
+  - kleine URL-basierte Darstellungsumschaltung `view=list|grid` ergänzt:
+    - reine Darstellung, keine neue Daten-, Ranking- oder Aktionslogik
+    - gleiche Inhalte, gleiche Reihenfolge, gleiche Aktionen
+
 - Neu in dieser Runde (12. April 2026, 17:26 CET):
   - Der alte passive Checkbox-Block auf `/suche` wurde als Primärlösung ersetzt.
   - Stattdessen gibt es jetzt einen aktiven Filtermodus mit zwei klaren Eingriffen: `Harte Spitzen raus` und `Dichte Klangflächen raus`.
@@ -42,7 +68,7 @@ Wenn ein neuer Chat ohne weiteren Kontext übernehmen soll, ist das hier der akt
   - Filtergruppe jetzt als `Optional eingrenzen`
 - Die Karten-Erstlesart wurde noch einmal umgebaut:
   - keine freie kleine Achse mehr
-  - stattdessen drei feste Segmente `ruhiger`, `mittig`, `intensiver`
+  - stattdessen drei feste Segmente `ruhig`, `durchwachsen`, `intensiv`
   - Status darunter bleibt kurz
 - Fokuszustände wurden vereinheitlicht:
   - globaler doppelter Fokusstil mit heller und dunkler Linie
@@ -148,7 +174,7 @@ Bestehende Doku, die in dieser Runde ebenfalls nachgezogen wurde:
 - Die Erstlesart ist die zweite Hauptaussage nach dem Poster.
 - Sie arbeitet mit:
   - Kicker `Erstlesart`
-  - auf Karten einer segmentierten 3er-Vorschau `ruhiger`, `mittig`, `intensiver`
+  - auf Karten einer segmentierten 3er-Vorschau `ruhig`, `durchwachsen`, `intensiv`
   - auf Detailseiten weiter einer größeren passiven Skalenlesart
   - verdichtetem Statussatz
 - Die Vorschau soll sichtbar sein, aber nicht wie ein Slider oder Range-Control wirken.
@@ -156,9 +182,10 @@ Bestehende Doku, die in dieser Runde ebenfalls nachgezogen wurde:
 
 ### Browse-Logik auf /suche
 
-- Bei leerem `q` erscheinen zwei sichtbare Bereiche:
-  - `Eher leise`
-  - `Eher laut`
+- Bei leerem `q` erscheinen drei sichtbare Bereiche:
+  - `ruhig`
+  - `durchwachsen`
+  - `intensiv`
 - Die Vorschläge kommen primär aus externen TMDb-Discover-Pools.
 - Die Auswahl wird über `mix` sichtbar durchmischt.
 - `Andere zeigen` soll die Auswahl spürbar variieren, nicht nur gleiches Material neu sortieren.
@@ -300,7 +327,7 @@ Bestehende Doku, die in dieser Runde ebenfalls nachgezogen wurde:
 
 - Detailseiten führen jetzt sichtbar weiter:
   - `Dazu passt auch ...` zeigt kleine Folgevorschläge in ähnlicher Reizlage
-  - bei eher lauten / intensiveren Titeln taucht zusätzlich `Wenn du etwas Ruhigeres suchst` auf
+  - bei intensiven Titeln taucht zusätzlich `Wenn du etwas Ruhigeres suchst` auf
   - beide Bereiche bleiben klein, vorsichtig formuliert und nutzen dieselbe Tile-Sprache wie Suche und Browse
 - `Merken` und `Schon gesehen` gibt es jetzt lokal im Browser:
   - ohne Konto
@@ -311,7 +338,7 @@ Bestehende Doku, die in dieser Runde ebenfalls nachgezogen wurde:
   - gemerkte Titel landen dort für später
   - gesehen markierte Titel können gesammelt und optional aus Browse/Treffern ausgeblendet werden
 - Browse-/Treffer-Tiles erklären sich jetzt etwas besser:
-  - kurze Begründungszeilen wie `wenig harte Spitzen` oder `eher ruhiger Einstieg`
+  - kurze Begründungszeilen wie `ruhig`, `durchwachsen` oder `intensiv`
   - alltagssprachlich und defensiv statt taxonomisch oder technisch
 - Unsicherheit wurde noch einmal sprachlich nachgeschärft:
   - sehr dünner Stand klingt jetzt sichtbar vorsichtiger, z. B. `Kaum Hinweise`
@@ -331,13 +358,13 @@ Bestehende Doku, die in dieser Runde ebenfalls nachgezogen wurde:
   - Kurzbeschreibung
   - vorhandene Rückmeldungen, wenn schon da
 - Direkt darunter sitzt jetzt ein minimaler, anonymer Feedback-Block:
-  - `ruhiger als erwartet`
-  - `ungefähr passend`
-  - `intensiver als erwartet`
+  - `ruhig`
+  - `durchwachsen`
+  - `intensiv`
   - ohne Konto, ohne Community-Sichtbarkeit
   - nach Abgabe mit ruhigem Erfolgszustand im selben Bereich
 - Browse auf `/suche` ist nützlicher geworden:
-  - Tiles haben eine kurze Begründungszeile wie `wenig harte Spitzen`
+  - Tiles haben eine kurze Begründungszeile wie `ruhig`, `durchwachsen` oder `intensiv`
   - der Browse-Mix bleibt pro Filtersatz stabil und wechselt erst mit `Andere zeigen`
   - nach `Andere zeigen` erscheint eine knappe Rückmeldung `Neue Auswahl, gleicher Rahmen.`
 - Suchqualität wurde praktisch nachgezogen:
@@ -360,7 +387,7 @@ Bestehende Doku, die in dieser Runde ebenfalls nachgezogen wurde:
 - Die Erstlesart ist in diesen Tiles nicht mehr nur ein Teil des Body-Flusses:
   - kleine Kickerzeile
   - grosse Tendenzzeile
-  - deutlich breitere `leise ↔ laut`-Achse
+  - deutlich breitere `ruhig ↔ intensiv`-Achse
   - verdichteter Statussatz
 - Das Suchraster wurde dafür auf eine ruhigere, editorialere Breite umgestellt:
 - Das Suchraster wurde dafür auf eine ruhigere, editorialere Breite umgestellt:
@@ -376,7 +403,7 @@ Bestehende Doku, die in dieser Runde ebenfalls nachgezogen wurde:
 - Detailseiten wurden in dieser Runde nicht komplett neu gebaut, aber der stärkere Erstlesart-Block bleibt dort als Referenz und passt jetzt sichtbarer zur neuen Trefferhierarchie.
 - Die Erstlesart-Achse wurde danach noch einmal als passive Pegelanzeige neu gebaut:
   - keine Slider-/Regleroptik mehr
-  - sichtbares, segmentiertes `leise ↔ laut`-Band
+  - sichtbares, segmentiertes `ruhig ↔ intensiv`-Band
   - passive Anzeige statt bedienbares Control
 - Externe Treffer arbeiten jetzt mit ruhigerem `Details`-CTA statt einem heroischen `NUR ANSEHEN`.
 - Auf der externen Detailseite wurde der Block `Basisdaten im Blick` entfernt; `Verfügbar bei` sitzt dort jetzt prominenter und nähert sich strukturell stärker einer Watch-Detailseite an.
@@ -389,14 +416,14 @@ Bestehende Doku, die in dieser Runde ebenfalls nachgezogen wurde:
 - Fokus dieser Runde war ein gestaffelter Produkt- und UI-Ausbau statt einer reinen Schnellkorrektur.
 - Die Erstlesart auf Detailseiten wurde deutlich stärker gewichtet:
   - größere Tendenz
-  - deutlich präsentere `leise ↔ laut`-Achse
+  - deutlich präsentere `ruhig ↔ intensiv`-Achse
   - kompakterer und geschlossenerer Leseblock
   - auf lokalen Detailseiten jetzt ebenfalls wieder mit großem Poster im Callout
 - Die Detailposter laufen jetzt konsistenter über eine größere TMDb-Quelle:
   - lokale und externe Detailseiten nutzen die große Poster-Variante
   - Suchkacheln bleiben bewusst kleiner
 - `/suche` hat jetzt bei leerem `q` einen echten Browse-Zustand im Hauptcontent:
-  - zwei klar sichtbare Bereiche `Eher leise` und `Eher laut`
+  - drei klar sichtbare Bereiche `ruhig`, `durchwachsen` und `intensiv`
   - 4 bis 6 externe TMDb-Titel pro Bereich
   - `Andere zeigen` für eine neue Mischung
   - keine Vermischung mit normalen Suchtreffern
@@ -583,7 +610,7 @@ Zuletzt gemeldeter Stand:
   - Suchstart aus dem Hero
   - `/suche?q=Arrival`
   - `/suche?q=Forrest+Gump`
-  - Browse-Zustand mit `Eher leise` / `Eher laut`
+  - Browse-Zustand mit `ruhig` / `durchwachsen` / `intensiv`
   - Suchvorschläge auf `/suche`
   - `/titel/mondfenster`
   - externe Detailseite mit großem Poster

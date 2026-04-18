@@ -4,6 +4,30 @@ Stand: Version `0.8.3` am 12. April 2026
 
 ## Aktueller Hinweis
 
+Heute (18. April 2026, Spike-Fokuspass) wurde der Detailpfad `/spike/metadaten/...` sichtbar beruhigt:
+
+- rechte Infospalte (`Worauf das gerade ruht`) wurde entschärft: weniger ornamentale Kapselwirkung, ruhigere Staffelung der Metazeilen, `Lokal anlegen` klar nachgeordnet
+- linke Hauptspalte priorisiert: Erstlesart und Entscheidungsbereich bleiben Hauptkern, nachfolgende Blöcke wurden optisch leiser nachgeordnet
+- Followup-Bereich `Dazu passt auch …` wurde verdichtet: kompaktere Karten, geringere vertikale Last, Erstlesart und Aktionen bleiben vollständig
+- `Verfügbar bei` wurde rhythmisch ruhiger an den Flow angeschlossen, ohne neue Logik oder neue Datenwege
+- defensive Reflow-Härtung auf Spike-Hero/Callout blieb erhalten (`min-width: 0` an kritischen Grid-Kindern), geprüft u. a. auf `/spike/metadaten/series/1855`
+
+Heute (18. April 2026, späterer lokaler UI-Pass) wurde `/suche` und der Spike-Detailpfad punktuell stabilisiert:
+
+- `search-direct-starts` ist jetzt als ruhiger Sekundär-CTA in responsiven Kacheln angelegt (nebeneinander mit sauberem Umbruch).
+- Der linke Artefakt-Rand im Browse-Cluster wurde bereinigt: doppelte linke Kante aus Wrapper-Rahmung plus Gruppenrahmung entfernt.
+- Die Box-in-Box-Wirkung wurde etwas beruhigt: weniger konkurrierende Innenrahmen, geringere Radiusstufe und flachere Flächenhierarchie.
+- Spike-Detailseiten wurden defensiv gegen Grid-Überlauf gehärtet (`min-width: 0` auf kritischen Hero-/Callout-Bereichen, geprüft auf `/spike/metadaten/series/1855`).
+
+Heute (18. April 2026) gab es einen kleinen lokalen Such-UI-Pass ohne neue Daten- oder Bewertungslogik:
+
+- Browse-Gruppen links bereinigt: kein harter linker `border-left` mehr pro Gruppe, stattdessen ruhige innere Akzentlinie ohne Artefaktkante.
+- Gruppenfläche auf `/suche` klarer getrennt: ruhig differenzierte Hintergrundtöne und stabilere Rahmen für `ruhig` / `durchwachsen` / `intensiv`.
+- `search-tone-scale-triad` robuster gemacht: Labels dürfen umbrechen, Segmentbreiten sind defensiver, kein sichtbarer Überlauf in Nachbarelemente.
+- `search-direct-starts` als klarer, aber untergeordneter Sekundärbereich nachgeschärft.
+- Ergebnisdichte im Standardlayout erhöht: kompaktere Karten- und Listenabstände bei gleicher Informationslogik.
+- Kleine lokale Darstellungsumschaltung ergänzt: `view=list|grid` auf `/suche` als reine Darstellung (gleiche Inhalte, Reihenfolge, Aktionen).
+
 Heute (12. April 2026, 17:26 CET) wurde der Such-/Filterbereich auf `/suche` in einer härteren V3-Fassung geschärft:
 
 - die passive Checkbox-Anmutung wurde durch einen aktiven Filtermodus mit zwei klaren Umschaltern ersetzt:
@@ -32,7 +56,7 @@ Die aktuelle Runde war ein kleiner UI-/UX-Pass auf dem vorhandenen Referenzstand
   - Filtertexte wurden auf `Optional eingrenzen`, `Möglichst ohne harte Spitzen` und `Dichte Klangflächen vermeiden` umgestellt
 - Karten-Erstlesart sichtbar neu gefasst:
   - statt der schwachen Achse nutzen Karten jetzt eine ruhige segmentierte 3er-Logik
-  - `ruhiger`, `mittig` und `intensiver` sind direkt auf der Vorschau lesbar
+  - `ruhig`, `durchwachsen` und `intensiv` sind direkt auf der Vorschau lesbar
   - die Statuszeile bleibt kurz bei `Erste Einschätzung` oder `Noch ohne Rückmeldungen`
 - Fokus und Skiplinks vereinheitlicht:
   - globaler doppelter Fokusstil aus heller und dunkler Linie
@@ -154,7 +178,7 @@ Die vorherige größere Phase war ein mehrstufiger Produkt- und UI-Ausbau auf de
   - auf `/suche` erscheint dafür ein kleiner Abschnitt `Für später und schon gesehen`
   - gesehen markierte Titel können dort optional ausgeblendet werden, ohne dass daraus eine Watchlist- oder Tracking-Logik wird
 - Browse nützlicher gemacht:
-  - Tiles tragen jetzt kurze Begründungszeilen wie `eher ruhiger Einstieg` oder `wenig harte Spitzen`
+  - Tiles tragen jetzt kurze Begründungszeilen wie `ruhig`, `durchwachsen` oder `intensiv`
   - der leere Suchzustand führt dadurch nicht nur in Titel, sondern auch in eine kurze alltagssprachliche Einordnung
 - Unsicherheit noch sichtbarer:
   - bei dünner Datenlage klingen Erstlesart und Status jetzt sichtbar vorsichtiger, z. B. `Kaum Hinweise`
@@ -177,12 +201,12 @@ Die vorherige größere Phase war ein mehrstufiger Produkt- und UI-Ausbau auf de
   - die Hauptaussage bleibt kurz, die Vertiefung wandert bewusst in `details/summary`
 - Minimalen Feedback-Flow ergänzt:
   - Detailseiten haben jetzt einen kleinen anonymen Rückkanal `War das für dich eher …`
-  - Optionen: `ruhiger als erwartet`, `ungefähr passend`, `intensiver als erwartet`
+  - Optionen: `ruhig`, `durchwachsen`, `intensiv`
   - keine Konten, keine soziale Sichtbarkeit, kein Bewertungs-Spektakel
   - nach Abgabe erscheint ein ruhiger Erfolgszustand direkt im selben Bereich
 - Browse auf `/suche` produktischer gemacht:
-  - der leere Suchzustand bleibt bei `Eher leise` und `Eher laut`, erklärt die Auswahl jetzt aber nützlicher
-  - Tiles tragen eine kurze Begründungszeile wie `wenig harte Spitzen` oder `eher ruhiger Einstieg`
+  - der leere Suchzustand bleibt bei `ruhig`, `durchwachsen` und `intensiv`, erklärt die Auswahl jetzt aber nützlicher
+  - Tiles tragen eine kurze Begründungszeile wie `ruhig`, `durchwachsen` oder `intensiv`
   - `Andere zeigen` variiert den Pool sichtbar, während der Ausgangszustand pro Filtersatz ruhiger und session-stabil bleibt
 - Provider-Nutzwert verbessert:
   - `Verfügbar bei` ordnet Gruppen jetzt stabil als `Im Abo`, `Kostenlos`, `Leihen`, `Kaufen`
@@ -197,11 +221,11 @@ Die vorherige größere Phase war ein mehrstufiger Produkt- und UI-Ausbau auf de
   - Detailseiten laden Erklär- und Zusatzblöcke nachgeordnet, ohne die Kernseite in neue Widget-Komplexität zu kippen
 
 - Neubau der Browse-/Trefferdarstellung: die Suchseite arbeitet nicht mehr primär mit schmalen, hohen Kacheln, sondern mit breiteren Tile-Artikeln; Poster und Erstlesart sind als erste und zweite Hauptaussage klar getrennt.
-- Erstlesart als zweite Hauptaussage: Browse- und Trefferobjekte haben jetzt eine eigene Lesezone mit Kicker, großer Tendenzzeile, breiterer `leise ↔ laut`-Achse und verdichtetem Statussatz vor dem CTA.
+- Erstlesart als zweite Hauptaussage: Browse- und Trefferobjekte haben jetzt eine eigene Lesezone mit Kicker, großer Tendenzzeile, breiterer `ruhig ↔ intensiv`-Achse und verdichtetem Statussatz vor dem CTA.
 - Abkehr vom alten Kartenmuster: CTA und Nebenhinweise sitzen jetzt in eigener Nachzone statt als dominanter Kartenfuß, das Suchraster ist breiter und editorialer angelegt.
 - Suchseite und Detailseiten folgen jetzt sichtbarer demselben Hierarchieprinzip: Poster, Titel, Erstlesart, dann Aktion und Rest.
-- Erstlesart gestärkt: lokale und externe Detailseiten gewichten Tendenz, Status und Achse jetzt deutlich stärker; die horizontale `leise ↔ laut`-Achse sitzt direkter unter der großen Tendenz und spielt visuell fast auf Poster-Niveau mit.
-- Browse-Zustand auf `/suche` ausgebaut: bei leerem `q` erscheint jetzt direkt ein echter Browse-Zustand mit zwei klar getrennten Bereichen `Eher leise` und `Eher laut` statt einer leeren Suchfläche.
+- Erstlesart gestärkt: lokale und externe Detailseiten gewichten Tendenz, Status und Achse jetzt deutlich stärker; die horizontale `ruhig ↔ intensiv`-Achse sitzt direkter unter der großen Tendenz und spielt visuell fast auf Poster-Niveau mit.
+- Browse-Zustand auf `/suche` ausgebaut: bei leerem `q` erscheint jetzt direkt ein echter Browse-Zustand mit drei klar getrennten Bereichen `ruhig`, `durchwachsen` und `intensiv` statt einer leeren Suchfläche.
 - Externe Vorschläge verfeinert: der Browse-Zustand zieht jetzt echte TMDb-Discover-Titel, mischt sie über `mix` sichtbar durch und trennt Browse sauber von normalen Suchtreffern.
 - TMDb-/Inference-Pfad verfeinert: externe Detaildaten ziehen jetzt Keywords mit ein; die vorläufige Erstlesart kann damit Genres, Synopsis und TMDb-Keywords etwas belastbarer lesen, bleibt aber ausdrücklich eine vorsichtige Startbasis.
 - Poster-/Provider-/Performance-Nachzug: große Detailposter laufen jetzt konsistenter über die große TMDb-Variante, TMDb-Detail- und Watch-Requests werden sinnvoller gepuffert, und `Verfügbar bei` bleibt textbasiert, gruppiert und ehrlich verlinkt.
@@ -244,8 +268,9 @@ Wenn ein neuer Chat den aktuellen Stand übernehmen soll, ist das hier der kürz
 - `null-noise` ist aktuell eine Next.js-App zum Finden und vorsichtigen Einordnen von Filmen und Serien nach vermuteter Reizwirkung.
 - Reale Titel und Basisdaten kommen primär aus `TMDb`.
 - `null-noise` legt darüber eine eigene, ausdrücklich vorläufige Erstlesart:
-  - `eher leise`
-  - `eher laut`
+  - `ruhig`
+  - `durchwachsen`
+  - `intensiv`
   - dazu Status wie `Vorläufig`, `Wachsend`, `Belastbarer`
 - Es gibt keine Scores, Prozentwerte oder KPI-Darstellung.
 - Lokale Titel existieren weiter für Profil-/Produktlogik, aber nicht mehr als primäre sichtbare Quelle im Hauptfluss.
@@ -256,9 +281,10 @@ Wenn ein neuer Chat den aktuellen Stand übernehmen soll, ist das hier der kürz
   - Hero-getriebene Startseite mit großer Suche
   - bunte, organische Art-Direction nur hier deutlich sichtbar
 - `/suche`
-  - `q` leer: echter Browse-Zustand mit zwei sichtbaren Bereichen:
-    - `Eher leise`
-    - `Eher laut`
+  - `q` leer: echter Browse-Zustand mit drei sichtbaren Bereichen:
+    - `ruhig`
+    - `durchwachsen`
+    - `intensiv`
   - `q` gesetzt: normale Suchtreffer
   - keine Mischliste aus Browse und Suche
 - `/spike/metadaten/[mediaType]/[externalId]`
@@ -291,7 +317,7 @@ Wenn ein neuer Chat den aktuellen Stand übernehmen soll, ist das hier der kürz
     - CTA
     - Sekundärinfos
 - Die Erstlesart ist die zweite Hauptaussage nach dem Poster.
-- Die `leise ↔ laut`-Anzeige ist keine Slider-Optik mehr, sondern eine passive Pegelanzeige.
+- Die `ruhig ↔ intensiv`-Anzeige ist keine Slider-Optik mehr, sondern eine passive Pegelanzeige.
 - Detailseiten folgen demselben Hierarchieprinzip, nur größer und stärker.
 - `Verfügbar bei` ist auf externen Detailseiten inzwischen wichtiger als rohe Metadaten-Listen wie `Basisdaten im Blick`.
 
