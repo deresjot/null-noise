@@ -1,14 +1,32 @@
+"use client";
+
+import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 const navigationItems = [
   { href: "/suche", label: "Suche" },
-  { href: "/erklaerung", label: "Lesart" },
+  { href: "/erklaerung", label: "Einordnung" },
   { href: "/bedienung", label: "Hilfe" },
 ];
 
 export function SiteHeader() {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const updateScrollState = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+
+    updateScrollState();
+    window.addEventListener("scroll", updateScrollState, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", updateScrollState);
+    };
+  }, []);
+
   return (
-    <header className="site-header">
+    <header className="site-header" data-scrolled={isScrolled ? "true" : "false"}>
       <nav aria-label="Sprunglinks" className="skip-links">
         <a className="skip-link" href="#top-menu">
           Zum Top-Menü springen
@@ -22,17 +40,28 @@ export function SiteHeader() {
       </nav>
       <div className="shell header-inner">
         <Link aria-label="null-noise Startseite" className="brand" href="/">
-          <span aria-hidden="true" className="brand-mark">
-            <span className="brand-mark-shape brand-mark-shape-blue" />
-            <span className="brand-mark-shape brand-mark-shape-yellow" />
-            <span className="brand-mark-shape brand-mark-shape-coral" />
-            <span className="brand-mark-face">
-              <span className="brand-mark-eye brand-mark-eye-left" />
-              <span className="brand-mark-eye brand-mark-eye-right" />
-              <span className="brand-mark-mouth" />
-            </span>
+          <span className="brand-image-frame" aria-hidden="true">
+            <Image
+              alt=""
+              className="brand-image"
+              height={1254}
+              priority
+              sizes="(max-width: 760px) 56px, 72px"
+              src="/brand/nullnoise-logo.svg"
+              width={1603}
+            />
           </span>
-          <span className="brand-wordmark">null-noise</span>
+          <span className="brand-wordmark-frame" aria-hidden="true">
+            <Image
+              alt=""
+              className="brand-wordmark-image"
+              height={1080}
+              priority
+              sizes="(max-width: 760px) 136px, 190px"
+              src="/brand/nullnoise-wortmarke.svg"
+              width={1920}
+            />
+          </span>
         </Link>
         <nav aria-label="Hauptnavigation" id="top-menu">
           <ul className="nav-list">

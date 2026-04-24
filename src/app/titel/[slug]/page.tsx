@@ -125,7 +125,7 @@ function getRatingStatus(value: string | string[] | undefined): RatingStatus {
   if (rating === "inactive") {
     return {
       title: "Einschätzen bleibt hier gerade zu",
-      text: "Lesen geht schon. Schreiben kommt in dieser Instanz später dazu.",
+      text: "Lesen geht schon. Schreiben geht in dieser Instanz gerade nicht.",
       tone: "warning",
     };
   }
@@ -223,7 +223,7 @@ function getFeedbackStatus(value: string | string[] | undefined): RatingStatus {
   if (status === "inactive") {
     return {
       title: "Rückmeldung bleibt hier gerade zu",
-      text: "Lesen geht schon. Schreiben kommt in dieser Instanz später dazu.",
+      text: "Lesen geht schon. Schreiben geht in dieser Instanz gerade nicht.",
       tone: "warning",
     };
   }
@@ -370,7 +370,7 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
   const inactiveRatingState: RatingStatus = !writesEnabled
     ? {
         title: "Einschätzen bleibt hier gerade zu",
-        text: "Lesen geht schon. Schreiben kommt in dieser Instanz später dazu.",
+        text: "Lesen geht schon. Schreiben geht in dieser Instanz gerade nicht.",
         tone: "warning",
       }
     : null;
@@ -464,7 +464,7 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
     (!writesEnabled
       ? {
           title: "Rückmeldung bleibt hier gerade zu",
-          text: "Lesen geht schon. Schreiben kommt in dieser Instanz später dazu.",
+          text: "Lesen geht schon. Schreiben geht in dieser Instanz gerade nicht.",
           tone: "warning" as const,
         }
       : null);
@@ -485,11 +485,11 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
             {`${formatKind(title.external.kind)} · ${title.external.year ?? "Jahr offen"}`}
           </p>
           <h1>{title.external.title}</h1>
-          <section className="detail-reading-block" aria-label="Erstlesart">
-            <p className="detail-reading-kicker">Erstlesart</p>
+          <section className="detail-reading-block" aria-label="Erste Einschätzung">
+            <p className="detail-reading-kicker">Erste Einschätzung</p>
             <p className="detail-hero-tendency">{profileTendency.label}</p>
             <SearchToneScale
-              caption="Leise bis laut"
+              caption="Ruhig bis intensiv"
               emphasis="hero"
               mode={aggregatePresentation.state}
               note={profileTendency.text}
@@ -659,7 +659,6 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
             </div>
           </dl>
 
-          {watchProviderState ? <WatchProvidersPanel state={watchProviderState} /> : null}
           {letterboxdState?.kind === "success" ? <LetterboxdPanel state={letterboxdState} /> : null}
 
           <section aria-labelledby="flags-heading" className="subsection">
@@ -743,6 +742,8 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
               />
             )}
           </section>
+
+          {watchProviderState ? <WatchProvidersPanel state={watchProviderState} /> : null}
 
           {showDeleteAction ? (
             <section aria-labelledby="delete-heading" className="subsection">

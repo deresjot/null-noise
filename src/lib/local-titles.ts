@@ -9,10 +9,12 @@ import {
   appendPersistedTitleImportAttempt,
   persistLocalTitleSeedRecord,
 } from "@/lib/catalog-db";
+import { createTitleExternalLookupKey } from "@/lib/local-title-shared";
 import type { MetadataSpikeTitle } from "@/lib/metadata-spike";
 import type { TitleSeedRecord } from "@/lib/types";
 
 export { buildImportedTitleSeedFromMetadata } from "@/lib/catalog-db";
+export { createTitleExternalLookupKey } from "@/lib/local-title-shared";
 
 const titleImportAttemptStatusSchema = z.enum(["accepted", "rejected_rate_limited", "suspicious"]);
 
@@ -43,10 +45,6 @@ function trimExpiredImportAttempts(
   return attempts.filter(
     (attempt) => now - Date.parse(attempt.submittedAt) <= titleImportGuardConfig.attemptsRetentionMs,
   );
-}
-
-export function createTitleExternalLookupKey(source: string, sourceId: string | number): string {
-  return `${source}:${String(sourceId)}`;
 }
 
 export async function listStoredLocalTitleSeeds(): Promise<StoredLocalTitleSeed[]> {

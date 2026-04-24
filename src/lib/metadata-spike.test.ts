@@ -502,13 +502,20 @@ describe("metadata spike mapping", () => {
     }
 
     const quietSection = result.sections.find((section) => section.id === "quiet");
+    const balancedSection = result.sections.find((section) => section.id === "balanced");
     const loudSection = result.sections.find((section) => section.id === "loud");
 
-    expect(result.sections).toHaveLength(2);
-    expect(result.sections.map((section) => section.title)).toEqual(["Eher leise", "Eher laut"]);
+    expect(result.sections).toHaveLength(3);
+    expect(result.sections.map((section) => section.title)).toEqual([
+      "ruhig",
+      "durchwachsen",
+      "intensiv",
+    ]);
     expect(quietSection?.items.every((item) => item.mediaType === "movie")).toBe(true);
+    expect(balancedSection?.items.every((item) => item.mediaType === "movie")).toBe(true);
     expect(loudSection?.items.every((item) => item.mediaType === "movie")).toBe(true);
     expect(quietSection?.items.some((item) => item.title === "War Alarm")).toBe(false);
+    expect(balancedSection?.items.some((item) => item.title === "War Alarm")).toBe(false);
     expect(loudSection?.items.some((item) => item.title === "War Alarm")).toBe(true);
   });
 

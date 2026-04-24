@@ -48,6 +48,8 @@ Praktische Präzisierung seit dieser Runde:
 
 - `details` und `summary` sind für `null-noise` nicht nur ein semantischer, sondern auch ein Testbarkeitsvorteil
 - Hover- und Fokus-Popups bleiben bewusst die Ausnahme, weil sie schneller in Konflikt mit Vorhersehbarkeit, Vergrößerung und WCAG-1.4.13-Anforderungen geraten
+- Meta-Zeilen dürfen nicht wie Form-Felder aussehen; Hinweise bleiben als Badge-, Text- oder Listenmuster lesbar und nicht als scheinbare Inputs
+- Echte Steuerung muss im UI auch so aussehen: Umschalter und Reload-Aktionen brauchen klare Flächen-, Hover- und Fokuszustände statt bloßer Meta-Typografie
 
 Diese Ableitungen helfen uns, "moderne" UI-Abkürzungen zu vermeiden, wenn sie Orientierung, Semantik oder Tastaturbedienung verschlechtern würden.
 
@@ -141,6 +143,7 @@ Manuell verpflichtend vor Ausbau komplexerer Widgets:
 Die erste Basis folgt dieser Strategie bereits:
 
 - `SiteHeader`: Landmarken, Listen-Navigation, Skip-Link
+- `SiteHeader`: verwendet seit dem Fix-Pass vom 23. April 2026 das vom Nutzer gelieferte Logo als Markenquelle; Header, Favicon, Apple-Icon und OG-Bild leiten sich aus derselben Quelle ab
 - `SearchForm`: native Formularfelder mit `fieldset` und `legend`
 - `SearchPage` im leeren Zustand: zwei semantisch getrennte Browse-Bereiche mit echten Listen statt Carousel- oder Mischlogik
 - `ResultList`: semantische Trefferliste mit breiteren Tile-Artikeln statt schmalen App-Karten; Poster, Titelzone, Erstlesart und Aktionen sind als getrennte Leseblöcke aufgebaut
@@ -156,6 +159,7 @@ Die erste Basis folgt dieser Strategie bereits:
 - `SearchLocalShelf`: kleiner lokaler Abschnitt auf `/suche` für gemerkte und gesehene Titel; bleibt semantische Listen- und Formularstruktur statt Client-seitiger Board- oder Drawer-Mechanik
 - Spike-Detailseiten: visuelle Beruhigung wurde über Hierarchie und Verdichtung gelöst (Spaltengewichtung, kompaktere Followup-Karten, ruhigere Provider-Einbindung) statt über neue Widgets, zusätzliche Interaktionsmodi oder zweite Darstellungssysteme
 - `Inline-Status statt Toast`: kleine Rückmeldungen wie `Für später gemerkt.` oder `Neue Auswahl, gleicher Rahmen.` bleiben direkt am betroffenen Bereich und werden nicht als globale Notification-Mechanik aufgebaut
+- `Search-Browse-Intro`: Ansicht und `Neu mischen` sind als kleine, aber klar lesbare Aktionsblöcke umgesetzt; Meta-Beschriftung und Steuerung bleiben sichtbar getrennt
 - `Erklärungsseite`: native Disclosure-Muster für vertiefende Informationen statt Custom-Accordion
 
 ## Wann wir spaeter doch eine externe Bibliothek pruefen

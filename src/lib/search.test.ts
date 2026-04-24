@@ -59,7 +59,9 @@ describe("catalog search", () => {
       avoidDensity: false,
     });
 
-    expect(results.every((item) => item.stimulusProfile.peakIntensity <= 0)).toBe(true);
+    expect(results.length).toBeGreaterThan(0);
+    expect(results.every((item) => item.stimulusProfile.peakIntensity < 4)).toBe(true);
+    expect(results.some((item) => item.stimulusProfile.peakIntensity >= 2)).toBe(true);
   });
 
   it("filters stronger when density avoidance is active", () => {
@@ -71,6 +73,8 @@ describe("catalog search", () => {
       avoidDensity: true,
     });
 
-    expect(results.every((item) => item.stimulusProfile.stimulusDensity <= 0)).toBe(true);
+    expect(results.length).toBeGreaterThan(0);
+    expect(results.every((item) => item.stimulusProfile.stimulusDensity < 4)).toBe(true);
+    expect(results.some((item) => item.stimulusProfile.stimulusDensity >= 2)).toBe(true);
   });
 });

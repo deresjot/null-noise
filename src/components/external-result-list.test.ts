@@ -26,18 +26,17 @@ describe("external result list poster rendering", () => {
       }),
     );
 
-    expect(html).toContain("Erstlesart");
+    expect(html).toContain("Erste Einschätzung");
     expect(html).toContain("Noch ohne Rückmeldungen");
     expect(html).toContain("result-card-reading-block");
     expect(html).toContain("search-tone-scale-triad");
-    expect(html).toContain("ruhiger");
-    expect(html).toContain("mittig");
-    expect(html).toContain("intensiver");
+    expect(html).toContain("ruhig");
+    expect(html).toContain("durchwachsen");
+    expect(html).toContain("intensiv");
     expect(html).toContain("poster-thumb-frame");
     expect(html).toContain("Details");
-    expect(html).toContain("Lokales Anlegen liegt erst auf der Detailseite.");
     expect(html).not.toContain("Lokal anlegen");
-    expect(html).not.toContain("zwischen ruhigeren und dichteren Momenten");
+    expect(html).toContain('aria-label="Erste Einschätzung: durchwachsen"');
   });
 
   it("renders a fallback poster tile when no poster is available", () => {
@@ -111,7 +110,7 @@ describe("external result list poster rendering", () => {
       }),
     );
 
-    expect(html).toContain("Diese Instanz bleibt gerade lesend.");
+    expect(html).toContain("Nur lesen ist hier gerade aktiv.");
     expect(html).toContain("Noch ohne Rückmeldungen");
     expect(html).toContain("Details");
     expect(html).not.toContain("Lokal anlegen");

@@ -24,7 +24,7 @@ describe("detail followups", () => {
     const sections: MetadataSpikeBrowseSection[] = [
       {
         id: "quiet",
-        title: "Eher leise",
+        title: "ruhig",
         description: "",
         items: [
           {
@@ -40,8 +40,14 @@ describe("detail followups", () => {
         ],
       },
       {
+        id: "balanced",
+        title: "durchwachsen",
+        description: "",
+        items: [],
+      },
+      {
         id: "loud",
-        title: "Eher laut",
+        title: "intensiv",
         description: "",
         items: [
           {

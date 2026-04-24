@@ -4,6 +4,14 @@ Stand: Version `0.8.3` am 12. April 2026
 
 ## Aktueller Hinweis
 
+Heute (23. April 2026, lokaler UI-/Content-/Brand-Fix-Pass) wurde der sichtbare Einstieg ohne neue Produktlogik nachgeschärft:
+
+- Im Hero erklärt `hero-search-head` null-noise jetzt direkt als Suche mit grober Reiz-Einordnung und ruhigerer Auswahl, statt nur generisch weiterzuwinken.
+- Das vom Nutzer gelieferte Logo ist jetzt die verbindliche Markenquelle: Header nutzt eine PNG-Ableitung daraus, die Icon-Sets liegen als PNG-Varianten vor, und `opengraph-image` nutzt dieselbe Quelle ohne SVG-Nachbau.
+- `hero-kicker-row` wurde aus der Input-Anmutung herausgenommen und als ruhige Meta-/Badge-Zeile neu gefasst.
+- Die `nav-list` läuft ohne den störenden Außenborder weiter; Interaktion bleibt über Flächen-, Hover- und Fokuszustände klar.
+- Im Browse-Intro auf `/suche` sind Ansicht und `Neu mischen` jetzt sichtbarer als echte Steuerung statt wie bloße Metazeilen.
+
 Heute (18. April 2026, Spike-Fokuspass) wurde der Detailpfad `/spike/metadaten/...` sichtbar beruhigt:
 
 - rechte Infospalte (`Worauf das gerade ruht`) wurde entschärft: weniger ornamentale Kapselwirkung, ruhigere Staffelung der Metazeilen, `Lokal anlegen` klar nachgeordnet

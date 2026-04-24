@@ -15,7 +15,7 @@ const headingFont = Fredoka({
 });
 
 const metadataBase = getMetadataBase();
-const shareImageUrl = new URL("/og/og-null-noise-launch-v2.png", metadataBase).toString();
+const shareImageUrl = new URL("/opengraph-image", metadataBase).toString();
 
 const rootHydrationGuardScript = `
 (() => {
@@ -41,9 +41,13 @@ export const metadata: Metadata = {
   title: siteName,
   description: `${siteClaim} ${siteDescription}`,
   icons: {
-    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
-    shortcut: ["/icon.svg"],
-    apple: [{ url: "/apple-icon", type: "image/png" }],
+    icon: [
+      { url: "/brand/favicon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/brand/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/brand/favicon-48.png", sizes: "48x48", type: "image/png" },
+    ],
+    shortcut: ["/brand/favicon-32.png"],
+    apple: [{ url: "/brand/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
   openGraph: {
     title: siteName,
@@ -53,7 +57,7 @@ export const metadata: Metadata = {
         url: shareImageUrl,
         width: 1200,
         height: 630,
-        alt: "null-noise – Filme ruhiger schauen. Klarer wählen.",
+        alt: "Null Noise – ruhiger finden",
       },
     ],
   },

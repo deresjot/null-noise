@@ -20,7 +20,7 @@ export const scaleLabels: Record<
   },
   1: {
     short: "ruhig",
-    description: "Eher leise oder nur punktuell belastend.",
+    description: "Ruhig oder nur punktuell belastend.",
   },
   2: {
     short: "mittel",
@@ -83,7 +83,7 @@ export const soothingEffectLabels: Record<
 export const sourceTypeLabels: Record<AggregateSourceType, string> = {
   editorial_seed: "redaktionelle Startbasis",
   provisional_seed: "vorläufige Startbasis",
-  metadata_inference: "erste Lesart aus Basisdaten",
+  metadata_inference: "erste Einschätzung aus Basisdaten",
   community_median: "anonyme Rückmeldungen",
   mixed: "Startbasis und Rückmeldungen",
 };
@@ -104,9 +104,9 @@ export const stimulusDimensions: Array<{
     rangeHigh: "laut",
     valueLabels: {
       0: "sehr leise",
-      1: "eher leise",
+      1: "ruhig",
       2: "mittlere Lautstärke",
-      3: "eher laut",
+      3: "intensiv",
       4: "sehr laut",
     },
   },

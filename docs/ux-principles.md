@@ -53,6 +53,8 @@ Die Oberfläche soll sich ruhig verhalten.
 - keine versteckten Aktionen
 - keine überraschenden Zustandswechsel
 - kein UI, das erst beim Klicken erklärt, was es eigentlich tut
+- Meta-Elemente dürfen nicht wie Eingabefelder wirken, wenn sie nicht editierbar sind
+- Echte Steuerung soll als Steuerung lesbar sein: Umschalter, View-Toggles und Refresh-Aktionen brauchen sichtbare Affordance auch ohne Hover
 
 ### Sekundärinfos bleiben sekundär
 
@@ -90,6 +92,12 @@ Für `null-noise` heißt das:
 - `Worauf basiert das?` bleibt vertiefend und ruhig.
 - Unsicherheit wird sichtbar benannt.
 - Folge- und Escape-Logik bleiben klein und erklärbar.
+
+## Konkrete Folgen für Hero und Sucheinstieg
+
+- Die Startseite beschreibt den Dienst kurz und direkt statt mit einer generischen Platzhalterformel.
+- Der Hero-Hinweis benennt Suche, grobe Reiz-Einordnung und ruhigere Auswahl in Alltagssprache.
+- Browse-Steuerung trennt sichtbare Meta-Texte klar von klickbaren Aktionen.
 
 ## Bezug zu W3C COGA
 

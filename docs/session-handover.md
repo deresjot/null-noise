@@ -13,6 +13,15 @@ Stand: 12. April 2026
 
 Wenn ein neuer Chat ohne weiteren Kontext übernehmen soll, ist das hier der aktuelle Arbeitsstand in knapper, aber belastbarer Form:
 
+- Neu in dieser lokalen Runde (23. April 2026, UI-/Content-/Brand-Fix-Pass):
+  - das vom Nutzer gelieferte Logo ist jetzt die verbindliche Markenquelle
+  - Header nutzt eine reduzierte Szenen-Ableitung des neuen Logos; Favicon, Apple-Icon und OG-Bild wurden daran angepasst
+  - der Hero erklärt den Dienst jetzt konkreter (`Filme und Serien finden, grob nach Reizwirkung einschätzen und ruhiger auswählen.`)
+  - `hero-kicker-row` wurde aus der Input-Anmutung gelöst und als ruhige Meta-Zeile umgesetzt
+  - die Navigation läuft ohne störenden Button-Border weiter; Fokus- und Hover-Sichtbarkeit bleibt erhalten
+  - Browse-Steuerungen auf `/suche` sind als echte Aktionen klarer lesbar (`Liste`, `Karten`, `Neu mischen`)
+  - Stand ist lokal geprüft, aber bewusst nicht gepusht und nicht deployt
+
 - Neu in dieser lokalen Runde (18. April 2026, Spike-Fokuspass):
   - Spike-Detailseiten (`/spike/metadaten/...`) visuell beruhigt, ohne Daten- oder Logikänderung
   - rechte Infospalte (`Worauf das gerade ruht`) flacher und weniger dicht; Aktionsbereich klarer nachgeordnet

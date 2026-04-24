@@ -5,9 +5,9 @@ import {
   getSearchAggregatePresentation,
   getProfileTendency,
 } from "@/lib/format";
-import { createTitleExternalLookupKey } from "@/lib/local-titles";
+import { createTitleExternalLookupKey } from "@/lib/local-title-shared";
 import { createMetadataInferencePreview } from "@/lib/metadata-inference";
-import { getTmdbPosterProxyPath, type MetadataSpikeTitle } from "@/lib/metadata-spike";
+import { getTmdbPosterProxyPath, type MetadataSpikeTitle } from "@/lib/metadata-shared";
 import { normalizeSearchText } from "@/lib/search";
 import { buildTitlePocketEntryFromMetadata } from "@/lib/title-pocket";
 import { ResultPoster } from "./result-poster";
@@ -19,6 +19,7 @@ interface ExternalResultListProps {
   localTitleByExternalKey?: Record<string, string>;
   query: string;
   writesEnabled?: boolean;
+  displayMode?: "list" | "grid";
 }
 
 function formatMediaType(value: MetadataSpikeTitle["mediaType"]): string {
@@ -161,9 +162,6 @@ function ExternalItemAction({
             Einordnung lesen
           </Link>
         </div>
-        <div className="result-card-note-zone">
-          <p className="result-card-note">Hier liegt schon eine eigene Seite bereit.</p>
-        </div>
       </>
     );
   }
@@ -181,7 +179,7 @@ function ExternalItemAction({
           </Link>
         </div>
         <div className="result-card-note-zone">
-          <p className="result-card-note">Diese Instanz bleibt gerade lesend.</p>
+          <p className="result-card-note">Nur lesen ist hier gerade aktiv.</p>
         </div>
       </>
     );
@@ -198,9 +196,6 @@ function ExternalItemAction({
           Details
         </Link>
       </div>
-      <div className="result-card-note-zone">
-        <p className="result-card-note">Lokales Anlegen liegt erst auf der Detailseite.</p>
-      </div>
     </>
   );
 }
@@ -210,6 +205,7 @@ export function ExternalResultList({
   localTitleByExternalKey = {},
   query,
   writesEnabled = true,
+  displayMode = "list",
 }: ExternalResultListProps) {
   if (!items.length) {
     return null;
@@ -218,7 +214,7 @@ export function ExternalResultList({
   const sortedItems = getSortedItems(items, query);
 
   return (
-    <ul className="result-grid result-grid-external">
+    <ul className="result-grid result-grid-external" data-layout={displayMode}>
       {sortedItems.map((item) => {
         const preview = createMetadataInferencePreview(item);
         const tendency = getProfileTendency(preview.stimulusProfile);
@@ -265,15 +261,15 @@ export function ExternalResultList({
               </header>
 
               <div className="result-card-reading-block">
-                <p className="result-card-reading-kicker">Erstlesart</p>
+                <p className="result-card-reading-kicker">Erste Einschätzung</p>
                 <SearchToneScale
-                  caption="Erstlesart"
+                  caption="Erste Einschätzung"
                   emphasis="card"
                   mode={aggregatePresentation.state}
                   showCaption={false}
                   showValueLabel
-                  startLabel="ruhiger"
-                  endLabel="intensiver"
+                  startLabel="ruhig"
+                  endLabel="intensiv"
                   value={tendency.tone}
                   valueLabel={tendency.label}
                 />

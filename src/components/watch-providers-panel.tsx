@@ -67,6 +67,24 @@ function getProviderLinkLabel(offerMode: "direct" | "listing"): string {
   return offerMode === "direct" ? "Direkt zum Angebot" : "Zur Angebotsseite";
 }
 
+function getFreeProviderHighlights(state: MetadataWatchProviderState) {
+  if (state.kind !== "success") {
+    return [];
+  }
+
+  const freeGroup = state.groups.find((group) => group.id === "free");
+
+  if (!freeGroup) {
+    return [];
+  }
+
+  const featured = freeGroup.providers.filter((provider) =>
+    /arte|zdf mediathek|zdf/iu.test(provider.name),
+  );
+
+  return (featured.length ? featured : freeGroup.providers).slice(0, 3);
+}
+
 export function WatchProvidersPanel({
   heading = "Verfügbar bei",
   headingLevel = "h3",
@@ -81,6 +99,7 @@ export function WatchProvidersPanel({
             watchProviderGroupOrder.indexOf(left.id) - watchProviderGroupOrder.indexOf(right.id),
         )
       : [];
+  const freeHighlights = getFreeProviderHighlights(state);
 
   return (
     <section
@@ -96,6 +115,24 @@ export function WatchProvidersPanel({
             : `Für ${formatRegionLabel(state.region)}. Direktlinks sind gerade nicht verfügbar. Die Angebotsseite bleibt aber offen.`}
         </p>
       </div>
+      {freeHighlights.length ? (
+        <section className="watch-provider-free-start" aria-label="Gerade frei verfügbar">
+          <p className="watch-provider-free-kicker">Gerade frei verfügbar</p>
+          <ul className="plain-list watch-provider-free-list">
+            {freeHighlights.map((provider) => (
+              <li key={`free-${provider.id}`}>
+                {provider.offerUrl ? (
+                  <a href={provider.offerUrl} rel="noreferrer" target="_blank">
+                    {provider.name}
+                  </a>
+                ) : (
+                  provider.name
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {state.kind === "success" ? (
         <>

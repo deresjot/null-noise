@@ -5,7 +5,7 @@ interface ExplanationPanelProps {
 export function ExplanationPanel({ compact = false }: ExplanationPanelProps) {
   return (
     <section className="panel" aria-labelledby="explanation-panel-heading">
-      <h2 id="explanation-panel-heading">Wie diese Lesart gemeint ist</h2>
+      <h2 id="explanation-panel-heading">Wie diese Einschätzung gemeint ist</h2>
       <p>Keine Messwerte, keine Scores, keine falsche Sicherheit. Nur eine grobe Richtung.</p>
       <ul className="plain-list">
         <li>Grundlautstärke meint das normale Lautstärkeniveau eines Titels.</li>

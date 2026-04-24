@@ -67,6 +67,16 @@ Darum zeigt `null-noise`:
 - worauf diese Einschätzung beruht
 - wie viel Rückhalt es bisher gibt
 
+## FSK nur als schwaches Kontextsignal (später)
+
+Altersfreigaben wie FSK können höchstens ein schwaches Zusatzsignal sein. Sie sind keine Reizklassifikation.
+
+Darum gilt für `null-noise`:
+
+- keine direkte Ableitung `FSK = ruhig/intensiv`
+- keine harte Filter- oder Score-Logik aus FSK
+- wenn später genutzt, dann nur defensiv als Kontextsignal neben den bestehenden Erstlesart-Signalen
+
 ## Trennung von Quellen
 
 TMDb liefert Katalog- und Metadaten. `null-noise` ergänzt darüber eine eigene, vorsichtige Lesart.

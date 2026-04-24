@@ -56,6 +56,20 @@ export function SearchQueryField({
   const [statusKind, setStatusKind] = useState<"idle" | "loading" | "empty" | "error">("idle");
 
   useEffect(() => {
+    const syncTimer = window.setTimeout(() => {
+      setQuery(defaultValue);
+      setIsOpen(false);
+      setSuggestions([]);
+      setStatusKind("idle");
+      setStatusMessage("");
+    }, 0);
+
+    return () => {
+      window.clearTimeout(syncTimer);
+    };
+  }, [defaultValue]);
+
+  useEffect(() => {
     const normalizedQuery = query.trim();
     let currentController: AbortController | null = null;
 

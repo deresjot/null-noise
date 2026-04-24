@@ -2,18 +2,28 @@ import packageJson from "../../package.json";
 
 export const currentBuild = {
   version: packageJson.version,
-  label: "Spike Layout Stabilization Pass",
-  releasedAt: "2026-04-18 · 20:40 CET",
+  label: "Lokaler Logo- und UI-Fix-Pass",
+  releasedAt: "2026-04-23 · 15:10 CET",
 };
 
 export const releaseNotes = [
   {
     version: packageJson.version,
+    label: "Lokaler Logo- und UI-Fix-Pass",
+    releasedAt: "2026-04-23",
+    entries: [
+      "Der Hero erklärt null-noise jetzt direkt als Suche mit grober Reiz-Einordnung statt mit einer generischen Platzhalterformulierung.",
+      "Das vom Nutzer gelieferte Logo wurde als neue Markenquelle im Header eingebunden; Favicon, Apple-Icon und OG-Bild wurden daraus neu abgeleitet.",
+      "Die Hero-Kicker-Zeile wirkt nicht mehr wie ein Eingabefeld, die Navigation läuft ohne störenden Border, und Browse-Steuerungen lesen sich klarer als echte Aktionen.",
+    ],
+  },
+  {
+    version: "0.8.3",
     label: "Spike Layout Stabilization Pass",
     releasedAt: "2026-04-18",
     entries: [
       "Die Spike-Detailseite wurde visuell beruhigt: linke Hauptspalte klarer priorisiert, rechte Infospalte flacher und weniger kapselartig.",
-      "Empfehlungskarten unter `Dazu passt auch …` wurden verdichtet: kompaktere Kartenhöhe, geringere Scrolllast, Erstlesart bleibt vollständig sichtbar.",
+      "Empfehlungskarten unter `Dazu passt auch …` wurden verdichtet: kompaktere Kartenhöhe, geringere Scrolllast, erste Einschätzung bleibt vollständig sichtbar.",
       "Der Bereich `Verfügbar bei` wurde rhythmisch ruhiger eingebunden und als nachgeordneter Abschnitt klarer lesbar gemacht.",
       "Auf `/suche` wurde `search-direct-starts` als responsive Kachelreihe geschärft, inklusive stabiler Fokus- und Klickflächen.",
       "Der linke Artefaktrand in Browse-Gruppen wurde bereinigt, indem die doppelte linke Kante aus Wrapper- und Gruppenrahmung entfernt wurde.",

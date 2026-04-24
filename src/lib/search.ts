@@ -1,7 +1,8 @@
 import type { SearchFilters, TitleRecord, ToneFilter } from "@/lib/types";
 
 const toneValues: ToneFilter[] = ["all", "calm", "balanced", "intense"];
-const AVOIDANCE_EXCLUDE_FROM_LEVEL = 1;
+// Entlastungsfilter sollen eingrenzen, aber nicht regelmäßig alles ausblenden.
+const AVOIDANCE_EXCLUDE_FROM_LEVEL = 4;
 
 function isToneFilter(value: string): value is ToneFilter {
   return toneValues.includes(value as ToneFilter);

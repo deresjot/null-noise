@@ -144,7 +144,7 @@ function getFeedbackStatus(value: string | string[] | undefined) {
   if (status === "inactive") {
     return {
       title: "Rückmeldung bleibt hier gerade zu",
-      text: "Lesen geht schon. Schreiben kommt in dieser Instanz später dazu.",
+      text: "Lesen geht schon. Schreiben geht in dieser Instanz gerade nicht.",
       tone: "warning" as const,
     };
   }
@@ -270,7 +270,7 @@ export default async function MetadataSpikeDetailPage({
     : {
         eyebrow: "Stand heute",
         title: "Kaum Hinweise",
-        text: "Das ruht hier erst auf Basisdaten und einer vorsichtigen Erstlesart. Eine eigene Seite kommt erst danach.",
+        text: "Das ruht hier erst auf Basisdaten und einer vorsichtigen ersten Einschätzung. Eine eigene Seite kommt erst danach.",
       };
   const activeProfile = localTitle ? localTitle.stimulusProfile : preview.stimulusProfile;
   const tendency = getProfileTendency(activeProfile);
@@ -293,7 +293,7 @@ export default async function MetadataSpikeDetailPage({
     (!writesEnabled
       ? {
           title: "Rückmeldung bleibt hier gerade zu",
-          text: "Lesen geht schon. Schreiben kommt in dieser Instanz später dazu.",
+          text: "Lesen geht schon. Schreiben geht in dieser Instanz gerade nicht.",
           tone: "warning" as const,
         }
       : null);
@@ -366,11 +366,11 @@ export default async function MetadataSpikeDetailPage({
         <div className="detail-hero-copy">
           <p className="eyebrow">{`${formatMediaType(item.mediaType)} · ${item.releaseYear ?? "Jahr offen"}`}</p>
           <h1>{item.title}</h1>
-          <section className="detail-reading-block" aria-label="Erstlesart">
-            <p className="detail-reading-kicker">Erstlesart</p>
+          <section className="detail-reading-block" aria-label="Erste Einschätzung">
+            <p className="detail-reading-kicker">Erste Einschätzung</p>
             <p className="detail-hero-tendency">{tendency.label}</p>
             <SearchToneScale
-              caption="Leise bis laut"
+              caption="Ruhig bis intensiv"
               emphasis="hero"
               mode={aggregatePresentation.state}
               note={tendency.text}
@@ -454,7 +454,7 @@ export default async function MetadataSpikeDetailPage({
             </div>
             <div>
               <dt>Grundlage</dt>
-              <dd>{localTitle ? "Eigene Seite plus vorhandene Rückmeldungen" : "Erstlesart aus Basisdaten"}</dd>
+              <dd>{localTitle ? "Eigene Seite plus vorhandene Rückmeldungen" : "Erste Einschätzung aus Basisdaten"}</dd>
             </div>
             <div>
               <dt>Quelle</dt>
@@ -502,13 +502,8 @@ export default async function MetadataSpikeDetailPage({
         </aside>
       </header>
 
-      {watchProviderState ? (
-        <WatchProvidersPanel
-          headingLevel="h2"
-          prominence="featured"
-          state={watchProviderState}
-        />
-      ) : null}
+      {watchProviderState ? <WatchProvidersPanel state={watchProviderState} /> : null}
+      {letterboxdState?.kind === "success" ? <LetterboxdPanel state={letterboxdState} /> : null}
 
       {followupState.sections.length || followupState.notices.length ? (
         <section className="detail-followups-stack" aria-label="Weiterführende Titel">
@@ -535,8 +530,6 @@ export default async function MetadataSpikeDetailPage({
           ))}
         </section>
       ) : null}
-
-      {letterboxdState?.kind === "success" ? <LetterboxdPanel state={letterboxdState} /> : null}
     </article>
   );
 }

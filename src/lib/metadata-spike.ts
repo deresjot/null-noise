@@ -2,6 +2,7 @@ import { DataExchangeClient, SendApiAssetCommand } from "@aws-sdk/client-dataexc
 import { z } from "zod";
 
 import { createMetadataInferencePreview } from "./metadata-inference";
+import { getProfileTendency } from "./format";
 import { getTextMatchScore, matchesAvoidanceFilters, normalizeSearchText } from "./search";
 import type { SearchFilters } from "./types";
 
@@ -85,7 +86,7 @@ export type MetadataSpikeSearchState =
       items: MetadataSpikeTitle[];
     };
 
-export type MetadataSpikeBrowseSectionId = "quiet" | "loud";
+export type MetadataSpikeBrowseSectionId = "quiet" | "balanced" | "loud";
 
 export interface MetadataSpikeBrowseSection {
   id: MetadataSpikeBrowseSectionId;
@@ -1365,19 +1366,31 @@ function getBrowseGenreBias(
   return null;
 }
 
-function getBrowseSectionTone(
-  filters: SearchFilters,
-  sectionId: MetadataSpikeBrowseSectionId,
-): SearchFilters["tone"] {
-  if (filters.tone === "calm") {
-    return sectionId === "quiet" ? "calm" : "balanced";
+function getBrowseSectionTone(sectionId: MetadataSpikeBrowseSectionId): SearchFilters["tone"] {
+  if (sectionId === "quiet") {
+    return "calm";
   }
 
-  if (filters.tone === "intense") {
-    return sectionId === "quiet" ? "balanced" : "intense";
+  if (sectionId === "loud") {
+    return "intense";
   }
 
-  return sectionId === "quiet" ? "calm" : "intense";
+  return "balanced";
+}
+
+function getBrowseSectionIdForItem(item: MetadataSpikeTitle): MetadataSpikeBrowseSectionId {
+  const preview = createMetadataInferencePreview(item);
+  const tendency = getProfileTendency(preview.stimulusProfile);
+
+  if (tendency.tone === "ruhig") {
+    return "quiet";
+  }
+
+  if (tendency.tone === "intensiv") {
+    return "loud";
+  }
+
+  return "balanced";
 }
 
 function matchesBrowseFilters(item: MetadataSpikeTitle, filters: SearchFilters): boolean {
@@ -1404,7 +1417,11 @@ function isPreferredBrowseSectionMatch(
     return score <= 1.95;
   }
 
-  return score >= 2.65;
+  if (sectionId === "loud") {
+    return score >= 2.65;
+  }
+
+  return score > 1.95 && score < 2.65;
 }
 
 function isFallbackBrowseSectionMatch(
@@ -1415,7 +1432,11 @@ function isFallbackBrowseSectionMatch(
     return score <= 2.3;
   }
 
-  return score >= 2.2;
+  if (sectionId === "loud") {
+    return score >= 2.2;
+  }
+
+  return score > 1.7 && score < 2.9;
 }
 
 function sortBrowseCandidates(
@@ -1425,7 +1446,18 @@ function sortBrowseCandidates(
 ): BrowseCandidate[] {
   return [...items].sort((left, right) => {
     if (left.score !== right.score) {
-      return sectionId === "quiet" ? left.score - right.score : right.score - left.score;
+      if (sectionId === "quiet") {
+        return left.score - right.score;
+      }
+
+      if (sectionId === "loud") {
+        return right.score - left.score;
+      }
+
+      const leftDistance = Math.abs(left.score - 2.3);
+      const rightDistance = Math.abs(right.score - 2.3);
+
+      return leftDistance - rightDistance;
     }
 
     const leftPosterBonus = left.item.posterPath ? 1 : 0;
@@ -2082,7 +2114,7 @@ export async function searchTmdbMetadata(
         query: normalizedQuery,
         source: "tmdb",
         message:
-          "Die zusätzlichen Treffer zeigen nur Titeldaten. Eine Erstlesart liegt dafür noch nicht vor.",
+          "Die zusätzlichen Treffer zeigen nur Titeldaten. Eine erste Einschätzung liegt dafür noch nicht vor.",
         items: relevantPrimaryItems,
       };
     }
@@ -2119,7 +2151,7 @@ export async function searchTmdbMetadata(
           query: normalizedQuery,
           source: "tmdb",
           message:
-            "Die zusätzlichen Treffer stammen aus einer fehlertoleranten Suche. Eine Erstlesart liegt dafür noch nicht vor.",
+            "Die zusätzlichen Treffer stammen aus einer fehlertoleranten Suche. Eine erste Einschätzung liegt dafür noch nicht vor.",
           items: relevantRetryItems,
         };
       }
@@ -2132,7 +2164,7 @@ export async function searchTmdbMetadata(
         query: normalizedQuery,
         source: "tmdb",
         message:
-          "Die zusätzlichen Treffer zeigen nur Titeldaten. Eine Erstlesart liegt dafür noch nicht vor.",
+          "Die zusätzlichen Treffer zeigen nur Titeldaten. Eine erste Einschätzung liegt dafür noch nicht vor.",
         items: relevantPrimaryItems,
       };
     }
@@ -2191,8 +2223,7 @@ export async function browseTmdbMetadata(
   dependencies: MetadataSpikeDependencies = {},
 ): Promise<MetadataSpikeBrowseState> {
   const accessToken = getTmdbAccessToken(dependencies.accessToken);
-  const browseLimit =
-    filters.avoidPeaks && filters.avoidDensity ? 2 : filters.avoidPeaks || filters.avoidDensity ? 3 : 5;
+  const browseLimit = filters.avoidPeaks && filters.avoidDensity ? 4 : 5;
   const sectionDefinitions: Array<{
     description: string;
     id: MetadataSpikeBrowseSectionId;
@@ -2200,13 +2231,18 @@ export async function browseTmdbMetadata(
   }> = [
     {
       id: "quiet",
-      title: "Eher leise",
-      description: "Ruhigerer Einstieg, weniger harte Spitzen.",
+      title: "ruhig",
+      description: "Ruhigerer Einstieg, weniger Druck.",
+    },
+    {
+      id: "balanced",
+      title: "durchwachsen",
+      description: "Ruhige und dichtere Momente wechseln sich ab.",
     },
     {
       id: "loud",
-      title: "Eher laut",
-      description: "Dichter oder spürbarer, aber noch im selben Rahmen.",
+      title: "intensiv",
+      description: "Spürbarer und dichter, aber weiterhin im selben Rahmen.",
     },
   ];
 
@@ -2224,7 +2260,7 @@ export async function browseTmdbMetadata(
 
   const requestConfigs = mediaTypes.flatMap((mediaType) => {
     return sectionDefinitions.flatMap((section) => {
-      const resolvedTone = getBrowseSectionTone(filters, section.id);
+      const resolvedTone = getBrowseSectionTone(section.id);
       const pages = getBrowsePages(
         [
           mix,
@@ -2282,6 +2318,7 @@ export async function browseTmdbMetadata(
     );
 
     const successfulPayloads: Record<MetadataSpikeBrowseSectionId, MetadataSpikeTitle[]> = {
+      balanced: [],
       loud: [],
       quiet: [],
     };
@@ -2315,14 +2352,20 @@ export async function browseTmdbMetadata(
 
     const usedIds = new Set<string>();
     const sections = sectionDefinitions.map((section) => {
-      const resolvedTone = getBrowseSectionTone(filters, section.id);
+      const resolvedTone = getBrowseSectionTone(section.id);
       const sectionFilters: SearchFilters = {
         ...filters,
         tone: resolvedTone,
       };
-      const pool = dedupeMetadataItemsByTitle(dedupeMetadataItems(successfulPayloads[section.id]))
-        .filter((item) => item.posterPath)
-        .filter((item) => matchesBrowseFilters(item, sectionFilters));
+      const basePool = dedupeMetadataItemsByTitle(dedupeMetadataItems(successfulPayloads[section.id])).filter(
+        (item) => item.posterPath,
+      );
+      const sectionPool = basePool.filter((item) => getBrowseSectionIdForItem(item) === section.id);
+      const filteredPool = sectionPool.filter((item) => matchesBrowseFilters(item, sectionFilters));
+      const pool =
+        (sectionFilters.avoidPeaks || sectionFilters.avoidDensity) && !filteredPool.length
+          ? sectionPool
+          : filteredPool;
       const items = pickBrowseSectionItems(pool, section.id, mix, usedIds, browseLimit);
 
       for (const item of items) {
@@ -2351,6 +2394,7 @@ export async function browseTmdbMetadata(
     if (
       sawInvalidPayload &&
       !successfulPayloads.quiet.length &&
+      !successfulPayloads.balanced.length &&
       !successfulPayloads.loud.length
     ) {
       return {

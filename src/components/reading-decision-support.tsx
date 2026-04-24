@@ -23,6 +23,13 @@ export function ReadingDecisionSupport({
   comparisons,
   decision,
 }: ReadingDecisionSupportProps) {
+  const positiveIntro =
+    decision.tone === "steady"
+      ? "Könnte heute gut funktionieren."
+      : decision.tone === "caution"
+        ? "Wirkt eher konstant."
+        : "Wenn du Reserve hast, kann es trotzdem aufgehen.";
+
   return (
     <section className="reading-support-stack" aria-label="Entscheidungshilfe">
       <section className="reading-support-card" data-tone={decision.tone} aria-labelledby="reading-decision-heading">
@@ -30,6 +37,7 @@ export function ReadingDecisionSupport({
         <h2 id="reading-decision-heading" className="reading-support-title">
           {decision.title}
         </h2>
+        <p className="reading-support-positive">{positiveIntro}</p>
         <p className="reading-support-text">{decision.text}</p>
       </section>
 

@@ -171,7 +171,7 @@ export function getAggregatePresentation(aggregate: RatingAggregate): {
       text: "Zur Startbasis kommen Rückmeldungen dazu. Ganz fest ist das noch nicht.",
       chip: "Hinweise",
       state: "growing",
-      basis: "Erstlesart plus erste Rückmeldungen.",
+    basis: "Erste Einschätzung plus erste Rückmeldungen.",
     };
   }
 
@@ -217,7 +217,7 @@ export function getSearchAggregatePresentation(aggregate: RatingAggregate): {
       text: "Ein paar Rückmeldungen tragen schon mit.",
       chip: "Hinweise",
       state: "growing",
-      basis: "Erstlesart plus erste Rückmeldungen.",
+      basis: "Erste Einschätzung plus erste Rückmeldungen.",
     };
   }
 
@@ -225,7 +225,7 @@ export function getSearchAggregatePresentation(aggregate: RatingAggregate): {
     if (aggregate.level === "hoch") {
       return {
         label: "Das wirkt inzwischen stimmiger",
-        text: "Erstlesart und Rückmeldungen ziehen inzwischen eher zusammen.",
+        text: "Erste Einschätzung und Rückmeldungen ziehen inzwischen eher zusammen.",
         chip: "Trägt",
         state: "rated",
         basis: "Basisdaten und mehrere Rückmeldungen ziehen zusammen.",
@@ -234,10 +234,10 @@ export function getSearchAggregatePresentation(aggregate: RatingAggregate): {
 
     return {
       label: "Dafür gibt es erste Rückmeldungen",
-      text: "Zur Erstlesart kommen erste Rückmeldungen dazu.",
+      text: "Zur ersten Einschätzung kommen erste Rückmeldungen dazu.",
       chip: "Hinweise",
       state: "growing",
-      basis: "Erstlesart plus erste Rückmeldungen.",
+      basis: "Erste Einschätzung plus erste Rückmeldungen.",
     };
   }
 
@@ -260,7 +260,7 @@ export function getProfileTendency(profile: Pick<StimulusProfile, "volumeLevel" 
   if (weightedValue <= 1.35) {
     return {
       tone: "ruhig",
-      label: "eher leise",
+      label: "ruhig",
       text: "Mehr Luft als Druck. Spitzen und Dichte bleiben meist im Hintergrund.",
     };
   }
@@ -268,7 +268,7 @@ export function getProfileTendency(profile: Pick<StimulusProfile, "volumeLevel" 
   if (weightedValue <= 1.95) {
     return {
       tone: "ruhig",
-      label: "eher leise mit dichteren Spitzen",
+      label: "ruhig",
       text: "Im Grundton eher ruhig, aber nicht ganz ohne engere Momente.",
     };
   }
@@ -276,14 +276,14 @@ export function getProfileTendency(profile: Pick<StimulusProfile, "volumeLevel" 
   if (weightedValue <= 2.55) {
     return {
       tone: "ausgeglichen",
-      label: "zwischen leise und laut",
+      label: "durchwachsen",
       text: "Ruhigere Strecken und dichtere Phasen wechseln sich eher ab.",
     };
   }
 
   return {
     tone: "intensiv",
-    label: "eher laut",
+    label: "intensiv",
     text: "Spitzen und Dichte deuten eher auf einen anstrengenderen Titel hin.",
   };
 }
@@ -298,7 +298,7 @@ export function getDecisionPresentation(input: {
     if (input.state === "rated") {
       return {
         title: "Passt gerade gut.",
-        text: "Eher ruhig. Das wirkt passend, wenn du gerade wenig Reibung willst.",
+        text: "Ruhig. Das wirkt passend, wenn du gerade wenig Reibung willst.",
         tone: "steady",
       };
     }
@@ -306,14 +306,14 @@ export function getDecisionPresentation(input: {
     if (input.state === "growing") {
       return {
         title: "Kann gut passen.",
-        text: "Eher ruhig. Das ist aber noch keine feste Einordnung.",
+        text: "Ruhig. Das ist aber noch keine feste Einordnung.",
         tone: "steady",
       };
     }
 
     return {
       title: "Kann gut gehen.",
-      text: "Erste Einschätzung: eher ruhig.",
+      text: "Erste Einschätzung: ruhig.",
       tone: "steady",
     };
   }
@@ -360,7 +360,7 @@ export function getDecisionPresentation(input: {
 
   return {
     title: "Lieber mit etwas Reserve.",
-    text: "Erste Einschätzung: eher intensiv. Das kann schnell zu viel werden.",
+    text: "Erste Einschätzung: intensiv. Das kann schnell zu viel werden.",
     tone: "risk",
   };
 }
@@ -380,7 +380,7 @@ export function getCautionHints(
   }
 
   if (profile.volumeLevel >= 3) {
-    hints.push("das Grundniveau drückt eher laut nach vorn");
+    hints.push("das Grundniveau wirkt klar intensiv");
   }
 
   if (!hints.length && weightedValue >= 2) {
@@ -396,14 +396,14 @@ export function getCautionHints(
 
 export function getCompactProfileTendencyLabel(tone: "ruhig" | "ausgeglichen" | "intensiv"): string {
   if (tone === "ruhig") {
-    return "eher leise";
+    return "ruhig";
   }
 
   if (tone === "ausgeglichen") {
-    return "zwischen leise und laut";
+    return "durchwachsen";
   }
 
-  return "eher laut";
+  return "intensiv";
 }
 
 export function getCardReadingStatus(aggregate: RatingAggregate): string {
@@ -417,29 +417,5 @@ export function getCardReadingStatus(aggregate: RatingAggregate): string {
 export function getReadingReasonLine(
   profile: Pick<StimulusProfile, "volumeLevel" | "peakIntensity" | "stimulusDensity">,
 ): string {
-  if (profile.peakIntensity <= 1 && profile.stimulusDensity <= 1) {
-    return "wenig harte Spitzen";
-  }
-
-  if (profile.peakIntensity <= 1 && profile.stimulusDensity <= 2) {
-    return "eher gleichmäßig und nicht zu dicht";
-  }
-
-  if (profile.stimulusDensity <= 1 && profile.volumeLevel <= 1) {
-    return "eher ruhiger Einstieg";
-  }
-
-  if (profile.peakIntensity >= 3 && profile.stimulusDensity >= 3) {
-    return "spürbare Spitzen und dichte Phasen";
-  }
-
-  if (profile.peakIntensity >= 3) {
-    return "spürbare harte Spitzen";
-  }
-
-  if (profile.stimulusDensity >= 3) {
-    return "dichter, aber nicht ganz extrem";
-  }
-
-  return "zwischen ruhigeren und dichteren Momenten";
+  return getCompactProfileTendencyLabel(getProfileTendency(profile).tone);
 }

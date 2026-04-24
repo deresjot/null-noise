@@ -4,7 +4,7 @@ export default function ExplanationPage() {
   return (
     <section className="section-stack">
       <div className="section-header">
-        <p className="eyebrow">Lesart</p>
+        <p className="eyebrow">Einordnung</p>
         <h1>So ist die Einordnung hier gemeint</h1>
         <p>Die Einordnung bleibt bewusst grob. Sie soll vor dem Schauen helfen, nicht das Schauen ersetzen.</p>
       </div>

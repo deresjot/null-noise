@@ -19,6 +19,9 @@ type MetadataInferenceAssessment = {
   signalState: MetadataSeedSignalState;
 };
 
+// Hinweis für spätere Iterationen:
+// Altersfreigaben (z. B. FSK) sind kein Reizlast-Proxy und werden hier bewusst nicht als harter Treiber genutzt.
+
 const metadataGenreRules: MetadataSeedRule[] = [
   {
     needles: ["action"],

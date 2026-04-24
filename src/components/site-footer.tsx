@@ -10,7 +10,7 @@ export function SiteFooter() {
           <div className="footer-signoff">
             <p className="eyebrow">null-noise</p>
             <h2 id="privacy-summary-heading">Ein Titel zuerst. Alles Weitere danach.</h2>
-            <p>Die Oberfläche bleibt absichtlich knapp. Mehr als eine erste Lesart will sie nicht sein.</p>
+            <p>Die Oberfläche bleibt absichtlich knapp. Mehr als eine erste Einschätzung will sie nicht sein.</p>
             <p className="field-note">
               Ohne Konto. Ohne Tracker. Ohne großes Theater.
             </p>
@@ -18,7 +18,7 @@ export function SiteFooter() {
 
           <div className="footer-link-cloud" aria-label="Direkt erreichbar">
             <Link href="/suche">Suche</Link>
-            <Link href="/erklaerung">Lesart</Link>
+            <Link href="/erklaerung">Einordnung</Link>
             <Link href="/bedienung">Hilfe</Link>
             <Link href="/barrierefreiheit">Barrierefreiheit</Link>
             <Link href="/datenschutz">Datenschutz</Link>

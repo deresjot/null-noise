@@ -4,7 +4,7 @@ import {
   getReadingReasonLine,
   getProfileTendency,
 } from "@/lib/format";
-import { getTmdbPosterProxyPath, type MetadataSpikeTitle } from "@/lib/metadata-spike";
+import { getTmdbPosterProxyPath, type MetadataSpikeTitle } from "@/lib/metadata-shared";
 import type { StimulusProfile, TitleKind, TitleRecord } from "@/lib/types";
 
 export type TitlePocketEntry = {

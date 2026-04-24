@@ -6,7 +6,7 @@ import {
   getSearchAggregatePresentation,
   getProfileTendency,
 } from "@/lib/format";
-import { getTmdbPosterProxyPath } from "@/lib/metadata-spike";
+import { getTmdbPosterProxyPath } from "@/lib/metadata-shared";
 import { buildTitlePocketEntryFromTitle } from "@/lib/title-pocket";
 import type { TitleRecord } from "@/lib/types";
 import { SearchToneScale } from "./search-tone-scale";
@@ -19,6 +19,7 @@ interface ResultListProps {
   emptyText: string;
   allowDelete?: boolean;
   detailMode?: "local" | "external";
+  displayMode?: "list" | "grid";
   returnPath?: string;
 }
 
@@ -52,6 +53,7 @@ export function ResultList({
   emptyText,
   allowDelete = false,
   detailMode = "local",
+  displayMode = "list",
   returnPath = "/suche",
 }: ResultListProps) {
   if (!titles.length) {
@@ -64,7 +66,7 @@ export function ResultList({
   }
 
   return (
-    <ul className="result-grid">
+    <ul className="result-grid" data-layout={displayMode}>
       {titles.map((title) => {
         const tendency = getProfileTendency(title.stimulusProfile);
         const aggregatePresentation = getSearchAggregatePresentation(title.aggregation);
@@ -111,15 +113,15 @@ export function ResultList({
               </header>
 
               <div className="result-card-reading-block">
-                <p className="result-card-reading-kicker">Erstlesart</p>
+                <p className="result-card-reading-kicker">Erste Einschätzung</p>
                 <SearchToneScale
-                  caption="Erstlesart"
+                  caption="Erste Einschätzung"
                   emphasis="card"
                   mode={aggregatePresentation.state}
                   showCaption={false}
                   showValueLabel
-                  startLabel="ruhiger"
-                  endLabel="intensiver"
+                  startLabel="ruhig"
+                  endLabel="intensiv"
                   value={tendency.tone}
                   valueLabel={tendency.label}
                 />
