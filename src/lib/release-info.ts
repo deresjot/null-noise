@@ -2,19 +2,19 @@ import packageJson from "../../package.json";
 
 export const currentBuild = {
   version: packageJson.version,
-  label: "Lokaler Logo- und UI-Fix-Pass",
-  releasedAt: "2026-04-23 · 15:10 CET",
+  label: "Mobile UX, Evidence und Doku-Pass",
+  releasedAt: "2026-05-01 · 10:46 CEST",
 };
 
 export const releaseNotes = [
   {
     version: packageJson.version,
-    label: "Lokaler Logo- und UI-Fix-Pass",
-    releasedAt: "2026-04-23",
+    label: "Mobile UX, Evidence und Doku-Pass",
+    releasedAt: "2026-05-01",
     entries: [
-      "Der Hero erklärt null-noise jetzt direkt als Suche mit grober Reiz-Einordnung statt mit einer generischen Platzhalterformulierung.",
-      "Das vom Nutzer gelieferte Logo wurde als neue Markenquelle im Header eingebunden; Favicon, Apple-Icon und OG-Bild wurden daraus neu abgeleitet.",
-      "Die Hero-Kicker-Zeile wirkt nicht mehr wie ein Eingabefeld, die Navigation läuft ohne störenden Border, und Browse-Steuerungen lesen sich klarer als echte Aktionen.",
+      "Mobile Scroll-Stabilität, Einstiegshierarchie, Suchkarten und Footer wurden für echte iPhone-Prüfung lokal beruhigt.",
+      "Die Ersteinschätzung nutzt intern ein kalibriertes Evidence-Modell mit TMDb als aktiver Quelle und optionalen Adaptergrenzen.",
+      "Die Doku wurde für LLM-/Codex-Runden neu strukturiert; das Copy-Bundle verweist auf die Originaldateien als fachliche Quelle.",
     ],
   },
   {

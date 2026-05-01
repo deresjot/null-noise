@@ -22,7 +22,7 @@ async function getImageDataUrl(filename: string): Promise<string> {
 }
 
 export default async function OpenGraphImage() {
-  const logoSrc = await getImageDataUrl("null-noise-header.png");
+  const logoSrc = await getImageDataUrl("null-noise-logo.png");
 
   return new ImageResponse(
     (
@@ -58,7 +58,7 @@ export default async function OpenGraphImage() {
             alt="Null Noise Logo"
             style={{
               width: "360px",
-              height: "257px",
+              height: "360px",
               objectFit: "contain",
             }}
           />
