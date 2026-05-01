@@ -63,6 +63,6 @@ Vor einer größeren Änderung müssen mindestens diese Fragen beantwortbar sein
 ## Verweis auf die Projektbasis
 
 - [a11y-principles.md](./a11y-principles.md)
-- [a11y-testing.md](./a11y-testing.md)
+- [a11y-testing.md](../20-testing/a11y-testing.md)
 - [ux-principles.md](./ux-principles.md)
 - [product-principles.md](./product-principles.md)

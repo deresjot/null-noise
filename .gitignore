@@ -17,3 +17,6 @@ data/title-import-attempts.local.json
 prisma/*.db
 prisma/*.db-journal
 .vercel
+.codex-recovery/
+.codex-screenshots/
+docs.zip

@@ -1,0 +1,1 @@
+../../30-architecture/ui-component-strategy.md

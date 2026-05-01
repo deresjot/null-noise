@@ -25,7 +25,8 @@ describe("metadata inference", () => {
     expect(assessment.ratingSamples.peakIntensity[0]).toBe(3);
     expect(assessment.ratingSamples.stimulusDensity[0]).toBeGreaterThanOrEqual(2);
     expect(assessment.ratingSamples.soothingEffect[0]).toBeLessThanOrEqual(2);
-    expect(assessment.notes).toContain("Konflikte, Spitzen oder dichtere Reize");
+    expect(assessment.notes).toContain("intensivere Wirkung");
+    expect(assessment.evidenceSummary.status).toBe("Mehrere Hinweise");
   });
 
   it("keeps very thin metadata close to a neutral start basis without pretending certainty", () => {
@@ -45,7 +46,7 @@ describe("metadata inference", () => {
     expect(preview.stimulusProfile.peakIntensity).toBe(2);
     expect(preview.stimulusProfile.stimulusDensity).toBe(2);
     expect(preview.soothingEffect).toBe(2);
-    expect(preview.notes).toContain("nur eine neutrale erste Einordnung");
+    expect(preview.notes).toContain("vorläufig");
   });
 
   it("uses mapped TMDb genres to create a usable first assessment even when the synopsis stays thin", () => {
@@ -65,6 +66,6 @@ describe("metadata inference", () => {
     expect(preview.stimulusProfile.volumeLevel).toBeGreaterThanOrEqual(2);
     expect(preview.stimulusProfile.peakIntensity).toBe(3);
     expect(preview.stimulusProfile.stimulusDensity).toBe(3);
-    expect(preview.notes).toContain("Konflikte, Spitzen oder dichtere Reize");
+    expect(preview.notes).toContain("intensivere Wirkung");
   });
 });

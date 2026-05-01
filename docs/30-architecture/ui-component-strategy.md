@@ -6,11 +6,11 @@ Die Prüfung dieser Bausteine orientiert sich an WCAG 2.2 und an den öffentlich
 
 Seit dem Accessibility-Härtungspass vom 11. April 2026 wird diese Datei durch vier ergänzende Referenzdokumente flankiert:
 
-- [a11y-principles.md](./a11y-principles.md)
-- [a11y-testing.md](./a11y-testing.md)
-- [ux-principles.md](./ux-principles.md)
-- [product-principles.md](./product-principles.md)
-- [reference-goals.md](./reference-goals.md)
+- [a11y-principles.md](../10-principles/a11y-principles.md)
+- [a11y-testing.md](../20-testing/a11y-testing.md)
+- [ux-principles.md](../10-principles/ux-principles.md)
+- [product-principles.md](../10-principles/product-principles.md)
+- [reference-goals.md](../10-principles/reference-goals.md)
 
 ## Zielbild
 
@@ -81,7 +81,7 @@ Bevorzugte Bausteine:
 - Erklärbare Offenlegung: bevorzugt `details` und `summary` oder klar beschriftete Buttons, wenn eine Offenlegung später wirklich nötig ist
 - Kontextuelle Hilfe: sichtbarer Hilfetext zuerst, Toggletip nur für echte Zusatzinformation und niemals als Hover-only-Tooltip
 
-Nur mit klarer Begruendung zulassen:
+Nur mit klarer Begründung zulassen:
 
 - Dialoge
 - Tabs
@@ -162,7 +162,7 @@ Die erste Basis folgt dieser Strategie bereits:
 - `Search-Browse-Intro`: Ansicht und `Neu mischen` sind als kleine, aber klar lesbare Aktionsblöcke umgesetzt; Meta-Beschriftung und Steuerung bleiben sichtbar getrennt
 - `Erklärungsseite`: native Disclosure-Muster für vertiefende Informationen statt Custom-Accordion
 
-## Wann wir spaeter doch eine externe Bibliothek pruefen
+## Wann wir später doch eine externe Bibliothek prüfen
 
 Erst wenn ein Muster semantisch komplex wird und die Eigenumsetzung nachweislich mehr Risiko als Nutzen erzeugt. Typische Kandidaten wären:
 
