@@ -2,19 +2,19 @@ import packageJson from "../../package.json";
 
 export const currentBuild = {
   version: packageJson.version,
-  label: "Mobile UX, Evidence und Doku-Pass",
-  releasedAt: "2026-05-01 · 10:46 CEST",
+  label: "Mobile App-Experiment, Relay-Bundle und Live-Test-Pass",
+  releasedAt: "2026-05-03 · 12:41 CEST",
 };
 
 export const releaseNotes = [
   {
     version: packageJson.version,
-    label: "Mobile UX, Evidence und Doku-Pass",
-    releasedAt: "2026-05-01",
+    label: "Mobile App-Experiment, Relay-Bundle und Live-Test-Pass",
+    releasedAt: "2026-05-03",
     entries: [
-      "Mobile Scroll-Stabilität, Einstiegshierarchie, Suchkarten und Footer wurden für echte iPhone-Prüfung lokal beruhigt.",
-      "Die Ersteinschätzung nutzt intern ein kalibriertes Evidence-Modell mit TMDb als aktiver Quelle und optionalen Adaptergrenzen.",
-      "Die Doku wurde für LLM-/Codex-Runden neu strukturiert; das Copy-Bundle verweist auf die Originaldateien als fachliche Quelle.",
+      "Der optionale Mobile-App-Experimentmodus bleibt per `?view=app` erreichbar, ohne die Standardansicht zu ersetzen.",
+      "Das Copy-Bundle ist jetzt als KI-Relay-Bundle mit echten Markdown-Kopien für stabile App-Uploads eingeordnet.",
+      "Release-Stand wurde nach lokaler Prüfung, Push und Production-Deploy für den Live-Test sichtbar aktualisiert.",
     ],
   },
   {

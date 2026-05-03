@@ -10,7 +10,7 @@ export function SiteFooter() {
         <div className="mobile-experiment-footer-body">
           <p className="mobile-experiment-build-line">
             <strong>{`Version ${currentBuild.version}`}</strong>
-            {` · Stand ${currentBuild.releasedAt}`}
+            {` · ${currentBuild.label} · Stand ${currentBuild.releasedAt}`}
           </p>
           <p className="field-note">Früher Prototyp. Einschätzungen sind vorläufig.</p>
           <nav className="mobile-experiment-footer-links" aria-label="Info und Rechtliches">

@@ -1,6 +1,6 @@
 {
   "name": "null-noise",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "private": true,
   "description": "Barrierearmes MVP-Grundgeruest fuer null-noise",
   "scripts": {
