@@ -6,7 +6,8 @@ Diese Datei ist der kurze Arbeitsstand. Die lange Chronik liegt in `docs/90-arch
 
 - lokaler Branch: `null-noise`
 - lokaler Projektpfad: `/Users/deresjot/Library/CloudStorage/Dropbox/_PRIVAT/Code/git-webdev/null-noise`
-- Stand: lokal, nicht gepusht, nicht deployt
+- Stand: Branch `null-noise` wurde zuletzt nach Vercel deployed; aktuelle lokale Änderungen sind noch nicht gepusht oder deployt
+- Live-URL: https://null-noise.vercel.app
 - v0/grüne UI liegt im Archiv-Worktree und wird nicht bearbeitet
 - `main` ist keine Arbeitsfläche
 
@@ -33,6 +34,14 @@ Diese Datei ist der kurze Arbeitsstand. Die lange Chronik liegt in `docs/90-arch
 - Doku-Struktur:
   - kurzer LLM-Einstieg in `docs/00-current/llm-context.md`
   - stabile Prinzipien, Testing, Architektur und Historie getrennt
+  - bevorzugtes Upload-Set in `docs/00-current/upload-set/` mit maximal 10 echten Markdown-Dateien
+  - `docs/00-current/copy-bundle/` bleibt nur KI-Relay-/Übergabeordner mit echten Markdown-Kopien
+- Mobile App-Bedienlogik:
+  - Suche bleibt primärer Einstieg
+  - Richtungs-/Situationsstart bleibt sekundär und kompakter
+  - mobile Ansichten stärker als App-Screens organisiert
+  - keine neue Produktlogik und keine neue Navigation als Feature
+  - lokaler Playwright-/Test-Check gehört zum Abschluss dieses Passes
 
 ## Geänderte Kernbereiche
 

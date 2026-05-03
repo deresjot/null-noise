@@ -77,7 +77,7 @@ export default function BarrierefreiheitPage() {
               <code>prefers-reduced-motion</code> und ruhiges Verhalten ohne überraschende
               Zustandswechsel
             </li>
-            <li>Verständlichkeit: erste Einschätzung, Entscheidungsfrage und ehrliche Unsicherheit</li>
+            <li>Verständlichkeit: situative Lesart, Entscheidungsfrage und ehrliche Unsicherheit</li>
           </ul>
         </section>
 

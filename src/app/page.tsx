@@ -8,7 +8,7 @@ export default async function HomePage() {
   const betaNote = getBetaNoteText().replace(/^(Beta\.\s*)+/u, "");
 
   return (
-    <section className="home-page hero hero-home" aria-labelledby="home-hero-heading">
+    <section className="home-page hero hero-home mobile-command-screen" aria-labelledby="home-hero-heading">
       <div className="hero-home-stage home-hero-stage">
         <div className="hero-copy hero-copy-home">
           <div className="hero-copy-intro">
@@ -16,10 +16,9 @@ export default async function HomePage() {
               <p className="eyebrow hero-kicker-badge">null-noise</p>
               <p className="hero-kicker-note hero-kicker-badge">Beta</p>
             </div>
+            <p className="home-screen-question">Was passt gerade?</p>
             <h1 id="home-hero-heading">{siteClaim}</h1>
-            <p className="lead hero-home-context">
-              Außer du willst es.
-            </p>
+            <p className="lead hero-home-context">Titel suchen oder erst eine Richtung wählen.</p>
           </div>
         </div>
 
@@ -29,9 +28,7 @@ export default async function HomePage() {
         >
           <div className="hero-search-head">
             <h2 id="home-search-heading">Suche</h2>
-            <p className="field-note hero-search-note">
-              Filme und Serien finden, grob nach Reizwirkung einschätzen und ruhiger auswählen.
-            </p>
+            <p className="field-note hero-search-note">Titel suchen oder erst eine Richtung wählen.</p>
           </div>
 
           <SearchForm
@@ -48,7 +45,7 @@ export default async function HomePage() {
           />
           <section className="home-checkin-zone" aria-labelledby="home-checkin-heading">
             <h3 id="home-checkin-heading">Ohne Titel starten</h3>
-            <p className="field-note">Diese Einstiege führen direkt in bestehende Browse-Zustände.</p>
+            <p className="field-note">Tertiär, wenn du keinen Suchbegriff hast.</p>
             <nav className="home-checkin-actions" aria-label="Schneller Einstieg">
               <Link className="home-checkin-action" href="/suche?tone=calm#results-heading">
                 Etwas Ruhiges finden

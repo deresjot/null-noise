@@ -3,6 +3,8 @@ import type { MetadataSpikeTitle } from "@/lib/metadata-spike";
 import type { RatingSampleSet, ScaleValue } from "@/lib/types";
 
 export type StimulusAxis =
+  // Internal legacy keys stay stable; labels map to peaks_risk, hectic_density,
+  // visual_risk, emotional_weight, surprise_risk and relief_signals.
   | "audio_peaks"
   | "stimulus_density"
   | "visual_intensity"
@@ -21,6 +23,11 @@ export type StimulusSource =
 export type StimulusDirection = "calming" | "mixed" | "intensifying";
 export type StimulusConfidence = "weak" | "medium" | "strong";
 export type StimulusTone = "calm" | "mixed" | "intense";
+export type SituationalFitState =
+  | "passt eher"
+  | "vielleicht"
+  | "eher vorsichtig"
+  | "zu wenig Hinweise";
 export type StimulusEvidenceStatus =
   | "Metadatenbasis"
   | "Mehrere Hinweise"
@@ -43,6 +50,10 @@ export type StimulusEvidenceSummary = {
   status: StimulusEvidenceStatus;
   reasons: string[];
   note: string;
+  situationalFit: {
+    label: string;
+    state: SituationalFitState;
+  }[];
   evidence: StimulusEvidence[];
 };
 
@@ -95,7 +106,7 @@ const tmdbGenreRules: EvidenceRule[] = [
     strength: 1,
     confidence: "weak",
     signal: "Genre: Action",
-    explanation: "Action ist nur ein grober Hinweis auf dichtere Reize.",
+    explanation: "Hinweis aus Genre: Action kann für mehr Tempo sprechen, bleibt aber schwache Evidenz.",
   },
   {
     needles: ["horror"],
@@ -104,7 +115,7 @@ const tmdbGenreRules: EvidenceRule[] = [
     strength: 2,
     confidence: "medium",
     signal: "Genre: Horror",
-    explanation: "Horror spricht vorsichtig fuer mehr Anspannung oder Unvorhersehbarkeit.",
+    explanation: "Hinweis aus Genre: Horror kann für mehr Überraschung oder Anspannung sprechen.",
   },
   {
     needles: ["thriller"],
@@ -113,7 +124,7 @@ const tmdbGenreRules: EvidenceRule[] = [
     strength: 1,
     confidence: "weak",
     signal: "Genre: Thriller",
-    explanation: "Thriller ist ein schwacher Hinweis auf Spannung.",
+    explanation: "Hinweis aus Genre: Thriller ist nur ein schwacher Hinweis auf Spannung.",
   },
   {
     needles: ["war", "krieg"],
@@ -122,7 +133,7 @@ const tmdbGenreRules: EvidenceRule[] = [
     strength: 2,
     confidence: "medium",
     signal: "Genre: Krieg",
-    explanation: "Kriegskontext kann emotional und sensorisch belastender wirken.",
+    explanation: "Hinweis aus Genre: Kriegskontext kann emotional schwerer liegen.",
   },
   {
     needles: ["documentary", "dokumentarfilm"],
@@ -131,7 +142,7 @@ const tmdbGenreRules: EvidenceRule[] = [
     strength: 1,
     confidence: "weak",
     signal: "Genre: Dokumentarfilm",
-    explanation: "Dokumentarische Formen koennen berechenbarer sein, bleiben aber nicht automatisch ruhig.",
+    explanation: "Hinweis aus Genre: Dokumentarische Formen können berechenbarer wirken, sind aber keine Entwarnung.",
   },
   {
     needles: ["family", "familie", "romance", "romantik"],
@@ -139,8 +150,8 @@ const tmdbGenreRules: EvidenceRule[] = [
     direction: "calming",
     strength: 1,
     confidence: "weak",
-    signal: "Genre: ruhigere Alltagserzaehlung",
-    explanation: "Das Genre kann auf mildere oder entlastende Momente hindeuten.",
+    signal: "Genre: ruhigere Alltagserzählung",
+    explanation: "Hinweis aus Genre: Das kann auf mildere oder entlastende Momente hindeuten.",
   },
 ];
 
@@ -151,8 +162,8 @@ const tmdbKeywordRules: EvidenceRule[] = [
     direction: "intensifying",
     strength: 2,
     confidence: "medium",
-    signal: "Keywords: laute Spitzen",
-    explanation: "Mehrere Metadatenhinweise sprechen fuer moegliche laute oder ploetzliche Spitzen.",
+    signal: "Keywords: mögliche Spitzen",
+    explanation: "Hinweise aus Keywords: Es gibt Metadatenhinweise auf mögliche Spitzen. Keine Szenenprüfung.",
   },
   {
     needles: [
@@ -177,7 +188,7 @@ const tmdbKeywordRules: EvidenceRule[] = [
     strength: 2,
     confidence: "medium",
     signal: "Keywords: emotionale Last",
-    explanation: "Die Metadaten deuten auf emotional schwerere Themen.",
+    explanation: "Hinweise aus Keywords: Die Metadaten deuten auf emotional schwerere Themen.",
   },
   {
     needles: [
@@ -199,7 +210,7 @@ const tmdbKeywordRules: EvidenceRule[] = [
     strength: 2,
     confidence: "medium",
     signal: "Keywords: Drucksituationen",
-    explanation: "Drucksituationen koennen Tempo und Reizdichte erhoehen.",
+    explanation: "Hinweise aus Keywords: Drucksituationen können für mehr Hektik oder Dichte sprechen.",
   },
   {
     needles: ["jump scare", "jumpscare", "horror", "survival horror", "slasher", "stalking"],
@@ -208,7 +219,7 @@ const tmdbKeywordRules: EvidenceRule[] = [
     strength: 2,
     confidence: "medium",
     signal: "Keywords: Schreckmomente",
-    explanation: "Die Metadaten sprechen fuer weniger Vorhersehbarkeit.",
+    explanation: "Hinweise aus Keywords: Die Metadaten sprechen für weniger Vorhersehbarkeit. Keine Szenenprüfung.",
   },
   {
     needles: [
@@ -232,7 +243,7 @@ const tmdbKeywordRules: EvidenceRule[] = [
     strength: 2,
     confidence: "medium",
     signal: "Keywords: ruhige Form",
-    explanation: "Mehrere Begriffe deuten auf eine ruhigere, entlastende Form.",
+    explanation: "Hinweise aus Keywords: Mehrere Begriffe deuten auf eine ruhigere, entlastende Form.",
   },
   {
     needles: [
@@ -250,7 +261,7 @@ const tmdbKeywordRules: EvidenceRule[] = [
     strength: 1,
     confidence: "weak",
     signal: "Keywords: beobachtender Kontext",
-    explanation: "Beobachtende oder alltagsnahe Begriffe sind ein vorsichtiger Ruhehinweis.",
+    explanation: "Hinweise aus Keywords: Beobachtende oder alltagsnahe Begriffe sind ein vorsichtiger Ruhehinweis.",
   },
   {
     needles: [
@@ -272,7 +283,7 @@ const tmdbKeywordRules: EvidenceRule[] = [
     strength: 2,
     confidence: "medium",
     signal: "Keywords: visuelle Dichte",
-    explanation: "Es gibt Hinweise auf visuell dichte oder schnelle Bildreize.",
+    explanation: "Hinweise aus Keywords: Es gibt mögliche Hinweise auf visuelle Dichte. Keine Szenenprüfung.",
   },
 ];
 
@@ -294,8 +305,8 @@ const tmdbOverviewRules: EvidenceRule[] = [
     direction: "intensifying",
     strength: 1,
     confidence: "weak",
-    signal: "Synopsis: Spitzen moeglich",
-    explanation: "Die Synopsis enthaelt vorsichtige Hinweise auf Spitzen oder Druck.",
+    signal: "Kurzbeschreibung: Spitzen möglich",
+    explanation: "Hinweis aus Kurzbeschreibung: Es gibt vorsichtige Hinweise auf Spitzen oder Druck.",
   },
   {
     needles: [
@@ -320,7 +331,7 @@ const tmdbOverviewRules: EvidenceRule[] = [
     strength: 1,
     confidence: "weak",
     signal: "Synopsis: belastende Themen",
-    explanation: "Die Synopsis deutet grob auf belastendere Inhalte.",
+    explanation: "Hinweis aus Kurzbeschreibung: Die Beschreibung deutet grob auf belastendere Themen.",
   },
   {
     needles: [
@@ -342,7 +353,7 @@ const tmdbOverviewRules: EvidenceRule[] = [
     strength: 1,
     confidence: "weak",
     signal: "Synopsis: ruhigere Lesart",
-    explanation: "Die Synopsis klingt eher nach zurueckhaltenderen Momenten.",
+    explanation: "Hinweis aus Kurzbeschreibung: Die Beschreibung klingt eher nach zurückhaltenderen Momenten.",
   },
   {
     needles: ["flashing", "strobe", "hallucination", "psychedelic", "chaotic", "fast cutting"],
@@ -350,8 +361,8 @@ const tmdbOverviewRules: EvidenceRule[] = [
     direction: "intensifying",
     strength: 1,
     confidence: "weak",
-    signal: "Synopsis: visuelle Dichte moeglich",
-    explanation: "Die Synopsis deutet vorsichtig auf visuell dichte Momente.",
+    signal: "Kurzbeschreibung: visuelle Dichte möglich",
+    explanation: "Hinweis aus Kurzbeschreibung: Die Beschreibung deutet vorsichtig auf visuell dichte Momente.",
   },
 ];
 
@@ -474,11 +485,11 @@ export function createUserFeedbackEvidence(input: {
       direction: input.direction,
       strength: input.agreements >= 3 ? 2 : 1,
       confidence: input.agreements >= 3 ? "medium" : "weak",
-      signal: "Rueckmeldungen",
+      signal: "Rückmeldungen",
       explanation:
         input.agreements >= 3
-          ? "Mehrere Rueckmeldungen zeigen vorsichtig in dieselbe Richtung."
-          : "Eine einzelne Rueckmeldung bleibt nur ein schwacher Hinweis.",
+          ? "Mehrere Rückmeldungen zeigen vorsichtig in dieselbe Richtung."
+          : "Eine einzelne Rückmeldung bleibt nur ein schwacher Hinweis.",
     },
   ];
 }
@@ -523,30 +534,40 @@ function createSummaryNote(input: {
   confidence: StimulusConfidence;
   status: StimulusEvidenceStatus;
   reasons: string[];
+  situationalFit: StimulusEvidenceSummary["situationalFit"];
 }): string {
-  const prefix = "Vorläufige Startbasis aus Metadaten.";
+  const dataLabel =
+    input.confidence === "strong" ? "stark" : input.confidence === "medium" ? "mittel" : "schwach";
+  const prefix =
+    `Datenlage: ${dataLabel}. Einschätzung basiert auf Genre, Keywords und Kurzbeschreibung. Keine Szenenprüfung.`;
+  const fitLine = input.situationalFit.length
+    ? ` Situativ: ${input.situationalFit
+        .slice(0, 3)
+        .map((item) => `${item.label}: ${item.state}`)
+        .join("; ")}.`
+    : "";
 
   if (!input.reasons.length || input.confidence === "weak") {
-    return `${prefix} Bisher nur grob gelesen. Die Einschätzung bleibt vorläufig.`;
+    return `${prefix} Keine deutlichen Hinweise gefunden. Das ist keine Entwarnung.${fitLine}`;
   }
 
   if (input.status === "Durch Rückmeldungen gestützt") {
-    return `${prefix} Rückmeldungen stützen diese Richtung. Die Einschätzung bleibt offen für Korrekturen.`;
+    return `${prefix} Rückmeldungen stützen diese Richtung. Die Einschätzung bleibt offen für Korrekturen.${fitLine}`;
   }
 
   if (input.status === "Manuell geprüft") {
-    return `${prefix} Manuell geprüfte Hinweise stützen diese Richtung. Trotzdem bleibt die Wirkung individuell.`;
+    return `${prefix} Manuell geprüfte Hinweise stützen diese Richtung. Trotzdem bleibt die Wirkung individuell.${fitLine}`;
   }
 
   if (input.tone === "intense") {
-    return `${prefix} Mehrere Hinweise sprechen für eine intensivere Wirkung. Die Einschätzung bleibt vorläufig.`;
+    return `${prefix} Metadaten deuten auf eher vorsichtige Passung, wenn gerade wenig Reserve da ist.${fitLine}`;
   }
 
   if (input.tone === "calm") {
-    return `${prefix} Mehrere Hinweise sprechen für eine ruhigere Wirkung. Die Einschätzung bleibt vorläufig.`;
+    return `${prefix} Metadaten deuten auf eher passende Momente, wenn du etwas Ruhigeres suchst.${fitLine}`;
   }
 
-  return `${prefix} Hinweise zeigen in unterschiedliche Richtungen. Die Einschätzung bleibt vorläufig.`;
+  return `${prefix} Hinweise zeigen in unterschiedliche Richtungen. Das bleibt eher vielleicht.${fitLine}`;
 }
 
 function pickReasons(evidence: StimulusEvidence[]): string[] {
@@ -605,6 +626,48 @@ function resolveAxisConfidence(evidence: StimulusEvidence[]): StimulusConfidence
   return "weak";
 }
 
+function hasAxisDirection(
+  evidence: StimulusEvidence[],
+  axis: StimulusAxis,
+  direction: StimulusDirection,
+): boolean {
+  return evidence.some((item) => item.axis === axis && item.direction === direction);
+}
+
+function createSituationalFit(
+  evidence: StimulusEvidence[],
+  tone: StimulusTone,
+): StimulusEvidenceSummary["situationalFit"] {
+  const hasPeakRisk = hasAxisDirection(evidence, "audio_peaks", "intensifying");
+  const hasDensityRisk = hasAxisDirection(evidence, "stimulus_density", "intensifying");
+  const hasEmotionalWeight = hasAxisDirection(evidence, "emotional_load", "intensifying");
+  const hasReliefSignals = hasAxisDirection(evidence, "relief", "calming");
+  const hasSurpriseRisk = hasAxisDirection(evidence, "predictability", "intensifying");
+
+  return [
+    {
+      label: "Bitte keine Spitzen",
+      state: hasPeakRisk ? "eher vorsichtig" : "zu wenig Hinweise",
+    },
+    {
+      label: "Nicht zu hektisch",
+      state: hasDensityRisk ? "eher vorsichtig" : hasReliefSignals ? "vielleicht" : "zu wenig Hinweise",
+    },
+    {
+      label: "Emotional leicht",
+      state: hasEmotionalWeight ? "eher vorsichtig" : tone === "calm" ? "passt eher" : "vielleicht",
+    },
+    {
+      label: "Zum Runterkommen",
+      state: hasReliefSignals ? "passt eher" : tone === "intense" ? "eher vorsichtig" : "vielleicht",
+    },
+    {
+      label: "Etwas Spannung geht",
+      state: hasSurpriseRisk || tone === "intense" ? "vielleicht" : "passt eher",
+    },
+  ];
+}
+
 export function aggregateStimulusEvidence(evidence: StimulusEvidence[]): StimulusEvidenceSummary {
   const calming = evidence
     .filter((item) => item.direction === "calming")
@@ -626,13 +689,15 @@ export function aggregateStimulusEvidence(evidence: StimulusEvidence[]): Stimulu
   const confidence = resolveConfidence(evidence, Math.max(calming, intensifying, mixed));
   const status = resolveStatus(evidence);
   const reasons = pickReasons(evidence);
+  const situationalFit = createSituationalFit(evidence, tone);
 
   return {
     tone,
     confidence,
     status,
     reasons,
-    note: createSummaryNote({ tone, confidence, status, reasons }),
+    note: createSummaryNote({ tone, confidence, status, reasons, situationalFit }),
+    situationalFit,
     evidence,
   };
 }

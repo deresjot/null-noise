@@ -79,12 +79,12 @@ type BrowsePreset = {
 const browsePresets: BrowsePreset[] = [
   {
     id: "calm",
-    label: "Ruhig starten",
+    label: "Ruhig",
     filters: { tone: "calm" },
   },
   {
     id: "balanced",
-    label: "Durchwachsen",
+    label: "Wechsel",
     filters: { tone: "balanced" },
   },
   {
@@ -114,8 +114,8 @@ function buildBrowsePresetPath(
 function SearchDirectStarts({ filters }: { filters: SearchFilters }) {
   return (
     <section className="search-direct-starts" aria-labelledby="search-direct-starts-heading">
-      <h3 id="search-direct-starts-heading">Direkt starten</h3>
-      <p className="field-note">Wenn noch kein Titel feststeht: eine Richtung wählen und direkt rein.</p>
+      <h3 id="search-direct-starts-heading">Richtung starten</h3>
+      <p className="field-note">Wenn noch kein Titel feststeht: eine Richtung wählen.</p>
       <ul className="plain-list search-direct-starts-list">
         {browsePresets.map((preset) => {
           const isActive = filters.tone === preset.filters.tone;
@@ -246,16 +246,16 @@ export function SearchForm({
         <button className="primary-button search-submit-button" type="submit">
           {submitLabel}
         </button>
+        <SearchDirectStarts filters={filters} />
         <p className="search-form-alt-action">
           <Link
             className="secondary-link search-browse-link"
             href={browsePath}
             aria-label="Zeig mir eine Auswahl ohne Suchbegriff"
           >
-            Zeig mir was
+            Auswahl zeigen
           </Link>
         </p>
-        <SearchDirectStarts filters={filters} />
       </form>
     );
   }
@@ -279,20 +279,20 @@ export function SearchForm({
             {submitLabel}
           </button>
         </div>
+        <SearchDirectStarts filters={filters} />
         <p className="search-form-alt-action">
           <Link
             className="secondary-link search-browse-link"
             href={browsePath}
             aria-label="Zeig mir eine Auswahl ohne Suchbegriff"
           >
-            Zeig mir was
+            Auswahl zeigen
           </Link>
         </p>
-        <SearchDirectStarts filters={filters} />
 
         <div className="search-form-stage-controls">
           <div className="field-group field-group-tone">
-            <label htmlFor="tone">Reizrichtung</label>
+            <label htmlFor="tone">Passungsrichtung</label>
             <select id="tone" name="tone" value={filters.tone} onChange={submitOnSelectChange}>
               <option value="all">Alle Richtungen</option>
               <option value="calm">ruhig</option>
@@ -327,7 +327,7 @@ export function SearchForm({
           />
 
           <div className="field-group field-group-tone">
-            <label htmlFor="tone">Reizrichtung</label>
+            <label htmlFor="tone">Passungsrichtung</label>
             <select id="tone" name="tone" value={filters.tone} onChange={submitOnSelectChange}>
               <option value="all">Alle Richtungen</option>
               <option value="calm">ruhig</option>
@@ -348,7 +348,7 @@ export function SearchForm({
               href={browsePath}
               aria-label="Zeig mir eine Auswahl ohne Suchbegriff"
             >
-              Zeig mir was
+              Auswahl zeigen
             </Link>
           </p>
         </div>
@@ -369,7 +369,7 @@ export function SearchForm({
 
       <div className="field-row">
         <div className="field-group">
-          <label htmlFor="tone">Reizrichtung</label>
+          <label htmlFor="tone">Passungsrichtung</label>
           <select id="tone" name="tone" value={filters.tone} onChange={submitOnSelectChange}>
             <option value="all">Alle Richtungen</option>
             <option value="calm">ruhig</option>
@@ -387,16 +387,16 @@ export function SearchForm({
       <button className="primary-button" type="submit">
         {submitLabel}
       </button>
+      <SearchDirectStarts filters={filters} />
       <p className="search-form-alt-action">
         <Link
           className="secondary-link search-browse-link"
           href={browsePath}
           aria-label="Zeig mir eine Auswahl ohne Suchbegriff"
         >
-          Zeig mir was
+          Auswahl zeigen
         </Link>
       </p>
-      <SearchDirectStarts filters={filters} />
     </form>
   );
 }

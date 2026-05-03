@@ -14,6 +14,25 @@ export function SiteHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
+    const syncMobileAppView = () => {
+      const enabled = new URLSearchParams(window.location.search).get("view") === "app";
+
+      if (enabled) {
+        document.documentElement.dataset.mobileAppView = "true";
+      } else {
+        delete document.documentElement.dataset.mobileAppView;
+      }
+    };
+
+    syncMobileAppView();
+    window.addEventListener("popstate", syncMobileAppView);
+    return () => {
+      window.removeEventListener("popstate", syncMobileAppView);
+      delete document.documentElement.dataset.mobileAppView;
+    };
+  }, []);
+
+  useEffect(() => {
     const updateScrollState = () => {
       setIsScrolled(window.scrollY > 10);
     };
@@ -26,7 +45,7 @@ export function SiteHeader() {
   }, []);
 
   return (
-    <header className="site-header" data-scrolled={isScrolled ? "true" : "false"}>
+    <header className="site-header mobile-app-shell" data-scrolled={isScrolled ? "true" : "false"}>
       <nav aria-label="Sprunglinks" className="skip-links">
         <a className="skip-link" href="#top-menu">
           Zum Top-Menü springen

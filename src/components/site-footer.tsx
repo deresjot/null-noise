@@ -5,6 +5,21 @@ import { currentBuild, releaseNotes } from "@/lib/release-info";
 export function SiteFooter() {
   return (
     <footer className="site-footer" id="site-footer">
+      <details className="mobile-experiment-footer">
+        <summary>Info &amp; Stand</summary>
+        <div className="mobile-experiment-footer-body">
+          <p className="mobile-experiment-build-line">
+            <strong>{`Version ${currentBuild.version}`}</strong>
+            {` · Stand ${currentBuild.releasedAt}`}
+          </p>
+          <p className="field-note">Früher Prototyp. Einschätzungen sind vorläufig.</p>
+          <nav className="mobile-experiment-footer-links" aria-label="Info und Rechtliches">
+            <Link href="/barrierefreiheit">Barrierefreiheit</Link>
+            <Link href="/datenschutz">Datenschutz</Link>
+            <Link href="/impressum">Impressum</Link>
+          </nav>
+        </div>
+      </details>
       <div className="shell footer-stage">
         <section className="footer-atmosphere" aria-labelledby="privacy-summary-heading">
           <div className="footer-signoff">

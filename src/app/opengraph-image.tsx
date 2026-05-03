@@ -124,7 +124,7 @@ export default async function OpenGraphImage() {
               fontWeight: 700,
             }}
           >
-            Filme und Serien grob nach Reizwirkung einordnen.
+            Metadaten vorsichtig lesen. Situativ ruhiger entscheiden.
           </div>
         </div>
       </div>

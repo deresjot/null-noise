@@ -2385,7 +2385,7 @@ export async function browseTmdbMetadata(
       return {
         kind: "success",
         source: "tmdb",
-        message: "Grob nach Reizrichtung aus externen Titeln gezogen.",
+        message: "Grob nach situativer Passung aus externen Titeln gezogen.",
         items: visibleItems,
         sections,
       };
@@ -2626,7 +2626,7 @@ export async function getTmdbMetadataDetail(
       source: "tmdb",
       item,
       message:
-        "Basisdaten von TMDb. null-noise liest daraus vorläufig eine erste Reizrichtung.",
+        "Basisdaten von TMDb. null-noise liest daraus vorsichtig eine situative Lesart.",
     };
   } catch (error) {
     if (error instanceof Error && error.name === "TimeoutError") {

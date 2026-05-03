@@ -26,8 +26,8 @@ describe("external result list poster rendering", () => {
       }),
     );
 
-    expect(html).toContain("Erste Einschätzung");
-    expect(html).toContain("Noch ohne Rückmeldungen");
+    expect(html).toContain("Metadaten-Lesart");
+    expect(html).toContain("Metadaten · keine Szenenprüfung");
     expect(html).toContain("result-card-reading-block");
     expect(html).toContain("search-tone-scale-triad");
     expect(html).toContain("ruhig");
@@ -36,7 +36,7 @@ describe("external result list poster rendering", () => {
     expect(html).toContain("poster-thumb-frame");
     expect(html).toContain("Details");
     expect(html).not.toContain("Lokal anlegen");
-    expect(html).toContain('aria-label="Erste Einschätzung: durchwachsen"');
+    expect(html).toContain('aria-label="Metadaten-Lesart: durchwachsen"');
   });
 
   it("renders a fallback poster tile when no poster is available", () => {
@@ -85,7 +85,7 @@ describe("external result list poster rendering", () => {
     );
 
     expect(html).toContain('href="/titel/arrival-2016"');
-    expect(html).toContain("Erste Einschätzung");
+    expect(html).toContain("Metadaten-Lesart");
     expect(html).toContain("Einordnung lesen");
     expect(html).not.toContain("Lokal anlegen");
   });
@@ -111,7 +111,7 @@ describe("external result list poster rendering", () => {
     );
 
     expect(html).toContain("Nur lesen ist hier gerade aktiv.");
-    expect(html).toContain("Noch ohne Rückmeldungen");
+    expect(html).toContain("Metadaten · keine Szenenprüfung");
     expect(html).toContain("Details");
     expect(html).not.toContain("Lokal anlegen");
     expect(html).not.toContain('action="/api/local-titles"');

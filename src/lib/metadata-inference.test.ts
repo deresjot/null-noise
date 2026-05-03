@@ -25,7 +25,8 @@ describe("metadata inference", () => {
     expect(assessment.ratingSamples.peakIntensity[0]).toBe(3);
     expect(assessment.ratingSamples.stimulusDensity[0]).toBeGreaterThanOrEqual(2);
     expect(assessment.ratingSamples.soothingEffect[0]).toBeLessThanOrEqual(2);
-    expect(assessment.notes).toContain("intensivere Wirkung");
+    expect(assessment.notes).toContain("eher vorsichtige Passung");
+    expect(assessment.notes).toContain("Keine Szenenprüfung");
     expect(assessment.evidenceSummary.status).toBe("Mehrere Hinweise");
   });
 
@@ -46,7 +47,8 @@ describe("metadata inference", () => {
     expect(preview.stimulusProfile.peakIntensity).toBe(2);
     expect(preview.stimulusProfile.stimulusDensity).toBe(2);
     expect(preview.soothingEffect).toBe(2);
-    expect(preview.notes).toContain("vorläufig");
+    expect(preview.notes).toContain("Keine deutlichen Hinweise gefunden");
+    expect(preview.notes).toContain("keine Entwarnung");
   });
 
   it("uses mapped TMDb genres to create a usable first assessment even when the synopsis stays thin", () => {
@@ -66,6 +68,7 @@ describe("metadata inference", () => {
     expect(preview.stimulusProfile.volumeLevel).toBeGreaterThanOrEqual(2);
     expect(preview.stimulusProfile.peakIntensity).toBe(3);
     expect(preview.stimulusProfile.stimulusDensity).toBe(3);
-    expect(preview.notes).toContain("intensivere Wirkung");
+    expect(preview.notes).toContain("eher vorsichtige Passung");
+    expect(preview.notes).toContain("Keine Szenenprüfung");
   });
 });

@@ -127,11 +127,11 @@ export function getAggregatePresentation(aggregate: RatingAggregate): {
 } {
   if (aggregate.sourceType === "metadata_inference") {
     return {
-      label: "Erste Einschätzung",
-      text: "Kaum Hinweise außer Basisdaten. Das kann noch deutlich kippen.",
+      label: "Metadaten-Lesart",
+      text: "Nur Genre, Keywords und Kurzbeschreibung. Keine Szenenprüfung, keine Entwarnung.",
       chip: "Vorläufig",
       state: "seed",
-      basis: "Bisher spricht vor allem die Basis dafür.",
+      basis: "Bisher tragen nur Basisdaten.",
     };
   }
 
@@ -171,7 +171,7 @@ export function getAggregatePresentation(aggregate: RatingAggregate): {
       text: "Zur Startbasis kommen Rückmeldungen dazu. Ganz fest ist das noch nicht.",
       chip: "Hinweise",
       state: "growing",
-    basis: "Erste Einschätzung plus erste Rückmeldungen.",
+    basis: "Metadaten-Lesart plus erste Rückmeldungen.",
     };
   }
 
@@ -193,11 +193,11 @@ export function getSearchAggregatePresentation(aggregate: RatingAggregate): {
 } {
   if (aggregate.sourceType === "metadata_inference") {
     return {
-      label: "Erste Einschätzung",
-      text: "Kaum Hinweise außer Basisdaten. Eigene Rückmeldungen fehlen noch.",
+      label: "Metadaten-Lesart",
+      text: "Nur Genre, Keywords und Kurzbeschreibung. Eigene Rückmeldungen fehlen noch.",
       chip: "Vorläufig",
       state: "seed",
-      basis: "Bisher spricht vor allem die Basis dafür.",
+      basis: "Bisher tragen nur Basisdaten.",
     };
   }
 
@@ -217,7 +217,7 @@ export function getSearchAggregatePresentation(aggregate: RatingAggregate): {
       text: "Ein paar Rückmeldungen tragen schon mit.",
       chip: "Hinweise",
       state: "growing",
-      basis: "Erste Einschätzung plus erste Rückmeldungen.",
+      basis: "Metadaten-Lesart plus erste Rückmeldungen.",
     };
   }
 
@@ -225,7 +225,7 @@ export function getSearchAggregatePresentation(aggregate: RatingAggregate): {
     if (aggregate.level === "hoch") {
       return {
         label: "Das wirkt inzwischen stimmiger",
-        text: "Erste Einschätzung und Rückmeldungen ziehen inzwischen eher zusammen.",
+        text: "Metadaten-Lesart und Rückmeldungen ziehen inzwischen eher zusammen.",
         chip: "Trägt",
         state: "rated",
         basis: "Basisdaten und mehrere Rückmeldungen ziehen zusammen.",
@@ -237,7 +237,7 @@ export function getSearchAggregatePresentation(aggregate: RatingAggregate): {
       text: "Zur ersten Einschätzung kommen erste Rückmeldungen dazu.",
       chip: "Hinweise",
       state: "growing",
-      basis: "Erste Einschätzung plus erste Rückmeldungen.",
+      basis: "Metadaten-Lesart plus erste Rückmeldungen.",
     };
   }
 
@@ -313,7 +313,7 @@ export function getDecisionPresentation(input: {
 
     return {
       title: "Kann gut gehen.",
-      text: "Erste Einschätzung: ruhig.",
+      text: "Metadaten deuten auf eher ruhige Passung. Keine Entwarnung.",
       tone: "steady",
     };
   }
@@ -337,7 +337,7 @@ export function getDecisionPresentation(input: {
 
     return {
       title: "Lieber mit etwas Reserve.",
-      text: "Erste Einschätzung: nicht durchgehend ruhig.",
+      text: "Metadaten deuten auf gemischte Passung. Keine Szenenprüfung.",
       tone: "caution",
     };
   }
@@ -360,7 +360,7 @@ export function getDecisionPresentation(input: {
 
   return {
     title: "Lieber mit etwas Reserve.",
-    text: "Erste Einschätzung: intensiv. Das kann schnell zu viel werden.",
+    text: "Metadaten deuten auf eher vorsichtige Passung. Keine Szenenprüfung.",
     tone: "risk",
   };
 }
@@ -408,10 +408,10 @@ export function getCompactProfileTendencyLabel(tone: "ruhig" | "ausgeglichen" | 
 
 export function getCardReadingStatus(aggregate: RatingAggregate): string {
   if (aggregate.sourceType === "metadata_inference" || aggregate.ratingCount === 0) {
-    return "Noch ohne Rückmeldungen";
+    return "Metadaten · keine Szenenprüfung";
   }
 
-  return "Erste Einschätzung";
+  return "Einschätzung mit Rückmeldungen";
 }
 
 export function getReadingReasonLine(

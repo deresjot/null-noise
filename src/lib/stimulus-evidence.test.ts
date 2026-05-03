@@ -73,7 +73,7 @@ describe("stimulus evidence", () => {
         strength: 2,
         confidence: "medium",
         signal: "Ruhige Form",
-        explanation: "Mehrere Hinweise sprechen fuer Ruhe.",
+        explanation: "Mehrere Hinweise sprechen für Ruhe.",
       }),
       createEvidence({
         axis: "audio_peaks",
@@ -81,7 +81,7 @@ describe("stimulus evidence", () => {
         strength: 2,
         confidence: "medium",
         signal: "Laute Spitzen",
-        explanation: "Mehrere Hinweise sprechen fuer Spitzen.",
+        explanation: "Mehrere Hinweise sprechen für Spitzen.",
       }),
     ]);
 
@@ -95,7 +95,8 @@ describe("stimulus evidence", () => {
     expect(summary.tone).toBe("mixed");
     expect(summary.confidence).toBe("weak");
     expect(summary.status).toBe("Metadatenbasis");
-    expect(summary.note).toContain("vorläufig");
+    expect(summary.note).toContain("Keine deutlichen Hinweise gefunden");
+    expect(summary.note).toContain("keine Entwarnung");
   });
 
   it("resolves several strong intensifying signals as intense without exposing a score", () => {
@@ -106,7 +107,7 @@ describe("stimulus evidence", () => {
         strength: 3,
         confidence: "strong",
         signal: "Laute Spitzen",
-        explanation: "Mehrere Hinweise sprechen fuer laute Spitzen.",
+        explanation: "Mehrere Hinweise sprechen für mögliche Spitzen.",
       }),
       createEvidence({
         axis: "emotional_load",
@@ -114,7 +115,7 @@ describe("stimulus evidence", () => {
         strength: 3,
         confidence: "medium",
         signal: "Emotionale Last",
-        explanation: "Mehrere Hinweise sprechen fuer emotionale Last.",
+        explanation: "Mehrere Hinweise sprechen für emotionale Last.",
       }),
     ]);
 
@@ -282,7 +283,7 @@ describe("stimulus evidence", () => {
         expect(
           summary.axes.predictability?.direction === "calming" || summary.axes.relief?.confidence === "medium",
         ).toBe(true);
-        expect(summary.status).not.toContain("intensivere Wirkung");
+        expect(summary.status).not.toContain("eher vorsichtige Passung");
       }
     });
 
@@ -306,7 +307,7 @@ describe("stimulus evidence", () => {
             summary.axes.stimulus_density?.direction === "intensifying" ||
             summary.axes.predictability?.direction === "intensifying",
         ).toBe(true);
-        expect(summary.reasons.join(" ")).toMatch(/laute|Spitzen|Druck|Reizdichte|Vorhersehbarkeit/i);
+        expect(summary.reasons.join(" ")).toMatch(/Spitzen|Druck|Dichte|Vorhersehbarkeit/i);
       }
     });
 
@@ -327,7 +328,7 @@ describe("stimulus evidence", () => {
 
         expect(summary.tendency).toBe("intense");
         expect(summary.axes.visual_intensity?.direction).toBe("intensifying");
-        expect(summary.reasons.join(" ")).toMatch(/visuell|Bildreize/i);
+        expect(summary.reasons.join(" ")).toMatch(/visuell|Dichte/i);
       }
     });
 
@@ -341,7 +342,8 @@ describe("stimulus evidence", () => {
 
       expect(summary.tendency).toBe("mixed");
       expect(summary.confidence).toBe("weak");
-      expect(summary.status).toContain("vorläufig");
+      expect(summary.status).toContain("Keine deutlichen Hinweise gefunden");
+      expect(summary.status).toContain("keine Entwarnung");
       expect(summary.status).not.toMatch(/\d+%|Score|Ranking/i);
     });
   });

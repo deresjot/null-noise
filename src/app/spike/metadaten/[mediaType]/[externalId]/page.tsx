@@ -366,8 +366,8 @@ export default async function MetadataSpikeDetailPage({
         <div className="detail-hero-copy">
           <p className="eyebrow">{`${formatMediaType(item.mediaType)} · ${item.releaseYear ?? "Jahr offen"}`}</p>
           <h1>{item.title}</h1>
-          <section className="detail-reading-block" aria-label="Erste Einschätzung">
-            <p className="detail-reading-kicker">Erste Einschätzung</p>
+          <section className="detail-reading-block" aria-label="Metadaten-Lesart">
+            <p className="detail-reading-kicker">Metadaten-Lesart</p>
             <p className="detail-hero-tendency">{tendency.label}</p>
             <SearchToneScale
               caption="Ruhig bis intensiv"
@@ -401,7 +401,7 @@ export default async function MetadataSpikeDetailPage({
             />
             <ReadingEvidenceDetails
               entries={readingEvidenceEntries}
-              intro="Kurz und ehrlich: Das hier wird aus Genres, Keywords, Kurzbeschreibung und – wenn schon vorhanden – aus ersten Rückmeldungen gelesen."
+              intro="Kurz und ehrlich: Das ist eine vorsichtige Lesart aus Genres, Keywords, Kurzbeschreibung und, wenn vorhanden, Rückmeldungen. Keine Szenenprüfung, keine Entwarnung."
             />
 
             <div id="reading-feedback">
@@ -454,7 +454,7 @@ export default async function MetadataSpikeDetailPage({
             </div>
             <div>
               <dt>Grundlage</dt>
-              <dd>{localTitle ? "Eigene Seite plus vorhandene Rückmeldungen" : "Erste Einschätzung aus Basisdaten"}</dd>
+              <dd>{localTitle ? "Eigene Seite plus vorhandene Rückmeldungen" : "Metadaten-Lesart aus Basisdaten"}</dd>
             </div>
             <div>
               <dt>Quelle</dt>

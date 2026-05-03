@@ -214,14 +214,14 @@ export function ExternalResultList({
   const sortedItems = getSortedItems(items, query);
 
   return (
-    <ul className="result-grid result-grid-external" data-layout={displayMode}>
+    <ul className="result-grid result-grid-external mobile-media-list" data-layout={displayMode}>
       {sortedItems.map((item) => {
         const preview = createMetadataInferencePreview(item);
         const tendency = getProfileTendency(preview.stimulusProfile);
         const aggregatePresentation = getSearchAggregatePresentation(preview.aggregation);
         const localPath = getLocalTitlePath(item, localTitleByExternalKey);
         const cardReadingStatus = localPath
-          ? "Erste Einschätzung"
+          ? "Einschätzung mit Rückmeldungen"
           : getCardReadingStatus(preview.aggregation);
         const detailPath = localPath ?? getExternalDetailPath(item, query);
         const pocketEntry = buildTitlePocketEntryFromMetadata(item, {
@@ -261,9 +261,9 @@ export function ExternalResultList({
               </header>
 
               <div className="result-card-reading-block">
-                <p className="result-card-reading-kicker">Erste Einschätzung</p>
+                <p className="result-card-reading-kicker">Metadaten-Lesart</p>
                 <SearchToneScale
-                  caption="Erste Einschätzung"
+                  caption="Metadaten-Lesart"
                   emphasis="card"
                   mode={aggregatePresentation.state}
                   showCaption={false}

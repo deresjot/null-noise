@@ -56,6 +56,15 @@ npm run test:a11y
 npx playwright test
 ```
 
+## Release-/Deploy-Check
+
+Vor Commit/Deploy zusätzlich prüfen:
+
+- sichtbaren Versions-/Standbereich aktualisieren, wenn passend
+- keine Recovery-/Screenshot-/ZIP-Dateien committen
+- keine API-Keys oder lokalen Env-Dateien committen
+- `docs/20-testing/release-checklist.md` nur bei Release-/Deploy-Aufgaben zusätzlich lesen
+
 ## Kurze Sichtprüfung
 
 - Erstlesart sichtbar

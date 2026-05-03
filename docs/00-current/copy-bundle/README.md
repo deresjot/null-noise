@@ -1,27 +1,26 @@
-# null-noise Copy-Bundle
+# null-noise KI-Relay-Bundle
 
-Dieser Ordner ist eine Kopierhilfe für neue LLM-/Codex-Runden.
+Dieser Ordner ist kein fachlicher Master und nicht der bevorzugte Upload-Weg.
 
-Die nummerierten Dateien sind Symlinks auf die Originaldokumente. Die Originaldateien bleiben die fachliche Quelle; Inhalte sollen dort gepflegt werden.
+Zweck:
 
-## Standardkontext
+- kompakter Kontext fuer KI-zu-KI-Uebergaben
+- nutzbar, wenn zwei KI-Systeme oder zwei Sessions denselben Minimalstand teilen sollen
+- echte Markdown-Kopien, damit App-Uploads stabil funktionieren
+- maximal 10 Dateien insgesamt
+- keine Archivdateien
+- keine Screenshots
+- keine Recovery-Dateien
+- keine zweite Pflegeflaeche
 
-Für die meisten Runden reicht:
+Bevorzugter Upload-Weg:
 
-- `01-llm-context.md`
+- `docs/00-current/upload-set/`
+- enthaelt maximal 10 echte Markdown-Dateien
+- diese Dateien sind fuer ChatGPT/Codex-Uploads massgeblich
 
-## Reihenfolge
+Regel:
 
-1. `01-llm-context.md`
-2. `02-current-state.md`
-3. `03-current-runbook.md`
-4. `04-product-principles.md`
-5. `05-ux-principles.md`
-6. `06-a11y-principles.md`
-7. `07-a11y-testing.md`
-8. `08-ui-component-strategy.md`
-9. `09-evidence-model.md`
-10. `10-data-sources.md`
-11. `11-release-checklist.md`
-
-Detaildateien nur je nach Aufgabe kopieren. Archive nur bei Bedarf aus `docs/90-archive/` laden.
+Wenn du mir Dateien in ChatGPT hochlaedst, nimm bevorzugt `docs/00-current/upload-set/`.
+`copy-bundle` nur verwenden, wenn ein anderes KI-Tool gezielt diese Relay-Struktur braucht.
+Inhalte nicht hier pflegen, sondern aus den aktuellen Doku-Quellen neu ableiten.

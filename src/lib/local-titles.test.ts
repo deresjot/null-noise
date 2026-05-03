@@ -36,7 +36,8 @@ describe("local titles from external TMDb metadata", () => {
     expect(result.seed.external.slug).toBe("feuerlinie-2024");
     expect(result.seed.external.posterPath).toBe("/feuerlinie.jpg");
     expect(result.seed.aggregation.sourceType).toBe("metadata_inference");
-    expect(result.seed.notes).toContain("Vorläufige Startbasis aus Metadaten.");
+    expect(result.seed.notes).toContain("Datenlage:");
+    expect(result.seed.notes).toContain("Keine Szenenprüfung");
     expect(result.seed.ratingSamples.volumeLevel[0]).toBeGreaterThanOrEqual(2);
     expect(result.seed.ratingSamples.peakIntensity[0]).toBe(3);
     expect(result.seed.ratingSamples.stimulusDensity[0]).toBeGreaterThanOrEqual(2);
@@ -128,7 +129,8 @@ describe("local titles from external TMDb metadata", () => {
     expect(foundInSearch.some((title) => title.external.slug === "arrival-2016")).toBe(true);
     expect(beforeRating?.aggregation.sourceType).toBe("metadata_inference");
     expect(beforeRating?.aggregation.ratingCount).toBe(1);
-    expect(beforeRating?.stimulusProfile.notes).toContain("Vorläufige Startbasis aus Metadaten.");
+    expect(beforeRating?.stimulusProfile.notes).toContain("Datenlage:");
+    expect(beforeRating?.stimulusProfile.notes).toContain("keine Entwarnung");
 
     await appendStoredRating({
       titleId: beforeRating?.external.slug ?? "arrival-2016",

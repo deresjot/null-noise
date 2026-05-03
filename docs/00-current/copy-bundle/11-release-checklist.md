@@ -1,1 +1,0 @@
-../../20-testing/release-checklist.md

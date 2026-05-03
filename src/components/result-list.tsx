@@ -66,7 +66,7 @@ export function ResultList({
   }
 
   return (
-    <ul className="result-grid" data-layout={displayMode}>
+    <ul className="result-grid mobile-media-list" data-layout={displayMode}>
       {titles.map((title) => {
         const tendency = getProfileTendency(title.stimulusProfile);
         const aggregatePresentation = getSearchAggregatePresentation(title.aggregation);
@@ -113,9 +113,9 @@ export function ResultList({
               </header>
 
               <div className="result-card-reading-block">
-                <p className="result-card-reading-kicker">Erste Einschätzung</p>
+                <p className="result-card-reading-kicker">Situative Lesart</p>
                 <SearchToneScale
-                  caption="Erste Einschätzung"
+                  caption="Situative Lesart"
                   emphasis="card"
                   mode={aggregatePresentation.state}
                   showCaption={false}

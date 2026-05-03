@@ -8,7 +8,7 @@ import type {
 export const siteName = "null-noise";
 export const siteClaim = "Du musst dich nicht auch noch in der Freizeit anschreien lassen.";
 export const siteDescription =
-  "null-noise hilft beim Finden von Filmen und Serien und zeigt eine grobe Reizrichtung mit dem Stand dahinter: vorläufig, wachsend oder belastbarer.";
+  "null-noise hilft beim Finden von Filmen und Serien und liest vorhandene Metadaten vorsichtig als situative Entscheidungshilfe.";
 
 export const scaleLabels: Record<
   ScaleValue,

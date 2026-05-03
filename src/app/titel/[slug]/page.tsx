@@ -468,9 +468,13 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
           tone: "warning" as const,
         }
       : null);
+  const decisionReasonItems = [
+    profileTendency.text,
+    cautionHints[0] ?? aggregatePresentation.text,
+  ].filter((item, index, list): item is string => Boolean(item) && list.indexOf(item) === index).slice(0, 2);
 
   return (
-    <article className="section-stack detail-page">
+    <article className="section-stack detail-page mobile-decision-screen">
       {importStatus ? (
         <StatusPanel
           title={importStatus.title}
@@ -485,8 +489,8 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
             {`${formatKind(title.external.kind)} · ${title.external.year ?? "Jahr offen"}`}
           </p>
           <h1>{title.external.title}</h1>
-          <section className="detail-reading-block" aria-label="Erste Einschätzung">
-            <p className="detail-reading-kicker">Erste Einschätzung</p>
+          <section className="detail-reading-block" aria-label="Situative Lesart">
+            <p className="detail-reading-kicker">Situative Lesart</p>
             <p className="detail-hero-tendency">{profileTendency.label}</p>
             <SearchToneScale
               caption="Ruhig bis intensiv"
@@ -502,8 +506,11 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
             <p className="field-note detail-hero-status">
               <strong>{aggregatePresentation.label}.</strong> {aggregatePresentation.text}
             </p>
-          </section>
-          <div className="detail-reading-followups">
+            <ul className="plain-list detail-decision-reasons" aria-label="Kurze Gründe">
+              {decisionReasonItems.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
             <ReadingDecisionSupport
               cautions={{
                 items: cautionHints,
@@ -518,9 +525,12 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
               }}
               decision={decision}
             />
+          </section>
+          <TitlePocketActions entry={titlePocketEntry} variant="detail" />
+          <div className="detail-reading-followups">
             <ReadingEvidenceDetails
               entries={readingEvidenceEntries}
-              intro="Kurz und ehrlich: Das hier wird aus Basisdaten und – wenn schon da – aus anonymen Rückmeldungen zusammengesetzt."
+              intro="Kurz und ehrlich: Das ist eine vorsichtige Lesart aus Basisdaten und, wenn vorhanden, Rückmeldungen. Keine Szenenprüfung, keine Entwarnung."
             />
 
             <div id="reading-feedback">
@@ -543,7 +553,6 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
                 />
               ) : null}
             </div>
-            <TitlePocketActions entry={titlePocketEntry} variant="detail" />
           </div>
           <p className="lead">
             {title.external.synopsis ?? "Zu diesem Titel liegt gerade nur ein knapper Abriss vor."}
