@@ -589,7 +589,7 @@ export function SearchExperience({ initialState }: { initialState: SearchPageSta
               </header>
 
               <div className="search-results-stack">
-                <SearchLocalShelf showWhenEmpty />
+                <SearchLocalShelf />
                 {state.browseMetadataState?.kind === "success" && browseSuggestionCount ? (
                   <section
                     className="search-browse-cluster"

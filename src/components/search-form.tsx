@@ -246,14 +246,14 @@ export function SearchForm({
         <button className="primary-button search-submit-button" type="submit">
           {submitLabel}
         </button>
-        <SearchDirectStarts filters={filters} />
+        {filters.q ? null : <SearchDirectStarts filters={filters} />}
         <p className="search-form-alt-action">
           <Link
             className="secondary-link search-browse-link"
             href={browsePath}
             aria-label="Zeig mir eine Auswahl ohne Suchbegriff"
           >
-            Auswahl zeigen
+            Ohne Titel stöbern
           </Link>
         </p>
       </form>
@@ -279,14 +279,14 @@ export function SearchForm({
             {submitLabel}
           </button>
         </div>
-        <SearchDirectStarts filters={filters} />
+        {filters.q ? null : <SearchDirectStarts filters={filters} />}
         <p className="search-form-alt-action">
           <Link
             className="secondary-link search-browse-link"
             href={browsePath}
             aria-label="Zeig mir eine Auswahl ohne Suchbegriff"
           >
-            Auswahl zeigen
+            Ohne Titel stöbern
           </Link>
         </p>
 

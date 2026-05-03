@@ -6,7 +6,7 @@ export function SiteFooter() {
   return (
     <footer className="site-footer" id="site-footer">
       <details className="mobile-experiment-footer">
-        <summary>Info &amp; Stand</summary>
+        <summary>{`Info & Stand · Version ${currentBuild.version}`}</summary>
         <div className="mobile-experiment-footer-body">
           <p className="mobile-experiment-build-line">
             <strong>{`Version ${currentBuild.version}`}</strong>
