@@ -120,8 +120,8 @@ export function ResultList({
                   mode={aggregatePresentation.state}
                   showCaption={false}
                   showValueLabel
-                  startLabel="ruhig"
-                  endLabel="intensiv"
+                  startLabel="Eher ruhig"
+                  endLabel="Eher intensiv"
                   value={tendency.tone}
                   valueLabel={tendency.label}
                 />

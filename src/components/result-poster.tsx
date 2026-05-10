@@ -34,11 +34,14 @@ export function ResultPoster({
         />
       ) : (
         <div
-          aria-label={`Kein Poster für ${title}`}
+          aria-label={`Kein Poster verfügbar für ${title}`}
           className={`poster-thumb-fallback poster-thumb-fallback-${variant}`}
           role="img"
         >
-          <span>{title}</span>
+          <span aria-hidden="true" className="poster-thumb-fallback-mark">
+            NN
+          </span>
+          <span>Kein Poster verfügbar</span>
         </div>
       )}
     </div>

@@ -26,9 +26,9 @@ describe("result list quick scale", () => {
     expect(html).toContain("Situative Lesart");
     expect(html).toContain("Metadaten · keine Szenenprüfung");
     expect(html).toContain("search-tone-scale-triad");
-    expect(html).toContain("ruhig");
-    expect(html).toContain("durchwachsen");
-    expect(html).toContain("intensiv");
+    expect(html).toContain("Eher ruhig");
+    expect(html).toContain("Eher wechselhaft");
+    expect(html).toContain("Eher intensiv");
     expect(html).toContain('data-tone="ruhig"');
     expect(html).toContain("Einordnung lesen");
     expect(html).not.toContain("wenig harte Spitzen");

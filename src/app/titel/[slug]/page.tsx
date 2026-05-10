@@ -493,7 +493,7 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
             <p className="detail-reading-kicker">Situative Lesart</p>
             <p className="detail-hero-tendency">{profileTendency.label}</p>
             <SearchToneScale
-              caption="Ruhig bis intensiv"
+              caption="Eher ruhig bis eher intensiv"
               emphasis="hero"
               mode={aggregatePresentation.state}
               note={profileTendency.text}

@@ -3,9 +3,9 @@ type SearchToneScaleMode = "rated" | "growing" | "seed" | "pending";
 type SearchToneScaleEmphasis = "default" | "card" | "hero";
 const toneMeterSegments = 12;
 const cardToneSegments = [
-  { key: "ruhig", label: "ruhig" },
-  { key: "ausgeglichen", label: "durchwachsen" },
-  { key: "intensiv", label: "intensiv" },
+  { key: "ruhig", label: "Eher ruhig" },
+  { key: "ausgeglichen", label: "Eher wechselhaft" },
+  { key: "intensiv", label: "Eher intensiv" },
 ] as const;
 
 interface SearchToneScaleProps {
@@ -25,13 +25,13 @@ interface SearchToneScaleProps {
 export function SearchToneScale({
   caption,
   compact = false,
-  endLabel = "intensiv",
+  endLabel = "Eher intensiv",
   emphasis = "default",
   mode,
   note,
   showCaption = true,
   showValueLabel = true,
-  startLabel = "ruhig",
+  startLabel = "Eher ruhig",
   value,
   valueLabel,
 }: SearchToneScaleProps) {

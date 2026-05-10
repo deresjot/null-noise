@@ -17,6 +17,11 @@ export default async function HomePage() {
               <p className="hero-kicker-note hero-kicker-badge">Beta</p>
             </div>
             <p className="home-screen-question">Was passt gerade?</p>
+            <p className="lead hero-purpose-text">
+              Null Noise ordnet Filme und Serien danach ein, wie ruhig, wechselhaft oder intensiv
+              sie wirken können. So findest du schneller etwas, das gerade zu deiner Stimmung,
+              Energie und Aufmerksamkeit passt – ohne Bewertungen, Rankings oder Social-Druck.
+            </p>
             <h1 id="home-hero-heading">{siteClaim}</h1>
             <p className="lead hero-home-context">Titel suchen oder erst eine Richtung wählen.</p>
           </div>
@@ -48,7 +53,7 @@ export default async function HomePage() {
             <p className="field-note">Tertiär, wenn du keinen Suchbegriff hast.</p>
             <nav className="home-checkin-actions" aria-label="Schneller Einstieg">
               <Link className="home-checkin-action" href="/suche?tone=calm#results-heading">
-                Etwas Ruhiges finden
+                Eher ruhig starten
               </Link>
               <Link className="home-checkin-action" href="/suche#results-heading">
                 Einfach stöbern

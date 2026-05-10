@@ -7,9 +7,9 @@ type ReadingFeedbackFormProps = {
 };
 
 const feedbackChoices = [
-  { label: "ruhig", value: "calmer" },
-  { label: "durchwachsen", value: "match" },
-  { label: "intensiv", value: "stronger" },
+  { label: "Eher ruhig", value: "calmer" },
+  { label: "Eher wechselhaft", value: "match" },
+  { label: "Eher intensiv", value: "stronger" },
 ] as const;
 
 export function ReadingFeedbackForm({

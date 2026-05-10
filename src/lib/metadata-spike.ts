@@ -2231,17 +2231,17 @@ export async function browseTmdbMetadata(
   }> = [
     {
       id: "quiet",
-      title: "ruhig",
+      title: "Eher ruhig",
       description: "Ruhigerer Einstieg, weniger Druck.",
     },
     {
       id: "balanced",
-      title: "durchwachsen",
+      title: "Eher wechselhaft",
       description: "Ruhige und dichtere Momente wechseln sich ab.",
     },
     {
       id: "loud",
-      title: "intensiv",
+      title: "Eher intensiv",
       description: "Spürbarer und dichter, aber weiterhin im selben Rahmen.",
     },
   ];

@@ -370,7 +370,7 @@ export default async function MetadataSpikeDetailPage({
             <p className="detail-reading-kicker">Metadaten-Lesart</p>
             <p className="detail-hero-tendency">{tendency.label}</p>
             <SearchToneScale
-              caption="Ruhig bis intensiv"
+              caption="Eher ruhig bis eher intensiv"
               emphasis="hero"
               mode={aggregatePresentation.state}
               note={tendency.text}

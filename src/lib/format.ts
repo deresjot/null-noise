@@ -260,7 +260,7 @@ export function getProfileTendency(profile: Pick<StimulusProfile, "volumeLevel" 
   if (weightedValue <= 1.35) {
     return {
       tone: "ruhig",
-      label: "ruhig",
+      label: "Eher ruhig",
       text: "Mehr Luft als Druck. Spitzen und Dichte bleiben meist im Hintergrund.",
     };
   }
@@ -268,7 +268,7 @@ export function getProfileTendency(profile: Pick<StimulusProfile, "volumeLevel" 
   if (weightedValue <= 1.95) {
     return {
       tone: "ruhig",
-      label: "ruhig",
+      label: "Eher ruhig",
       text: "Im Grundton eher ruhig, aber nicht ganz ohne engere Momente.",
     };
   }
@@ -276,14 +276,14 @@ export function getProfileTendency(profile: Pick<StimulusProfile, "volumeLevel" 
   if (weightedValue <= 2.55) {
     return {
       tone: "ausgeglichen",
-      label: "durchwachsen",
+      label: "Eher wechselhaft",
       text: "Ruhigere Strecken und dichtere Phasen wechseln sich eher ab.",
     };
   }
 
   return {
     tone: "intensiv",
-    label: "intensiv",
+    label: "Eher intensiv",
     text: "Spitzen und Dichte deuten eher auf einen anstrengenderen Titel hin.",
   };
 }
@@ -396,14 +396,14 @@ export function getCautionHints(
 
 export function getCompactProfileTendencyLabel(tone: "ruhig" | "ausgeglichen" | "intensiv"): string {
   if (tone === "ruhig") {
-    return "ruhig";
+    return "Eher ruhig";
   }
 
   if (tone === "ausgeglichen") {
-    return "durchwachsen";
+    return "Eher wechselhaft";
   }
 
-  return "intensiv";
+  return "Eher intensiv";
 }
 
 export function getCardReadingStatus(aggregate: RatingAggregate): string {

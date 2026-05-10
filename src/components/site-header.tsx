@@ -58,7 +58,7 @@ export function SiteHeader() {
         </a>
       </nav>
       <div className="shell header-inner">
-        <Link aria-label="null-noise Startseite" className="brand" href="/">
+        <Link aria-label="Null Noise – Startseite" className="brand" href="/">
           <span className="brand-image-frame" aria-hidden="true">
             <Image
               alt=""

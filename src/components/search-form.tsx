@@ -79,17 +79,17 @@ type BrowsePreset = {
 const browsePresets: BrowsePreset[] = [
   {
     id: "calm",
-    label: "Ruhig",
+    label: "Eher ruhig",
     filters: { tone: "calm" },
   },
   {
     id: "balanced",
-    label: "Wechsel",
+    label: "Eher wechselhaft",
     filters: { tone: "balanced" },
   },
   {
     id: "intense",
-    label: "Intensiv",
+    label: "Eher intensiv",
     filters: { tone: "intense" },
   },
 ];
@@ -295,9 +295,9 @@ export function SearchForm({
             <label htmlFor="tone">Passungsrichtung</label>
             <select id="tone" name="tone" value={filters.tone} onChange={submitOnSelectChange}>
               <option value="all">Alle Richtungen</option>
-              <option value="calm">ruhig</option>
-              <option value="balanced">durchwachsen</option>
-              <option value="intense">intensiv</option>
+              <option value="calm">Eher ruhig</option>
+              <option value="balanced">Eher wechselhaft</option>
+              <option value="intense">Eher intensiv</option>
             </select>
           </div>
           <SearchKindToggle filters={filters} />
@@ -330,9 +330,9 @@ export function SearchForm({
             <label htmlFor="tone">Passungsrichtung</label>
             <select id="tone" name="tone" value={filters.tone} onChange={submitOnSelectChange}>
               <option value="all">Alle Richtungen</option>
-              <option value="calm">ruhig</option>
-              <option value="balanced">durchwachsen</option>
-              <option value="intense">intensiv</option>
+              <option value="calm">Eher ruhig</option>
+              <option value="balanced">Eher wechselhaft</option>
+              <option value="intense">Eher intensiv</option>
             </select>
           </div>
           <SearchKindToggle filters={filters} />
@@ -372,9 +372,9 @@ export function SearchForm({
           <label htmlFor="tone">Passungsrichtung</label>
           <select id="tone" name="tone" value={filters.tone} onChange={submitOnSelectChange}>
             <option value="all">Alle Richtungen</option>
-            <option value="calm">ruhig</option>
-            <option value="balanced">durchwachsen</option>
-            <option value="intense">intensiv</option>
+            <option value="calm">Eher ruhig</option>
+            <option value="balanced">Eher wechselhaft</option>
+            <option value="intense">Eher intensiv</option>
           </select>
         </div>
         <SearchKindToggle filters={filters} />

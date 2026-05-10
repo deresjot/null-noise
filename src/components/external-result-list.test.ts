@@ -30,13 +30,13 @@ describe("external result list poster rendering", () => {
     expect(html).toContain("Metadaten · keine Szenenprüfung");
     expect(html).toContain("result-card-reading-block");
     expect(html).toContain("search-tone-scale-triad");
-    expect(html).toContain("ruhig");
-    expect(html).toContain("durchwachsen");
-    expect(html).toContain("intensiv");
+    expect(html).toContain("Eher ruhig");
+    expect(html).toContain("Eher wechselhaft");
+    expect(html).toContain("Eher intensiv");
     expect(html).toContain("poster-thumb-frame");
     expect(html).toContain("Details");
     expect(html).not.toContain("Lokal anlegen");
-    expect(html).toContain('aria-label="Metadaten-Lesart: durchwachsen"');
+    expect(html).toContain('aria-label="Metadaten-Lesart: Eher wechselhaft"');
   });
 
   it("renders a fallback poster tile when no poster is available", () => {
@@ -60,6 +60,7 @@ describe("external result list poster rendering", () => {
 
     expect(html).toContain("Arrival");
     expect(html).toContain("poster-thumb-fallback");
+    expect(html).toContain("Kein Poster verfügbar");
   });
 
   it("links to the local detail page when the external title already exists locally", () => {

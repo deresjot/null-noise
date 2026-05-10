@@ -103,7 +103,7 @@ function getBrowseOrientation(filters: SearchFilters): string | null {
     return "Hier darf es dichter werden.";
   }
 
-  return "Ruhig, durchwachsen oder intensiv: wähle einfach eine Richtung.";
+  return "Eher ruhig, eher wechselhaft oder eher intensiv: wähle einfach eine Richtung.";
 }
 
 function getAvoidanceStatusLine(filters: SearchFilters): string | null {
@@ -141,18 +141,18 @@ function isBrowseSectionVisible(
 
 function getBrowseClusterLabel(filters: SearchFilters): string {
   if (filters.tone === "calm") {
-    return "Browse-Kategorie ruhig";
+    return "Browse-Kategorie Eher ruhig";
   }
 
   if (filters.tone === "balanced") {
-    return "Browse-Kategorie durchwachsen";
+    return "Browse-Kategorie Eher wechselhaft";
   }
 
   if (filters.tone === "intense") {
-    return "Browse-Kategorie intensiv";
+    return "Browse-Kategorie Eher intensiv";
   }
 
-  return "Browse-Kategorien von ruhig bis intensiv";
+  return "Browse-Kategorien von eher ruhig bis eher intensiv";
 }
 
 function normalizeSearchFormTarget(form: HTMLFormElement): string {

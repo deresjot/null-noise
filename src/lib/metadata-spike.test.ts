@@ -507,9 +507,9 @@ describe("metadata spike mapping", () => {
 
     expect(result.sections).toHaveLength(3);
     expect(result.sections.map((section) => section.title)).toEqual([
-      "ruhig",
-      "durchwachsen",
-      "intensiv",
+      "Eher ruhig",
+      "Eher wechselhaft",
+      "Eher intensiv",
     ]);
     expect(quietSection?.items.every((item) => item.mediaType === "movie")).toBe(true);
     expect(balancedSection?.items.every((item) => item.mediaType === "movie")).toBe(true);
