@@ -16,7 +16,7 @@ export default async function HomePage() {
               <p className="eyebrow hero-kicker-badge">null-noise</p>
               <p className="hero-kicker-note hero-kicker-badge">Beta</p>
             </div>
-            <p className="home-screen-question">Was passt gerade?</p>
+            <h2 className="home-screen-question">Was passt gerade?</h2>
             <p className="lead hero-purpose-text">
               Null Noise ordnet Filme und Serien danach ein, wie ruhig, wechselhaft oder intensiv
               sie wirken können. So findest du schneller etwas, das gerade zu deiner Stimmung,

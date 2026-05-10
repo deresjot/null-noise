@@ -107,20 +107,29 @@
 
 ## Mobile-Stand
 
+- mobile Scroll-Stabilität wurde lokal verbessert
 - Startseite erklärt jetzt direkt unter `Was passt gerade?`, wofür Null Noise gedacht ist
 - Header-Branding zeigt auf Mobile und Desktop Icon-Logo plus Wortmarke
-- Suche bleibt primärer Einstieg; Richtungskacheln bleiben sekundär
-- Richtungskacheln, Ergebnisgruppen, Filter und Karten nutzen konsistent `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv`
-- mobile Ergebnislisten, Merken-/Gesehen-Bereich und Toggle wurden gegen abgeschnittene Texte und horizontale Überläufe stabilisiert
-- fehlende Poster zeigen einen bewussten Platzhalter `Kein Poster verfügbar`
-- mobile Scroll-Stabilität wurde lokal verbessert
 - mobile Header-Blur reduziert / desktop-begrenzt
 - Card-/Panel-Schatten mobil reduziert
+- Richtungskacheln, Ergebnisgruppen, Filter und Karten nutzen konsistent `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv`
+- Merken-/Gesehen-Bereich bricht mobil sauber um; Toggle und Label bleiben sichtbar zusammengehörig
+- fehlende Poster zeigen einen bewussten Platzhalter `Kein Poster verfügbar`
 - leere Posterflächen mobil kompakt
 - Home-Einstiege mobil priorisiert: Suche primär, Richtungsstart sekundär
 - Mobile Bedienlogik wurde app-näher gemacht: Suche bleibt primär, Richtungs-/Situationsstart bleibt sekundär, ohne neue Produktlogik oder neue Navigation als Feature
 - Footer mobil beruhigt
 - Preview ist bereit, echter iPhone-Check bleibt wegen Vercel-SSO/Deployment-Protection manuell mit Login nötig
+
+## Letzte grüne UI-Prüfung
+
+- `npm run lint`
+- `npm run build`
+- `npm run test:unit`
+- `npm run test:axe-core`
+- `npm run test:a11y`
+- `npx playwright test`
+- lokale visuelle Prüfung: `/`, `/suche`, `/suche?q=Arrival`, `/titel/mondfenster`, `/barrierefreiheit` bei Mobile/Desktop-Smoke
 
 ## Testbefehle
 
@@ -143,16 +152,6 @@
 - Mobile Scrollgefühl nach Deploy auf echtem iPhone
 - nach Security-Deploy: Header/CSP, API-Cache-Header und schreibende Routen live prüfen
 - nach Security-Deploy: `.next/static`/Client-Bundle weiter ohne sensible Secret-Bezüge halten
-
-## Letzte grüne UI-Prüfung
-
-- `npm run lint`
-- `npm run build`
-- `npm run test:unit` (78 Tests)
-- `npm run test:axe-core` (4 Tests)
-- `npm run test:a11y` (29 Tests)
-- `npx playwright test` (29 bestanden, 2 TMDb-Live-Tests übersprungen)
-- lokale Playwright-Sichtprüfung auf 320px, 390px und Desktop ohne horizontalen Overflow
 
 ## Welche Doku bei welcher Aufgabe lesen?
 

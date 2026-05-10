@@ -20,12 +20,12 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
   - Header zeigt auf Mobile und Desktop Icon-Logo plus Wortmarke
   - Startseite erklärt unter `Was passt gerade?` kurz Zweck und Nutzung von Null Noise
   - sichtbare Wirkungskategorien sind vereinheitlicht: `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv`
-  - Hero, Suchformular, Richtungskacheln, Ergebnislisten und Footer skalieren auf breiten Viewports ruhiger
-  - mobile Ergebnislisten, Merken-/Gesehen-Bereich und Toggle umbrechen sauber ohne horizontalen Overflow
+  - große Viewports sind ruhiger skaliert; Mobile bleibt bedienbar
+  - mobile Ergebnislisten, Merken-/Gesehen-Bereich und Toggle brechen ohne horizontalen Overflow um
   - fehlende Poster zeigen einen bewussten Platzhalter `Kein Poster verfügbar`
-  - lokale Sichtprüfung auf 320px, 390px und Desktop war ohne horizontalen Overflow
-  - vollständige lokale Checks liefen zuletzt grün: Lint, Build, Unit, Axe-Core, A11y, Playwright
-  - Footer-Stand/Release Notes sind auf `Startseite und mobile Suche stabilisiert` aktualisiert
+  - lokale visuelle Prüfung lief auf `/`, `/suche`, `/suche?q=Arrival`, `/titel/mondfenster`, `/barrierefreiheit` bei 320/390/Desktop
+  - lokale Checks liefen grün: lint, build, unit, axe-core, a11y, Playwright
+  - sichtbarer Footer-/Versionsbereich wurde mit Release-Notes zum UI-Fix aktualisiert
 - Security-/Privacy-Hardening lokal:
   - lokale Änderungen sind noch nicht gepusht oder deployt; Live-Production muss nach Deploy separat geprüft werden
   - Security Header/CSP lokal in `next.config.ts` ergänzt
@@ -74,8 +74,8 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 - `src/lib/ratings.test.ts`, `vitest.config.ts`, `tests/server-only-mock.ts`: Tests für Security-Hardening
 - `src/app/globals.css`: mobile Performance- und Dichtekorrekturen aus vorherigen lokalen Pässen
 - `src/app/page.tsx`, `src/components/site-header.tsx`, `src/components/search-form.tsx`, `src/components/result-list.tsx`, `src/components/external-result-list.tsx`, `src/components/result-poster.tsx`, `src/components/search-tone-scale.tsx`: UI-Fix für Startseite, Header, mobile Suche, Labels und Poster-Fallbacks
-- `src/lib/format.ts`, `src/lib/metadata-spike.ts`: nur sichtbare Label-/Darstellungswerte für die drei Wirkungskategorien im UI-Fix
-- `src/lib/release-info.ts`: sichtbarer Footer-Stand und aktuelle Release Notes
+- `src/lib/format.ts`, `src/lib/metadata-spike.ts`, `src/app/titel/[slug]/page.tsx`, `src/app/spike/metadaten/[mediaType]/[externalId]/page.tsx`: sichtbare Label-/Darstellungslogik ohne Produktlogik-Umbau
+- `src/lib/release-info.ts`: sichtbare Footer-/Info-Release-Notes aktualisiert
 - `src/lib/stimulus-evidence.ts`: internes Evidence-Modell, Mapping, Aggregation, optionale Adaptergrenzen
 - `src/lib/stimulus-evidence.test.ts`: Unit-Tests und Kalibrier-Fixtures
 - `src/lib/metadata-inference.ts`: sichtbare Erstlesart wird aus Evidence-Aggregation gespeist
@@ -99,6 +99,16 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 - `npm run test:a11y`
 - `npx playwright test`, wenn sinnvoll
 
+## Letzte verifizierte UI-Checks
+
+- `npm run lint`: bestanden
+- `npm run build`: bestanden
+- `npm run test:unit`: 14 Files, 78 Tests bestanden
+- `npm run test:axe-core`: 4 Tests bestanden
+- `npm run test:a11y`: 29 Tests bestanden
+- `npx playwright test`: 29 Tests bestanden, 2 übersprungen
+- lokaler Dev-Server-Smoke: `/`, `/suche`, `/suche?q=Arrival`, `/titel/mondfenster`, `/barrierefreiheit`
+
 ## Offene echte Prüfungen
 
 - Vercel-ENV vor Deploy prüfen: serverseitige Secrets, `NULL_NOISE_RATE_LIMIT_SALT`, `NEXT_PUBLIC_SITE_URL`, Preview/Production-Unterschiede
@@ -110,13 +120,3 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 - echtes iPhone-Scrollgefühl nach Deploy prüfen
 - Does the Dog Die Zugriff/Nutzungsbedingungen klären, bevor aktiv genutzt
 - Common Sense Media Kosten/API/Partnerschaft/lokale Speicherung klären, bevor aktiv genutzt
-
-## Letzte verifizierte UI-Checks
-
-- `npm run lint`: bestanden
-- `npm run build`: bestanden
-- `npm run test:unit`: 14 Files, 78 Tests bestanden
-- `npm run test:axe-core`: 4 Tests bestanden
-- `npm run test:a11y`: 29 Tests bestanden
-- `npx playwright test`: 29 Tests bestanden, 2 TMDb-Live-Tests übersprungen
-- Dev-Server-Sichtprüfung auf `/`, `/suche`, `/suche?q=Arrival`, `/titel/mondfenster`, `/barrierefreiheit`

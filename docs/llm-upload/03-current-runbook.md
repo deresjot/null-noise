@@ -99,7 +99,7 @@ Vor Commit/Deploy zusätzlich prüfen:
 - Startseite enthält kurze Erklärung unter `Was passt gerade?`
 - Suche bleibt primärer Einstieg; Richtungskacheln bleiben sekundär
 - sichtbare Richtungskacheln/Labels: `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv`
-- Merken-/Gesehen-Bereich und Toggle umbrechen mobil sauber
+- Merken-/Gesehen-Bereich und Toggle brechen mobil sauber um
 - fehlende Poster wirken als bewusste Platzhalter, nicht wie kaputte Bilder
 - keine Console-Errors
 - bei 320 CSS-Pixeln kein horizontaler Overflow

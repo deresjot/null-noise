@@ -2,19 +2,20 @@ import packageJson from "../../package.json";
 
 export const currentBuild = {
   version: packageJson.version,
-  label: "Mobile App-Experiment, Relay-Bundle und Live-Test-Pass",
-  releasedAt: "2026-05-03 · 12:41 CEST",
+  label: "Startseite und mobile Suche stabilisiert",
+  releasedAt: "2026-05-10 · 12:55 CEST",
 };
 
 export const releaseNotes = [
   {
     version: packageJson.version,
-    label: "Mobile App-Experiment, Relay-Bundle und Live-Test-Pass",
-    releasedAt: "2026-05-03",
+    label: "Startseite und mobile Suche stabilisiert",
+    releasedAt: "2026-05-10",
     entries: [
-      "Der optionale Mobile-App-Experimentmodus bleibt per `?view=app` erreichbar, ohne die Standardansicht zu ersetzen.",
-      "Das Copy-Bundle ist jetzt als KI-Relay-Bundle mit echten Markdown-Kopien für stabile App-Uploads eingeordnet.",
-      "Release-Stand wurde nach lokaler Prüfung, Push und Production-Deploy für den Live-Test sichtbar aktualisiert.",
+      "Die Startseite erklärt jetzt kurz, wofür Null Noise gedacht ist, ohne die Suche aus dem Fokus zu nehmen.",
+      "Header, Hero, Suchformular, Richtungskacheln und Footer skalieren auf Mobile und breiten Viewports ruhiger.",
+      "Mobile Ergebnislisten, Merken-/Gesehen-Bereich und Poster-Platzhalter wurden gegen abgeschnittene Texte und horizontale Überläufe stabilisiert.",
+      "Sichtbare Wirkungskategorien verwenden konsistent: Eher ruhig, Eher wechselhaft und Eher intensiv.",
     ],
   },
   {
