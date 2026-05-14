@@ -115,6 +115,42 @@ test("detail page has no detectable axe violations", async ({ page }) => {
   });
 });
 
+test("info and legal pages have no detectable axe violations", async ({ page }) => {
+  const routes = [
+    {
+      path: "/erklaerung",
+      label: "explanation",
+      heading: "null-noise verstehen und benutzen",
+    },
+    {
+      path: "/bedienung",
+      label: "bedienung-redirect",
+      heading: "null-noise verstehen und benutzen",
+    },
+    {
+      path: "/barrierefreiheit",
+      label: "accessibility-statement",
+      heading: "Erklärung zur Barrierefreiheit",
+    },
+    {
+      path: "/datenschutz",
+      label: "privacy",
+      heading: "Datenschutz",
+    },
+    {
+      path: "/impressum",
+      label: "imprint",
+      heading: "Impressum",
+    },
+  ];
+
+  for (const route of routes) {
+    await expectNoAxeViolations(page, route.path, route.label, async () => {
+      await expect(page.getByRole("heading", { name: route.heading })).toBeVisible();
+    });
+  }
+});
+
 test("homepage renders the claim as the main heading", async ({ page }) => {
   await page.goto("/");
 
@@ -346,6 +382,13 @@ test("explanation page uses native disclosure for deeper help", async ({ page })
   ).toBeVisible();
 });
 
+test("bedienung route redirects to the consolidated explanation page", async ({ page }) => {
+  await page.goto("/bedienung");
+
+  await expect(page).toHaveURL(/\/erklaerung$/);
+  await expect(page.locator("main h1")).toHaveText("null-noise verstehen und benutzen");
+});
+
 test("metadata spike path stays clearly separated from the main product flow", async ({ page }) => {
   await page.goto("/spike/metadaten");
 
@@ -379,22 +422,42 @@ test("accessibility page is reachable and explains the current testing scope", a
   const pageHeader = page.locator(".section-header");
   const scopePanel = page
     .locator("section.panel")
-    .filter({ has: page.getByRole("heading", { name: "Wofür diese Erklärung gilt" }) });
+    .filter({ has: page.getByRole("heading", { name: "Prüfgrundlage und Prüfumfang" }) });
   const statusPanel = page
     .locator("section.panel")
-    .filter({ has: page.getByRole("heading", { name: "Aktueller Stand" }) });
+    .filter({
+      has: page.getByRole("heading", { name: "Stand der Vereinbarkeit mit den Anforderungen" }),
+    });
+  const manualPanel = page
+    .locator("section.panel")
+    .filter({ has: page.getByRole("heading", { name: "Manuelle Prüfungen" }) });
   const contactPanel = page
     .locator("section.panel")
-    .filter({ has: page.getByRole("heading", { name: "Hinweise und Kontakt" }) });
+    .filter({ has: page.getByRole("heading", { name: "Kontakt und Feedback" }) });
 
-  await expect(page.locator("main h1")).toHaveText("Barrierefreiheit in null-noise");
-  await expect(page.getByRole("heading", { name: "Was automatisiert geprüft wird" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Was manuell geprüft wird" })).toBeVisible();
-  await expect(scopePanel).toContainText("zentralen Nutzungsbereiche");
-  await expect(scopePanel.locator(".field-note")).toContainText("Drittanbietern");
+  await expect(page.locator("main h1")).toHaveText("Erklärung zur Barrierefreiheit");
+  await expect(page.getByRole("heading", { name: "Automatisierte Prüfungen" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Manuelle Prüfungen" })).toBeVisible();
+  await expect(scopePanel).toContainText("Kernrouten");
+  await expect(scopePanel.locator(".field-note")).toContainText("Externe");
   await expect(statusPanel).toContainText("BITV-Testverfahrens");
+  await expect(manualPanel).toContainText("BIK BITV- / WCAG-Tests für Webangebote");
+  await expect(manualPanel).toContainText("Beschreibung des Prüfverfahrens für Web");
+  await expect(manualPanel).toContainText("Prüfschritt-Verzeichnis zum WCAG 2.2 Test für Web");
+  await expect(
+    manualPanel.getByRole("link", { name: "BIK BITV- / WCAG-Tests für Webangebote" }),
+  ).toHaveAttribute("href", "https://bitvtest.de/tests-und-beratung/bik-bitv-test-web");
+  await expect(
+    manualPanel.getByRole("link", { name: "Beschreibung des Prüfverfahrens für Web" }),
+  ).toHaveAttribute(
+    "href",
+    "https://bitvtest.de/test-methodik/web/beschreibung-des-pruefverfahrens",
+  );
+  await expect(
+    manualPanel.getByRole("link", { name: "Prüfschritt-Verzeichnis zum WCAG 2.2 Test für Web" }),
+  ).toHaveAttribute("href", "https://bitvtest.de/pruefverfahren/wcag-22-web");
   await expect(contactPanel).toContainText("mail@sebastianjansen.com");
-  await expect(pageHeader).toContainText("keine formale Konformitätserklärung");
+  await expect(pageHeader).toContainText("keine amtliche oder vollständige Konformitätsbehauptung");
 });
 
 test("core routes avoid horizontal overflow at 320 CSS pixels", async ({ page }) => {
@@ -420,6 +483,26 @@ test("core routes avoid horizontal overflow at 320 CSS pixels", async ({ page })
       path: "/titel/mondfenster",
       ready: () => page.getByRole("heading", { name: "Mondfenster" }),
     },
+    {
+      path: "/erklaerung",
+      ready: () => page.getByRole("heading", { name: "null-noise verstehen und benutzen" }),
+    },
+    {
+      path: "/bedienung",
+      ready: () => page.getByRole("heading", { name: "null-noise verstehen und benutzen" }),
+    },
+    {
+      path: "/barrierefreiheit",
+      ready: () => page.getByRole("heading", { name: "Erklärung zur Barrierefreiheit" }),
+    },
+    {
+      path: "/datenschutz",
+      ready: () => page.getByRole("heading", { name: "Datenschutz" }),
+    },
+    {
+      path: "/impressum",
+      ready: () => page.getByRole("heading", { name: "Impressum" }),
+    },
   ];
 
   for (const route of routes) {
@@ -443,5 +526,5 @@ test("legal pages are reachable and keep TMDb attribution separate from the prof
 
   await page.goto("/datenschutz");
   await expect(page.locator("main h1")).toHaveText("Datenschutz");
-  await expect(page.getByText("keine Tracker")).toBeVisible();
+  await expect(page.getByText("Es gibt kein Tracking und keine Analytics.")).toBeVisible();
 });

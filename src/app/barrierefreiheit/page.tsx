@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { siteName } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: `Barrierefreiheit | ${siteName}`,
+  title: `Erklärung zur Barrierefreiheit | ${siteName}`,
 };
 
 export default function BarrierefreiheitPage() {
@@ -11,107 +11,127 @@ export default function BarrierefreiheitPage() {
     <section className="section-stack">
       <div className="section-header">
         <p className="eyebrow">Barrierefreiheit</p>
-        <h1>Barrierefreiheit in null-noise</h1>
+        <h1>Erklärung zur Barrierefreiheit</h1>
         <p>
-          Diese Erklärung beschreibt den aktuellen Stand der Barrierefreiheit in der Web-Anwendung
-          von null-noise. Sie dient der transparenten Einordnung des aktuellen Stands und ist keine
-          formale Konformitätserklärung oder juristische Vollbehauptung.
+          null-noise ist ein privates Hobby- und Referenzprojekt von Sebastian Jansen. Ziel ist
+          digitale Barrierefreiheit nach nachvollziehbaren Standards. Diese Seite ist eine
+          transparente Einordnung des aktuellen Projektstands und keine amtliche oder vollständige
+          Konformitätsbehauptung.
         </p>
       </div>
 
+      <section className="panel section-stack" aria-labelledby="status-heading">
+        <h2 id="status-heading">Stand der Vereinbarkeit mit den Anforderungen</h2>
+        <p>
+          Die Umsetzung orientiert sich an WCAG 2.2 AA, EN 301 549 und den Prüfansätzen des
+          BITV-Testverfahrens. Die Standardoberfläche bleibt der zugängliche Primärpfad. Es gibt
+          keinen separaten Sondermodus mit abweichenden Inhalten oder Funktionen. Bekannte Barrieren
+          werden dokumentiert und sollen schrittweise behoben werden.
+        </p>
+        <p>
+          Eine vollständige manuelle BITV- oder WCAG-Prüfung wurde für dieses private Projekt nicht
+          abgeschlossen. Deshalb wird hier bewusst nicht behauptet, dass null-noise vollständig
+          geprüft oder formal konform ist.
+        </p>
+      </section>
+
       <div className="content-grid">
-        <section className="panel" aria-labelledby="accessibility-scope-heading">
-          <h2 id="accessibility-scope-heading">Wofür diese Erklärung gilt</h2>
+        <section className="panel" aria-labelledby="scope-heading">
+          <h2 id="scope-heading">Prüfgrundlage und Prüfumfang</h2>
           <p>
-            Diese Erklärung gilt für die Web-Anwendung in ihrer aktuellen Ausprägung und die
-            zentralen Nutzungsbereiche innerhalb von null-noise.
+            Der Prüfpfad umfasst die Kernrouten der Anwendung: Startseite, Suche ohne und mit
+            Suchbegriff, eine Detailseite sowie die Informations- und Rechtsseiten.
           </p>
           <p className="field-note">
-            Inhalte und Oberflächen von Drittanbietern liegen außerhalb dieses Geltungsbereichs.
+            Externe Websites, externe Dienste und Inhalte außerhalb der null-noise-Oberfläche sind
+            nicht Teil dieser Erklärung.
           </p>
         </section>
 
-        <section className="panel" aria-labelledby="accessibility-status-heading">
-          <h2 id="accessibility-status-heading">Aktueller Stand</h2>
-          <ul className="plain-list">
-            <li>
-              Die Accessibility-Prüfung orientiert sich an WCAG 2.2 und den Prüfansätzen des
-              BITV-Testverfahrens.
-            </li>
-            <li>HTML-first, sichtbarer Fokus und reduzierte Bewegung sind feste Projektprinzipien.</li>
-            <li>
-              Zentrale Nutzungsbereiche werden automatisiert geprüft und zusätzlich manuell
-              gegengeprüft.
-            </li>
-            <li>Die Standardoberfläche bleibt der Primärpfad für die Nutzung.</li>
-          </ul>
+        <section className="panel" aria-labelledby="automated-heading">
+          <h2 id="automated-heading">Automatisierte Prüfungen</h2>
+          <p>
+            Im Projekt werden Playwright, <code>@axe-core/playwright</code> und ein direkter{" "}
+            <code>axe-core</code>-Lauf verwendet. Zusätzlich gibt es Smoke-Checks für
+            Überschriftenstruktur, Landmarken, Fokuspfade, Tastaturbedienung und Reflow bei{" "}
+            <code>320 CSS-Pixeln</code>.
+          </p>
+          <p>
+            In den zuletzt ausgeführten automatisierten Tests wurden auf den geprüften Kernrouten
+            keine blockierenden Axe-Verstöße festgestellt. Automatisierte Tests unterstützen die
+            Prüfung, ersetzen aber keine vollständige manuelle Bewertung.
+          </p>
         </section>
 
-        <section className="panel" aria-labelledby="accessibility-automated-heading">
-          <h2 id="accessibility-automated-heading">Was automatisiert geprüft wird</h2>
+        <section className="panel" aria-labelledby="manual-heading">
+          <h2 id="manual-heading">Manuelle Prüfungen</h2>
+          <p>
+            Ergänzend sind manuelle Prüfungen vorgesehen und für eine belastbare Bewertung nötig.
+            Sie orientieren sich an der Methodik des{" "}
+            <a href="https://bitvtest.de/tests-und-beratung/bik-bitv-test-web">
+              BIK BITV- / WCAG-Tests für Webangebote
+            </a>{" "}
+            und an der{" "}
+            <a href="https://bitvtest.de/test-methodik/web/beschreibung-des-pruefverfahrens">
+              Beschreibung des Prüfverfahrens für Web
+            </a>
+            . Für die WCAG-2.2-Einordnung wird zusätzlich das veröffentlichte{" "}
+            <a href="https://bitvtest.de/pruefverfahren/wcag-22-web">
+              Prüfschritt-Verzeichnis zum WCAG 2.2 Test für Web
+            </a>{" "}
+            als fachliche Orientierung herangezogen.
+          </p>
           <ul className="plain-list">
-            <li>Playwright mit <code>@axe-core/playwright</code> auf zentralen Nutzungsbereichen</li>
-            <li>
-              zusätzlicher direkter <code>axe-core</code>-Lauf mit injiziertem{" "}
-              <code>axe.run()</code>
-            </li>
-            <li>Landmarken, Heading-Struktur, erkennbare Label- und ARIA-Probleme</li>
-            <li>Kontrast-Fundstellen, die automatisiert belastbar erkennbar sind</li>
-            <li>
-              gezielte Smoke-Checks für Tastatur, Fokuspfade und Reflow bei{" "}
-              <code>320 CSS-Pixeln</code>
-            </li>
-          </ul>
-        </section>
-
-        <section className="panel" aria-labelledby="accessibility-manual-heading">
-          <h2 id="accessibility-manual-heading">Was manuell geprüft wird</h2>
-          <ul className="plain-list">
-            <li>reine Tastaturbedienung inklusive Fokusreihenfolge und sichtbarem Fokus</li>
+            <li>reine Tastaturbedienung mit sichtbarem Fokus</li>
             <li>Screenreader-Smoke-Test für Landmarken, Überschriften und Formularbeschriftungen</li>
             <li>
-              Reflow bei <code>320 CSS-Pixeln</code> und Prüfung bei <code>400 %</code>{" "}
-              Zoom
+              Reflow bei <code>320 CSS-Pixeln</code> und Prüfung bei <code>400 %</code> Zoom
             </li>
-            <li>
-              <code>prefers-reduced-motion</code> und ruhiges Verhalten ohne überraschende
-              Zustandswechsel
-            </li>
-            <li>Verständlichkeit: situative Lesart, Entscheidungsfrage und ehrliche Unsicherheit</li>
+            <li>ruhiges Verhalten ohne überraschende Zustandswechsel</li>
+            <li>Verständlichkeit der Texte, Unsicherheit und Entscheidungsfrage</li>
           </ul>
         </section>
 
-        <section className="panel" aria-labelledby="accessibility-limits-heading">
-          <h2 id="accessibility-limits-heading">Bekannte Grenzen und offene Punkte</h2>
+        <section className="panel" aria-labelledby="limits-heading">
+          <h2 id="limits-heading">Bekannte Grenzen und Auffälligkeiten</h2>
           <ul className="plain-list">
             <li>
-              Automatisierte Tests decken nur einen Teil der Anforderungen ab und ersetzen keine
-              belastbare Screenreader- oder Zoom-Prüfung.
+              Kritisch: keine aktuell belegte kritische Auffälligkeit aus den automatisierten
+              Projektprüfungen.
             </li>
             <li>
-              Ob Texte unter Stress oder schneller Überforderung wirklich entlasten, bleibt ein
-              manueller Qualitätscheck.
+              Schwerwiegend: keine aktuell belegte schwerwiegende Auffälligkeit aus den
+              automatisierten Projektprüfungen.
             </li>
             <li>
-              Wenn sich Nutzungsbereiche wesentlich ändern, muss die Bewertung der Barrierefreiheit
-              neu erfolgen.
+              Moderat: die tatsächliche Verständlichkeit unter Stress oder schneller Überforderung
+              lässt sich nur manuell und mit Nutzungskontext bewerten.
+            </li>
+            <li>
+              Gering: externe Metadaten, Poster und Titelinformationen können in Qualität und
+              Vollständigkeit schwanken.
             </li>
           </ul>
         </section>
 
-        <section className="panel" aria-labelledby="accessibility-contact-heading">
-          <h2 id="accessibility-contact-heading">Hinweise und Kontakt</h2>
+        <section className="panel" aria-labelledby="contact-heading">
+          <h2 id="contact-heading">Kontakt und Feedback</h2>
           <p>
-            Wenn dir eine Barriere auffällt oder ein Prüfpfad für dich nicht nachvollziehbar ist,
-            ist ein Hinweis willkommen.
+            Wenn dir eine Barriere auffällt oder ein Prüfpfad für dich nicht nachvollziehbar ist, ist
+            ein Hinweis willkommen.
           </p>
+          <p>Kontakt: mail@sebastianjansen.com</p>
+        </section>
+
+        <section className="panel" aria-labelledby="enforcement-heading">
+          <h2 id="enforcement-heading">Durchsetzungsverfahren / Hinweis zur Einordnung</h2>
           <p>
-            Kontakt: <a href="mailto:mail@sebastianjansen.com">mail@sebastianjansen.com</a>
+            null-noise ist aktuell ein privates Hobby- und Referenzprojekt. Diese Erklärung ist
+            deshalb als freiwillige Transparenzseite zu verstehen und nicht als behördliche
+            Erklärung einer öffentlichen Stelle.
           </p>
           <p className="field-note">
-            Stand dieser Erklärung: 11. April 2026. Letzte inhaltliche Prüfung: manueller
-            Prüfpfad auf den zentralen Nutzungsbereichen plus automatisierte Läufe mit Playwright
-            und <code>axe-core</code>.
+            Diese Einordnung ist keine Rechtsberatung. Stand dieser Erklärung: 14. Mai 2026.
           </p>
         </section>
       </div>
