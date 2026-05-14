@@ -399,14 +399,14 @@ test("metadata spike path stays clearly separated from the main product flow", a
 test("footer exposes the current build version and changelog", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.locator("footer .build-line")).toContainText("Version");
+  await expect(page.locator("footer .build-line")).toContainText("Build");
 
   const changelog = page
     .locator("summary")
-    .filter({ hasText: "Was zuletzt geändert wurde" });
+    .filter({ hasText: "Release Notes / Changelog" });
 
   await changelog.click();
-  await expect(page.locator(".release-notes h3").first()).toContainText("Version");
+  await expect(page.locator(".release-notes h3").first()).toContainText("v");
 });
 
 test("footer links to the minimal legal pages", async ({ page }) => {

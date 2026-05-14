@@ -6,13 +6,13 @@ export function SiteFooter() {
   return (
     <footer className="site-footer" id="site-footer">
       <details className="mobile-experiment-footer">
-        <summary>{`Info & Stand · Version ${currentBuild.version}`}</summary>
+        <summary>{`Build ${currentBuild.version} · Release Notes`}</summary>
         <div className="mobile-experiment-footer-body">
           <p className="mobile-experiment-build-line">
-            <strong>{`Version ${currentBuild.version}`}</strong>
-            {` · ${currentBuild.label} · Stand ${currentBuild.releasedAt}`}
+            <strong>{`Build ${currentBuild.version}`}</strong>
+            {` · ${currentBuild.label} · Released ${currentBuild.releasedAt}`}
           </p>
-          <p className="field-note">Früher Prototyp. Einschätzungen sind vorläufig.</p>
+          <p className="field-note">Private Beta. Reiz-Einschätzungen bleiben vorläufig.</p>
           <nav className="mobile-experiment-footer-links" aria-label="Info und Rechtliches">
             <Link href="/barrierefreiheit">Barrierefreiheit</Link>
             <Link href="/datenschutz">Datenschutz</Link>
@@ -33,8 +33,7 @@ export function SiteFooter() {
 
           <div className="footer-link-cloud" aria-label="Direkt erreichbar">
             <Link href="/suche">Suche</Link>
-            <Link href="/erklaerung">Einordnung</Link>
-            <Link href="/bedienung">Hilfe</Link>
+            <Link href="/erklaerung">Erklärung und Hilfe</Link>
             <Link href="/barrierefreiheit">Barrierefreiheit</Link>
             <Link href="/datenschutz">Datenschutz</Link>
             <Link href="/impressum">Impressum</Link>
@@ -42,20 +41,20 @@ export function SiteFooter() {
 
           <div className="footer-meta-runway">
             <p className="build-line">
-              <strong>{`Version ${currentBuild.version}`}</strong>
-              {` · ${currentBuild.label} · Stand ${currentBuild.releasedAt}`}
+              <strong>{`Build ${currentBuild.version}`}</strong>
+              {` · ${currentBuild.label} · Released ${currentBuild.releasedAt}`}
             </p>
-            <p className="field-note">Früher Prototyp. Einschätzungen sind vorläufig.</p>
+            <p className="field-note">Private Beta. Reiz-Einschätzungen bleiben vorläufig.</p>
 
             <details className="disclosure footer-changelog">
-              <summary>Was zuletzt geändert wurde</summary>
+              <summary>Release Notes / Changelog</summary>
               <div className="release-notes">
                 {releaseNotes.map((release) => (
                   <section key={release.version} aria-labelledby={`release-${release.version}`}>
                     <h3 id={`release-${release.version}`}>
-                      {`Version ${release.version} · ${release.label}`}
+                      {`v${release.version} · ${release.label}`}
                     </h3>
-                    <p className="field-note">{`Stand ${release.releasedAt}`}</p>
+                    <p className="field-note">{`Released ${release.releasedAt}`}</p>
                     <ul className="plain-list">
                       {release.entries.map((entry) => (
                         <li key={entry}>{entry}</li>
