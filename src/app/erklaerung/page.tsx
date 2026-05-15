@@ -41,7 +41,7 @@ export default function ExplanationPage() {
           </li>
           <li>
             Lies in der Trefferliste zuerst die kurze Tendenz. Sie zeigt nur eine vorsichtige
-            Erstlesart.
+            erste Einschätzung.
           </li>
           <li>
             Öffne die Detailseite, wenn du mehr Kontext brauchst.
@@ -59,9 +59,9 @@ export default function ExplanationPage() {
 
       <div className="content-grid">
         <section className="panel" aria-labelledby="reading-heading">
-          <h2 id="reading-heading">Was bedeutet Erstlesart?</h2>
+          <h2 id="reading-heading">Was bedeutet erste Einschätzung?</h2>
           <p>
-            Eine Erstlesart ist eine vorsichtige Einordnung aus vorhandenen Hinweisen. Sie sagt nicht:
+            Eine erste Einschätzung ist eine vorsichtige Einordnung aus vorhandenen Hinweisen. Sie sagt nicht:
             So ist der Titel wirklich. Sie sagt eher: So wirkt der Titel nach aktuellem Stand
             vermutlich.
           </p>
@@ -96,7 +96,7 @@ export default function ExplanationPage() {
             Hinweise stehen darunter, damit die Seite nicht wie ein Analysedashboard wirkt.
           </p>
           <p>
-            Der Bereich <strong>Worauf basiert das?</strong> erklärt, welche Hinweise die Erstlesart
+            Der Bereich <strong>Worauf basiert das?</strong> erklärt, welche Hinweise die erste Einschätzung
             gerade tragen. Er trennt Metadaten, Reizhinweise, Rückhalt und Unsicherheit.
           </p>
         </section>
@@ -129,7 +129,7 @@ export default function ExplanationPage() {
           <details className="disclosure">
             <summary>Was bedeutet „Worauf basiert das?“</summary>
             <p>
-              Der Bereich zeigt die Grundlage der Erstlesart. Dazu können Metadaten, vorhandene
+            Der Bereich zeigt die Grundlage dieser Einschätzung. Dazu können Metadaten, vorhandene
               Rückmeldungen, interne Reizachsen und beruhigende Hinweise gehören. Nicht jeder Titel
               hat gleich viel Rückhalt.
             </p>

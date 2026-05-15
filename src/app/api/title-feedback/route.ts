@@ -231,6 +231,7 @@ export async function POST(request: NextRequest) {
   response.cookies.set(recentRatingsCookieName, serializeRecentRatingsCookie(recentRatings), {
     httpOnly: true,
     sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
     path: "/",
     maxAge: Math.floor(ratingGuardConfig.titleCooldownMs / 1000),
   });

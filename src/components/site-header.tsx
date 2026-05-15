@@ -5,9 +5,9 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const navigationItems = [
+  { href: "/", label: "Start" },
   { href: "/suche", label: "Suche" },
-  { href: "/erklaerung", label: "Einordnung" },
-  { href: "/bedienung", label: "Hilfe" },
+  { href: "/erklaerung", label: "Erklärung / Hilfe" },
 ];
 
 export function SiteHeader() {

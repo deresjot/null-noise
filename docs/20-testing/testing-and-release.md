@@ -58,7 +58,7 @@ Für `null-noise` gilt: Die Buckets sind Diagnosehilfe, nicht Freibrief. Auch `m
 
 Automatisierte Tests sind nötig, aber nicht ausreichend. Sie erfassen zum Beispiel nicht zuverlässig:
 
-- ob die Erstlesart wirklich verständlich und entlastend formuliert ist
+- ob die erste Einschätzung wirklich verständlich und entlastend formuliert ist
 - ob Unsicherheit sprachlich ehrlich wirkt
 - ob ein Screenreader-Fluss insgesamt ruhig und sinnvoll wirkt
 - ob Interaktionen unter Stress, Müdigkeit oder kognitiver Last nachvollziehbar bleiben
@@ -101,15 +101,15 @@ Die folgenden Schritte sind der feste manuelle Prüfpfad für `null-noise`. Er e
 - Screenreader-Smoke: Trefferüberschrift, Gruppenkontext und CTA-Beschriftungen bleiben unterscheidbar
 - Reflow: Treffergruppen bleiben lesbar, auch wenn Poster und Text untereinander stehen
 - Zoom: Ergebnisgruppen bleiben als getrennte Bereiche erkennbar
-- Verständlichkeit: Suchhinweis, Gruppenlogik und Erstlesart bleiben knapp und nicht überladen
+- Verständlichkeit: Suchhinweis, Gruppenlogik und erste Einschätzung bleiben knapp und nicht überladen
 
 ### Route `/titel/mondfenster`
 
-- per Tastatur: Erstlesart, `Passt das gerade?`, `Worauf basiert das?`, Feedbackblock, Folgeblöcke, Footer
+- per Tastatur: Erste Einschätzung, `Passt das gerade?`, `Worauf basiert das?`, Feedbackblock, Folgeblöcke, Footer
 - Fokus: Disclosure, Bewertungsbuttons und Footer-Links bleiben klar markiert
 - Screenreader-Smoke: Überschriftenhierarchie, Disclosure-Zustand und Formularbeschriftungen bleiben schlüssig
 - Reflow: Hero, Profilschalen, Kontextblöcke und Feedbackbereich stapeln ohne Seitwärts-Scrollen
-- Zoom: Erstlesart und Entscheidungsfrage bleiben als erste Orientierung sichtbar
+- Zoom: Erste Einschätzung und Entscheidungsfrage bleiben als erste Orientierung sichtbar
 - Verständlichkeit: Die Seite liest sich als ruhige Entscheidungshilfe und nicht als Analysedashboard
 
 ### Tastatur
@@ -142,7 +142,7 @@ Die folgenden Schritte sind der feste manuelle Prüfpfad für `null-noise`. Er e
 
 ### Verständlichkeit
 
-- Erstlesart in Alltagssprache
+- Erste Einschätzung in Alltagssprache
 - Entscheidungsfrage "Passt das gerade?" in 1 bis 2 kurzen Sätzen
 - Sekundärinfos bleiben sekundär
 - Unsicherheit bleibt sichtbar und wird nicht in scheinpräzise Sicherheit umformuliert
@@ -151,18 +151,20 @@ Die folgenden Schritte sind der feste manuelle Prüfpfad für `null-noise`. Er e
 
 Vor einem Beta-Release oder Deploy sollten mindestens diese Schritte laufen:
 
-1. `npm run lint`
-2. `npm run build`
-3. `npm run test:unit`
-4. `npm run test:axe-core`
-5. `npm run test:a11y`
-6. eine reine Tastatur-Session
-7. ein Screenreader-Smoke-Test
-8. Reflow-/Zoom-Check auf kleiner Breite
-9. keine Console-Errors
-10. keine Score-/Prozent-UI
-11. Mobile-Scrollgefühl nach Deploy auf echtem iPhone prüfen
-12. Header-Branding, Startseiten-Erklärung, mobile Ergebniskarten, Merken-/Gesehen-Toggle und Poster-Fallbacks auf kleinem Viewport prüfen
+1. sichtbare Release Notes und Footer-Metadaten in `src/lib/release-info.ts` aktualisieren
+2. relevante Footer-/Changelog-Tests anpassen, wenn sichtbare Texte geändert wurden
+3. `npm run lint`
+4. `npm run build`
+5. `npm run test:unit`
+6. `npm run test:axe-core`
+7. `npm run test:a11y`
+8. eine reine Tastatur-Session
+9. ein Screenreader-Smoke-Test
+10. Reflow-/Zoom-Check auf kleiner Breite
+11. keine Console-Errors
+12. keine Score-/Prozent-UI
+13. Mobile-Scrollgefühl nach Deploy auf echtem iPhone prüfen
+14. Header-Branding, Startseiten-Erklärung, mobile Ergebniskarten, Merken-/Gesehen-Toggle und Poster-Fallbacks auf kleinem Viewport prüfen
 
 Optional, wenn der Umfang es rechtfertigt:
 

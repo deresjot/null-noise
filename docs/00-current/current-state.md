@@ -78,7 +78,7 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 - `src/lib/release-info.ts`: sichtbarer Footer-Stand und aktuelle Release Notes
 - `src/lib/stimulus-evidence.ts`: internes Evidence-Modell, Mapping, Aggregation, optionale Adaptergrenzen
 - `src/lib/stimulus-evidence.test.ts`: Unit-Tests und Kalibrier-Fixtures
-- `src/lib/metadata-inference.ts`: sichtbare Erstlesart wird aus Evidence-Aggregation gespeist
+- `src/lib/metadata-inference.ts`: sichtbare Erste Einschätzung wird aus Evidence-Aggregation gespeist
 - `docs/`: auf 10 kanonische Markdown-Dateien reduziert
 
 ## Relevante Prüfpfade

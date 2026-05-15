@@ -15,7 +15,7 @@
 
 - `null-noise` hilft, Filme und Serien grob nach vermuteter Reizwirkung einzuordnen.
 - Sichtbare Tendenzen: `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv`.
-- Die Ausgabe ist eine vorsichtige Erstlesart, keine objektive Messung.
+- Die Ausgabe ist eine vorsichtige erste Einschätzung, keine objektive Messung.
 - Es gibt keine Scores, Prozentwerte oder Rankings.
 - Unsicherheit bleibt sichtbar und wird nicht sprachlich glattgezogen.
 
@@ -91,7 +91,7 @@
 - sichtbare Unsicherheit
 - vorhersehbare Interaktion
 - keine Hover-only-Hilfe
-- Standard-UI ist der barrierearme Primärpfad
+- Standard-UI ist der zugängliche Primärpfad
 - Sekundäre Infos bleiben sekundär und werden ruhig vertieft
 
 ## Accessibility-Prinzipien

@@ -22,6 +22,21 @@ export default async function HomePage() {
               sie wirken können. So findest du schneller etwas, das gerade zu deiner Stimmung,
               Energie und Aufmerksamkeit passt – ohne Bewertungen, Rankings oder Social-Druck.
             </p>
+            <section className="home-onboarding" aria-labelledby="home-onboarding-heading">
+              <h3 id="home-onboarding-heading">Kurz gesagt</h3>
+              <ol>
+                <li>Filme oder Serien suchen.</li>
+                <li>
+                  Eine grobe erste Einschätzung lesen: <strong>Eher ruhig</strong>,{" "}
+                  <strong>Eher wechselhaft</strong> oder <strong>Eher intensiv</strong>.
+                </li>
+                <li>Dann entscheiden, ob der Titel gerade passt.</li>
+              </ol>
+              <p>
+                Keine Qualitätswertung, keine objektive Messung.{" "}
+                <Link href="/erklaerung">Wie funktioniert null-noise?</Link>
+              </p>
+            </section>
             <h1 id="home-hero-heading">{siteClaim}</h1>
             <p className="lead hero-home-context">Titel suchen oder erst eine Richtung wählen.</p>
           </div>

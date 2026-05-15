@@ -27,7 +27,7 @@ Die wichtigste Aussage steht zuerst und sichtbar.
 Auf der Detailseite bedeutet das:
 
 1. Titel
-2. Erstlesart
+2. Erste Einschätzung
 3. direkte Entscheidungsfrage
 4. erst danach Kontext, Herkunft und Zusatzblöcke
 
@@ -60,9 +60,9 @@ Die Oberfläche soll sich ruhig verhalten.
 
 Nicht alles muss sofort sichtbar sein. Aber Vertiefung darf nicht unauffindbar oder flüchtig werden. Deshalb arbeitet `null-noise` mit sichtbarer Primärinformation und ruhiger Offenlegung über `details` und `summary`.
 
-### Erstlesart auf Karten bleibt Vorschau
+### Erste Einschätzung auf Karten bleibt Vorschau
 
-Auf Such- und Browse-Karten muss die Erstlesart schneller lesbar sein als auf Detailseiten. Deshalb gilt dort:
+Auf Such- und Browse-Karten muss die erste Einschätzung schneller lesbar sein als auf Detailseiten. Deshalb gilt dort:
 
 - die segmentierte 3er-Vorschau ist das Primärsignal
 - Status bleibt kurz
@@ -76,7 +76,7 @@ Wenn ein Zusatzblock keinen klaren Entscheidungsnutzen bringt, ist weglassen bes
 
 ### Ruhige Standardoberfläche statt Sonderpfad
 
-Die barrierearme UX soll nicht in einen separaten Spezialmodus ausgelagert werden. Die normale Produktoberfläche selbst muss ruhig, verständlich und vorhersagbar bleiben.
+Zugängliche, verständliche und vorhersehbare UX soll nicht in einen separaten Spezialmodus ausgelagert werden. Die normale Produktoberfläche selbst muss ruhig, verständlich und vorhersagbar bleiben.
 
 Für `null-noise` heißt das:
 
@@ -87,7 +87,7 @@ Für `null-noise` heißt das:
 
 ## Konkrete Folgen für die Detailseite
 
-- Die Erstlesart ist die primäre Aussage.
+- Die erste Einschätzung ist die primäre Aussage.
 - `Passt das gerade?` bleibt kurz und direkt.
 - `Worauf basiert das?` bleibt vertiefend und ruhig.
 - Unsicherheit wird sichtbar benannt.

@@ -240,3 +240,38 @@ describe("stored ratings", () => {
     });
   });
 });
+
+describe("client address hashing", () => {
+  const originalSalt = process.env.NULL_NOISE_RATE_LIMIT_SALT;
+  const originalNodeEnv = process.env.NODE_ENV;
+
+  afterEach(() => {
+    if (originalSalt === undefined) {
+      delete process.env.NULL_NOISE_RATE_LIMIT_SALT;
+    } else {
+      process.env.NULL_NOISE_RATE_LIMIT_SALT = originalSalt;
+    }
+
+    if (originalNodeEnv === undefined) {
+      delete process.env.NODE_ENV;
+    } else {
+      process.env.NODE_ENV = originalNodeEnv;
+    }
+  });
+
+  it("requires an explicit salt before hashing client addresses in production", () => {
+    delete process.env.NULL_NOISE_RATE_LIMIT_SALT;
+    process.env.NODE_ENV = "production";
+
+    expect(() => hashClientAddress("127.0.0.1")).toThrow(
+      "NULL_NOISE_RATE_LIMIT_SALT_REQUIRED",
+    );
+  });
+
+  it("keeps local hashing available without a configured salt", () => {
+    delete process.env.NULL_NOISE_RATE_LIMIT_SALT;
+    process.env.NODE_ENV = "development";
+
+    expect(hashClientAddress("127.0.0.1")).toMatch(/^[a-f0-9]{32}$/);
+  });
+});

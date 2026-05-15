@@ -6,7 +6,7 @@ Diese Datei beschreibt die barrierebezogenen Grundentscheidungen für `null-nois
 
 ## Ziel
 
-`null-noise` soll nicht nur formal möglichst barrierearm sein, sondern nachvollziehbar und testbar. Das bedeutet:
+`null-noise` verfolgt digitale Barrierefreiheit nach nachvollziehbaren Standards und soll zugleich verständlich und testbar bleiben. Das bedeutet:
 
 - Entscheidungen sollen sich auf Standards und belastbare Muster stützen.
 - Die Prüfung orientiert sich an WCAG 2.2 und den Prüfansätzen des BITV-Testverfahrens.
@@ -58,7 +58,7 @@ Animation ist in `null-noise` nachgeordnet. Bewegungen dürfen weder Information
 
 Die Oberfläche priorisiert deshalb:
 
-- eine kurze Erstlesart
+- eine kurze Erste Einschätzung
 - sichtbare Unsicherheit
 - nachvollziehbare Herkunft der Aussage
 
@@ -89,7 +89,7 @@ Der Grund für diese Wahl:
 
 `null-noise` baut aktuell keinen zweiten "maximal barrierefreien" Parallelpfad mit eigener Oberfläche. Der Grund ist nicht Bequemlichkeit, sondern Produktdisziplin:
 
-- Die Standardoberfläche selbst soll der barrierearme Primärpfad sein.
+- Die Standardoberfläche selbst soll der zugängliche Primärpfad sein.
 - Eine zweite UI würde Inhalte, Reihenfolge und Teststand leichter auseinanderlaufen lassen.
 - Getrennte Modi erhöhen Pflegeaufwand und erzeugen neue Inkonsistenzen, besonders bei Text, Fokus, Disclosure und Rückmeldungen.
 

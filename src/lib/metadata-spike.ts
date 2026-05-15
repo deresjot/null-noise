@@ -1,3 +1,5 @@
+import "server-only";
+
 import { DataExchangeClient, SendApiAssetCommand } from "@aws-sdk/client-dataexchange";
 import { z } from "zod";
 
@@ -2626,7 +2628,7 @@ export async function getTmdbMetadataDetail(
       source: "tmdb",
       item,
       message:
-        "Basisdaten von TMDb. null-noise liest daraus vorsichtig eine situative Lesart.",
+        "Basisdaten von TMDb. null-noise macht daraus vorsichtig eine erste Einschätzung.",
     };
   } catch (error) {
     if (error instanceof Error && error.name === "TimeoutError") {

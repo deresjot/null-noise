@@ -261,9 +261,9 @@ export function ExternalResultList({
               </header>
 
               <div className="result-card-reading-block">
-                <p className="result-card-reading-kicker">Metadaten-Lesart</p>
+                <p className="result-card-reading-kicker">Erste Einschätzung</p>
                 <SearchToneScale
-                  caption="Metadaten-Lesart"
+                  caption="Erste Einschätzung"
                   emphasis="card"
                   mode={aggregatePresentation.state}
                   showCaption={false}

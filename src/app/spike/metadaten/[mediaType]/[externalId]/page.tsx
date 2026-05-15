@@ -366,8 +366,8 @@ export default async function MetadataSpikeDetailPage({
         <div className="detail-hero-copy">
           <p className="eyebrow">{`${formatMediaType(item.mediaType)} · ${item.releaseYear ?? "Jahr offen"}`}</p>
           <h1>{item.title}</h1>
-          <section className="detail-reading-block" aria-label="Metadaten-Lesart">
-            <p className="detail-reading-kicker">Metadaten-Lesart</p>
+          <section className="detail-reading-block" aria-label="Erste Einschätzung">
+            <p className="detail-reading-kicker">Erste Einschätzung</p>
             <p className="detail-hero-tendency">{tendency.label}</p>
             <SearchToneScale
               caption="Eher ruhig bis eher intensiv"
@@ -383,8 +383,13 @@ export default async function MetadataSpikeDetailPage({
             <p className="field-note detail-hero-status">
               <strong>{aggregatePresentation.label}.</strong> {aggregatePresentation.text}
             </p>
+            <p className="field-note detail-reading-explain-link">
+              <a href="#reading-basis">Worauf basiert das?</a>{" "}
+              <span aria-hidden="true">·</span>{" "}
+              <a href="/erklaerung">Wie funktioniert die erste Einschätzung?</a>
+            </p>
           </section>
-          <div className="detail-reading-followups">
+          <div className="detail-reading-followups" id="reading-basis">
             <ReadingDecisionSupport
               cautions={{
                 items: cautionHints,
@@ -401,7 +406,7 @@ export default async function MetadataSpikeDetailPage({
             />
             <ReadingEvidenceDetails
               entries={readingEvidenceEntries}
-              intro="Kurz und ehrlich: Das ist eine vorsichtige Lesart aus Genres, Keywords, Kurzbeschreibung und, wenn vorhanden, Rückmeldungen. Keine Szenenprüfung, keine Entwarnung."
+              intro="Kurz und ehrlich: Das ist eine vorsichtige erste Einschätzung aus Genres, Keywords, Kurzbeschreibung und, wenn vorhanden, Rückmeldungen. Keine Szenenprüfung, keine Entwarnung."
             />
 
             <div id="reading-feedback">
@@ -454,7 +459,7 @@ export default async function MetadataSpikeDetailPage({
             </div>
             <div>
               <dt>Grundlage</dt>
-              <dd>{localTitle ? "Eigene Seite plus vorhandene Rückmeldungen" : "Metadaten-Lesart aus Basisdaten"}</dd>
+              <dd>{localTitle ? "Eigene Seite plus vorhandene Rückmeldungen" : "Erste Einschätzung aus Basisdaten"}</dd>
             </div>
             <div>
               <dt>Quelle</dt>

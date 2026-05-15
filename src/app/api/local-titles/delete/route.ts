@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { deleteStoredLocalTitleSeedBySlug } from "@/lib/local-titles";
+import { hasTrustedOrigin } from "@/lib/ratings";
 import { arePublicWritesEnabled } from "@/lib/runtime-config";
 
 const deleteLocalTitleSchema = z.object({
@@ -43,6 +44,18 @@ export async function POST(request: NextRequest) {
 
   if (!arePublicWritesEnabled()) {
     return NextResponse.redirect(buildRedirectUrl(request, errorPath, "inactive"), 303);
+  }
+
+  if (
+    !hasTrustedOrigin({
+      origin: request.headers.get("origin"),
+      referer: request.headers.get("referer"),
+      host: request.headers.get("host"),
+      forwardedHost: request.headers.get("x-forwarded-host"),
+      secFetchSite: request.headers.get("sec-fetch-site"),
+    })
+  ) {
+    return NextResponse.redirect(buildRedirectUrl(request, errorPath, "error"), 303);
   }
 
   try {

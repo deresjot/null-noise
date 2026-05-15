@@ -167,6 +167,24 @@ test("homepage exposes a small beta note without turning into a banner", async (
   await expect(page.getByText(/^Beta\./).first()).toBeVisible();
 });
 
+test("mobile homepage explains the first visit context without a modal", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 900 });
+  await page.goto("/");
+
+  const onboarding = page.locator(".home-onboarding");
+
+  await expect(page.getByRole("heading", { name: "Kurz gesagt" })).toBeVisible();
+  await expect(onboarding.getByText("Filme oder Serien suchen.")).toBeVisible();
+  await expect(onboarding.getByText("Eher ruhig")).toBeVisible();
+  await expect(onboarding.getByText("Eher wechselhaft")).toBeVisible();
+  await expect(onboarding.getByText("Eher intensiv")).toBeVisible();
+  await expect(onboarding.getByText("Keine Qualitätswertung, keine objektive Messung.")).toBeVisible();
+  await expect(
+    onboarding.getByRole("link", { name: "Wie funktioniert null-noise?" }),
+  ).toHaveAttribute("href", "/erklaerung");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+});
+
 test("search page exposes a visible results heading", async ({ page }) => {
   await page.goto("/suche?q=mond");
 
@@ -199,6 +217,23 @@ test("detail page keeps low confidence understandable for small data", async ({ 
   await expect(page.getByText("Worauf das gerade ruht")).toBeVisible();
   await expect(page.locator(".confidence-callout-eyebrow")).toHaveText("Stand heute");
   await expect(page.locator(".confidence-callout-title")).toHaveText("Erste Rückmeldungen da");
+});
+
+test("mobile detail page keeps the decision callout visible at 320 CSS pixels", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 900 });
+  await page.goto("/titel/mondfenster");
+
+  await expect(page.getByRole("heading", { name: "Mondfenster" })).toBeVisible();
+  const readingBlock = page.getByLabel("Erste Einschätzung", { exact: true });
+  await expect(readingBlock.getByText("Erste Einschätzung", { exact: true })).toBeVisible();
+  await expect(page.getByText("Passt das gerade?")).toBeVisible();
+  const callout = page.locator(".detail-callout-panel");
+  await expect(callout).toBeVisible();
+  await expect(callout.getByRole("heading", { name: "Worauf das gerade ruht" })).toBeVisible();
+  await expect(callout.getByText("Rückmeldungen", { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Wie funktioniert die erste Einschätzung?" }),
+  ).toHaveAttribute("href", "/erklaerung");
 });
 
 test("detail page exposes the fourth prepared rating question", async ({ page }) => {
@@ -412,9 +447,36 @@ test("footer exposes the current build version and changelog", async ({ page }) 
 test("footer links to the minimal legal pages", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("link", { name: "Barrierefreiheit" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Datenschutz" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Impressum" })).toBeVisible();
+  const footer = page.locator("footer");
+
+  await expect(footer.getByRole("link", { name: "Start" }).first()).toBeVisible();
+  await expect(footer.getByRole("link", { name: "Suche" }).first()).toBeVisible();
+  await expect(footer.getByRole("link", { name: "Erklärung und Hilfe" }).first()).toBeVisible();
+  await expect(footer.getByRole("link", { name: "Barrierefreiheit" }).first()).toBeVisible();
+  await expect(footer.getByRole("link", { name: "Datenschutz" }).first()).toBeVisible();
+  await expect(footer.getByRole("link", { name: "Impressum" }).first()).toBeVisible();
+});
+
+test("mobile navigation separates primary header links from footer metadata links", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 900 });
+  await page.goto("/");
+
+  const headerNav = page.getByRole("navigation", { name: "Hauptnavigation" });
+  const footerNav = page.getByRole("navigation", { name: "Info und Rechtliches" });
+
+  await expect(headerNav.getByRole("link", { name: "Start" })).toHaveAttribute("href", "/");
+  await expect(headerNav.getByRole("link", { name: "Suche" })).toHaveAttribute("href", "/suche");
+  await expect(headerNav.getByRole("link", { name: "Erklärung / Hilfe" })).toHaveAttribute("href", "/erklaerung");
+  await expect(headerNav.getByRole("link", { name: "Barrierefreiheit" })).toHaveCount(0);
+  await expect(headerNav.getByRole("link", { name: "Datenschutz" })).toHaveCount(0);
+  await expect(headerNav.getByRole("link", { name: "Impressum" })).toHaveCount(0);
+
+  await expect(footerNav.locator('a[href="/"]')).toHaveText("Start");
+  await expect(footerNav.locator('a[href="/suche"]')).toHaveText("Suche");
+  await expect(footerNav.locator('a[href="/erklaerung"]')).toHaveText("Erklärung und Hilfe");
+  await expect(footerNav.locator('a[href="/barrierefreiheit"]')).toHaveText("Barrierefreiheit");
+  await expect(footerNav.locator('a[href="/datenschutz"]')).toHaveText("Datenschutz");
+  await expect(footerNav.locator('a[href="/impressum"]')).toHaveText("Impressum");
 });
 
 test("accessibility page is reachable and explains the current testing scope", async ({ page }) => {

@@ -1,3 +1,5 @@
+import "server-only";
+
 import { createHash } from "node:crypto";
 
 import { z } from "zod";
@@ -166,8 +168,13 @@ export function deriveAggregateSourceType(
 }
 
 export function hashClientAddress(input: string): string {
-  const salt = process.env.NULL_NOISE_RATE_LIMIT_SALT ?? "null-noise-local";
-  return createHash("sha256").update(`${salt}:${input}`).digest("hex").slice(0, 32);
+  const salt = process.env.NULL_NOISE_RATE_LIMIT_SALT?.trim();
+
+  if (!salt && process.env.NODE_ENV === "production") {
+    throw new Error("NULL_NOISE_RATE_LIMIT_SALT_REQUIRED");
+  }
+
+  return createHash("sha256").update(`${salt ?? "null-noise-local"}:${input}`).digest("hex").slice(0, 32);
 }
 
 export function extractClientAddress(headers: {

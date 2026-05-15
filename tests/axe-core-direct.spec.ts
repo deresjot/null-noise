@@ -152,3 +152,39 @@ test("direct axe-core scan stays clean on detail page", async ({ page }) => {
     await expect(page.getByRole("heading", { name: "Mondfenster" })).toBeVisible();
   });
 });
+
+test("direct axe-core scan stays clean on info and legal pages", async ({ page }) => {
+  const routes = [
+    {
+      path: "/erklaerung",
+      label: "explanation",
+      heading: "null-noise verstehen und benutzen",
+    },
+    {
+      path: "/bedienung",
+      label: "bedienung-redirect",
+      heading: "null-noise verstehen und benutzen",
+    },
+    {
+      path: "/barrierefreiheit",
+      label: "accessibility-statement",
+      heading: "Erklärung zur Barrierefreiheit",
+    },
+    {
+      path: "/datenschutz",
+      label: "privacy",
+      heading: "Datenschutz",
+    },
+    {
+      path: "/impressum",
+      label: "imprint",
+      heading: "Impressum",
+    },
+  ];
+
+  for (const route of routes) {
+    await expectNoDirectAxeViolations(page, route.path, route.label, async () => {
+      await expect(page.getByRole("heading", { name: route.heading })).toBeVisible();
+    });
+  }
+});

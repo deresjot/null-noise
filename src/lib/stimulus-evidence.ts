@@ -352,7 +352,7 @@ const tmdbOverviewRules: EvidenceRule[] = [
     direction: "calming",
     strength: 1,
     confidence: "weak",
-    signal: "Synopsis: ruhigere Lesart",
+    signal: "Synopsis: ruhigere erste Einschätzung",
     explanation: "Hinweis aus Kurzbeschreibung: Die Beschreibung klingt eher nach zurückhaltenderen Momenten.",
   },
   {

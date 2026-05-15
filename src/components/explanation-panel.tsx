@@ -6,7 +6,7 @@ export function ExplanationPanel({ compact = false }: ExplanationPanelProps) {
   return (
     <section className="panel" aria-labelledby="explanation-panel-heading">
       <h2 id="explanation-panel-heading">Wie diese Einschätzung gemeint ist</h2>
-      <p>Keine Messwerte, keine Punktwerte, keine falsche Sicherheit. Nur eine vorsichtige Lesart.</p>
+      <p>Keine Messwerte, keine Punktwerte, keine falsche Sicherheit. Nur eine vorsichtige erste Einschätzung.</p>
       <ul className="plain-list">
         <li>Grundlautstärke meint das normale Lautstärkeniveau eines Titels.</li>
         <li>Plötzliche Spitzen meint abrupte laute Momente oder harte Reizwechsel.</li>

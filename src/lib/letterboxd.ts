@@ -1,3 +1,5 @@
+import "server-only";
+
 import { z } from "zod";
 
 const LETTERBOXD_API_BASE_URL = "https://api.letterboxd.com/api/v0";

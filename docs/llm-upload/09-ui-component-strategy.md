@@ -1,6 +1,6 @@
 # UI-Komponentenstrategie für null-noise
 
-Diese Datei ergänzt das MVP-Konzept um eine belastbare Auswahl- und Validierungslogik für barrierearme UI-Bausteine. Grundsatz für `null-noise`: Wir übernehmen keine Bibliothek als Ganzes, sondern orientieren uns an guten, dokumentierten Mustern und setzen im MVP bevorzugt native HTML-Semantik mit dünnen lokalen Komponenten um.
+Diese Datei ergänzt das MVP-Konzept um eine belastbare Auswahl- und Validierungslogik für UI-Bausteine mit dem Ziel digitaler Barrierefreiheit. Grundsatz für `null-noise`: Wir übernehmen keine Bibliothek als Ganzes, sondern orientieren uns an guten, dokumentierten Mustern und setzen im MVP bevorzugt native HTML-Semantik mit dünnen lokalen Komponenten um.
 
 Die Prüfung dieser Bausteine orientiert sich an WCAG 2.2 und an den öffentlich dokumentierten Prüfansätzen des BITV-Testverfahrens. Automatisierung ist dabei nur ein Teil der Absicherung.
 
@@ -66,7 +66,7 @@ Das ist kein Dogma. Es ist eine Produktentscheidung für ein ruhiges, erklärbar
 Zusätzlich gilt seit dieser Runde:
 
 - kein separater HTML-Sondermodus als Paralleloberfläche
-- die Standard-UI selbst ist der barrierearme Primärpfad
+- die Standard-UI selbst ist der zugängliche Primärpfad
 - Reduktion wird zuerst im bestehenden Muster gesucht, nicht in einer zweiten Oberfläche
 
 ## Komponenten-Policy
@@ -145,7 +145,7 @@ Die erste Basis folgt dieser Strategie bereits:
 - `SiteHeader`: verwendet seit dem Fix-Pass vom 23. April 2026 das vom Nutzer gelieferte Logo als Markenquelle; Header, Favicon, Apple-Icon und OG-Bild leiten sich aus derselben Quelle ab
 - `SearchForm`: native Formularfelder mit `fieldset` und `legend`
 - `SearchPage` im leeren Zustand: zwei semantisch getrennte Browse-Bereiche mit echten Listen statt Carousel- oder Mischlogik
-- `ResultList`: semantische Trefferliste mit breiteren Tile-Artikeln statt schmalen App-Karten; Poster, Titelzone, Erstlesart und Aktionen sind als getrennte Leseblöcke aufgebaut
+- `ResultList`: semantische Trefferliste mit breiteren Tile-Artikeln statt schmalen App-Karten; Poster, Titelzone, Erste Einschätzung und Aktionen sind als getrennte Leseblöcke aufgebaut
 - `ExternalResultList`: dieselbe Tile-Sprache für externe TMDb-Titel, klar getrennt vom lokalen Stand und ohne Mischliste aus Browse und Suche
 - `SearchToneScale`: Detailseiten nutzen weiter eine textlich beschriftete ruhige Pegelanzeige; Karten arbeiten dagegen reduzierter mit Achse und Marker als Vorschau statt mit zweiter Erklärungsebene. Sichtbare Labels lauten konsistent `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv`.
 - `ResultPoster`: fehlende Poster werden als bewusster Platzhalter `Kein Poster verfügbar` dargestellt und nicht als leere oder kaputte Bildfläche

@@ -489,8 +489,8 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
             {`${formatKind(title.external.kind)} · ${title.external.year ?? "Jahr offen"}`}
           </p>
           <h1>{title.external.title}</h1>
-          <section className="detail-reading-block" aria-label="Situative Lesart">
-            <p className="detail-reading-kicker">Situative Lesart</p>
+          <section className="detail-reading-block" aria-label="Erste Einschätzung">
+            <p className="detail-reading-kicker">Erste Einschätzung</p>
             <p className="detail-hero-tendency">{profileTendency.label}</p>
             <SearchToneScale
               caption="Eher ruhig bis eher intensiv"
@@ -525,12 +525,17 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
               }}
               decision={decision}
             />
+            <p className="field-note detail-reading-explain-link">
+              <a href="#reading-basis">Worauf basiert das?</a>{" "}
+              <span aria-hidden="true">·</span>{" "}
+              <a href="/erklaerung">Wie funktioniert die erste Einschätzung?</a>
+            </p>
           </section>
           <TitlePocketActions entry={titlePocketEntry} variant="detail" />
-          <div className="detail-reading-followups">
+          <div className="detail-reading-followups" id="reading-basis">
             <ReadingEvidenceDetails
               entries={readingEvidenceEntries}
-              intro="Kurz und ehrlich: Das ist eine vorsichtige Lesart aus Basisdaten und, wenn vorhanden, Rückmeldungen. Keine Szenenprüfung, keine Entwarnung."
+              intro="Kurz und ehrlich: Das ist eine vorsichtige erste Einschätzung aus Basisdaten und, wenn vorhanden, Rückmeldungen. Keine Szenenprüfung, keine Entwarnung."
             />
 
             <div id="reading-feedback">

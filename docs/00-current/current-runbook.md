@@ -84,15 +84,17 @@ Nach Deploy:
 
 Vor Commit/Deploy zusätzlich prüfen:
 
-- sichtbaren Versions-/Standbereich aktualisieren, wenn passend
+- sichtbare Release Notes und Footer-Metadaten in `src/lib/release-info.ts` aktualisieren, bevor ein Push oder Vercel-Deploy vorbereitet wird
+- relevante Footer-/Changelog-Tests anpassen, falls sichtbare Texte geändert wurden
 - keine Recovery-/Screenshot-/ZIP-Dateien committen
 - keine API-Keys oder lokalen Env-Dateien committen
 - Security-/Privacy-Checks aus diesem Runbook durchführen
 - `docs/20-testing/testing-and-release.md` nur bei Release-/Deploy-Aufgaben zusätzlich lesen
+- erst danach die passenden Tests ausführen und nur mit expliziter Freigabe pushen oder deployen
 
 ## Kurze Sichtprüfung
 
-- Erstlesart sichtbar
+- Erste Einschätzung sichtbar
 - Gründe kurz
 - keine Score-/Prozent-UI
 - Header/Branding zeigt Icon-Logo plus Wortmarke auf Mobile und Desktop

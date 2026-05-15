@@ -113,9 +113,9 @@ export function ResultList({
               </header>
 
               <div className="result-card-reading-block">
-                <p className="result-card-reading-kicker">Situative Lesart</p>
+                <p className="result-card-reading-kicker">Erste Einschätzung</p>
                 <SearchToneScale
-                  caption="Situative Lesart"
+                  caption="Erste Einschätzung"
                   emphasis="card"
                   mode={aggregatePresentation.state}
                   showCaption={false}

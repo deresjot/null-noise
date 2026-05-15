@@ -75,11 +75,11 @@ Darum gilt für `null-noise`:
 
 - keine direkte Ableitung `FSK = ruhig/intensiv`
 - keine harte Filter- oder Score-Logik aus FSK
-- wenn später genutzt, dann nur defensiv als Kontextsignal neben den bestehenden Erstlesart-Signalen
+- wenn später genutzt, dann nur defensiv als Kontextsignal neben den bestehenden Signalen der ersten Einschätzung
 
 ## Trennung von Quellen
 
-TMDb liefert Katalog- und Metadaten. `null-noise` ergänzt darüber eine eigene, vorsichtige Lesart.
+TMDb liefert Katalog- und Metadaten. `null-noise` ergänzt darüber eine eigene, vorsichtige erste Einschätzung.
 
 Diese Trennung bleibt sichtbar, damit das Produkt nicht suggeriert, externe Metadaten seien schon ein Reizprofil.
 
@@ -94,13 +94,39 @@ Folgen daraus:
 - kurze Texte
 - keine gamifizierte UI
 - keine aggressive Bewegung
-- auf Karten darf die Erstlesart eher als ruhige Vorschau funktionieren als als zweite Erklärungsebene
+- auf Karten darf die erste Einschätzung eher als ruhige Vorschau funktionieren als als zweite Erklärungsebene
 
 ## Referenzprojekt statt Feature-Sammlung
 
-`null-noise` soll ein belastbares Beispiel für barrierearme, nachvollziehbare und testbare Web-UX sein. Neue Features werden deshalb nicht an Neuheit gemessen, sondern an diesen Fragen:
+`null-noise` soll ein belastbares Referenzprojekt für digitale Barrierefreiheit, nachvollziehbare Entscheidungen und testbare Web-UX sein. Neue Features werden deshalb nicht an Neuheit gemessen, sondern an diesen Fragen:
 
 1. Wird das Produkt dadurch verständlicher?
 2. Bleibt das Verhalten testbar?
 3. Erhöht die Änderung die kognitive Last?
 4. Ist der Nutzen größer als die neue Komplexität?
+
+## Referenzziele
+
+Das Projekt ist keine Showcase-Sammlung und kein Design-Experiment mit Accessibility-Nachtrag. Es soll zeigen, wie sich ein kleines Webprodukt bewusst begrenzen lässt:
+
+- HTML-first statt komplexer Eigenwidgets
+- Orientierung an WCAG 2.2 und den Prüfansätzen des BITV-Testverfahrens
+- sichtbare Unsicherheit statt Scheinpräzision
+- manuelle und automatisierte Prüfung nebeneinander
+- Produktlogik vor Feature-Druck
+
+Diese Entscheidungen bleiben sichtbar, weil sie das Produkt zusammenhalten:
+
+- keine Scores oder Rankings
+- keine Social-Logik
+- keine algorithmische Personalisierung
+- `details` und `summary` für ruhige Vertiefung
+- klare Trennung von Metadatenquelle und null-noise-Einschätzung
+
+Vor größeren Änderungen müssen diese Fragen beantwortbar sein:
+
+1. Macht die Änderung den Kernnutzen klarer?
+2. Bleibt sie mit automatischen und manuellen Prüfungen testbar?
+3. Senkt sie die kognitive Last oder erhöht sie sie?
+4. Bleibt der Primärpfad für Tastatur, Screenreader und Reflow stabil?
+5. Lässt sich die Entscheidung später dokumentieren und begründen?

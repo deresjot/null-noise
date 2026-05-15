@@ -23,7 +23,7 @@ describe("result list quick scale", () => {
       }),
     );
 
-    expect(html).toContain("Situative Lesart");
+    expect(html).toContain("Erste Einschätzung");
     expect(html).toContain("Metadaten · keine Szenenprüfung");
     expect(html).toContain("search-tone-scale-triad");
     expect(html).toContain("Eher ruhig");

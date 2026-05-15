@@ -127,7 +127,7 @@ export function getAggregatePresentation(aggregate: RatingAggregate): {
 } {
   if (aggregate.sourceType === "metadata_inference") {
     return {
-      label: "Metadaten-Lesart",
+      label: "Erste Einschätzung aus Basisdaten",
       text: "Nur Genre, Keywords und Kurzbeschreibung. Keine Szenenprüfung, keine Entwarnung.",
       chip: "Vorläufig",
       state: "seed",
@@ -171,7 +171,7 @@ export function getAggregatePresentation(aggregate: RatingAggregate): {
       text: "Zur Startbasis kommen Rückmeldungen dazu. Ganz fest ist das noch nicht.",
       chip: "Hinweise",
       state: "growing",
-    basis: "Metadaten-Lesart plus erste Rückmeldungen.",
+      basis: "Erste Einschätzung aus Basisdaten plus erste Rückmeldungen.",
     };
   }
 
@@ -193,7 +193,7 @@ export function getSearchAggregatePresentation(aggregate: RatingAggregate): {
 } {
   if (aggregate.sourceType === "metadata_inference") {
     return {
-      label: "Metadaten-Lesart",
+      label: "Erste Einschätzung aus Basisdaten",
       text: "Nur Genre, Keywords und Kurzbeschreibung. Eigene Rückmeldungen fehlen noch.",
       chip: "Vorläufig",
       state: "seed",
@@ -217,7 +217,7 @@ export function getSearchAggregatePresentation(aggregate: RatingAggregate): {
       text: "Ein paar Rückmeldungen tragen schon mit.",
       chip: "Hinweise",
       state: "growing",
-      basis: "Metadaten-Lesart plus erste Rückmeldungen.",
+      basis: "Erste Einschätzung aus Basisdaten plus erste Rückmeldungen.",
     };
   }
 
@@ -225,7 +225,7 @@ export function getSearchAggregatePresentation(aggregate: RatingAggregate): {
     if (aggregate.level === "hoch") {
       return {
         label: "Das wirkt inzwischen stimmiger",
-        text: "Metadaten-Lesart und Rückmeldungen ziehen inzwischen eher zusammen.",
+      text: "Erste Einschätzung aus Basisdaten und Rückmeldungen ziehen inzwischen eher zusammen.",
         chip: "Trägt",
         state: "rated",
         basis: "Basisdaten und mehrere Rückmeldungen ziehen zusammen.",
@@ -237,7 +237,7 @@ export function getSearchAggregatePresentation(aggregate: RatingAggregate): {
       text: "Zur ersten Einschätzung kommen erste Rückmeldungen dazu.",
       chip: "Hinweise",
       state: "growing",
-      basis: "Metadaten-Lesart plus erste Rückmeldungen.",
+      basis: "Erste Einschätzung aus Basisdaten plus erste Rückmeldungen.",
     };
   }
 

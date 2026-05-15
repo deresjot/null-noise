@@ -69,7 +69,7 @@ export default function ImpressumPage() {
           </p>
           <p className="field-note">
             null-noise wird dadurch nicht von TMDb unterstützt oder zertifiziert. Reizprofile und
-            Erstlesart bleiben null-noise-intern.
+            erste Einschätzungen bleiben null-noise-intern.
           </p>
         </section>
       </div>

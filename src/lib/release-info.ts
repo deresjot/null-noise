@@ -1,14 +1,26 @@
 import packageJson from "../../package.json";
 
 export const currentBuild = {
-  version: packageJson.version,
-  label: "Legal pages and mobile UI maintenance",
-  releasedAt: "2026-05-14 · 16:37 CEST",
+  version: `${packageJson.version}-mobile.20260515`,
+  label: "Mobile orientation, navigation and terminology pass",
+  releasedAt: "2026-05-15 · local",
 };
 
 export const releaseNotes = [
   {
-    version: packageJson.version,
+    version: `${packageJson.version}-mobile.20260515`,
+    label: "Mobile orientation, navigation and terminology pass",
+    releasedAt: "2026-05-15",
+    entries: [
+      "Mobile onboarding copy now explains search, coarse stimulus orientation and the three visible categories before the primary search flow.",
+      "Detail page callout visibility was restored on small viewports so confidence, basis and feedback count remain available near the first decision.",
+      "Header navigation now stays scoped to primary product links while footer metadata navigation keeps Accessibility, Privacy and Imprint reachable.",
+      "User-facing copy now uses `Erste Einschätzung` instead of the previous internal wording across UI, help copy and related tests.",
+      "Footer release metadata was updated before the Git push and Vercel deploy step for this mobile-orientation pass.",
+    ],
+  },
+  {
+    version: "0.8.4",
     label: "Legal pages and mobile UI maintenance",
     releasedAt: "2026-05-14",
     entries: [

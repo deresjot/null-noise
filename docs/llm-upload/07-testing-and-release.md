@@ -58,7 +58,7 @@ Für `null-noise` gilt: Die Buckets sind Diagnosehilfe, nicht Freibrief. Auch `m
 
 Automatisierte Tests sind nötig, aber nicht ausreichend. Sie erfassen zum Beispiel nicht zuverlässig:
 
-- ob die Erstlesart wirklich verständlich und entlastend formuliert ist
+- ob die erste Einschätzung wirklich verständlich und entlastend formuliert ist
 - ob Unsicherheit sprachlich ehrlich wirkt
 - ob ein Screenreader-Fluss insgesamt ruhig und sinnvoll wirkt
 - ob Interaktionen unter Stress, Müdigkeit oder kognitiver Last nachvollziehbar bleiben
@@ -101,15 +101,15 @@ Die folgenden Schritte sind der feste manuelle Prüfpfad für `null-noise`. Er e
 - Screenreader-Smoke: Trefferüberschrift, Gruppenkontext und CTA-Beschriftungen bleiben unterscheidbar
 - Reflow: Treffergruppen bleiben lesbar, auch wenn Poster und Text untereinander stehen
 - Zoom: Ergebnisgruppen bleiben als getrennte Bereiche erkennbar
-- Verständlichkeit: Suchhinweis, Gruppenlogik und Erstlesart bleiben knapp und nicht überladen
+- Verständlichkeit: Suchhinweis, Gruppenlogik und erste Einschätzung bleiben knapp und nicht überladen
 
 ### Route `/titel/mondfenster`
 
-- per Tastatur: Erstlesart, `Passt das gerade?`, `Worauf basiert das?`, Feedbackblock, Folgeblöcke, Footer
+- per Tastatur: Erste Einschätzung, `Passt das gerade?`, `Worauf basiert das?`, Feedbackblock, Folgeblöcke, Footer
 - Fokus: Disclosure, Bewertungsbuttons und Footer-Links bleiben klar markiert
 - Screenreader-Smoke: Überschriftenhierarchie, Disclosure-Zustand und Formularbeschriftungen bleiben schlüssig
 - Reflow: Hero, Profilschalen, Kontextblöcke und Feedbackbereich stapeln ohne Seitwärts-Scrollen
-- Zoom: Erstlesart und Entscheidungsfrage bleiben als erste Orientierung sichtbar
+- Zoom: Erste Einschätzung und Entscheidungsfrage bleiben als erste Orientierung sichtbar
 - Verständlichkeit: Die Seite liest sich als ruhige Entscheidungshilfe und nicht als Analysedashboard
 
 ### Tastatur
@@ -142,7 +142,7 @@ Die folgenden Schritte sind der feste manuelle Prüfpfad für `null-noise`. Er e
 
 ### Verständlichkeit
 
-- Erstlesart in Alltagssprache
+- Erste Einschätzung in Alltagssprache
 - Entscheidungsfrage "Passt das gerade?" in 1 bis 2 kurzen Sätzen
 - Sekundärinfos bleiben sekundär
 - Unsicherheit bleibt sichtbar und wird nicht in scheinpräzise Sicherheit umformuliert

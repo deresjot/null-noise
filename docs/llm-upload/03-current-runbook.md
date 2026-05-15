@@ -92,7 +92,7 @@ Vor Commit/Deploy zusätzlich prüfen:
 
 ## Kurze Sichtprüfung
 
-- Erstlesart sichtbar
+- Erste Einschätzung sichtbar
 - Gründe kurz
 - keine Score-/Prozent-UI
 - Header/Branding zeigt Icon-Logo plus Wortmarke auf Mobile und Desktop
