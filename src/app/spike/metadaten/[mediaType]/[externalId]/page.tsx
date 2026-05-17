@@ -354,8 +354,13 @@ export default async function MetadataSpikeDetailPage({
 
   return (
     <article className="section-stack detail-page metadata-detail-page">
-      <p>
-        <Link href={searchPath}>Zurück zur Suche</Link>
+      <p className="detail-back-action">
+        <Link className="back-button-link" href={searchPath}>
+          <span aria-hidden="true" className="back-button-icon">
+            ←
+          </span>
+          <span>Zurück zur Suche</span>
+        </Link>
       </p>
 
       {importStatus ? (

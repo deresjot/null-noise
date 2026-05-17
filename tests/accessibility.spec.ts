@@ -461,15 +461,17 @@ test("mobile navigation separates primary header links from footer metadata link
   await page.setViewportSize({ width: 320, height: 900 });
   await page.goto("/");
 
-  const headerNav = page.getByRole("navigation", { name: "Hauptnavigation" });
+  await page.getByRole("button", { name: "Menü" }).click();
+
+  const headerNav = page.getByRole("navigation", { name: "Mobile Navigation" });
   const footerNav = page.getByRole("navigation", { name: "Info und Rechtliches" });
 
   await expect(headerNav.getByRole("link", { name: "Start" })).toHaveAttribute("href", "/");
   await expect(headerNav.getByRole("link", { name: "Suche" })).toHaveAttribute("href", "/suche");
   await expect(headerNav.getByRole("link", { name: "Erklärung / Hilfe" })).toHaveAttribute("href", "/erklaerung");
-  await expect(headerNav.getByRole("link", { name: "Barrierefreiheit" })).toHaveCount(0);
-  await expect(headerNav.getByRole("link", { name: "Datenschutz" })).toHaveCount(0);
-  await expect(headerNav.getByRole("link", { name: "Impressum" })).toHaveCount(0);
+  await expect(headerNav.getByRole("link", { name: "Barrierefreiheit" })).toHaveAttribute("href", "/barrierefreiheit");
+  await expect(headerNav.getByRole("link", { name: "Datenschutz" })).toHaveAttribute("href", "/datenschutz");
+  await expect(headerNav.getByRole("link", { name: "Impressum" })).toHaveAttribute("href", "/impressum");
 
   await expect(footerNav.locator('a[href="/"]')).toHaveText("Start");
   await expect(footerNav.locator('a[href="/suche"]')).toHaveText("Suche");

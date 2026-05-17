@@ -43,7 +43,11 @@ Nur verwenden, wenn der Prozess eindeutig zum lokalen Dev-Server gehört. Prozes
 - `http://localhost:3000/suche`
 - `http://localhost:3000/suche?q=Arrival`
 - `http://localhost:3000/titel/mondfenster`
+- `http://localhost:3000/erklaerung`
+- `http://localhost:3000/bedienung`
 - `http://localhost:3000/barrierefreiheit`
+- `http://localhost:3000/datenschutz`
+- `http://localhost:3000/impressum`
 
 ## Testbefehle
 
@@ -55,6 +59,16 @@ npm run test:axe-core
 npm run test:a11y
 npx playwright test
 ```
+
+Für den Mobile-UX-Pass vom 17. Mai 2026 liefen zuletzt grün:
+
+```sh
+npm run lint
+npm run build
+npm run test:a11y
+```
+
+Vor einem Push/Deploy sollten `npm run test:unit`, `npm run test:axe-core` als Einzelbefehl und bei ausreichender Zeit `npx playwright test` erneut laufen, weil sie in diesem letzten Mobile-Pass nicht separat abgeschlossen wurden.
 
 ## Security-/Privacy-Checks
 
@@ -85,6 +99,7 @@ Nach Deploy:
 Vor Commit/Deploy zusätzlich prüfen:
 
 - sichtbare Release Notes und Footer-Metadaten in `src/lib/release-info.ts` aktualisieren, bevor ein Push oder Vercel-Deploy vorbereitet wird
+- Doku-Übergabe synchron halten: `docs/00-current/*`, `docs/20-testing/testing-and-release.md` und die jeweiligen Dateien in `docs/llm-upload/`
 - relevante Footer-/Changelog-Tests anpassen, falls sichtbare Texte geändert wurden
 - keine Recovery-/Screenshot-/ZIP-Dateien committen
 - keine API-Keys oder lokalen Env-Dateien committen
@@ -92,17 +107,41 @@ Vor Commit/Deploy zusätzlich prüfen:
 - `docs/20-testing/testing-and-release.md` nur bei Release-/Deploy-Aufgaben zusätzlich lesen
 - erst danach die passenden Tests ausführen und nur mit expliziter Freigabe pushen oder deployen
 
+## Übergabe an anderen Chat vor Push/Deploy
+
+Empfohlenes Briefing:
+
+```text
+Bitte arbeite im Projekt null-noise auf dem Branch null-noise.
+Lies zuerst docs/llm-upload/00-docs-readme.md, 01-llm-context.md,
+02-current-state.md, 03-current-runbook.md und 07-testing-and-release.md.
+Ziel: Vor Git-Push und Vercel-Deploy den aktuellen lokalen Mobile-UX-Pass prüfen.
+Bitte nichts committen, pushen oder deployen ohne explizite Freigabe.
+Prüfe git status/diff, Release Notes, Doku-Sync, Secrets/Artefakte,
+Tests, mobile Viewports 390px/430px und danach die Vercel-Deploy-Bereitschaft.
+```
+
 ## Kurze Sichtprüfung
 
 - Erste Einschätzung sichtbar
 - Gründe kurz
 - keine Score-/Prozent-UI
 - Header/Branding zeigt Icon-Logo plus Wortmarke auf Mobile und Desktop
+- Logo/Wortmarke führt von Unterseiten zurück zur Startseite
+- Mobile Header-App-Shell hat symmetrische Innenabstände und schrumpft smooth beim Scrollen
+- Burger-Menü öffnet und schließt per Button, Link-Klick und Escape; Fokus bleibt sichtbar
+- Burger-Menü liegt sichtbar über Seiteninhalt, Ergebnisgruppen und Detailkarten
 - Startseite enthält kurze Erklärung unter `Was passt gerade?`
 - Suche bleibt primärer Einstieg; Richtungskacheln bleiben sekundär
+- `Ohne Titel stöbern` / `Auswahl zeigen` wirkt als Button-CTA mit Icon, nicht wie ein schwacher Textlink
+- `Richtung starten` hat ausreichend Innenabstand; die drei Richtungen sind grün, gold und rot markiert
 - sichtbare Richtungskacheln/Labels: `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv`
 - Merken-/Gesehen-Bereich und Toggle umbrechen mobil sauber
-- fehlende Poster wirken als bewusste Platzhalter, nicht wie kaputte Bilder
+- Detailseite zeigt mobil Poster und Synopsis, sofern Daten vorhanden sind
+- fehlende Poster wirken als bewusste kompakte Platzhalter, nicht wie kaputte Bilder
+- `Zurück zur Suche` wirkt wie ein Button mit Pfeil und bleibt tastaturbedienbar
 - keine Console-Errors
 - bei 320 CSS-Pixeln kein horizontaler Overflow
+- bei 390px und 430px kein horizontaler Overflow; Touch-Ziele wirken fingerfreundlich
+- `prefers-reduced-motion` bleibt respektiert
 - Mobile-Scrollgefühl nach Deploy auf echtem iPhone prüfen

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const navigationItems = [
@@ -10,8 +11,42 @@ const navigationItems = [
   { href: "/erklaerung", label: "Erklärung / Hilfe" },
 ];
 
+const mobileNavigationItems = [
+  ...navigationItems,
+  { href: "/barrierefreiheit", label: "Barrierefreiheit" },
+  { href: "/datenschutz", label: "Datenschutz" },
+  { href: "/impressum", label: "Impressum" },
+];
+
+function isActivePath(pathname: string, href: string): boolean {
+  if (href === "/") {
+    return pathname === "/";
+  }
+
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export function SiteHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (!isMenuOpen) {
+      return;
+    }
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [isMenuOpen]);
 
   useEffect(() => {
     const syncMobileAppView = () => {
@@ -82,15 +117,59 @@ export function SiteHeader() {
             />
           </span>
         </Link>
-        <nav aria-label="Hauptnavigation" id="top-menu">
-          <ul className="nav-list">
-            {navigationItems.map((item) => (
-              <li key={item.href}>
-                <Link href={item.href}>{item.label}</Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <button
+          aria-controls="mobile-menu"
+          aria-expanded={isMenuOpen}
+          className="mobile-menu-toggle"
+          type="button"
+          onClick={() => setIsMenuOpen((current) => !current)}
+        >
+          <span className="mobile-menu-toggle-icon" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </span>
+          <span>{isMenuOpen ? "Schließen" : "Menü"}</span>
+        </button>
+        <div className="navigation-region" id="top-menu">
+          <nav aria-label="Hauptnavigation" className="desktop-navigation">
+            <ul className="nav-list">
+              {navigationItems.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    aria-current={isActivePath(pathname, item.href) ? "page" : undefined}
+                    data-active={isActivePath(pathname, item.href) ? "true" : "false"}
+                    href={item.href}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <nav
+            aria-label="Mobile Navigation"
+            className="mobile-navigation"
+            data-open={isMenuOpen ? "true" : "false"}
+            hidden={!isMenuOpen}
+            id="mobile-menu"
+          >
+            <ul className="mobile-nav-list">
+              {mobileNavigationItems.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    aria-current={isActivePath(pathname, item.href) ? "page" : undefined}
+                    data-active={isActivePath(pathname, item.href) ? "true" : "false"}
+                    href={item.href}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
       </div>
     </header>
   );

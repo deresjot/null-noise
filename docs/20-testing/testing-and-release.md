@@ -1,6 +1,6 @@
 # Testing und Release für null-noise
 
-Stand: 10. Mai 2026
+Stand: 17. Mai 2026
 
 Diese Datei beschreibt, wie `null-noise` Accessibility testet und wo die Grenzen der Automatisierung liegen.
 
@@ -28,6 +28,11 @@ Die Prüfung orientiert sich an WCAG 2.2 und den Prüfansätzen des BITV-Testver
 - `/suche`
 - `/suche?q=Arrival`
 - `/titel/mondfenster`
+- `/erklaerung`
+- `/bedienung`
+- `/barrierefreiheit`
+- `/datenschutz`
+- `/impressum`
 
 ### Was die automatisierten Tests derzeit prüfen
 
@@ -39,6 +44,7 @@ Die Prüfung orientiert sich an WCAG 2.2 und den Prüfansätzen des BITV-Testver
 - Kontrast-Fundstellen, die axe erkennen kann
 - erkennbare Form-/Label-Probleme
 - wiederholbare Keyboard-Smoke-Checks, zum Beispiel Skip-Link und erreichbare Suchvorschläge
+- mobile Navigation mit Burger-Menü und sekundären Info-/Legal-Zielen
 - kleiner Reflow-Smoke-Test auf den Kernrouten bei `320 CSS-Pixeln`, damit offensichtliches horizontales Overflow früh auffällt
 
 Diese automatisierten Prüfungen helfen besonders bei wiederholbaren Prüffeldern aus dem BITV-/WCAG-Kontext, etwa Struktur, Kontrast, Tastaturzugänglichkeit und Robustheit. Sie ersetzen aber keine vollständige manuelle Bewertung.
@@ -111,6 +117,15 @@ Die folgenden Schritte sind der feste manuelle Prüfpfad für `null-noise`. Er e
 - Reflow: Hero, Profilschalen, Kontextblöcke und Feedbackbereich stapeln ohne Seitwärts-Scrollen
 - Zoom: Erste Einschätzung und Entscheidungsfrage bleiben als erste Orientierung sichtbar
 - Verständlichkeit: Die Seite liest sich als ruhige Entscheidungshilfe und nicht als Analysedashboard
+- Mobile: Poster und Synopsis bleiben sichtbar, sofern Daten vorhanden sind; Poster skaliert groß, Fallbacks bleiben kompakt
+
+### Info- und Legal-Routen
+
+- Routen: `/erklaerung`, `/bedienung`, `/barrierefreiheit`, `/datenschutz`, `/impressum`
+- per Tastatur: Header, mobile Navigation, Inhaltslinks und Footer-Links bleiben erreichbar
+- Reflow: lange Überschriften und Rechtstexte bleiben bei kleiner Breite lesbar
+- Kontrast: Notizen, Definitionslisten und Meta-Texte dürfen nicht nur knapp über Animation/Opacity lesbar sein
+- Mobile: Kartenabstände und Footer dürfen nicht an Außenkanten kleben
 
 ### Tastatur
 
@@ -137,7 +152,9 @@ Die folgenden Schritte sind der feste manuelle Prüfpfad für `null-noise`. Er e
 ### Bewegung und Zustandswechsel
 
 - `prefers-reduced-motion`
-- keine überraschenden Wechsel
+- sanfte Zustandswechsel sind erlaubt, solange sie kurz bleiben und keine Information verdecken
+- Entry-Animationen dürfen Text nicht über Opacity abblenden, wenn dadurch Kontrastprüfungen oder reale Lesbarkeit leiden
+- Ladebalken sind nur als dezente Überbrückung gedacht und dürfen keinen Inhalt ersetzen
 - keine Hilfe, die nur flüchtig eingeblendet wird
 
 ### Verständlichkeit
@@ -152,23 +169,50 @@ Die folgenden Schritte sind der feste manuelle Prüfpfad für `null-noise`. Er e
 Vor einem Beta-Release oder Deploy sollten mindestens diese Schritte laufen:
 
 1. sichtbare Release Notes und Footer-Metadaten in `src/lib/release-info.ts` aktualisieren
-2. relevante Footer-/Changelog-Tests anpassen, wenn sichtbare Texte geändert wurden
-3. `npm run lint`
-4. `npm run build`
-5. `npm run test:unit`
-6. `npm run test:axe-core`
-7. `npm run test:a11y`
-8. eine reine Tastatur-Session
-9. ein Screenreader-Smoke-Test
-10. Reflow-/Zoom-Check auf kleiner Breite
-11. keine Console-Errors
-12. keine Score-/Prozent-UI
-13. Mobile-Scrollgefühl nach Deploy auf echtem iPhone prüfen
-14. Header-Branding, Startseiten-Erklärung, mobile Ergebniskarten, Merken-/Gesehen-Toggle und Poster-Fallbacks auf kleinem Viewport prüfen
+2. Doku-Übergabe synchronisieren: `docs/00-current/*`, diese Datei und die passenden `docs/llm-upload/*`
+3. relevante Footer-/Changelog-Tests anpassen, wenn sichtbare Texte geändert wurden
+4. `git status --short` und `git diff --name-only` prüfen
+5. `npm run lint`
+6. `npm run build`
+7. `npm run test:unit`
+8. `npm run test:axe-core`
+9. `npm run test:a11y`
+10. eine reine Tastatur-Session
+11. ein Screenreader-Smoke-Test
+12. Reflow-/Zoom-Check auf kleiner Breite
+13. Mobile-Viewport-Check bei ca. `390px` und `430px`
+14. keine Console-Errors
+15. keine Score-/Prozent-UI
+16. Mobile-Scrollgefühl nach Deploy auf echtem iPhone prüfen
+17. Header-Branding, mobile Burger-Navigation, Startseiten-Erklärung, mobile Ergebniskarten, Merken-/Gesehen-Toggle, Detailposter/Synopsis und Poster-Fallbacks auf kleinem Viewport prüfen
 
 Optional, wenn der Umfang es rechtfertigt:
 
 - `npx playwright test`
+
+## Letzter lokaler Stand vor Übergabe
+
+Mobile-UX-Pass vom 17. Mai 2026, lokal geprüft und nicht deployt:
+
+- `npm run lint`: bestanden
+- `npm run build`: bestanden
+- `npm run test:a11y`: 35 Tests bestanden
+- zusätzlicher Playwright-Smoke bei 390px und 430px:
+  - Header-App-Shell links/rechts symmetrisch
+  - Header-Shrink smooth beim Scrollen
+  - Logo/Wortmarke klickt/tappt von Unterseiten zurück zur Startseite
+  - Burger-Menü-Touchziele ca. 51px hoch
+  - Browse-Link wirkt als Button-CTA mit Icon und ausreichender Touchfläche
+  - `Richtung starten` hat ausreichend Innenabstand und farbige Kategorieflächen
+  - Burger-Menü liegt über Seiteninhalt statt von Karten/Content überdeckt zu werden
+  - Detailposter sichtbar und groß skaliert
+  - keine horizontale Scrollbar
+
+Vor Push/Deploy noch separat nachholen:
+
+- `npm run test:unit`
+- `npm run test:axe-core`
+- vollständiges `npx playwright test`, wenn Zeit und lokale TMDb-Bedingungen es zulassen
 
 ## Security-/Privacy-Release-Checks
 

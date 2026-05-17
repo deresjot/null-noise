@@ -3,7 +3,9 @@
 ## Aktueller Arbeitsstand
 
 - aktiver lokaler Arbeitsbranch: `null-noise`
-- aktueller Stand: Startseiten-/Mobile-UI-Fix ist lokal committed (`196db83 fix: stabilize home and mobile search UI`) und als Vercel Preview bereitgestellt; Production wurde nicht angerührt
+- aktueller Stand: Mobile-UX-Pass vom 17. Mai 2026 liegt lokal als uncommitted Working-Tree auf `null-noise`
+- vorheriger Stand: Startseiten-/Mobile-UI-Fix ist lokal committed (`196db83 fix: stabilize home and mobile search UI`) und als Vercel Preview bereitgestellt; Production wurde nicht angerührt
+- aktueller Mobile-UX-Pass wurde noch nicht gepusht und nicht nach Vercel deployt
 - Live-URL: https://null-noise.vercel.app
 - Preview-URL: https://null-noise-ezndxaczf-deresjots-projects.vercel.app
 - Preview-Hinweis: Deployment Protection/SSO ist aktiv; ohne Vercel-Login kommt `401`
@@ -37,7 +39,11 @@
 - `/suche`
 - `/suche?q=Arrival`
 - `/titel/mondfenster`
+- `/erklaerung`
+- `/bedienung`
 - `/barrierefreiheit`
+- `/datenschutz`
+- `/impressum`
 - ggf. `/spike/metadaten/...` als externer Detailpfad
 
 ## Aktuelle Datenquellen
@@ -107,6 +113,21 @@
 
 ## Mobile-Stand
 
+- Mobile-UX-Pass vom 17. Mai 2026 ist lokal umgesetzt, aber noch nicht committed/gepusht/deployt
+- Mobile Header ist eine fixe App-Shell mit Burger-Menü, aktiver Route, Escape-Schließen und sichtbarem Fokus
+- Hauptziele im mobilen Menü: Start, Suche, Erklärung/Hilfe, Barrierefreiheit, Datenschutz, Impressum
+- Mobile Navigation ist als Overlay gegen Stacking-Context-Probleme gehärtet und liegt über Seiteninhalt/Karten
+- Logo/Wortmarke im Header führen mobil und desktop zur Startseite; versteckte Skip-Links dürfen diese Tap-Fläche nicht blockieren
+- Header-Innenabstände wurden bei 390px und 430px symmetrisch geprüft; der Header schrumpft beim Scrollen smooth und behält den Glass-Effekt
+- mobile Typografie, Labels, Buttons, Card-Metadaten, Footer-Links, Legal-Texte und Detailseiten-Text wurden luftiger gesetzt
+- `search-browse-link` wird als Button-CTA mit Lupe dargestellt, bleibt aber ein nativer Link
+- `search-direct-starts` hat mobil mehr Innenabstand und farbige Richtungsflächen: grün, gold, rot
+- Detailseiten zeigen mobil Poster und Synopsis, sofern vorhanden; die Reihenfolge ist Titelkopf mit Poster/Titel/Synopsis, danach Erste Einschätzung, Stand, Verfügbarkeit, Empfehlungen
+- Detailposter skalieren auf Mobile groß von links nach rechts; Fallbacks für fehlende Poster bleiben kompakt
+- `Zurück zur Suche` im Metadaten-Detailpfad ist ein gestalteter Button mit Zurück-Pfeil
+- Favicon, Open-Graph-/Twitter-Metadaten und generiertes Social-Image wurden aktualisiert
+- sanfte CSS-Transitions und optionale Ladebalken-Hooks sind ergänzt; `prefers-reduced-motion` wird respektiert
+- Opacity-Fades wurden aus Entry-Animationen entfernt, damit A11y-Kontrast-Scans nicht während halbtransparenter Texte fehlschlagen
 - Startseite erklärt jetzt direkt unter `Was passt gerade?`, wofür Null Noise gedacht ist
 - Header-Branding zeigt auf Mobile und Desktop Icon-Logo plus Wortmarke
 - Suche bleibt primärer Einstieg; Richtungskacheln bleiben sekundär
@@ -131,6 +152,20 @@
 - `npm run test:a11y`
 - `npx playwright test`
 
+## Letzte Prüfung dieses Mobile-UX-Passes
+
+- `npm run lint`: bestanden
+- `npm run build`: bestanden
+- `npm run test:a11y`: 35 Tests bestanden
+- zusätzlicher lokaler Playwright-Smoke bei 390px und 430px:
+  - Header links/rechts symmetrisch
+  - Header-Shrink smooth
+  - Burger-Menü-Touchziele ca. 51px hoch
+  - Detailposter sichtbar und groß skaliert
+  - keine horizontale Scrollbar
+- zusätzlicher Layer-Smoke bei 390px: mobile Navigation liegt auf `/`, `/suche?q=Arrival`, `/titel/mondfenster` über dem Content
+- noch vor Push/Deploy separat nachholen: `npm run test:unit`, `npm run test:axe-core` als Einzelbefehl und nach Möglichkeit vollständiges `npx playwright test`
+
 ## Manuelle Kernprüfung
 
 - Tastaturfluss
@@ -140,6 +175,10 @@
 - Zoom bei 400 %
 - keine Console-Errors
 - keine Score-/Prozent-UI
+- Mobile-Navigation bei 390px und 430px inklusive Escape, Fokus, Link-Klick und aktivem Zustand prüfen
+- Detailseite mobil auf Poster und Synopsis prüfen
+- Legal-/Footer-Abstände mobil prüfen
+- `prefers-reduced-motion` prüfen
 - Mobile Scrollgefühl nach Deploy auf echtem iPhone
 - nach Security-Deploy: Header/CSP, API-Cache-Header und schreibende Routen live prüfen
 - nach Security-Deploy: `.next/static`/Client-Bundle weiter ohne sensible Secret-Bezüge halten
@@ -148,11 +187,9 @@
 
 - `npm run lint`
 - `npm run build`
-- `npm run test:unit` (78 Tests)
-- `npm run test:axe-core` (4 Tests)
-- `npm run test:a11y` (29 Tests)
-- `npx playwright test` (29 bestanden, 2 TMDb-Live-Tests übersprungen)
-- lokale Playwright-Sichtprüfung auf 320px, 390px und Desktop ohne horizontalen Overflow
+- `npm run test:a11y` (35 Tests)
+- lokale Playwright-Sichtprüfung auf 390px und 430px ohne horizontalen Overflow
+- ältere vollständige Prüfung vor diesem Mobile-UX-Pass: Unit, axe-core und Playwright waren grün; vor Push/Deploy erneut prüfen
 
 ## Welche Doku bei welcher Aufgabe lesen?
 

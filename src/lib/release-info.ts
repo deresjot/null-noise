@@ -1,12 +1,29 @@
 import packageJson from "../../package.json";
 
 export const currentBuild = {
-  version: `${packageJson.version}-mobile.20260515`,
-  label: "Mobile orientation, navigation and terminology pass",
-  releasedAt: "2026-05-15 · local",
+  version: `${packageJson.version}-mobile.20260517`,
+  label: "Mobile header, motion and detail layout hardening",
+  releasedAt: "2026-05-17 · local",
 };
 
 export const releaseNotes = [
+  {
+    version: `${packageJson.version}-mobile.20260517`,
+    label: "Mobile header, motion and detail layout hardening",
+    releasedAt: "2026-05-17",
+    entries: [
+      "Mobile header is now a client-side fixed app shell with a burger menu, Escape handling, active route state and symmetric safe-area spacing.",
+      "Mobile menu layering was hardened so the navigation overlay stays above page content in mobile browser stacking contexts.",
+      "Hidden skip links no longer intercept taps on the logo/wordmark while remaining keyboard-focusable.",
+      "Scroll compaction, glass backdrop, menu opening, cards and page transitions now use short CSS transitions while preserving `prefers-reduced-motion`.",
+      "Mobile detail pages keep poster, title, type/year, synopsis, first assessment, status, availability and recommendations visible in the intended reading order.",
+      "Mobile typography, touch targets, footer rhythm, result cards, legal text contrast and metadata-detail back navigation were tightened without changing product logic.",
+      "Search browse links are now presented as button-style CTAs with a small magnifier icon while keeping native link semantics.",
+      "Direct browse starts now have roomier inner spacing and green, gold and red category surfaces for calm, mixed and intense directions.",
+      "Favicon, Open Graph/Twitter metadata and the generated social image were refreshed with current null-noise copy and logo-derived colors.",
+      "Local verification for this pass: `npm run lint`, `npm run build`, `npm run test:a11y` and manual 390px/430px viewport checks passed.",
+    ],
+  },
   {
     version: `${packageJson.version}-mobile.20260515`,
     label: "Mobile orientation, navigation and terminology pass",

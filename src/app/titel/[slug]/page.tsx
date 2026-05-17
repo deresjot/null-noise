@@ -489,6 +489,9 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
             {`${formatKind(title.external.kind)} · ${title.external.year ?? "Jahr offen"}`}
           </p>
           <h1>{title.external.title}</h1>
+          <p className="lead">
+            {title.external.synopsis ?? "Zu diesem Titel liegt gerade nur ein knapper Abriss vor."}
+          </p>
           <section className="detail-reading-block" aria-label="Erste Einschätzung">
             <p className="detail-reading-kicker">Erste Einschätzung</p>
             <p className="detail-hero-tendency">{profileTendency.label}</p>
@@ -559,9 +562,6 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
               ) : null}
             </div>
           </div>
-          <p className="lead">
-            {title.external.synopsis ?? "Zu diesem Titel liegt gerade nur ein knapper Abriss vor."}
-          </p>
         </div>
 
         <aside className="detail-callout-panel" aria-labelledby="confidence-heading">
