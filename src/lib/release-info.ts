@@ -1,12 +1,24 @@
 import packageJson from "../../package.json";
 
 export const currentBuild = {
-  version: `${packageJson.version}-mobile.20260517`,
-  label: "Mobile header, motion and detail layout hardening",
-  releasedAt: "2026-05-17 · local",
+  version: `${packageJson.version}-joy.20260522`,
+  label: "Product states and calmer software feel",
+  releasedAt: "2026-05-22 · preview",
 };
 
 export const releaseNotes = [
+  {
+    version: `${packageJson.version}-joy.20260522`,
+    label: "Product states and calmer software feel",
+    releasedAt: "2026-05-22",
+    entries: [
+      "Search now shows the current frame as compact state chips for title, direction, format, peaks and density without adding scores or rankings.",
+      "Local Merken and Schon gesehen actions now expose a clearer browser-local state on result cards and detail pages.",
+      "Detail pages surface direction, current status and confidence as a short decision strip near the first assessment.",
+      "Direct browse arrows and the secondary browse action were visually tightened into calmer, button-like controls while keeping native link semantics.",
+      "Verification for this pass: lint, build, unit, axe-core, a11y, full Playwright and 320px/390px/430px/desktop route smokes passed.",
+    ],
+  },
   {
     version: `${packageJson.version}-mobile.20260517`,
     label: "Mobile header, motion and detail layout hardening",
