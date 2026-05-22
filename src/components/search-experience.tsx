@@ -122,6 +122,64 @@ function getAvoidanceStatusLine(filters: SearchFilters): string | null {
   return null;
 }
 
+function getToneLabel(tone: SearchFilters["tone"]): string {
+  if (tone === "calm") {
+    return "Eher ruhig";
+  }
+
+  if (tone === "balanced") {
+    return "Eher wechselhaft";
+  }
+
+  if (tone === "intense") {
+    return "Eher intensiv";
+  }
+
+  return "Alle Richtungen";
+}
+
+function getKindLabel(kind: SearchFilters["kind"]): string {
+  if (kind === "movie") {
+    return "Nur Filme";
+  }
+
+  if (kind === "series") {
+    return "Nur Serien";
+  }
+
+  return "Filme und Serien";
+}
+
+function getSearchFrameItems(filters: SearchFilters): Array<{ label: string; value: string; active?: boolean }> {
+  return [
+    {
+      label: "Titel",
+      value: filters.q ? `„${filters.q}“` : "noch offen",
+      active: Boolean(filters.q),
+    },
+    {
+      label: "Richtung",
+      value: getToneLabel(filters.tone),
+      active: filters.tone !== "all",
+    },
+    {
+      label: "Format",
+      value: getKindLabel(filters.kind),
+      active: filters.kind !== "all",
+    },
+    {
+      label: "Spitzen",
+      value: filters.avoidPeaks ? "gedämpft" : "normal",
+      active: filters.avoidPeaks,
+    },
+    {
+      label: "Dichte",
+      value: filters.avoidDensity ? "gedämpft" : "normal",
+      active: filters.avoidDensity,
+    },
+  ];
+}
+
 function getActiveBrowseSectionId(filters: SearchFilters): MetadataSpikeBrowseSectionId | null {
   if (filters.tone === "all") {
     return null;
@@ -448,6 +506,7 @@ export function SearchExperience({ initialState }: { initialState: SearchPageSta
   const avoidanceStatusLine = getAvoidanceStatusLine(filters);
   const browseClusterLabel = getBrowseClusterLabel(filters);
   const busy = transitionPhase === "loading" || isPending;
+  const searchFrameItems = getSearchFrameItems(filters);
   const searchState = useMemo(() => {
     let title = "";
     let text = "";
@@ -548,6 +607,14 @@ export function SearchExperience({ initialState }: { initialState: SearchPageSta
                     {avoidanceStatusLine ? (
                       <p className="search-filter-note" role="status">{avoidanceStatusLine}</p>
                     ) : null}
+                    <dl className="search-frame-summary" aria-label="Aktueller Suchrahmen">
+                      {searchFrameItems.map((item) => (
+                        <div key={item.label} data-active={item.active ? "true" : "false"}>
+                          <dt>{item.label}</dt>
+                          <dd>{item.value}</dd>
+                        </div>
+                      ))}
+                    </dl>
                   </div>
                   <div className="search-results-group-actions">
                     <div className="search-action-block">
@@ -657,6 +724,14 @@ export function SearchExperience({ initialState }: { initialState: SearchPageSta
                   Erst einschätzen, Details danach.
                 </p>
                 {avoidanceStatusLine ? <p className="search-filter-note" role="status">{avoidanceStatusLine}</p> : null}
+                <dl className="search-frame-summary" aria-label="Aktueller Suchrahmen">
+                  {searchFrameItems.map((item) => (
+                    <div key={item.label} data-active={item.active ? "true" : "false"}>
+                      <dt>{item.label}</dt>
+                      <dd>{item.value}</dd>
+                    </div>
+                  ))}
+                </dl>
                 <div className="search-action-block search-action-block-inline">
                   <p className="search-actions-label">Ansicht</p>
                   <nav className="search-layout-toggle" aria-label="Darstellung wechseln">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import {
   dispatchTitlePocketChange,
@@ -24,9 +24,21 @@ export function TitlePocketActions({
   entry,
   variant = "tile",
 }: TitlePocketActionsProps) {
+  const rootRef = useRef<HTMLDivElement>(null);
   const [remembered, setRemembered] = useState(false);
   const [seen, setSeen] = useState(false);
   const [feedback, setFeedback] = useState<TitlePocketFeedback>(null);
+  const localStateLabel = useMemo(() => {
+    if (remembered) {
+      return "Lokal gemerkt";
+    }
+
+    if (seen) {
+      return "Lokal als gesehen markiert";
+    }
+
+    return "Noch nicht lokal markiert";
+  }, [remembered, seen]);
 
   useLayoutEffect(() => {
     const syncState = () => {
@@ -43,6 +55,17 @@ export function TitlePocketActions({
       window.removeEventListener("null-noise-title-pocket-change", syncState as EventListener);
     };
   }, [entry.key]);
+
+  useLayoutEffect(() => {
+    const card = rootRef.current?.closest<HTMLElement>(".result-card");
+
+    if (!card) {
+      return;
+    }
+
+    card.dataset.titleRemembered = remembered ? "true" : "false";
+    card.dataset.titleSeen = seen ? "true" : "false";
+  }, [remembered, seen]);
 
   function toggleRemembered() {
     try {
@@ -103,7 +126,12 @@ export function TitlePocketActions({
   }
 
   return (
-    <div className={`title-pocket-actions title-pocket-actions-${variant}`}>
+    <div
+      className={`title-pocket-actions title-pocket-actions-${variant}`}
+      data-state={remembered ? "remembered" : seen ? "seen" : "idle"}
+      data-variant={variant}
+      ref={rootRef}
+    >
       {variant === "detail" ? (
         <p className="field-note title-pocket-note">
           Nur in diesem Browser. Ohne Konto und ohne Wolke.
@@ -118,7 +146,8 @@ export function TitlePocketActions({
           type="button"
           onClick={toggleRemembered}
         >
-          {remembered ? "Gemerkt" : "Merken"}
+          <span aria-hidden="true" className="title-pocket-button-mark" />
+          <span>{remembered ? "Gemerkt" : "Merken"}</span>
         </button>
         <button
           aria-label={`${seen ? "Schon gesehen für" : "Als schon gesehen markieren für"} ${entry.title}`}
@@ -128,9 +157,13 @@ export function TitlePocketActions({
           type="button"
           onClick={toggleSeen}
         >
-          {seen ? "Schon gesehen" : "Schon gesehen?"}
+          <span aria-hidden="true" className="title-pocket-button-mark" />
+          <span>{seen ? "Schon gesehen" : "Schon gesehen?"}</span>
         </button>
       </div>
+      <p className="title-pocket-state" aria-live="polite">
+        {localStateLabel}
+      </p>
       {feedback ? (
         <p
           className="field-note title-pocket-feedback"

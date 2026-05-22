@@ -509,6 +509,20 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
             <p className="field-note detail-hero-status">
               <strong>{aggregatePresentation.label}.</strong> {aggregatePresentation.text}
             </p>
+            <dl className="detail-decision-strip" aria-label="Aktueller Entscheidungsrahmen">
+              <div>
+                <dt>Richtung</dt>
+                <dd>{profileTendency.label}</dd>
+              </div>
+              <div>
+                <dt>Stand</dt>
+                <dd>{aggregatePresentation.label}</dd>
+              </div>
+              <div>
+                <dt>Rückhalt</dt>
+                <dd>{confidencePresentation.title}</dd>
+              </div>
+            </dl>
             <ul className="plain-list detail-decision-reasons" aria-label="Kurze Gründe">
               {decisionReasonItems.map((item) => (
                 <li key={item}>{item}</li>
