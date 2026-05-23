@@ -11,12 +11,7 @@ const navigationItems = [
   { href: "/erklaerung", label: "Erklärung / Hilfe" },
 ];
 
-const mobileNavigationItems = [
-  ...navigationItems,
-  { href: "/barrierefreiheit", label: "Barrierefreiheit" },
-  { href: "/datenschutz", label: "Datenschutz" },
-  { href: "/impressum", label: "Impressum" },
-];
+const mobileNavigationItems = [...navigationItems];
 
 function isActivePath(pathname: string, href: string): boolean {
   if (href === "/") {
@@ -120,7 +115,9 @@ export function SiteHeader() {
         <button
           aria-controls="mobile-menu"
           aria-expanded={isMenuOpen}
+          aria-label={isMenuOpen ? "Menü schließen" : "Menü öffnen"}
           className="mobile-menu-toggle"
+          data-open={isMenuOpen ? "true" : "false"}
           type="button"
           onClick={() => setIsMenuOpen((current) => !current)}
         >

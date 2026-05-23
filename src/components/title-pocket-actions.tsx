@@ -28,6 +28,7 @@ export function TitlePocketActions({
   const [remembered, setRemembered] = useState(false);
   const [seen, setSeen] = useState(false);
   const [feedback, setFeedback] = useState<TitlePocketFeedback>(null);
+  const seenButtonLabel = variant === "tile" ? (seen ? "Gesehen" : "Gesehen?") : seen ? "Schon gesehen" : "Schon gesehen?";
   const localStateLabel = useMemo(() => {
     if (remembered) {
       return "Lokal gemerkt";
@@ -158,7 +159,7 @@ export function TitlePocketActions({
           onClick={toggleSeen}
         >
           <span aria-hidden="true" className="title-pocket-button-mark" />
-          <span>{seen ? "Schon gesehen" : "Schon gesehen?"}</span>
+          <span>{seenButtonLabel}</span>
         </button>
       </div>
       <p className="title-pocket-state" aria-live="polite">

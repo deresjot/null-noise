@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fredoka } from "next/font/google";
 
 import { SiteFooter } from "@/components/site-footer";
@@ -15,10 +15,10 @@ const headingFont = Fredoka({
 });
 
 const metadataBase = getMetadataBase();
-const shareImageUrl = new URL("/opengraph-image", metadataBase).toString();
+const shareImageUrl = new URL("/og/og-null-noise-mobile-20260523.png", metadataBase).toString();
 const shareTitle = "null-noise – Filme und Serien ruhiger auswählen";
 const shareDescription =
-  "Eine leise Entscheidungshilfe für Filme und Serien: erste Einschätzung, Reizprofil, Verfügbarkeit und Empfehlungen ohne Konto oder Tracking.";
+  "Eine ruhige Entscheidungshilfe für Filme und Serien: erste Einschätzung, grobe Reizwirkung und klare Auswahl ohne Konto oder Tracking.";
 
 const rootHydrationGuardScript = `
 (() => {
@@ -78,6 +78,10 @@ export const metadata: Metadata = {
     description: shareDescription,
     images: [shareImageUrl],
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#fff6e5",
 };
 
 export default function RootLayout({

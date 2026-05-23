@@ -130,7 +130,7 @@ test("info and legal pages have no detectable axe violations", async ({ page }) 
     {
       path: "/barrierefreiheit",
       label: "accessibility-statement",
-      heading: "Erklärung zur Barrierefreiheit",
+      heading: "Barrierefreiheit",
     },
     {
       path: "/datenschutz",
@@ -464,64 +464,55 @@ test("mobile navigation separates primary header links from footer metadata link
   await page.getByRole("button", { name: "Menü" }).click();
 
   const headerNav = page.getByRole("navigation", { name: "Mobile Navigation" });
-  const footerNav = page.getByRole("navigation", { name: "Info und Rechtliches" });
+  const footerProductNav = page.getByRole("navigation", { name: "Produktnavigation" });
+  const footerLegalNav = page.getByRole("navigation", { name: "Rechtliches" }).first();
 
   await expect(headerNav.getByRole("link", { name: "Start" })).toHaveAttribute("href", "/");
   await expect(headerNav.getByRole("link", { name: "Suche" })).toHaveAttribute("href", "/suche");
   await expect(headerNav.getByRole("link", { name: "Erklärung / Hilfe" })).toHaveAttribute("href", "/erklaerung");
-  await expect(headerNav.getByRole("link", { name: "Barrierefreiheit" })).toHaveAttribute("href", "/barrierefreiheit");
-  await expect(headerNav.getByRole("link", { name: "Datenschutz" })).toHaveAttribute("href", "/datenschutz");
-  await expect(headerNav.getByRole("link", { name: "Impressum" })).toHaveAttribute("href", "/impressum");
+  await expect(headerNav.getByRole("link", { name: "Barrierefreiheit" })).toHaveCount(0);
+  await expect(headerNav.getByRole("link", { name: "Datenschutz" })).toHaveCount(0);
+  await expect(headerNav.getByRole("link", { name: "Impressum" })).toHaveCount(0);
 
-  await expect(footerNav.locator('a[href="/"]')).toHaveText("Start");
-  await expect(footerNav.locator('a[href="/suche"]')).toHaveText("Suche");
-  await expect(footerNav.locator('a[href="/erklaerung"]')).toHaveText("Erklärung und Hilfe");
-  await expect(footerNav.locator('a[href="/barrierefreiheit"]')).toHaveText("Barrierefreiheit");
-  await expect(footerNav.locator('a[href="/datenschutz"]')).toHaveText("Datenschutz");
-  await expect(footerNav.locator('a[href="/impressum"]')).toHaveText("Impressum");
+  await expect(footerProductNav.locator('a[href="/"]')).toHaveText("Start");
+  await expect(footerProductNav.locator('a[href="/suche"]')).toHaveText("Suche");
+  await expect(footerProductNav.locator('a[href="/erklaerung"]')).toHaveText("Erklärung und Hilfe");
+  await expect(footerLegalNav.locator('a[href="/barrierefreiheit"]')).toHaveText("Barrierefreiheit");
+  await expect(footerLegalNav.locator('a[href="/datenschutz"]')).toHaveText("Datenschutz");
+  await expect(footerLegalNav.locator('a[href="/impressum"]')).toHaveText("Impressum");
 });
 
 test("accessibility page is reachable and explains the current testing scope", async ({ page }) => {
   await page.goto("/barrierefreiheit");
   const pageHeader = page.locator(".section-header");
-  const scopePanel = page
-    .locator("section.panel")
-    .filter({ has: page.getByRole("heading", { name: "Prüfgrundlage und Prüfumfang" }) });
   const statusPanel = page
     .locator("section.panel")
-    .filter({
-      has: page.getByRole("heading", { name: "Stand der Vereinbarkeit mit den Anforderungen" }),
-    });
-  const manualPanel = page
+    .filter({ has: page.getByRole("heading", { name: "Aktueller Status" }) });
+  const consideredPanel = page
     .locator("section.panel")
-    .filter({ has: page.getByRole("heading", { name: "Manuelle Prüfungen" }) });
+    .filter({ has: page.getByRole("heading", { name: "Was bereits berücksichtigt wird" }) });
+  const testingPanel = page
+    .locator("section.panel")
+    .filter({ has: page.getByRole("heading", { name: "Wie geprüft wird" }) });
+  const limitsPanel = page
+    .locator("section.panel")
+    .filter({ has: page.getByRole("heading", { name: "Bekannte Grenzen" }) });
   const contactPanel = page
     .locator("section.panel")
-    .filter({ has: page.getByRole("heading", { name: "Kontakt und Feedback" }) });
+    .filter({ has: page.getByRole("heading", { name: "Kontakt" }) });
 
-  await expect(page.locator("main h1")).toHaveText("Erklärung zur Barrierefreiheit");
-  await expect(page.getByRole("heading", { name: "Automatisierte Prüfungen" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Manuelle Prüfungen" })).toBeVisible();
-  await expect(scopePanel).toContainText("Kernrouten");
-  await expect(scopePanel.locator(".field-note")).toContainText("Externe");
-  await expect(statusPanel).toContainText("BITV-Testverfahrens");
-  await expect(manualPanel).toContainText("BIK BITV- / WCAG-Tests für Webangebote");
-  await expect(manualPanel).toContainText("Beschreibung des Prüfverfahrens für Web");
-  await expect(manualPanel).toContainText("Prüfschritt-Verzeichnis zum WCAG 2.2 Test für Web");
-  await expect(
-    manualPanel.getByRole("link", { name: "BIK BITV- / WCAG-Tests für Webangebote" }),
-  ).toHaveAttribute("href", "https://bitvtest.de/tests-und-beratung/bik-bitv-test-web");
-  await expect(
-    manualPanel.getByRole("link", { name: "Beschreibung des Prüfverfahrens für Web" }),
-  ).toHaveAttribute(
-    "href",
-    "https://bitvtest.de/test-methodik/web/beschreibung-des-pruefverfahrens",
-  );
-  await expect(
-    manualPanel.getByRole("link", { name: "Prüfschritt-Verzeichnis zum WCAG 2.2 Test für Web" }),
-  ).toHaveAttribute("href", "https://bitvtest.de/pruefverfahren/wcag-22-web");
+  await expect(page.locator("main h1")).toHaveText("Barrierefreiheit");
+  await expect(pageHeader).toContainText("WCAG 2.2 AA");
+  await expect(statusPanel).toContainText("keine abgeschlossene formale Konformitätsprüfung");
+  await expect(consideredPanel).toContainText("HTML-first");
+  await expect(consideredPanel).toContainText("sichtbarer Fokus");
+  await expect(testingPanel).toContainText("Automatisierte Tests ersetzen keine manuelle Prüfung");
+  await expect(limitsPanel).toContainText("Datenbasis und erste Einschätzungen bleiben unsicher");
   await expect(contactPanel).toContainText("mail@sebastianjansen.com");
-  await expect(pageHeader).toContainText("keine amtliche oder vollständige Konformitätsbehauptung");
+  await expect(contactPanel.getByRole("link", { name: "mail@sebastianjansen.com" })).toHaveAttribute(
+    "href",
+    "mailto:mail@sebastianjansen.com",
+  );
 });
 
 test("core routes avoid horizontal overflow at 320 CSS pixels", async ({ page }) => {
@@ -557,7 +548,7 @@ test("core routes avoid horizontal overflow at 320 CSS pixels", async ({ page })
     },
     {
       path: "/barrierefreiheit",
-      ready: () => page.getByRole("heading", { name: "Erklärung zur Barrierefreiheit" }),
+      ready: () => page.getByRole("heading", { name: "Barrierefreiheit" }),
     },
     {
       path: "/datenschutz",

@@ -6,17 +6,27 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 - lokaler Branch: `null-noise`
 - lokaler Projektpfad: `/Users/deresjot/Library/CloudStorage/Dropbox/_PRIVAT/Code/git-webdev/null-noise`
-- Stand: Mobile-UX-Pass vom 17. Mai 2026 liegt lokal als uncommitted Working-Tree auf dem Branch `null-noise`
-- vorheriger UI-Fix `196db83 fix: stabilize home and mobile search UI` ist lokal committed und als Vercel Preview bereitgestellt; der aktuelle Mobile-UX-Pass ist noch nicht gepusht und nicht deployt
+- Stand: Mobile-UX-Abschluss vom 23. Mai 2026 ist lokal auf dem Branch `null-noise` als Abschlusscommit `fix: finalize mobile ux and brand polish` vorbereitet
+- vorheriger UI-Fix `196db83 fix: stabilize home and mobile search UI` ist lokal committed und als Vercel Preview bereitgestellt; der aktuelle Mobile-UX-Abschluss wird nach lokaler Prüfung gepusht und deployt
 - Live-URL: https://null-noise.vercel.app
 - Preview-URL für den UI-Fix: https://null-noise-ezndxaczf-deresjots-projects.vercel.app
 - Hinweis: Preview ist `READY`, aber Vercel Deployment Protection/SSO ist aktiv; ohne Login kommt `401`
 - v0/grüne UI liegt im Archiv-Worktree und wird nicht bearbeitet
 - `main` ist keine Arbeitsfläche
-- ohne explizite Freigabe: nichts committen, nichts pushen, nichts deployen
+- ohne explizite Freigabe: nichts pushen, nichts deployen; weitere Commits nur mit klarem Auftrag
 
 ## Letzte lokale Arbeitsblöcke
 
+- Mobile-UX-Abschluss 23. Mai 2026:
+  - Mobile Navigation wurde auf Start, Suche und Erklärung/Hilfe reduziert; Barrierefreiheit, Datenschutz und Impressum bleiben im Footer erreichbar
+  - Mobile Menüfläche ist jetzt opak und kontrastreicher, mit klarer aktiver Route, großen Tap-Flächen und stabiler Layer-Reihenfolge über Karten und Content
+  - Header-Branding wurde für 320px/390px/430px auf gemeinsame Achse, ruhigen Scroll-Zustand, ausreichende Tap-Fläche und Ausrichtung an der Contentbreite nachgezogen
+  - Mobile Abstände für Suche, Richtungskacheln, Merken-/Gesehen-Bereich, Browse-Karten, Legal-/Hilfeseiten und Footer wurden geglättet
+  - Getippte Suche blendet gesehene Titel nicht mehr per lokalem Schon-gesehen-Filter aus; Browse kann weiterhin gesehene Titel ausblenden
+  - Erfolgreiche TMDb-Suchen werden kurz serverseitig wiederverwendet, wenn dieselbe Suchanfrage bei einer schnellen lokalen Prüfung kurz darauf upstream stolpert
+  - `/barrierefreiheit` wurde entschlackt: WCAG 2.2 AA als technisches Ziel, Status, konkrete Maßnahmen, Prüfweise, bekannte Grenzen, Kontakt
+  - Favicon nutzt nur noch ein vereinfachtes TV-Zeichen; Social-Share nutzt ein cache-gebustetes OG-Bild `public/og/og-null-noise-mobile-20260523.png`
+  - Release Notes stehen lokal auf `0.8.4-mobile.20260523`
 - Mobile-UX-Pass 17. Mai 2026:
   - Ziel: iOS-Chrome/Safari-ähnliche mobile Nutzung lesbarer, bedienbarer und ruhiger machen, ohne Produktlogik umzubauen
   - Mobile Header ist jetzt eine fixe App-Shell mit Burger-Menü, aktiven Zuständen, Escape-Schließen, sichtbarem Fokus und Hauptzielen: Start, Suche, Erklärung/Hilfe, Barrierefreiheit, Datenschutz, Impressum
@@ -42,6 +52,7 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
   - sichtbare Wirkungskategorien sind vereinheitlicht: `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv`
   - Hero, Suchformular, Richtungskacheln, Ergebnislisten und Footer skalieren auf breiten Viewports ruhiger
   - mobile Ergebnislisten, Merken-/Gesehen-Bereich und Toggle umbrechen sauber ohne horizontalen Overflow
+  - Result-Card-Aktionen `Details`, `Merken` und `Gesehen?` stehen mobil als gemeinsame CTA-Zeile nebeneinander, inklusive 320px-Reflow-Smoke
   - fehlende Poster zeigen einen bewussten Platzhalter `Kein Poster verfügbar`
   - lokale Sichtprüfung auf 320px, 390px und Desktop war ohne horizontalen Overflow
   - vollständige lokale Checks liefen zuletzt grün: Lint, Build, Unit, Axe-Core, A11y, Playwright
@@ -90,8 +101,11 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 - `src/components/site-header.tsx`: clientseitige mobile Navigation, Scroll-State, Escape-Schließen, aktive Zustände
 - `src/app/titel/[slug]/page.tsx`: mobile Detail-Hierarchie mit Synopsis im Titelkopf
 - `src/app/spike/metadaten/[mediaType]/[externalId]/page.tsx`: gestalteter Zurück-zur-Suche-Button
-- `src/app/layout.tsx`, `src/app/opengraph-image.tsx`, `public/brand/favicon.svg`: Favicon und Social-Sharing-Aktualisierung
-- `src/lib/release-info.ts`: technisches Release `0.8.4-mobile.20260517`
+- `src/app/layout.tsx`, `src/app/opengraph-image.tsx`, `public/brand/favicon.svg`, `public/brand/favicon-*.png`, `public/brand/apple-touch-icon.png`, `public/og/og-null-noise-mobile-20260523.png`: Favicon und Social-Sharing-Aktualisierung
+- `src/app/barrierefreiheit/page.tsx`: öffentliche Accessibility-Seite auf WCAG-Ziel, Status, Maßnahmen, Prüfung, Grenzen und Kontakt fokussiert
+- `src/components/search-local-shelf.tsx`: getippte Suchergebnisse bleiben trotz lokalem Schon-gesehen-Filter sichtbar
+- `src/lib/metadata-spike.ts`: kurzer Runtime-Cache für erfolgreiche TMDb-Suchantworten als defensiver Fallback bei wiederholten lokalen Checks
+- `src/lib/release-info.ts`: technisches Release `0.8.4-mobile.20260523`
 - `tests/accessibility.spec.ts`: mobile Navigationstest auf Burger-Menü und vollständige Zielnavigation angepasst
 - `next.config.ts`: lokale Security Header/CSP und API-Cache-Header
 - `src/lib/prisma.ts`, `src/lib/catalog-db.ts`, `src/lib/metadata-spike.ts`, `src/lib/letterboxd.ts`, `src/lib/local-titles.ts`, `src/lib/ratings.ts`: lokale `server-only`-Grenzen
@@ -134,7 +148,7 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 ## Offene echte Prüfungen
 
 - vor Push/Deploy durch anderen Chat prüfen: Working Tree, Diff-Scope, keine Secrets/Recovery-/Screenshot-Artefakte, Testmatrix vollständig
-- für diesen Mobile-UX-Pass noch nicht erneut gelaufen: `npm run test:unit`, `npm run test:axe-core` als Einzelbefehl und vollständiges `npx playwright test`; `npm run test:a11y` enthält aber die direkten axe-core-Spezifikationen
+- nach dem lokalen Abschlusscommit erneut gelaufen: `npm run lint`, `npm run build`, `npm run test:a11y`, `npm run test:axe-core`, `npm run test:unit` und vollständiges `npx playwright test`
 - Vercel-ENV vor Deploy prüfen: serverseitige Secrets, `NULL_NOISE_RATE_LIMIT_SALT`, `NEXT_PUBLIC_SITE_URL`, Preview/Production-Unterschiede
 - nach Deploy echte Production-Header/CSP und API-Cache-Header prüfen
 - nach Deploy schreibende Live-Routen prüfen: Feedback/Rating, lokaler Import, lokales Delete
@@ -147,11 +161,16 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 ## Letzte verifizierte UI-Checks
 
-- `npm run lint`: bestanden
-- `npm run build`: bestanden
-- `npm run test:a11y`: 35 Tests bestanden
+- Finale lokale Prüfung am 23. Mai 2026:
+  - `npm run lint`: bestanden
+  - `npm run build`: bestanden
+  - `npm run test:a11y`: 35 Tests bestanden
+  - `npm run test:axe-core`: 5 Tests bestanden
+  - `npm run test:unit`: 15 Dateien / 79 Tests bestanden
+  - `npx playwright test`: 35 Tests bestanden, 2 TMDb-Live-Fallback-Tests skipped
 - gezielter Playwright-Smoke bei 390px und 430px:
-  - Header links/rechts symmetrisch
+  - Header-Brand und Menübutton an Contentbreite ausgerichtet
+  - Result-Card-CTA-Zeile mit `Details`, `Merken`, `Gesehen?` nebeneinander
   - Header schrumpft smooth beim Scrollen
   - Burger-Menü öffnet mit ca. 51px hohen Link-Touchflächen
   - Detailposter sichtbar und groß skaliert

@@ -1,6 +1,6 @@
 # Testing und Release für null-noise
 
-Stand: 17. Mai 2026
+Stand: 23. Mai 2026
 
 Diese Datei beschreibt, wie `null-noise` Accessibility testet und wo die Grenzen der Automatisierung liegen.
 
@@ -44,7 +44,7 @@ Die Prüfung orientiert sich an WCAG 2.2 und den Prüfansätzen des BITV-Testver
 - Kontrast-Fundstellen, die axe erkennen kann
 - erkennbare Form-/Label-Probleme
 - wiederholbare Keyboard-Smoke-Checks, zum Beispiel Skip-Link und erreichbare Suchvorschläge
-- mobile Navigation mit Burger-Menü und sekundären Info-/Legal-Zielen
+- mobile Navigation mit Burger-Menü für primäre App-Ziele; Info-/Legal-Ziele bleiben im Footer erreichbar
 - kleiner Reflow-Smoke-Test auf den Kernrouten bei `320 CSS-Pixeln`, damit offensichtliches horizontales Overflow früh auffällt
 
 Diese automatisierten Prüfungen helfen besonders bei wiederholbaren Prüffeldern aus dem BITV-/WCAG-Kontext, etwa Struktur, Kontrast, Tastaturzugänglichkeit und Robustheit. Sie ersetzen aber keine vollständige manuelle Bewertung.
@@ -192,27 +192,33 @@ Optional, wenn der Umfang es rechtfertigt:
 
 ## Letzter lokaler Stand vor Übergabe
 
-Mobile-UX-Pass vom 17. Mai 2026, lokal geprüft und nicht deployt:
+Mobile-UX-Abschluss vom 23. Mai 2026, lokal als Abschlusscommit `fix: finalize mobile ux and brand polish` vorbereitet.
+
+Direkt vor der finalen lokalen Doku-/Commit-Aktualisierung erneut gelaufen:
 
 - `npm run lint`: bestanden
 - `npm run build`: bestanden
 - `npm run test:a11y`: 35 Tests bestanden
+- `npm run test:axe-core`: 5 Tests bestanden
+- `npm run test:unit`: 15 Dateien / 79 Tests bestanden
+- `npx playwright test`: 35 Tests bestanden, 2 TMDb-Live-Fallback-Tests skipped
+
+Vorherige gezielte mobile Sichtprüfung:
+
 - zusätzlicher Playwright-Smoke bei 390px und 430px:
-  - Header-App-Shell links/rechts symmetrisch
+  - Header-Brand und Menübutton an Contentbreite ausgerichtet
   - Header-Shrink smooth beim Scrollen
   - Logo/Wortmarke klickt/tappt von Unterseiten zurück zur Startseite
   - Burger-Menü-Touchziele ca. 51px hoch
+  - Burger-Menü auf Start, Suche und Erklärung/Hilfe reduziert; Legal-/Accessibility-Links im Footer
   - Browse-Link wirkt als Button-CTA mit Icon und ausreichender Touchfläche
+  - Result-Card-Aktionen `Details`, `Merken` und `Gesehen?` stehen mobil nebeneinander, auch im 320px-Reflow-Smoke
   - `Richtung starten` hat ausreichend Innenabstand und farbige Kategorieflächen
   - Burger-Menü liegt über Seiteninhalt statt von Karten/Content überdeckt zu werden
   - Detailposter sichtbar und groß skaliert
   - keine horizontale Scrollbar
 
-Vor Push/Deploy noch separat nachholen:
-
-- `npm run test:unit`
-- `npm run test:axe-core`
-- vollständiges `npx playwright test`, wenn Zeit und lokale TMDb-Bedingungen es zulassen
+Offen bleibt ein echter iPhone-Check nach einem späteren Preview-/Production-Deploy mit Vercel-Login, weil Deployment Protection/SSO die externe mobile Prüfung begrenzt.
 
 ## Security-/Privacy-Release-Checks
 

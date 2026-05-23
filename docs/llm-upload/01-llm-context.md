@@ -3,9 +3,9 @@
 ## Aktueller Arbeitsstand
 
 - aktiver lokaler Arbeitsbranch: `null-noise`
-- aktueller Stand: Mobile-UX-Pass vom 17. Mai 2026 liegt lokal als uncommitted Working-Tree auf `null-noise`
+- aktueller Stand: Mobile-UX-Abschluss vom 23. Mai 2026 ist lokal auf `null-noise` als Abschlusscommit `fix: finalize mobile ux and brand polish` vorbereitet
 - vorheriger Stand: Startseiten-/Mobile-UI-Fix ist lokal committed (`196db83 fix: stabilize home and mobile search UI`) und als Vercel Preview bereitgestellt; Production wurde nicht angerührt
-- aktueller Mobile-UX-Pass wurde noch nicht gepusht und nicht nach Vercel deployt
+- aktueller Mobile-UX-Abschluss ist nach lokaler Prüfung für Push und Vercel-Deploy vorgesehen
 - Live-URL: https://null-noise.vercel.app
 - Preview-URL: https://null-noise-ezndxaczf-deresjots-projects.vercel.app
 - Preview-Hinweis: Deployment Protection/SSO ist aktiv; ohne Vercel-Login kommt `401`
@@ -113,26 +113,31 @@
 
 ## Mobile-Stand
 
-- Mobile-UX-Pass vom 17. Mai 2026 ist lokal umgesetzt, aber noch nicht committed/gepusht/deployt
+- Mobile-UX-Abschluss vom 23. Mai 2026 ist lokal umgesetzt und committed, aber nicht gepusht/deployt
 - Mobile Header ist eine fixe App-Shell mit Burger-Menü, aktiver Route, Escape-Schließen und sichtbarem Fokus
-- Hauptziele im mobilen Menü: Start, Suche, Erklärung/Hilfe, Barrierefreiheit, Datenschutz, Impressum
-- Mobile Navigation ist als Overlay gegen Stacking-Context-Probleme gehärtet und liegt über Seiteninhalt/Karten
+- Hauptziele im mobilen Menü: Start, Suche, Erklärung/Hilfe
+- Barrierefreiheit, Datenschutz und Impressum bleiben mobil im Footer erreichbar
+- Mobile Navigation ist als opake, kontrastreiche Overlay-Navigation gegen Stacking-Context-Probleme gehärtet und liegt über Seiteninhalt/Karten
 - Logo/Wortmarke im Header führen mobil und desktop zur Startseite; versteckte Skip-Links dürfen diese Tap-Fläche nicht blockieren
-- Header-Innenabstände wurden bei 390px und 430px symmetrisch geprüft; der Header schrumpft beim Scrollen smooth und behält den Glass-Effekt
+- Header-Innenabstände wurden bei 320px, 390px und 430px geprüft; Brand und Menübutton richten sich an der Contentbreite aus, nicht am äußersten Viewport-Rand
 - mobile Typografie, Labels, Buttons, Card-Metadaten, Footer-Links, Legal-Texte und Detailseiten-Text wurden luftiger gesetzt
 - `search-browse-link` wird als Button-CTA mit Lupe dargestellt, bleibt aber ein nativer Link
 - `search-direct-starts` hat mobil mehr Innenabstand und farbige Richtungsflächen: grün, gold, rot
 - Detailseiten zeigen mobil Poster und Synopsis, sofern vorhanden; die Reihenfolge ist Titelkopf mit Poster/Titel/Synopsis, danach Erste Einschätzung, Stand, Verfügbarkeit, Empfehlungen
 - Detailposter skalieren auf Mobile groß von links nach rechts; Fallbacks für fehlende Poster bleiben kompakt
 - `Zurück zur Suche` im Metadaten-Detailpfad ist ein gestalteter Button mit Zurück-Pfeil
-- Favicon, Open-Graph-/Twitter-Metadaten und generiertes Social-Image wurden aktualisiert
+- Favicon, Open-Graph-/Twitter-Metadaten und Social-Image wurden auf vereinfachtes TV-Favicon und cache-gebustetes OG-Bild aktualisiert
+- Die freie Suche wurde gegen unklare Ausblendung durch den lokalen Schon-gesehen-Filter stabilisiert: getippte Suchergebnisse bleiben sichtbar, Browse kann weiterhin gesehene Titel ausblenden
+- Erfolgreiche TMDb-Suchen werden kurz serverseitig wiederverwendet, falls dieselbe Anfrage bei schnellen lokalen Checks anschließend upstream stolpert
+- `/barrierefreiheit` wurde auf WCAG 2.2 AA als technisches Ziel, aktuellen Status, konkrete Maßnahmen, Prüfweise, bekannte Grenzen und Kontakt fokussiert
 - sanfte CSS-Transitions und optionale Ladebalken-Hooks sind ergänzt; `prefers-reduced-motion` wird respektiert
 - Opacity-Fades wurden aus Entry-Animationen entfernt, damit A11y-Kontrast-Scans nicht während halbtransparenter Texte fehlschlagen
 - Startseite erklärt jetzt direkt unter `Was passt gerade?`, wofür Null Noise gedacht ist
-- Header-Branding zeigt auf Mobile und Desktop Icon-Logo plus Wortmarke
+- Header-Branding zeigt auf Mobile und Desktop Icon-Logo plus Wortmarke; die Brand sitzt links innerhalb der Contentbreite und nicht end-to-end am Viewport
 - Suche bleibt primärer Einstieg; Richtungskacheln bleiben sekundär
 - Richtungskacheln, Ergebnisgruppen, Filter und Karten nutzen konsistent `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv`
 - mobile Ergebnislisten, Merken-/Gesehen-Bereich und Toggle wurden gegen abgeschnittene Texte und horizontale Überläufe stabilisiert
+- Ergebnis-Karten zeigen `Details`, `Merken` und `Gesehen?` mobil als gemeinsame CTA-Zeile nebeneinander, auch im 320px-Reflow-Smoke
 - fehlende Poster zeigen einen bewussten Platzhalter `Kein Poster verfügbar`
 - mobile Scroll-Stabilität wurde lokal verbessert
 - mobile Header-Blur reduziert / desktop-begrenzt
@@ -152,19 +157,27 @@
 - `npm run test:a11y`
 - `npx playwright test`
 
-## Letzte Prüfung dieses Mobile-UX-Passes
+## Letzte finale Prüfung dieses Mobile-UX-Abschlusses
 
-- `npm run lint`: bestanden
-- `npm run build`: bestanden
-- `npm run test:a11y`: 35 Tests bestanden
-- zusätzlicher lokaler Playwright-Smoke bei 390px und 430px:
-  - Header links/rechts symmetrisch
-  - Header-Shrink smooth
-  - Burger-Menü-Touchziele ca. 51px hoch
-  - Detailposter sichtbar und groß skaliert
-  - keine horizontale Scrollbar
-- zusätzlicher Layer-Smoke bei 390px: mobile Navigation liegt auf `/`, `/suche?q=Arrival`, `/titel/mondfenster` über dem Content
-- noch vor Push/Deploy separat nachholen: `npm run test:unit`, `npm run test:axe-core` als Einzelbefehl und nach Möglichkeit vollständiges `npx playwright test`
+- direkt vor der Doku-/Commit-Aktualisierung am 23. Mai 2026 erneut gelaufen:
+  - `npm run lint`: bestanden
+  - `npm run build`: bestanden
+  - `npm run test:a11y`: 35 Tests bestanden
+  - `npm run test:axe-core`: 5 Tests bestanden
+  - `npm run test:unit`: 15 Dateien / 79 Tests bestanden
+  - `npx playwright test`: 35 Tests bestanden, 2 TMDb-Live-Fallback-Tests skipped
+- `git diff --check`: sauber
+
+- vorherige gezielte mobile Sichtprüfung in diesem Pass:
+  - lokaler Playwright-Smoke bei 390px und 430px:
+    - Header-Brand und Menübutton an Contentbreite ausgerichtet
+    - Result-Card-CTA-Zeile mit `Details`, `Merken`, `Gesehen?` nebeneinander
+    - Header-Shrink smooth
+    - Burger-Menü-Touchziele ca. 51px hoch
+    - Detailposter sichtbar und groß skaliert
+    - keine horizontale Scrollbar
+  - Layer-Smoke bei 390px: mobile Navigation liegt auf `/`, `/suche?q=Arrival`, `/titel/mondfenster` über dem Content
+- älterer manueller Playwright-Smoke bleibt als Sichtprüfungs-Evidenz dokumentiert; echter iPhone-Check nach Deploy bleibt offen
 
 ## Manuelle Kernprüfung
 
@@ -183,7 +196,7 @@
 - nach Security-Deploy: Header/CSP, API-Cache-Header und schreibende Routen live prüfen
 - nach Security-Deploy: `.next/static`/Client-Bundle weiter ohne sensible Secret-Bezüge halten
 
-## Letzte grüne UI-Prüfung
+## Vorherige grüne UI-Prüfung
 
 - `npm run lint`
 - `npm run build`

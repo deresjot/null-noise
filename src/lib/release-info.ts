@@ -1,12 +1,28 @@
 import packageJson from "../../package.json";
 
 export const currentBuild = {
-  version: `${packageJson.version}-joy.20260522`,
-  label: "Product states and calmer software feel",
-  releasedAt: "2026-05-22 · preview",
+  version: `${packageJson.version}-mobile.20260523`,
+  label: "Mobile navigation, search and accessibility wording",
+  releasedAt: "2026-05-23 · preview",
 };
 
 export const releaseNotes = [
+  {
+    version: `${packageJson.version}-mobile.20260523`,
+    label: "Mobile navigation, search and accessibility wording",
+    releasedAt: "2026-05-23",
+    entries: [
+      "Mobile navigation now contains only Start, Suche and Erklärung / Hilfe; legal and accessibility links stay reachable from the footer.",
+      "The mobile menu uses an opaque high-contrast layer, clearer active-route treatment, larger tap areas and the existing Escape/button/link close behavior.",
+      "Mobile spacing, card rhythm, local shelf controls, footer links and legal/help pages were tightened for calmer small-screen reading.",
+      "Free search keeps seen-title hiding out of typed search results so known queries do not silently collapse to a single visible card.",
+      "Successful TMDb searches are briefly reused server-side when the same query is checked again and the upstream search stumbles.",
+      "The accessibility page now focuses on WCAG 2.2 AA as the technical target, current status, implemented measures, test approach, known limits and contact.",
+      "Favicon and share metadata were refreshed with a simplified TV mark and a cache-busted Open Graph image.",
+      "Result cards now keep Details, Merken and Gesehen as one mobile action row, including the 320px reflow check.",
+      "The header brand lockup stays aligned to the viewport edge across breakpoints instead of drifting with the centered shell.",
+    ],
+  },
   {
     version: `${packageJson.version}-joy.20260522`,
     label: "Product states and calmer software feel",
@@ -16,6 +32,7 @@ export const releaseNotes = [
       "Local Merken and Schon gesehen actions now expose a clearer browser-local state on result cards and detail pages.",
       "Detail pages surface direction, current status and confidence as a short decision strip near the first assessment.",
       "Direct browse arrows and the secondary browse action were visually tightened into calmer, button-like controls while keeping native link semantics.",
+      "The mobile hamburger menu is now focused on primary product pages while legal pages remain reachable from the footer only.",
       "Verification for this pass: lint, build, unit, axe-core, a11y, full Playwright and 320px/390px/430px/desktop route smokes passed.",
     ],
   },

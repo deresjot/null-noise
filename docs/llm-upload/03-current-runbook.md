@@ -42,6 +42,10 @@ Nur verwenden, wenn der Prozess eindeutig zum lokalen Dev-Server gehört. Prozes
 - `http://localhost:3000`
 - `http://localhost:3000/suche`
 - `http://localhost:3000/suche?q=Arrival`
+- `http://localhost:3000/suche?q=Predator`
+- `http://localhost:3000/suche?q=Gladiator`
+- `http://localhost:3000/suche?q=Cars`
+- `http://localhost:3000/suche?q=Past%20Lives`
 - `http://localhost:3000/titel/mondfenster`
 - `http://localhost:3000/erklaerung`
 - `http://localhost:3000/bedienung`
@@ -60,15 +64,18 @@ npm run test:a11y
 npx playwright test
 ```
 
-Für den Mobile-UX-Pass vom 17. Mai 2026 liefen zuletzt grün:
+Für den Mobile-UX-Abschluss vom 23. Mai 2026 liefen direkt vor der finalen lokalen Doku-/Commit-Aktualisierung grün:
 
 ```sh
 npm run lint
 npm run build
+npm run test:unit
+npm run test:axe-core
 npm run test:a11y
+npx playwright test
 ```
 
-Vor einem Push/Deploy sollten `npm run test:unit`, `npm run test:axe-core` als Einzelbefehl und bei ausreichender Zeit `npx playwright test` erneut laufen, weil sie in diesem letzten Mobile-Pass nicht separat abgeschlossen wurden.
+Der vollständige Playwright-Lauf bestand mit 35 bestandenen Tests und 2 skipped TMDb-Live-Fallback-Tests. Vor einem späteren Push/Deploy trotzdem Status, Diff-Scope, Secrets/Artefakte und ggf. Live-/Preview-Bedingungen erneut prüfen.
 
 ## Security-/Privacy-Checks
 
@@ -115,8 +122,8 @@ Empfohlenes Briefing:
 Bitte arbeite im Projekt null-noise auf dem Branch null-noise.
 Lies zuerst docs/llm-upload/00-docs-readme.md, 01-llm-context.md,
 02-current-state.md, 03-current-runbook.md und 07-testing-and-release.md.
-Ziel: Vor Git-Push und Vercel-Deploy den aktuellen lokalen Mobile-UX-Pass prüfen.
-Bitte nichts committen, pushen oder deployen ohne explizite Freigabe.
+Ziel: Vor Git-Push und Vercel-Deploy den lokal committed Mobile-UX-Abschluss vom 23. Mai 2026 prüfen.
+Bitte nichts pushen oder deployen ohne explizite Freigabe.
 Prüfe git status/diff, Release Notes, Doku-Sync, Secrets/Artefakte,
 Tests, mobile Viewports 390px/430px und danach die Vercel-Deploy-Bereitschaft.
 ```
@@ -127,9 +134,11 @@ Tests, mobile Viewports 390px/430px und danach die Vercel-Deploy-Bereitschaft.
 - Gründe kurz
 - keine Score-/Prozent-UI
 - Header/Branding zeigt Icon-Logo plus Wortmarke auf Mobile und Desktop
+- Header-Brand und Menübutton sind unabhängig vom Breakpoint an der Contentbreite ausgerichtet, nicht end-to-end am Viewport-Rand
 - Logo/Wortmarke führt von Unterseiten zurück zur Startseite
 - Mobile Header-App-Shell hat symmetrische Innenabstände und schrumpft smooth beim Scrollen
 - Burger-Menü öffnet und schließt per Button, Link-Klick und Escape; Fokus bleibt sichtbar
+- Burger-Menü enthält mobil nur Start, Suche und Erklärung/Hilfe; Barrierefreiheit, Datenschutz und Impressum stehen im Footer
 - Burger-Menü liegt sichtbar über Seiteninhalt, Ergebnisgruppen und Detailkarten
 - Startseite enthält kurze Erklärung unter `Was passt gerade?`
 - Suche bleibt primärer Einstieg; Richtungskacheln bleiben sekundär
@@ -137,6 +146,8 @@ Tests, mobile Viewports 390px/430px und danach die Vercel-Deploy-Bereitschaft.
 - `Richtung starten` hat ausreichend Innenabstand; die drei Richtungen sind grün, gold und rot markiert
 - sichtbare Richtungskacheln/Labels: `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv`
 - Merken-/Gesehen-Bereich und Toggle umbrechen mobil sauber
+- Result-Card-Aktionen `Details`, `Merken` und `Gesehen?` stehen mobil nebeneinander und bleiben fingerfreundlich
+- getippte Suche zeigt weiterhin mehrere Treffer, auch wenn `Schon gesehene Titel hier ausblenden` lokal aktiv ist
 - Detailseite zeigt mobil Poster und Synopsis, sofern Daten vorhanden sind
 - fehlende Poster wirken als bewusste kompakte Platzhalter, nicht wie kaputte Bilder
 - `Zurück zur Suche` wirkt wie ein Button mit Pfeil und bleibt tastaturbedienbar

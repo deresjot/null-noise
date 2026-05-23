@@ -13,10 +13,12 @@ export function SiteFooter() {
             {` · ${currentBuild.label} · Released ${currentBuild.releasedAt}`}
           </p>
           <p className="field-note">Private Beta. Reiz-Einschätzungen bleiben vorläufig.</p>
-          <nav className="mobile-experiment-footer-links" aria-label="Info und Rechtliches">
+          <nav className="mobile-experiment-footer-links" aria-label="Produktnavigation">
             <Link href="/">Start</Link>
             <Link href="/suche">Suche</Link>
             <Link href="/erklaerung">Erklärung und Hilfe</Link>
+          </nav>
+          <nav className="mobile-experiment-footer-legal-links" aria-label="Rechtliches">
             <Link href="/barrierefreiheit">Barrierefreiheit</Link>
             <Link href="/datenschutz">Datenschutz</Link>
             <Link href="/impressum">Impressum</Link>
@@ -38,6 +40,8 @@ export function SiteFooter() {
             <Link href="/">Start</Link>
             <Link href="/suche">Suche</Link>
             <Link href="/erklaerung">Erklärung und Hilfe</Link>
+          </div>
+          <div className="footer-legal-links" aria-label="Rechtliches">
             <Link href="/barrierefreiheit">Barrierefreiheit</Link>
             <Link href="/datenschutz">Datenschutz</Link>
             <Link href="/impressum">Impressum</Link>

@@ -168,7 +168,7 @@ test("direct axe-core scan stays clean on info and legal pages", async ({ page }
     {
       path: "/barrierefreiheit",
       label: "accessibility-statement",
-      heading: "Erklärung zur Barrierefreiheit",
+      heading: "Barrierefreiheit",
     },
     {
       path: "/datenschutz",

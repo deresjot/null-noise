@@ -26,7 +26,7 @@ async function getImageDataUrl(filename: string): Promise<string> {
 }
 
 export default async function OpenGraphImage() {
-  const logoSrc = await getImageDataUrl("null-noise-logo.png");
+  const logoSrc = await getImageDataUrl("null-noise-icon-source.png");
 
   return new ImageResponse(
     (
@@ -37,9 +37,9 @@ export default async function OpenGraphImage() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          gap: "56px",
+          gap: "50px",
           padding: "54px 64px",
-          background: `linear-gradient(135deg, ${brand.sand} 0%, ${brand.white} 52%, #f8f4ff 100%)`,
+          background: `linear-gradient(135deg, ${brand.sand} 0%, ${brand.white} 56%, #f8f4ff 100%)`,
           color: brand.ink,
           border: `18px solid ${brand.ink}`,
           fontFamily: "Arial, Helvetica, sans-serif",
@@ -48,7 +48,7 @@ export default async function OpenGraphImage() {
         <div
           style={{
             display: "flex",
-            width: "460px",
+            width: "395px",
             height: "328px",
             alignItems: "center",
             justifyContent: "center",
@@ -63,7 +63,7 @@ export default async function OpenGraphImage() {
             alt="Null Noise Logo"
             style={{
               width: "360px",
-              height: "360px",
+              height: "300px",
               objectFit: "contain",
             }}
           />
@@ -72,8 +72,8 @@ export default async function OpenGraphImage() {
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "18px",
-            maxWidth: "470px",
+            gap: "20px",
+            maxWidth: "530px",
           }}
         >
           <div
@@ -86,7 +86,7 @@ export default async function OpenGraphImage() {
             <div
               style={{
                 display: "flex",
-                fontSize: "72px",
+                fontSize: "74px",
                 fontWeight: 900,
                 lineHeight: 0.94,
                 letterSpacing: 0,
@@ -98,7 +98,7 @@ export default async function OpenGraphImage() {
             <div
               style={{
                 display: "flex",
-                fontSize: "40px",
+                fontSize: "38px",
                 fontWeight: 760,
                 lineHeight: 1,
                 letterSpacing: 0,
@@ -110,8 +110,8 @@ export default async function OpenGraphImage() {
           </div>
           <div
             style={{
-              display: "flex",
-              fontSize: "54px",
+            display: "flex",
+            fontSize: "52px",
               fontWeight: 900,
               lineHeight: 1,
               letterSpacing: 0,
@@ -133,7 +133,7 @@ export default async function OpenGraphImage() {
               fontWeight: 700,
             }}
           >
-            <span>Reizprofil, Verfügbarkeit und Empfehlungen.</span>
+            <span>Grobe Reizwirkung, klare Tendenz, ruhiger Einstieg.</span>
             <span style={{ color: "#5A6170", fontSize: "22px", fontWeight: 700 }}>
               Ohne Konto. Ohne Tracking. Ohne Social-Druck.
             </span>

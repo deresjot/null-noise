@@ -24,6 +24,8 @@ function applyTitleMemoryState(
   const rememberedKeys = new Set(remembered.map((entry) => entry.key));
   const seenKeys = new Set(seen.map((entry) => entry.key));
   let hiddenSeenCount = 0;
+  const isFreeSearch = Boolean(new URLSearchParams(window.location.search).get("q")?.trim());
+  const shouldHideSeenCards = hideSeenTitles && !isFreeSearch;
 
   document.querySelectorAll<HTMLElement>("[data-title-pocket-key]").forEach((card) => {
     const key = card.dataset.titlePocketKey;
@@ -40,9 +42,9 @@ function applyTitleMemoryState(
     card.dataset.titleRemembered = isRemembered ? "true" : "false";
 
     if (listItem) {
-      listItem.hidden = hideSeenTitles && isSeen;
+      listItem.hidden = shouldHideSeenCards && isSeen;
 
-      if (hideSeenTitles && isSeen) {
+      if (shouldHideSeenCards && isSeen) {
         hiddenSeenCount += 1;
       }
     }

@@ -84,11 +84,11 @@ function formatCombinedResultCount(localCount: number, externalCount: number): s
   const parts: string[] = [];
 
   if (localCount > 0) {
-    parts.push(`${localCount} ${localCount === 1 ? "eigene Seite" : "eigene Seiten"}`);
+    parts.push(`${localCount} ${localCount === 1 ? "eigener Treffer" : "eigene Treffer"}`);
   }
 
   if (externalCount > 0) {
-    parts.push(`${externalCount} ${externalCount === 1 ? "weiterer Titel" : "weitere Titel"}`);
+    parts.push(`${externalCount} ${externalCount === 1 ? "externer Titel" : "externe Titel"}`);
   }
 
   return parts.join(" · ");

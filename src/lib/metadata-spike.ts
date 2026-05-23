@@ -88,6 +88,54 @@ export type MetadataSpikeSearchState =
       items: MetadataSpikeTitle[];
     };
 
+type TmdbSearchSuccessState = Extract<MetadataSpikeSearchState, { kind: "success" }>;
+
+const tmdbSearchCacheTtlMs = 5 * 60 * 1000;
+const tmdbSearchCache = new Map<string, { expiresAt: number; state: TmdbSearchSuccessState }>();
+
+function createTmdbSearchCacheKey(
+  query: string,
+  filters?: Pick<SearchFilters, "avoidPeaks" | "avoidDensity">,
+): string {
+  return [
+    normalizeSearchText(query),
+    filters?.avoidPeaks ? "avoid-peaks" : "allow-peaks",
+    filters?.avoidDensity ? "avoid-density" : "allow-density",
+  ].join(":");
+}
+
+function readCachedTmdbSearch(cacheKey: string): TmdbSearchSuccessState | null {
+  const cached = tmdbSearchCache.get(cacheKey);
+
+  if (!cached) {
+    return null;
+  }
+
+  if (cached.expiresAt <= Date.now()) {
+    tmdbSearchCache.delete(cacheKey);
+    return null;
+  }
+
+  return cached.state;
+}
+
+function writeCachedTmdbSearch(cacheKey: string, state: TmdbSearchSuccessState): void {
+  tmdbSearchCache.set(cacheKey, {
+    expiresAt: Date.now() + tmdbSearchCacheTtlMs,
+    state,
+  });
+}
+
+function createCachedTmdbSearchState(
+  cached: TmdbSearchSuccessState,
+  message: string,
+): TmdbSearchSuccessState {
+  return {
+    ...cached,
+    message,
+  };
+}
+
 export type MetadataSpikeBrowseSectionId = "quiet" | "balanced" | "loud";
 
 export interface MetadataSpikeBrowseSection {
@@ -1958,6 +2006,11 @@ export async function searchTmdbMetadata(
   const normalizedQuery = normalizeQuery(query);
   const accessToken = getTmdbAccessToken(dependencies.accessToken);
   const diagnostics = dependencies.tmdbDiagnostics;
+  const canUseRuntimeCache = !dependencies.fetchImpl;
+  const cacheKey = createTmdbSearchCacheKey(normalizedQuery, filters);
+  const cachedResult = canUseRuntimeCache ? readCachedTmdbSearch(cacheKey) : null;
+  const cachedMessage =
+    "Die zusätzlichen Treffer stammen aus einer kurz gespeicherten TMDb-Suche. Eine erste Einschätzung liegt dafür noch nicht vor.";
 
   if (!normalizedQuery) {
     finalizeTmdbDiagnostics(diagnostics, "idle");
@@ -2091,6 +2144,11 @@ export async function searchTmdbMetadata(
     const primaryResult = await runTmdbSearch(normalizedQuery);
 
     if (primaryResult.kind === "error") {
+      if (cachedResult) {
+        finalizeTmdbDiagnostics(diagnostics, "success");
+        return createCachedTmdbSearchState(cachedResult, cachedMessage);
+      }
+
       finalizeTmdbDiagnostics(diagnostics, "error", primaryResult.reason);
       return {
         kind: "error",
@@ -2111,20 +2169,31 @@ export async function searchTmdbMetadata(
 
     if (relevantPrimaryItems.length && hasStrongMetadataMatch(relevantPrimaryItems, normalizedQuery)) {
       finalizeTmdbDiagnostics(diagnostics, "success");
-      return {
+      const state = {
         kind: "success",
         query: normalizedQuery,
         source: "tmdb",
         message:
           "Die zusätzlichen Treffer zeigen nur Titeldaten. Eine erste Einschätzung liegt dafür noch nicht vor.",
         items: relevantPrimaryItems,
-      };
+      } satisfies TmdbSearchSuccessState;
+
+      if (canUseRuntimeCache) {
+        writeCachedTmdbSearch(cacheKey, state);
+      }
+
+      return state;
     }
 
     for (const relaxedQuery of buildRelaxedTmdbQueries(normalizedQuery)) {
       const retryResult = await runTmdbSearch(relaxedQuery);
 
       if (retryResult.kind === "error") {
+        if (cachedResult) {
+          finalizeTmdbDiagnostics(diagnostics, "success");
+          return createCachedTmdbSearchState(cachedResult, cachedMessage);
+        }
+
         finalizeTmdbDiagnostics(diagnostics, "error", retryResult.reason);
         return {
           kind: "error",
@@ -2148,27 +2217,39 @@ export async function searchTmdbMetadata(
 
       if (relevantRetryItems.length && hasStrongMetadataMatch(relevantRetryItems, normalizedQuery)) {
         finalizeTmdbDiagnostics(diagnostics, "success");
-        return {
+        const state = {
           kind: "success",
           query: normalizedQuery,
           source: "tmdb",
           message:
             "Die zusätzlichen Treffer stammen aus einer fehlertoleranten Suche. Eine erste Einschätzung liegt dafür noch nicht vor.",
           items: relevantRetryItems,
-        };
+        } satisfies TmdbSearchSuccessState;
+
+        if (canUseRuntimeCache) {
+          writeCachedTmdbSearch(cacheKey, state);
+        }
+
+        return state;
       }
     }
 
     if (relevantPrimaryItems.length) {
       finalizeTmdbDiagnostics(diagnostics, "success");
-      return {
+      const state = {
         kind: "success",
         query: normalizedQuery,
         source: "tmdb",
         message:
           "Die zusätzlichen Treffer zeigen nur Titeldaten. Eine erste Einschätzung liegt dafür noch nicht vor.",
         items: relevantPrimaryItems,
-      };
+      } satisfies TmdbSearchSuccessState;
+
+      if (canUseRuntimeCache) {
+        writeCachedTmdbSearch(cacheKey, state);
+      }
+
+      return state;
     }
 
     finalizeTmdbDiagnostics(diagnostics, "empty");
@@ -2181,6 +2262,11 @@ export async function searchTmdbMetadata(
       items: [],
     };
   } catch (error) {
+    if (cachedResult) {
+      finalizeTmdbDiagnostics(diagnostics, "success");
+      return createCachedTmdbSearchState(cachedResult, cachedMessage);
+    }
+
     if (error instanceof Error && error.message === "TMDB_NOT_CONFIGURED") {
       finalizeTmdbDiagnostics(diagnostics, "disabled");
       return {
@@ -2225,7 +2311,7 @@ export async function browseTmdbMetadata(
   dependencies: MetadataSpikeDependencies = {},
 ): Promise<MetadataSpikeBrowseState> {
   const accessToken = getTmdbAccessToken(dependencies.accessToken);
-  const browseLimit = filters.avoidPeaks && filters.avoidDensity ? 4 : 5;
+  const browseLimit = filters.avoidPeaks && filters.avoidDensity ? 5 : 6;
   const sectionDefinitions: Array<{
     description: string;
     id: MetadataSpikeBrowseSectionId;
