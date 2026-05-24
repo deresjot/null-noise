@@ -1,6 +1,6 @@
 # UX-Prinzipien für reduzierte kognitive Last
 
-Stand: 11. April 2026
+Stand: 24. Mai 2026
 
 `null-noise` ist kein klassisches Entertainment-Produkt. Die Oberfläche soll nicht fesseln, sondern entlasten. Diese Datei beschreibt die UX-Prinzipien dafür.
 
@@ -44,6 +44,20 @@ Texte werden auf Verständlichkeit statt Vollständigkeit optimiert. Für `null-
 Ungewissheit wird nicht kaschiert. Formulierungen wie `Erste Einschätzung`, `Kaum Hinweise` oder `Kann schnell zu viel werden` sind absichtlich direkt.
 
 Das Produkt soll nicht klüger klingen als seine Datenbasis.
+
+### Situative Discovery statt Empfehlung
+
+Discovery soll nicht wie ein personalisierter Feed wirken. Die Leitfrage ist
+nicht `Was empfiehlt das System?`, sondern `Passt das gerade?`.
+
+Deshalb gelten für Browse, Suche und Alternativen:
+
+- keine Formulierungen wie `Empfohlen für dich` oder `Heute passend`
+- ruhige Mix-Namen wie `Ruhiger Einstieg`, `Wenig Sprünge`, `Dicht, aber vorhersehbar` oder `Eher vormerken`
+- `Nicht jetzt` ist eine entlastende Einordnung, keine negative Bewertung des Titels
+- Alternativen werden als Gegengewichte formuliert: ruhiger, dichter oder leichter
+- keine Rankings, Toplisten, Prozentwerte oder scheinpräzise Reizwerte
+- keine Social-, Profil- oder Tracking-Logik
 
 ### Vorhersehbare Interaktion
 
@@ -90,6 +104,7 @@ Für `null-noise` heißt das:
 - Die erste Einschätzung ist die primäre Aussage.
 - `Passt das gerade?` bleibt kurz und direkt.
 - `Worauf basiert das?` bleibt vertiefend und ruhig.
+- Evidence kann dort als `Spricht eher dafür`, `Kann dagegen sprechen` und `Datenlage` gruppiert werden.
 - Unsicherheit wird sichtbar benannt.
 - Folge- und Escape-Logik bleiben klein und erklärbar.
 
@@ -98,6 +113,7 @@ Für `null-noise` heißt das:
 - Die Startseite beschreibt den Dienst kurz und direkt statt mit einer generischen Platzhalterformel.
 - Der Hero-Hinweis benennt Suche, grobe Reiz-Einordnung und ruhigere Auswahl in Alltagssprache.
 - Browse-Steuerung trennt sichtbare Meta-Texte klar von klickbaren Aktionen.
+- Browse-Mixes bleiben Einstiegshilfen und werden nicht zu persönlichen Empfehlungen.
 
 ## Bezug zu W3C COGA
 

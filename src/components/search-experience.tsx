@@ -96,14 +96,14 @@ function formatCombinedResultCount(localCount: number, externalCount: number): s
 
 function getBrowseOrientation(filters: SearchFilters): string | null {
   if (filters.tone === "calm" || filters.avoidPeaks || filters.avoidDensity) {
-    return "Die Auswahl bleibt bewusst ruhig.";
+    return "Die Auswahl fragt: Wäre das gerade eher leicht genug?";
   }
 
   if (filters.tone === "intense") {
-    return "Hier darf es dichter werden.";
+    return "Hier geht es eher um Vormerken als um sofort starten.";
   }
 
-  return "Eher ruhig, eher wechselhaft oder eher intensiv: wähle einfach eine Richtung.";
+  return "Nicht als Empfehlung, sondern als kleine Entscheidungshilfe: passt das gerade oder lieber später?";
 }
 
 function getAvoidanceStatusLine(filters: SearchFilters): string | null {
@@ -597,7 +597,7 @@ export function SearchExperience({ initialState }: { initialState: SearchPageSta
                     <p className="eyebrow">Browse</p>
                     <h1 id="results-heading">Noch kein Titel im Kopf?</h1>
                     <p className="field-note search-results-context">
-                      Wähle eine Richtung und entscheide direkt pro Karte.
+                      Starte mit einer ruhigen Frage: passt das gerade, wäre es zu viel, oder eher vormerken?
                     </p>
                     {browseOrientation ? (
                       <p className="field-note search-results-context search-browse-orientation">

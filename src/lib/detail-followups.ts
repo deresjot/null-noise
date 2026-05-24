@@ -114,9 +114,9 @@ function pickComparisonItems(
     }))
     .sort((left, right) => Math.abs(left.score - currentScore) - Math.abs(right.score - currentScore));
 
-  const quieter = scoredCandidates.find((candidate) => candidate.score >= currentScore + 0.45);
+  const quieter = scoredCandidates.find((candidate) => candidate.score <= currentScore - 0.45);
   const similar = scoredCandidates.find((candidate) => Math.abs(candidate.score - currentScore) <= 0.4);
-  const louder = scoredCandidates.find((candidate) => candidate.score <= currentScore - 0.45);
+  const louder = scoredCandidates.find((candidate) => candidate.score >= currentScore + 0.45);
 
   const selections = [quieter, similar, louder]
     .filter((candidate): candidate is NonNullable<typeof candidate> => Boolean(candidate))
@@ -129,9 +129,9 @@ function pickComparisonItems(
       item: candidate.item,
       relationLabel:
         candidate.score >= currentScore + 0.45
-          ? "Ruhiger als"
+          ? "Intensiver als"
           : candidate.score <= currentScore - 0.45
-            ? "Intensiver als"
+            ? "Ruhiger als"
             : "Ähnlich wie",
     }));
 
@@ -214,16 +214,21 @@ export async function getDetailFollowupSections(input: {
 
     if (items.length) {
       sections.push({
-        eyebrow: "Weiter in ähnlicher Reizlage",
+        eyebrow: "Weiter abwägen",
         id: "nearby",
         intro:
           tendency.tone === "intensiv"
-            ? "Ähnliche Reizlage, ohne so zu tun, als wäre das exaktes Matching."
+            ? "Wenn das gerade nicht zu viel wäre: ähnliche Richtung, weiter vorsichtig."
             : tendency.tone === "ruhig"
-              ? "Ähnlich ruhig oder zumindest ohne harte Spitzen."
-              : "Im selben groben Rahmen, ohne das enger zu behaupten als es ist.",
+              ? "Wenn das zu ruhig ist: etwas mehr Rahmen, ohne harte Spitzen zu suchen."
+              : "Wenn diese Richtung passt: im selben groben Rahmen, nicht enger behauptet.",
         items,
-        title: "Dazu passt auch …",
+        title:
+          tendency.tone === "intensiv"
+            ? "Wenn etwas mehr geht"
+            : tendency.tone === "ruhig"
+              ? "Wenn das zu ruhig ist"
+              : "Wenn diese Richtung passt",
       });
     } else {
       notices.push({
@@ -269,9 +274,9 @@ export async function getDetailFollowupSections(input: {
         sections.push({
           eyebrow: "Entlasten",
           id: "escape",
-          intro: "Leiser, luftiger und mit weniger harten Spitzen.",
+          intro: "Ruhigere Gegengewichte, falls dieser Titel gerade zu dicht wirkt.",
           items,
-          title: "Wenn du etwas Ruhigeres suchst",
+          title: "Wenn das zu dicht ist",
         });
       } else {
         notices.push({

@@ -5,6 +5,7 @@ import {
   getSearchAggregatePresentation,
   getProfileTendency,
 } from "@/lib/format";
+import { getSituationalDiscoveryLabel } from "@/lib/discovery-copy";
 import { createTitleExternalLookupKey } from "@/lib/local-title-shared";
 import { createMetadataInferencePreview } from "@/lib/metadata-inference";
 import { getTmdbPosterProxyPath, type MetadataSpikeTitle } from "@/lib/metadata-shared";
@@ -222,7 +223,7 @@ export function ExternalResultList({
         const localPath = getLocalTitlePath(item, localTitleByExternalKey);
         const cardReadingStatus = localPath
           ? "Einschätzung mit Rückmeldungen"
-          : getCardReadingStatus(preview.aggregation);
+          : getSituationalDiscoveryLabel(preview.evidenceSummary);
         const detailPath = localPath ?? getExternalDetailPath(item, query);
         const pocketEntry = buildTitlePocketEntryFromMetadata(item, {
           href: detailPath,

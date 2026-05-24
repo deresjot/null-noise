@@ -50,6 +50,9 @@ export type StimulusEvidenceSummary = {
   status: StimulusEvidenceStatus;
   reasons: string[];
   note: string;
+  conflicts: string[];
+  reliefSignals: string[];
+  thinData: boolean;
   situationalFit: {
     label: string;
     state: SituationalFitState;
@@ -112,10 +115,10 @@ const tmdbGenreRules: EvidenceRule[] = [
     needles: ["horror"],
     axis: "predictability",
     direction: "intensifying",
-    strength: 2,
-    confidence: "medium",
+    strength: 1,
+    confidence: "weak",
     signal: "Genre: Horror",
-    explanation: "Hinweis aus Genre: Horror kann für mehr Überraschung oder Anspannung sprechen.",
+    explanation: "Hinweis aus Genre: Horror kann für Überraschung oder Anspannung sprechen, bleibt aber Genre-Evidenz.",
   },
   {
     needles: ["thriller"],
@@ -130,10 +133,10 @@ const tmdbGenreRules: EvidenceRule[] = [
     needles: ["war", "krieg"],
     axis: "emotional_load",
     direction: "intensifying",
-    strength: 2,
-    confidence: "medium",
+    strength: 1,
+    confidence: "weak",
     signal: "Genre: Krieg",
-    explanation: "Hinweis aus Genre: Kriegskontext kann emotional schwerer liegen.",
+    explanation: "Hinweis aus Genre: Kriegskontext kann emotional schwerer liegen, reicht allein aber nicht für Sicherheit.",
   },
   {
     needles: ["documentary", "dokumentarfilm"],
@@ -374,6 +377,10 @@ function ruleMatches(haystack: string, rule: EvidenceRule): boolean {
   return rule.needles.some((needle) => haystack.includes(normalizeSearchText(needle)));
 }
 
+function countRuleMatches(haystack: string, rule: EvidenceRule): number {
+  return rule.needles.filter((needle) => haystack.includes(normalizeSearchText(needle))).length;
+}
+
 function createEvidenceFromRules(input: {
   haystack: string;
   rules: EvidenceRule[];
@@ -381,19 +388,33 @@ function createEvidenceFromRules(input: {
 }): StimulusEvidence[] {
   return input.rules
     .filter((rule) => input.haystack && ruleMatches(input.haystack, rule))
-    .map((rule) => ({
-      axis: rule.axis,
-      source: input.source,
-      direction: rule.direction,
-      strength: rule.strength,
-      confidence: rule.confidence,
-      signal: rule.signal,
-      explanation: rule.explanation,
-    }));
+    .map((rule) => {
+      const matchCount = countRuleMatches(input.haystack, rule);
+      const canStrengthenKeyword = rule.signal.startsWith("Keywords:") && matchCount >= 2;
+
+      return {
+        axis: rule.axis,
+        source: input.source,
+        direction: rule.direction,
+        strength:
+          canStrengthenKeyword && rule.strength < 3
+            ? ((rule.strength + 1) as 2 | 3)
+            : rule.strength,
+        confidence: canStrengthenKeyword && rule.confidence === "weak" ? "medium" : rule.confidence,
+        signal: rule.signal,
+        explanation: canStrengthenKeyword
+          ? `${rule.explanation} Mehrere passende Keywords zeigen in dieselbe Richtung.`
+          : rule.explanation,
+      };
+    });
 }
 
 function strengthenRepeatedTmdbSignals(evidence: StimulusEvidence[]): StimulusEvidence[] {
   const countsByAxisDirection = evidence.reduce<Record<string, number>>((counts, item) => {
+    if (!item.signal.startsWith("Keywords:")) {
+      return counts;
+    }
+
     const key = `${item.axis}:${item.direction}`;
     counts[key] = (counts[key] ?? 0) + 1;
     return counts;
@@ -402,7 +423,12 @@ function strengthenRepeatedTmdbSignals(evidence: StimulusEvidence[]): StimulusEv
   return evidence.map((item) => {
     const count = countsByAxisDirection[`${item.axis}:${item.direction}`] ?? 0;
 
-    if (item.source !== "tmdb" || count < 2 || item.confidence !== "weak") {
+    if (
+      item.source !== "tmdb" ||
+      !item.signal.startsWith("Keywords:") ||
+      count < 2 ||
+      item.confidence !== "weak"
+    ) {
       return item;
     }
 
@@ -501,12 +527,154 @@ function getEvidenceValue(item: StimulusEvidence): number {
   return directionSign * item.strength * confidenceWeight[item.confidence];
 }
 
-function resolveConfidence(evidence: StimulusEvidence[], absTotal: number): StimulusConfidence {
-  if (!evidence.length || absTotal <= 2) {
+type AxisSummary = Partial<
+  Record<
+    StimulusAxis,
+    {
+      calming: number;
+      intensifying: number;
+      mixed: number;
+      evidence: StimulusEvidence[];
+    }
+  >
+>;
+
+function createAxisSummary(evidence: StimulusEvidence[]): AxisSummary {
+  return evidence.reduce<AxisSummary>((summary, item) => {
+    const current = summary[item.axis] ?? {
+      calming: 0,
+      intensifying: 0,
+      mixed: 0,
+      evidence: [],
+    };
+    const value = Math.abs(getEvidenceValue(item));
+
+    if (item.direction === "calming") {
+      current.calming += value;
+    } else if (item.direction === "intensifying") {
+      current.intensifying += value;
+    } else {
+      current.mixed += item.strength * confidenceWeight[item.confidence];
+    }
+
+    current.evidence.push(item);
+    summary[item.axis] = current;
+    return summary;
+  }, {});
+}
+
+function getAxisLoad(summary: AxisSummary, axis: StimulusAxis, direction: StimulusDirection): number {
+  const axisSummary = summary[axis];
+
+  if (!axisSummary) {
+    return 0;
+  }
+
+  if (direction === "calming") {
+    return axisSummary.calming;
+  }
+
+  if (direction === "intensifying") {
+    return axisSummary.intensifying;
+  }
+
+  return axisSummary.mixed;
+}
+
+function getDominantAxisDirection(summary: AxisSummary, axis: StimulusAxis): StimulusDirection | null {
+  const axisSummary = summary[axis];
+
+  if (!axisSummary) {
+    return null;
+  }
+
+  if (axisSummary.calming > 0 && axisSummary.intensifying > 0) {
+    return "mixed";
+  }
+
+  if (axisSummary.intensifying > axisSummary.calming) {
+    return "intensifying";
+  }
+
+  if (axisSummary.calming > axisSummary.intensifying) {
+    return "calming";
+  }
+
+  return axisSummary.mixed > 0 ? "mixed" : null;
+}
+
+function isGenreOnlyEvidence(evidence: StimulusEvidence[]): boolean {
+  return evidence.length > 0 && evidence.every((item) => item.signal.startsWith("Genre:"));
+}
+
+function hasMetadataBeyondGenre(evidence: StimulusEvidence[]): boolean {
+  return evidence.some((item) => !item.signal.startsWith("Genre:"));
+}
+
+function hasConflict(axisSummary: AxisSummary): boolean {
+  const hasStrongCalming =
+    getAxisLoad(axisSummary, "relief", "calming") +
+      getAxisLoad(axisSummary, "predictability", "calming") >=
+    3;
+  const hasIntensifying =
+    getAxisLoad(axisSummary, "audio_peaks", "intensifying") > 0 ||
+    getAxisLoad(axisSummary, "stimulus_density", "intensifying") > 0 ||
+    getAxisLoad(axisSummary, "visual_intensity", "intensifying") > 0 ||
+    getAxisLoad(axisSummary, "emotional_load", "intensifying") > 0 ||
+    getAxisLoad(axisSummary, "predictability", "intensifying") > 0;
+
+  return hasStrongCalming && hasIntensifying;
+}
+
+function resolveConflicts(axisSummary: AxisSummary): string[] {
+  const conflicts: string[] = [];
+  const hasRelief = getAxisLoad(axisSummary, "relief", "calming") > 0;
+  const hasPredictable = getAxisLoad(axisSummary, "predictability", "calming") > 0;
+  const hasSensory =
+    getAxisLoad(axisSummary, "audio_peaks", "intensifying") > 0 ||
+    getAxisLoad(axisSummary, "stimulus_density", "intensifying") > 0 ||
+    getAxisLoad(axisSummary, "visual_intensity", "intensifying") > 0;
+  const hasEmotional = getAxisLoad(axisSummary, "emotional_load", "intensifying") > 0;
+  const hasSurprise = getAxisLoad(axisSummary, "predictability", "intensifying") > 0;
+
+  if ((hasRelief || hasPredictable) && hasSensory) {
+    conflicts.push("Ruhige oder klare Signale treffen auf sensorisch dichtere Hinweise.");
+  }
+
+  if ((hasRelief || hasPredictable) && hasEmotional) {
+    conflicts.push("Entlastende Formsignale stehen neben emotional schwereren Themen.");
+  }
+
+  if (hasPredictable && hasSurprise) {
+    conflicts.push("Vorhersehbarkeit und mögliche Überraschung sind beide angedeutet.");
+  }
+
+  return conflicts;
+}
+
+function resolveConfidence(input: {
+  evidence: StimulusEvidence[];
+  axisSummary: AxisSummary;
+  tone: StimulusTone;
+  thinData: boolean;
+  conflicts: string[];
+}): StimulusConfidence {
+  if (!input.evidence.length || input.thinData || isGenreOnlyEvidence(input.evidence)) {
     return "weak";
   }
 
-  if (evidence.some((item) => item.confidence === "strong") || absTotal >= 8) {
+  if (input.tone === "mixed" && input.conflicts.length) {
+    return "medium";
+  }
+
+  const strongestAxis = Math.max(
+    ...Object.values(input.axisSummary).map((axis) =>
+      Math.max(axis.calming, axis.intensifying, axis.mixed),
+    ),
+    0,
+  );
+
+  if (input.evidence.some((item) => item.confidence === "strong") || strongestAxis >= 8) {
     return "strong";
   }
 
@@ -522,7 +690,7 @@ function resolveStatus(evidence: StimulusEvidence[]): StimulusEvidenceStatus {
     return "Durch Rückmeldungen gestützt";
   }
 
-  if (evidence.length >= 2) {
+  if (hasMetadataBeyondGenre(evidence) && evidence.length >= 2) {
     return "Mehrere Hinweise";
   }
 
@@ -535,6 +703,8 @@ function createSummaryNote(input: {
   status: StimulusEvidenceStatus;
   reasons: string[];
   situationalFit: StimulusEvidenceSummary["situationalFit"];
+  conflicts: string[];
+  thinData: boolean;
 }): string {
   const dataLabel =
     input.confidence === "strong" ? "stark" : input.confidence === "medium" ? "mittel" : "schwach";
@@ -547,7 +717,7 @@ function createSummaryNote(input: {
         .join("; ")}.`
     : "";
 
-  if (!input.reasons.length || input.confidence === "weak") {
+  if (input.thinData || !input.reasons.length) {
     return `${prefix} Keine deutlichen Hinweise gefunden. Das ist keine Entwarnung.${fitLine}`;
   }
 
@@ -567,7 +737,11 @@ function createSummaryNote(input: {
     return `${prefix} Metadaten deuten auf eher passende Momente, wenn du etwas Ruhigeres suchst.${fitLine}`;
   }
 
-  return `${prefix} Hinweise zeigen in unterschiedliche Richtungen. Das bleibt eher vielleicht.${fitLine}`;
+  if (input.conflicts.length) {
+    return `${prefix} Hinweise zeigen in unterschiedliche Richtungen. Das bleibt eher vielleicht.${fitLine}`;
+  }
+
+  return `${prefix} Die Hinweise bleiben vorsichtig und nicht eindeutig. Das bleibt eher vielleicht.${fitLine}`;
 }
 
 function pickReasons(evidence: StimulusEvidence[]): string[] {
@@ -669,34 +843,54 @@ function createSituationalFit(
 }
 
 export function aggregateStimulusEvidence(evidence: StimulusEvidence[]): StimulusEvidenceSummary {
-  const calming = evidence
-    .filter((item) => item.direction === "calming")
-    .reduce((total, item) => total + Math.abs(getEvidenceValue(item)), 0);
-  const intensifying = evidence
-    .filter((item) => item.direction === "intensifying")
-    .reduce((total, item) => total + Math.abs(getEvidenceValue(item)), 0);
-  const mixed = evidence
-    .filter((item) => item.direction === "mixed")
-    .reduce((total, item) => total + item.strength * confidenceWeight[item.confidence], 0);
-  const net = intensifying - calming;
-  const contradictory = calming > 0 && intensifying > 0;
+  const axisSummary = createAxisSummary(evidence);
+  const conflicts = resolveConflicts(axisSummary);
+  const sensoryLoad =
+    getAxisLoad(axisSummary, "audio_peaks", "intensifying") +
+    getAxisLoad(axisSummary, "stimulus_density", "intensifying") +
+    getAxisLoad(axisSummary, "visual_intensity", "intensifying");
+  const emotionalLoad = getAxisLoad(axisSummary, "emotional_load", "intensifying");
+  const surpriseLoad = getAxisLoad(axisSummary, "predictability", "intensifying");
+  const reliefLoad = getAxisLoad(axisSummary, "relief", "calming");
+  const predictabilityRelief = getAxisLoad(axisSummary, "predictability", "calming");
+  const hasMixedAxis = Object.keys(axisSummary).some(
+    (axis) => getDominantAxisDirection(axisSummary, axis as StimulusAxis) === "mixed",
+  );
+  const thinData =
+    !evidence.length ||
+    isGenreOnlyEvidence(evidence) ||
+    (evidence.length < 2 && evidence.every((item) => item.confidence === "weak"));
   const tone: StimulusTone =
-    !evidence.length || mixed > 0 || contradictory || Math.abs(net) < 2
+    thinData || hasMixedAxis || hasConflict(axisSummary) || conflicts.length
       ? "mixed"
-      : net > 0
+      : sensoryLoad >= 4 || (sensoryLoad >= 3 && (emotionalLoad > 0 || surpriseLoad > 0))
         ? "intense"
-        : "calm";
-  const confidence = resolveConfidence(evidence, Math.max(calming, intensifying, mixed));
+        : reliefLoad + predictabilityRelief >= 4 && sensoryLoad === 0 && emotionalLoad === 0
+          ? "calm"
+          : emotionalLoad >= 3 && sensoryLoad === 0
+            ? "mixed"
+            : sensoryLoad + emotionalLoad + surpriseLoad > reliefLoad + predictabilityRelief
+              ? "intense"
+              : reliefLoad + predictabilityRelief > 0
+                ? "calm"
+                : "mixed";
+  const confidence = resolveConfidence({ evidence, axisSummary, tone, thinData, conflicts });
   const status = resolveStatus(evidence);
   const reasons = pickReasons(evidence);
   const situationalFit = createSituationalFit(evidence, tone);
+  const reliefSignals = evidence
+    .filter((item) => item.direction === "calming")
+    .map((item) => item.explanation);
 
   return {
     tone,
     confidence,
     status,
     reasons,
-    note: createSummaryNote({ tone, confidence, status, reasons, situationalFit }),
+    note: createSummaryNote({ tone, confidence, status, reasons, situationalFit, conflicts, thinData }),
+    conflicts,
+    reliefSignals,
+    thinData,
     situationalFit,
     evidence,
   };

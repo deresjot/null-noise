@@ -1,12 +1,49 @@
 import packageJson from "../../package.json";
 
 export const currentBuild = {
-  version: `${packageJson.version}-mobile.20260523`,
-  label: "Mobile navigation, search and accessibility wording",
-  releasedAt: "2026-05-23 · preview",
+  version: `${packageJson.version}-discovery.20260524`,
+  label: "Situational discovery UX",
+  releasedAt: "2026-05-24 · preview",
 };
 
 export const releaseNotes = [
+  {
+    version: `${packageJson.version}-discovery.20260524`,
+    label: "Situational discovery UX",
+    releasedAt: "2026-05-24",
+    entries: [
+      "Browse groups now use calmer situational entry points such as Ruhiger Einstieg, Dicht, aber vorhersehbar and Eher vormerken.",
+      "External result cards can surface not-now language like Kann gerade zu dicht sein without turning it into a negative rating.",
+      "Detail disclosures group evidence as spricht eher dafuer, kann dagegen sprechen and Datenlage, while keeping scores, percentages and rankings hidden.",
+      "Follow-up sections now frame alternatives as situational counterweights instead of classic similar-title recommendations.",
+      "The new copy is derived from existing Evidence/TMDb summaries only; no profile, tracking, social or new external-source logic was added.",
+    ],
+  },
+  {
+    version: `${packageJson.version}-evidence.20260524`,
+    label: "Evidence calibration and browse diversity",
+    releasedAt: "2026-05-24",
+    entries: [
+      "Evidence aggregation now evaluates axes and conflicts instead of flattening everything into one overall score.",
+      "Genre-only metadata stays weak; repeated matching keywords can raise confidence, while synopsis remains defensive.",
+      "Relief and predictability can soften a title, emotional load stays separate from audio or visual intensity, and contradictory signals remain wechselhaft.",
+      "TMDb browse now rotates controlled discover strategies across genre, popularity, vote-count and year windows before evidence grouping.",
+      "Browse picks use seeded deterministic shuffling and diversity buckets, so suggestions vary without becoming arbitrary or personalized.",
+      "Optional Does the Dog Die and Common Sense Media adapters remain inactive Noop/Fallback boundaries without keys.",
+    ],
+  },
+  {
+    version: `${packageJson.version}-mobile.20260524`,
+    label: "Mobile viewport and card repair",
+    releasedAt: "2026-05-24",
+    entries: [
+      "Mobile header, app shell, menu overlay and page content now share one content gutter on small viewports.",
+      "The opened mobile menu stays inside the viewport, uses a fully opaque layer and avoids the former bright right-side strip.",
+      "The menu button changes the hamburger into a close icon while preserving the text label and existing ARIA state.",
+      "Mobile menu active-route styling is visually distinct from keyboard focus, with focus outlines remaining visible.",
+      "Result cards on mobile now give Details its own full-width row and leave more room between Merken and Gesehen without changing product logic.",
+    ],
+  },
   {
     version: `${packageJson.version}-mobile.20260523`,
     label: "Mobile navigation, search and accessibility wording",

@@ -27,7 +27,7 @@ describe("external result list poster rendering", () => {
     );
 
     expect(html).toContain("Erste Einschätzung");
-    expect(html).toContain("Metadaten · keine Szenenprüfung");
+    expect(html).toContain("Erst kurz prüfen");
     expect(html).toContain("result-card-reading-block");
     expect(html).toContain("search-tone-scale-triad");
     expect(html).toContain("Eher ruhig");
@@ -61,6 +61,31 @@ describe("external result list poster rendering", () => {
     expect(html).toContain("Arrival");
     expect(html).toContain("poster-thumb-fallback");
     expect(html).toContain("Kein Poster verfügbar");
+  });
+
+  it("uses situational not-now language for dense external cards", () => {
+    const html = renderToStaticMarkup(
+      createElement(ExternalResultList, {
+        query: "",
+        items: [
+          {
+            externalSource: "tmdb",
+            externalId: "tmdb:movie:991001",
+            sourceId: 991001,
+            title: "Alarm Run",
+            mediaType: "movie",
+            releaseYear: 2024,
+            synopsis: "Eine Verfolgung mit Alarm, Explosionen und Panik.",
+            posterPath: "/alarm.jpg",
+            genres: ["Action"],
+            keywords: ["alarm", "explosion", "chase", "panic"],
+          },
+        ],
+      }),
+    );
+
+    expect(html).toContain("Kann gerade zu dicht sein");
+    expect(html).not.toMatch(/Empfohlen für dich|Heute passend|Ranking|Score/);
   });
 
   it("links to the local detail page when the external title already exists locally", () => {
@@ -112,7 +137,7 @@ describe("external result list poster rendering", () => {
     );
 
     expect(html).toContain("Nur lesen ist hier gerade aktiv.");
-    expect(html).toContain("Metadaten · keine Szenenprüfung");
+    expect(html).toContain("Erst kurz prüfen");
     expect(html).toContain("Details");
     expect(html).not.toContain("Lokal anlegen");
     expect(html).not.toContain('action="/api/local-titles"');

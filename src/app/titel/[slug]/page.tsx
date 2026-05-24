@@ -15,6 +15,7 @@ import { TitlePocketActions } from "@/components/title-pocket-actions";
 import { WatchProvidersPanel } from "@/components/watch-providers-panel";
 import { soothingEffectLabels, stimulusDimensions } from "@/lib/constants";
 import { getDetailFollowupSections } from "@/lib/detail-followups";
+import { buildEvidenceDisclosureGroups } from "@/lib/discovery-copy";
 import {
   getAggregatePresentation,
   formatKind,
@@ -28,6 +29,7 @@ import {
   getProfileTendency,
 } from "@/lib/format";
 import { getLetterboxdFilmByTmdbId } from "@/lib/letterboxd";
+import { createMetadataInferencePreview } from "@/lib/metadata-inference";
 import { getMetadataDetail, getTmdbPosterProxyPath, getTmdbWatchProviders } from "@/lib/metadata-spike";
 import { createTitleExternalLookupKey } from "@/lib/local-titles";
 import { formatScaleLegend, getScaleOptions } from "@/lib/ratings";
@@ -459,6 +461,11 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
           : `${title.aggregation.ratingCount - 1} anonyme Rückmeldungen liegen schon dazu vor.`,
     },
   ].filter((entry): entry is { label: string; value: string } => Boolean(entry));
+  const metadataEvidenceSummary =
+    metadataDetailState?.kind === "success"
+      ? createMetadataInferencePreview(metadataDetailState.item).evidenceSummary
+      : null;
+  const readingEvidenceGroups = buildEvidenceDisclosureGroups(metadataEvidenceSummary);
   const visibleFeedbackStatus =
     feedbackStatus ??
     (!writesEnabled
@@ -552,6 +559,7 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
           <div className="detail-reading-followups" id="reading-basis">
             <ReadingEvidenceDetails
               entries={readingEvidenceEntries}
+              groups={readingEvidenceGroups}
               intro="Kurz und ehrlich: Das ist eine vorsichtige erste Einschätzung aus Basisdaten und, wenn vorhanden, Rückmeldungen. Keine Szenenprüfung, keine Entwarnung."
             />
 

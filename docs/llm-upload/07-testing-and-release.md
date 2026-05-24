@@ -1,6 +1,6 @@
 # Testing und Release für null-noise
 
-Stand: 23. Mai 2026
+Stand: 24. Mai 2026
 
 Diese Datei beschreibt, wie `null-noise` Accessibility testet und wo die Grenzen der Automatisierung liegen.
 
@@ -46,6 +46,9 @@ Die Prüfung orientiert sich an WCAG 2.2 und den Prüfansätzen des BITV-Testver
 - wiederholbare Keyboard-Smoke-Checks, zum Beispiel Skip-Link und erreichbare Suchvorschläge
 - mobile Navigation mit Burger-Menü für primäre App-Ziele; Info-/Legal-Ziele bleiben im Footer erreichbar
 - kleiner Reflow-Smoke-Test auf den Kernrouten bei `320 CSS-Pixeln`, damit offensichtliches horizontales Overflow früh auffällt
+- gezielter Mobile-Viewport-Smoke bei `390 CSS-Pixeln` und `430 CSS-Pixeln`: Menü im Viewport, opake Menüfläche, gemeinsame Content-Breite von Header/Menü/Main, Touch-Ziel-Höhen und entdichtete Kartenaktionen
+- Unit-Kalibrierung für Evidence Engine v2: dünne Datenlage, widersprüchliche Metadaten, Relief, Genre-only, emotionale Last ohne sensorische Dichte und deterministische TMDb-Browse-Diversität
+- Unit-Checks für situative Discovery-Copy: Browse-Mix-Namen, Nicht-jetzt-Sprache, keine sichtbaren Scores/Prozentwerte/Rankings und keine personalisierte Empfehlungssprache
 
 Diese automatisierten Prüfungen helfen besonders bei wiederholbaren Prüffeldern aus dem BITV-/WCAG-Kontext, etwa Struktur, Kontrast, Tastaturzugänglichkeit und Robustheit. Sie ersetzen aber keine vollständige manuelle Bewertung.
 
@@ -96,6 +99,7 @@ Die folgenden Schritte sind der feste manuelle Prüfpfad für `null-noise`. Er e
 - Reflow: Filter und Karten stapeln sauber statt horizontal auszuweichen
 - Zoom: Browse-Einstieg und Filter bleiben in sinnvoller Reihenfolge
 - Verständlichkeit: Browse-Texte bleiben Orientierungshilfe und werden nicht zur zweiten Erklärungsebene
+- Discovery-Sprache: keine Formulierungen wie `Empfohlen für dich` oder `Heute passend`; `Eher vormerken` und `Kann gerade zu dicht sein` bleiben situativ statt wertend
 - Lokaler Merken-/Gesehen-Bereich: Text, Buttons und Toggle/Checkbox brechen mobil sauber um; Label und Checkbox bleiben sichtbar zusammengehörig
 - Poster: fehlende Poster zeigen den bewussten Platzhalter `Kein Poster verfügbar`
 - Labels: sichtbare Kategorien lauten konsistent `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv`
@@ -108,6 +112,7 @@ Die folgenden Schritte sind der feste manuelle Prüfpfad für `null-noise`. Er e
 - Reflow: Treffergruppen bleiben lesbar, auch wenn Poster und Text untereinander stehen
 - Zoom: Ergebnisgruppen bleiben als getrennte Bereiche erkennbar
 - Verständlichkeit: Suchhinweis, Gruppenlogik und erste Einschätzung bleiben knapp und nicht überladen
+- Kartenstatus: situative Labels bleiben Vorschau und führen keine Rankings, Scores oder Prozentwerte ein
 
 ### Route `/titel/mondfenster`
 
@@ -117,6 +122,7 @@ Die folgenden Schritte sind der feste manuelle Prüfpfad für `null-noise`. Er e
 - Reflow: Hero, Profilschalen, Kontextblöcke und Feedbackbereich stapeln ohne Seitwärts-Scrollen
 - Zoom: Erste Einschätzung und Entscheidungsfrage bleiben als erste Orientierung sichtbar
 - Verständlichkeit: Die Seite liest sich als ruhige Entscheidungshilfe und nicht als Analysedashboard
+- Evidence-Disclosure: `Spricht eher dafür`, `Kann dagegen sprechen` und `Datenlage` bleiben kurz, tastaturbedienbar und ohne technische Metriktabelle
 - Mobile: Poster und Synopsis bleiben sichtbar, sofern Daten vorhanden sind; Poster skaliert groß, Fallbacks bleiben kompakt
 
 ### Info- und Legal-Routen
@@ -126,6 +132,7 @@ Die folgenden Schritte sind der feste manuelle Prüfpfad für `null-noise`. Er e
 - Reflow: lange Überschriften und Rechtstexte bleiben bei kleiner Breite lesbar
 - Kontrast: Notizen, Definitionslisten und Meta-Texte dürfen nicht nur knapp über Animation/Opacity lesbar sein
 - Mobile: Kartenabstände und Footer dürfen nicht an Außenkanten kleben
+- Mobile-Menü: geöffnetes Menü bleibt links/rechts im Viewport, zeigt keine helle Randspalte und trennt aktive Route sichtbar vom Tastatur-Fokus
 
 ### Tastatur
 
@@ -191,6 +198,18 @@ Optional, wenn der Umfang es rechtfertigt:
 - `npx playwright test`
 
 ## Letzter lokaler Stand vor Übergabe
+
+Situative Discovery-UX vom 24. Mai 2026, lokal umgesetzt und nicht gepusht/deployt.
+
+- `npm run lint`: bestanden
+- `npm run build`: bestanden
+- `npm run test:unit`: 15 Dateien / 85 Tests bestanden
+- gezielt: `npx vitest run src/lib/metadata-spike.test.ts src/components/external-result-list.test.ts src/lib/detail-followups.test.ts --maxWorkers=1`: 27 Tests bestanden
+- `npm run test:a11y`: 35 Tests bestanden
+- `npm run test:axe-core`: 5 Tests bestanden
+- `npx playwright test`: 35 Tests bestanden, 2 TMDb-Live-Fallback-Tests skipped
+- lokaler Playwright-Smoke bei 390px und 430px auf `/`, `/suche`, `/suche?q=Arrival`, `/titel/mondfenster`, `/erklaerung`, `/bedienung`: kein horizontales Overflow, Mobile-Menü im Viewport
+- `git diff --check`: sauber
 
 Mobile-UX-Abschluss vom 23. Mai 2026, lokal als Abschlusscommit `fix: finalize mobile ux and brand polish` vorbereitet.
 

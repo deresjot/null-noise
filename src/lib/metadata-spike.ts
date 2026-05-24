@@ -30,6 +30,8 @@ export interface MetadataSpikeTitle {
   posterPath: string | null;
   genres?: string[];
   keywords?: string[];
+  popularity?: number | null;
+  voteCount?: number | null;
 }
 
 export interface TmdbSearchDiagnostics {
@@ -383,6 +385,7 @@ const rawSearchItemSchema = z.object({
   poster_path: z.string().nullish(),
   genre_ids: z.array(z.number().int()).nullish(),
   popularity: z.number().nullish(),
+  vote_count: z.number().int().nonnegative().nullish(),
 });
 
 const rawSearchResponseSchema = z.object({
@@ -1071,6 +1074,8 @@ function mapRawSearchItem(item: z.infer<typeof rawSearchItemSchema>): MetadataSp
     synopsis: normalizeText(item.overview),
     posterPath: normalizeText(item.poster_path),
     ...(genres ? { genres } : {}),
+    ...(typeof item.popularity === "number" ? { popularity: item.popularity } : {}),
+    ...(typeof item.vote_count === "number" ? { voteCount: item.vote_count } : {}),
   };
 }
 
@@ -1451,12 +1456,89 @@ function matchesBrowseFilters(item: MetadataSpikeTitle, filters: SearchFilters):
 type BrowseCandidate = {
   item: MetadataSpikeTitle;
   score: number;
+  bucket: BrowseDiversityBucket;
+  profileKey: string;
+};
+
+type BrowseDiversityBucket =
+  | "known"
+  | "mid"
+  | "obscure"
+  | "older"
+  | "newer";
+
+type BrowseQueryStrategy = {
+  id: string;
+  genreBias: string | null;
+  sortBy: string;
+  voteCountGte: number;
+  voteCountLte?: number;
+  popularityGte?: number;
+  popularityLte?: number;
+  yearGte?: number;
+  yearLte?: number;
 };
 
 function getBrowseIntensityScore(item: MetadataSpikeTitle): number {
   const profile = createMetadataInferencePreview(item).stimulusProfile;
 
   return profile.peakIntensity * 0.55 + profile.stimulusDensity * 0.3 + profile.volumeLevel * 0.15;
+}
+
+function getBrowseDiversityBucket(item: MetadataSpikeTitle): BrowseDiversityBucket {
+  const year = item.releaseYear ?? 0;
+  const voteCount = item.voteCount ?? 0;
+  const popularity = item.popularity ?? 0;
+
+  if (year > 0 && year <= 2009) {
+    return "older";
+  }
+
+  if (year >= 2019) {
+    return "newer";
+  }
+
+  if (voteCount >= 450 || popularity >= 18) {
+    return "known";
+  }
+
+  if (voteCount > 0 && voteCount <= 120) {
+    return "obscure";
+  }
+
+  return "mid";
+}
+
+function getBrowseProfileKey(item: MetadataSpikeTitle): string {
+  const genres = (item.genres ?? []).slice(0, 3).map(normalizeSearchText).filter(Boolean);
+  const keywords = (item.keywords ?? []).slice(0, 3).map(normalizeSearchText).filter(Boolean);
+
+  return [...genres, ...keywords].join("|") || normalizeSearchText(item.title).slice(0, 12);
+}
+
+function getFranchiseKey(item: MetadataSpikeTitle): string {
+  return normalizeSearchText(item.title)
+    .replace(/\b(part|chapter|episode|season|teil|kapitel)\b\s*\d+/g, "")
+    .replace(/\b[ivx]{2,}\b$/g, "")
+    .replace(/\b\d+\b$/g, "")
+    .trim();
+}
+
+function seededBrowseShuffle<T>(
+  items: T[],
+  seed: string,
+  getKey: (item: T) => string,
+): T[] {
+  return [...items].sort((left, right) => {
+    const leftHash = hashBrowseSeed(`${seed}:${getKey(left)}`);
+    const rightHash = hashBrowseSeed(`${seed}:${getKey(right)}`);
+
+    if (leftHash !== rightHash) {
+      return leftHash - rightHash;
+    }
+
+    return getKey(left).localeCompare(getKey(right), "de");
+  });
 }
 
 function isPreferredBrowseSectionMatch(
@@ -1533,6 +1615,28 @@ function pickDistributedBrowseItems(
   limit: number,
   mix: string,
 ): BrowseCandidate[] {
+  const bucketOrder = seededBrowseShuffle(
+    ["known", "mid", "obscure", "older", "newer"] as BrowseDiversityBucket[],
+    `${mix}:bucket-order`,
+    (bucket) => bucket,
+  );
+  const bucketGroups = bucketOrder.reduce<Record<BrowseDiversityBucket, BrowseCandidate[]>>(
+    (groups, bucket) => {
+      groups[bucket] = seededBrowseShuffle(
+        items.filter((candidate) => candidate.bucket === bucket),
+        `${mix}:${bucket}`,
+        (candidate) => candidate.item.externalId,
+      );
+      return groups;
+    },
+    {
+      known: [],
+      mid: [],
+      newer: [],
+      obscure: [],
+      older: [],
+    },
+  );
   const byMediaType: Record<MetadataSpikeMediaType, BrowseCandidate[]> = {
     movie: items.filter((item) => item.item.mediaType === "movie"),
     series: items.filter((item) => item.item.mediaType === "series"),
@@ -1547,6 +1651,47 @@ function pickDistributedBrowseItems(
   };
   const selected: BrowseCandidate[] = [];
   const seen = new Set<string>();
+  const seenProfiles = new Set<string>();
+  const seenFranchises = new Set<string>();
+
+  while (selected.length < limit) {
+    let progressed = false;
+
+    for (const bucket of bucketOrder) {
+      const group = bucketGroups[bucket];
+      const candidate = group.shift();
+
+      if (!candidate) {
+        continue;
+      }
+
+      const franchiseKey = getFranchiseKey(candidate.item);
+
+      if (
+        seen.has(candidate.item.externalId) ||
+        seenProfiles.has(candidate.profileKey) ||
+        (franchiseKey && seenFranchises.has(franchiseKey))
+      ) {
+        continue;
+      }
+
+      seen.add(candidate.item.externalId);
+      seenProfiles.add(candidate.profileKey);
+      if (franchiseKey) {
+        seenFranchises.add(franchiseKey);
+      }
+      selected.push(candidate);
+      progressed = true;
+
+      if (selected.length >= limit) {
+        break;
+      }
+    }
+
+    if (!progressed) {
+      break;
+    }
+  }
 
   while (selected.length < limit) {
     let progressed = false;
@@ -1560,11 +1705,19 @@ function pickDistributedBrowseItems(
 
       cursors[mediaType] += 1;
 
-      if (seen.has(candidate.item.externalId)) {
+      const franchiseKey = getFranchiseKey(candidate.item);
+
+      if (
+        seen.has(candidate.item.externalId) ||
+        (franchiseKey && seenFranchises.has(franchiseKey))
+      ) {
         continue;
       }
 
       seen.add(candidate.item.externalId);
+      if (franchiseKey) {
+        seenFranchises.add(franchiseKey);
+      }
       selected.push(candidate);
       progressed = true;
 
@@ -1608,7 +1761,9 @@ function pickBrowseSectionItems(
   const scored = items
     .filter((item) => !excludedIds.has(item.externalId))
     .map((item) => ({
+      bucket: getBrowseDiversityBucket(item),
       item,
+      profileKey: getBrowseProfileKey(item),
       score: getBrowseIntensityScore(item),
     }));
   const preferred = sortBrowseCandidates(
@@ -1630,11 +1785,98 @@ function pickBrowseSectionItems(
   return selected.map((candidate) => candidate.item);
 }
 
+function getBrowseQueryStrategies(
+  mediaType: MetadataSpikeMediaType,
+  tone: SearchFilters["tone"],
+): BrowseQueryStrategy[] {
+  const genreBias = getBrowseGenreBias(mediaType, tone);
+
+  return [
+    {
+      id: "genre-known",
+      genreBias,
+      sortBy: "popularity.desc",
+      voteCountGte: 120,
+    },
+    {
+      id: "genre-mid",
+      genreBias,
+      sortBy: "vote_average.desc",
+      voteCountGte: 35,
+      voteCountLte: 600,
+      popularityLte: 22,
+    },
+    {
+      id: "obscure-stable",
+      genreBias,
+      sortBy: "vote_count.desc",
+      voteCountGte: 15,
+      voteCountLte: 180,
+      popularityLte: 14,
+    },
+    {
+      id: "older",
+      genreBias,
+      sortBy: "popularity.desc",
+      voteCountGte: 25,
+      yearLte: 2009,
+    },
+    {
+      id: "newer",
+      genreBias,
+      sortBy: "popularity.desc",
+      voteCountGte: 25,
+      yearGte: 2019,
+    },
+  ];
+}
+
+function applyBrowseStrategyParams(
+  searchParams: URLSearchParams,
+  strategy: BrowseQueryStrategy,
+  mediaType: MetadataSpikeMediaType,
+): void {
+  searchParams.set("sort_by", strategy.sortBy);
+  searchParams.set("vote_count.gte", String(strategy.voteCountGte));
+
+  if (strategy.voteCountLte !== undefined) {
+    searchParams.set("vote_count.lte", String(strategy.voteCountLte));
+  }
+
+  if (strategy.popularityGte !== undefined) {
+    searchParams.set("popularity.gte", String(strategy.popularityGte));
+  }
+
+  if (strategy.popularityLte !== undefined) {
+    searchParams.set("popularity.lte", String(strategy.popularityLte));
+  }
+
+  if (strategy.yearGte !== undefined) {
+    searchParams.set(
+      mediaType === "movie" ? "primary_release_date.gte" : "first_air_date.gte",
+      `${strategy.yearGte}-01-01`,
+    );
+  }
+
+  if (strategy.yearLte !== undefined) {
+    searchParams.set(
+      mediaType === "movie" ? "primary_release_date.lte" : "first_air_date.lte",
+      `${strategy.yearLte}-12-31`,
+    );
+  }
+
+  if (strategy.genreBias) {
+    searchParams.set("with_genres", strategy.genreBias);
+  }
+}
+
 function dedupeMetadataItemsByTitle(items: MetadataSpikeTitle[]): MetadataSpikeTitle[] {
   const seen = new Set<string>();
 
   return items.filter((item) => {
-    const key = normalizeSearchText([item.title, item.mediaType, String(item.releaseYear ?? "")].join("::"));
+    const key = normalizeSearchText(
+      [item.title, item.mediaType, String(item.releaseYear ?? "")].join("::"),
+    );
 
     if (!key || seen.has(key)) {
       return false;
@@ -2319,18 +2561,18 @@ export async function browseTmdbMetadata(
   }> = [
     {
       id: "quiet",
-      title: "Eher ruhig",
-      description: "Ruhigerer Einstieg, weniger Druck.",
+      title: "Ruhiger Einstieg",
+      description: "Wenig Druck, eher klare Form. Trotzdem kurz prüfen.",
     },
     {
       id: "balanced",
-      title: "Eher wechselhaft",
-      description: "Ruhige und dichtere Momente wechseln sich ab.",
+      title: "Dicht, aber vorhersehbar",
+      description: "Nicht ganz leicht, aber eher mit erkennbarem Rahmen.",
     },
     {
       id: "loud",
-      title: "Eher intensiv",
-      description: "Spürbarer und dichter, aber weiterhin im selben Rahmen.",
+      title: "Eher vormerken",
+      description: "Kann gerade zu dicht sein. Kein Urteil über den Titel.",
     },
   ];
 
@@ -2349,47 +2591,47 @@ export async function browseTmdbMetadata(
   const requestConfigs = mediaTypes.flatMap((mediaType) => {
     return sectionDefinitions.flatMap((section) => {
       const resolvedTone = getBrowseSectionTone(section.id);
-      const pages = getBrowsePages(
-        [
-          mix,
-          section.id,
-          resolvedTone,
-          mediaType,
-          filters.kind,
-          String(filters.avoidPeaks),
-          String(filters.avoidDensity),
-        ].join(":"),
-      );
-      const genreBias = getBrowseGenreBias(mediaType, resolvedTone);
+      const strategies = getBrowseQueryStrategies(mediaType, resolvedTone);
 
-      return pages.map((page) => ({
-        genreBias,
-        mediaType,
-        page,
-        resolvedTone,
-        sectionId: section.id,
-      }));
+      return strategies.map((strategy) => {
+        const [page] = getBrowsePages(
+          [
+            mix,
+            section.id,
+            resolvedTone,
+            mediaType,
+            filters.kind,
+            String(filters.avoidPeaks),
+            String(filters.avoidDensity),
+            strategy.id,
+          ].join(":"),
+        );
+
+        return {
+          mediaType,
+          page,
+          resolvedTone,
+          sectionId: section.id,
+          strategy,
+        };
+      });
     });
   });
 
   try {
     const settledResponses = await Promise.all(
-      requestConfigs.map(async ({ mediaType, page, genreBias, sectionId }) => {
+      requestConfigs.map(async ({ mediaType, page, strategy, sectionId }) => {
         const searchParams = new URLSearchParams({
           language: "de-DE",
           include_adult: "false",
-          sort_by: "popularity.desc",
           page: String(page),
-          "vote_count.gte": "40",
         });
 
         if (mediaType === "movie") {
           searchParams.set("include_video", "false");
         }
 
-        if (genreBias) {
-          searchParams.set("with_genres", genreBias);
-        }
+        applyBrowseStrategyParams(searchParams, strategy, mediaType);
 
         const response = await fetchTmdb(`/discover/${toTmdbMediaType(mediaType)}?${searchParams.toString()}`, {
           ...dependencies,

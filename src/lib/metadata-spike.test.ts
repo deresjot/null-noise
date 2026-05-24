@@ -507,9 +507,9 @@ describe("metadata spike mapping", () => {
 
     expect(result.sections).toHaveLength(3);
     expect(result.sections.map((section) => section.title)).toEqual([
-      "Eher ruhig",
-      "Eher wechselhaft",
-      "Eher intensiv",
+      "Ruhiger Einstieg",
+      "Dicht, aber vorhersehbar",
+      "Eher vormerken",
     ]);
     expect(quietSection?.items.every((item) => item.mediaType === "movie")).toBe(true);
     expect(balancedSection?.items.every((item) => item.mediaType === "movie")).toBe(true);
@@ -620,6 +620,186 @@ describe("metadata spike mapping", () => {
     expect(alphaResult.items.map((item) => item.externalId)).not.toEqual(
       betaResult.items.map((item) => item.externalId),
     );
+  });
+
+  it("keeps seeded browse randomization deterministic for the same mix", async () => {
+    const fetchImpl = vi.fn().mockImplementation(async () =>
+      new Response(
+        JSON.stringify({
+          results: Array.from({ length: 12 }, (_, index) => ({
+            id: 700 + index,
+            title: `Seeded Pick ${index}`,
+            original_title: `Seeded Pick ${index}`,
+            release_date: `${2010 + index}-01-01`,
+            overview: index % 2 === 0 ? "A quiet routine and gentle healing." : "A chase with panic and alarm.",
+            poster_path: `/seeded-${index}.jpg`,
+            genre_ids: index % 2 === 0 ? [18] : [28],
+            popularity: 5 + index,
+            vote_count: 30 + index * 20,
+          })),
+        }),
+        { status: 200 },
+      ),
+    );
+
+    const first = await browseTmdbMetadata(
+      {
+        q: "",
+        tone: "all",
+        kind: "movie",
+        avoidPeaks: false,
+        avoidDensity: false,
+      },
+      "same-day-seed",
+      {
+        accessToken: "token",
+        fetchImpl,
+      },
+    );
+    const second = await browseTmdbMetadata(
+      {
+        q: "",
+        tone: "all",
+        kind: "movie",
+        avoidPeaks: false,
+        avoidDensity: false,
+      },
+      "same-day-seed",
+      {
+        accessToken: "token",
+        fetchImpl,
+      },
+    );
+
+    expect(first.kind).toBe("success");
+    expect(second.kind).toBe("success");
+
+    if (first.kind !== "success" || second.kind !== "success") {
+      return;
+    }
+
+    expect(first.items.map((item) => item.externalId)).toEqual(
+      second.items.map((item) => item.externalId),
+    );
+  });
+
+  it("diversifies similar TMDB browse queries before evidence grouping", async () => {
+    const seenSorts = new Set<string>();
+    const seenVoteWindows = new Set<string>();
+    const seenYearWindows = new Set<string>();
+    const fetchImpl = vi.fn().mockImplementation(async (input: string | URL | Request) => {
+      const url = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url;
+      const params = new URL(url).searchParams;
+
+      seenSorts.add(params.get("sort_by") ?? "");
+      seenVoteWindows.add(`${params.get("vote_count.gte") ?? ""}-${params.get("vote_count.lte") ?? ""}`);
+      seenYearWindows.add(
+        `${params.get("primary_release_date.gte") ?? ""}${params.get("first_air_date.gte") ?? ""}-${params.get("primary_release_date.lte") ?? ""}${params.get("first_air_date.lte") ?? ""}`,
+      );
+
+      return new Response(
+        JSON.stringify({
+          results: [
+            {
+              id: 801,
+              title: "Known Gentle",
+              original_title: "Known Gentle",
+              release_date: "2021-01-01",
+              overview: "A gentle routine and healing friendship.",
+              poster_path: "/known-gentle.jpg",
+              genre_ids: [18],
+              popularity: 32,
+              vote_count: 900,
+            },
+            {
+              id: 802,
+              title: "Mid Quiet",
+              original_title: "Mid Quiet",
+              release_date: "2017-01-01",
+              overview: "A quiet portrait of daily life.",
+              poster_path: "/mid-quiet.jpg",
+              genre_ids: [18],
+              popularity: 11,
+              vote_count: 220,
+            },
+            {
+              id: 803,
+              title: "Obscure Still",
+              original_title: "Obscure Still",
+              release_date: "2014-01-01",
+              overview: "Stillness, nature and routine.",
+              poster_path: "/obscure-still.jpg",
+              genre_ids: [99],
+              popularity: 4,
+              vote_count: 60,
+            },
+            {
+              id: 804,
+              title: "Older Calm",
+              original_title: "Older Calm",
+              release_date: "1998-01-01",
+              overview: "A contemplative older drama.",
+              poster_path: "/older-calm.jpg",
+              genre_ids: [18],
+              popularity: 9,
+              vote_count: 180,
+            },
+            {
+              id: 805,
+              title: "New Loud",
+              original_title: "New Loud",
+              release_date: "2023-01-01",
+              overview: "Alarm, panic and a chase through chaos.",
+              poster_path: "/new-loud.jpg",
+              genre_ids: [28],
+              popularity: 18,
+              vote_count: 260,
+            },
+            {
+              id: 806,
+              title: "Mid Loud",
+              original_title: "Mid Loud",
+              release_date: "2015-01-01",
+              overview: "Explosion, gunfire and time pressure.",
+              poster_path: "/mid-loud.jpg",
+              genre_ids: [28],
+              popularity: 12,
+              vote_count: 160,
+            },
+          ],
+        }),
+        { status: 200 },
+      );
+    });
+
+    const result = await browseTmdbMetadata(
+      {
+        q: "",
+        tone: "all",
+        kind: "movie",
+        avoidPeaks: false,
+        avoidDensity: false,
+      },
+      "diversity-seed",
+      {
+        accessToken: "token",
+        fetchImpl,
+      },
+    );
+
+    expect(result.kind).toBe("success");
+
+    if (result.kind !== "success") {
+      return;
+    }
+
+    expect(seenSorts.size).toBeGreaterThan(1);
+    expect(seenVoteWindows.size).toBeGreaterThan(1);
+    expect(seenYearWindows.size).toBeGreaterThan(1);
+    expect(new Set(result.items.map((item) => item.releaseYear && item.releaseYear >= 2019 ? "newer" : item.releaseYear && item.releaseYear <= 2009 ? "older" : "middle")).size).toBeGreaterThan(1);
+    expect(result.items.map((item) => item.externalId)).toEqual([
+      ...new Set(result.items.map((item) => item.externalId)),
+    ]);
   });
 
   it("keeps browse sections clearly separated into quieter and louder suggestions", async () => {

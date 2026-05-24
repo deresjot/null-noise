@@ -20,6 +20,7 @@ import {
   getProfileTendency,
 } from "@/lib/format";
 import { getDetailFollowupSections } from "@/lib/detail-followups";
+import { buildEvidenceDisclosureGroups } from "@/lib/discovery-copy";
 import { getLetterboxdFilmByTmdbId } from "@/lib/letterboxd";
 import { createTitleExternalLookupKey } from "@/lib/local-titles";
 import { createMetadataInferencePreview } from "@/lib/metadata-inference";
@@ -316,8 +317,9 @@ export default async function MetadataSpikeDetailPage({
       : {
           label: "Signalbild",
           value: getMetadataSignalExplanation(preview.signalState),
-        },
+      },
   ].filter((entry): entry is { label: string; value: string } => Boolean(entry));
+  const readingEvidenceGroups = buildEvidenceDisclosureGroups(preview.evidenceSummary);
   const followupState = await getDetailFollowupSections({
     excludeExternalIds: [item.externalId],
     kind: item.mediaType,
@@ -411,6 +413,7 @@ export default async function MetadataSpikeDetailPage({
             />
             <ReadingEvidenceDetails
               entries={readingEvidenceEntries}
+              groups={readingEvidenceGroups}
               intro="Kurz und ehrlich: Das ist eine vorsichtige erste Einschätzung aus Genres, Keywords, Kurzbeschreibung und, wenn vorhanden, Rückmeldungen. Keine Szenenprüfung, keine Entwarnung."
             />
 

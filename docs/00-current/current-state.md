@@ -17,6 +17,28 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 ## Letzte lokale Arbeitsblöcke
 
+- Situative Discovery-UX 24. Mai 2026:
+  - Browse-Mixes sprechen jetzt ruhiger von `Ruhiger Einstieg`, `Dicht, aber vorhersehbar` und `Eher vormerken` statt wie generische Ergebnislisten
+  - externe Karten können `Kann gerade zu dicht sein`, `Eher vormerken` oder `Erst kurz prüfen` zeigen, ohne Titel negativ zu bewerten
+  - Detailseiten strukturieren `Worauf basiert das?` zusätzlich als `Spricht eher dafür`, `Kann dagegen sprechen` und `Datenlage`
+  - Alternativen werden als situative Gegengewichte formuliert, etwa ruhiger, dichter oder leichter, nicht als personalisierte Empfehlung
+  - alles bleibt aus vorhandener Evidence-/TMDb-Logik abgeleitet; keine Profile, kein Tracking, keine Social-Logik und keine neue externe Quelle
+  - Release Notes stehen lokal auf `0.8.4-discovery.20260524`
+- Evidence-/TMDb-Logik 24. Mai 2026:
+  - Evidence Engine v2 aggregiert intern pro Achse und Konflikt statt über ein globales Gesamturteil
+  - Genre-only bleibt schwach; mehrere passende Keywords können Confidence erhöhen; Overview/Synopsis bleibt defensiv
+  - Relief und Vorhersehbarkeit werden als positive Evidenz gewertet, emotionale Last bleibt von Audio-/Visual-Intensität getrennt
+  - widersprüchliche Signale und dünne Datenlage bleiben sichtbar vorsichtig und kippen eher zu `Eher wechselhaft`
+  - TMDb-Browse nutzt Query-Strategien für Genre, Popularität, Vote-Count, ältere und neuere Titel vor der Evidence-Bewertung
+  - Candidate-Auswahl nutzt Diversity-Buckets und seeded Shuffle, ohne Profiling, Social-Logik oder sichtbare Rankings
+  - Release Notes stehen lokal auf `0.8.4-evidence.20260524`
+- Mobile-Viewport-Reparatur 24. Mai 2026:
+  - Geöffnetes Mobile-Menü bleibt innerhalb des Viewports und nutzt eine deckende Ebene ohne hellen rechten Seitenstreifen
+  - Header, Mobile-App-Shell, Menü und `main-content` teilen sich mobil denselben Content-Gutter; der Header bleibt innen geführt statt end-to-end aufzubrechen
+  - Der Menübutton wandelt das Hamburger-Zeichen im geöffneten Zustand in ein X, behält aber sichtbaren Text und ARIA-Zustand
+  - Aktive Route im mobilen Menü ist optisch von Tastatur-Fokus getrennt; sichtbarer Fokus bleibt erhalten
+  - Mobile Result-Karten sind entdichtet: Details steht in einer eigenen vollen Zeile, Merken/Gesehen haben mehr Abstand und dürfen sauber umbrechen
+  - Release Notes stehen lokal auf `0.8.4-mobile.20260524`
 - Mobile-UX-Abschluss 23. Mai 2026:
   - Mobile Navigation wurde auf Start, Suche und Erklärung/Hilfe reduziert; Barrierefreiheit, Datenschutz und Impressum bleiben im Footer erreichbar
   - Mobile Menüfläche ist jetzt opak und kontrastreicher, mit klarer aktiver Route, großen Tap-Flächen und stabiler Layer-Reihenfolge über Karten und Content
@@ -105,7 +127,12 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 - `src/app/barrierefreiheit/page.tsx`: öffentliche Accessibility-Seite auf WCAG-Ziel, Status, Maßnahmen, Prüfung, Grenzen und Kontakt fokussiert
 - `src/components/search-local-shelf.tsx`: getippte Suchergebnisse bleiben trotz lokalem Schon-gesehen-Filter sichtbar
 - `src/lib/metadata-spike.ts`: kurzer Runtime-Cache für erfolgreiche TMDb-Suchantworten als defensiver Fallback bei wiederholten lokalen Checks
-- `src/lib/release-info.ts`: technisches Release `0.8.4-mobile.20260523`
+- `src/lib/release-info.ts`: technisches Release `0.8.4-mobile.20260524`
+- `src/lib/discovery-copy.ts`: situative Labels und gruppierte Evidence-Erklärung für Discovery- und Detailtexte
+- `src/components/search-experience.tsx`, `src/components/search-form.tsx`, `src/components/external-result-list.tsx`: ruhigere Browse-Mixes und Nicht-jetzt-Kartensprache ohne Personalisierung
+- `src/components/reading-evidence-details.tsx`, `src/app/titel/[slug]/page.tsx`, `src/app/spike/metadaten/[mediaType]/[externalId]/page.tsx`: Detail-Disclosure mit Dafür/Dagegen/Datenlage-Gruppen
+- `src/lib/detail-followups.ts`: Alternativen als situative Gegengewichte statt klassische Empfehlungssprache
+- `src/lib/release-info.ts`: technisches Release `0.8.4-discovery.20260524`
 - `tests/accessibility.spec.ts`: mobile Navigationstest auf Burger-Menü und vollständige Zielnavigation angepasst
 - `next.config.ts`: lokale Security Header/CSP und API-Cache-Header
 - `src/lib/prisma.ts`, `src/lib/catalog-db.ts`, `src/lib/metadata-spike.ts`, `src/lib/letterboxd.ts`, `src/lib/local-titles.ts`, `src/lib/ratings.ts`: lokale `server-only`-Grenzen
@@ -119,6 +146,8 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 - `src/lib/release-info.ts`: sichtbarer Footer-Stand und aktuelle Release Notes
 - `src/lib/stimulus-evidence.ts`: internes Evidence-Modell, Mapping, Aggregation, optionale Adaptergrenzen
 - `src/lib/stimulus-evidence.test.ts`: Unit-Tests und Kalibrier-Fixtures
+- `src/lib/metadata-spike.ts`: TMDb-Browse-Strategien, Candidate-Diversität und seeded Shuffle vor Evidence-Gruppierung
+- `src/lib/metadata-spike.test.ts`, `src/lib/metadata-inference.test.ts`: deterministische Diversity- und Evidence-Kalibrierung
 - `src/lib/metadata-inference.ts`: sichtbare Erste Einschätzung wird aus Evidence-Aggregation gespeist
 - `docs/`: auf 10 kanonische Markdown-Dateien reduziert
 
@@ -161,6 +190,32 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 ## Letzte verifizierte UI-Checks
 
+- Situative Discovery-UX am 24. Mai 2026:
+  - gezielt: `npx vitest run src/lib/metadata-spike.test.ts src/components/external-result-list.test.ts src/lib/detail-followups.test.ts --maxWorkers=1`: 27 Tests bestanden
+  - `npm run lint`: bestanden
+  - `npm run build`: bestanden
+  - `npm run test:unit`: 15 Dateien / 85 Tests bestanden
+  - `npm run test:a11y`: 35 Tests bestanden
+  - `npm run test:axe-core`: 5 Tests bestanden
+  - `npx playwright test`: 35 Tests bestanden, 2 TMDb-Live-Fallback-Tests skipped
+  - lokaler Playwright-Smoke bei 390px und 430px auf `/`, `/suche`, `/suche?q=Arrival`, `/titel/mondfenster`, `/erklaerung`, `/bedienung`: kein horizontales Overflow, Mobile-Menü im Viewport
+  - `git diff --check`: sauber
+- Mobile-Viewport-Reparatur am 24. Mai 2026:
+  - `npm run lint`: bestanden
+  - `npm run build`: bestanden
+  - `npm run test:a11y`: 35 Tests bestanden
+  - `npm run test:axe-core`: 5 Tests bestanden
+  - `npm run test:e2e`: 35 Tests bestanden, 2 TMDb-Live-Fallback-Tests skipped
+  - lokaler Playwright-Smoke bei 390px und 430px auf `/`, `/suche`, `/suche?q=Arrival`, `/titel/mondfenster`, `/erklaerung`, `/bedienung`: kein horizontales Overflow, Menü im Viewport, opake Menüfläche, Header/Menü/Main innerhalb derselben Content-Breite, Touch-Ziele >= 44px, Kartenaktionen entdichtet
+- Evidence-/TMDb-Logik am 24. Mai 2026:
+  - `npm run lint`: bestanden
+  - `npm run build`: bestanden
+  - `npm run test:unit`: 15 Dateien / 84 Tests bestanden
+  - gezielt: `npx vitest run src/lib/stimulus-evidence.test.ts src/lib/metadata-inference.test.ts src/lib/metadata-spike.test.ts --maxWorkers=1`: 38 Tests bestanden
+  - `npm run test:a11y`: 35 Tests bestanden
+  - `npm run test:axe-core`: 5 Tests bestanden
+  - `npx playwright test`: 35 Tests bestanden, 2 TMDb-Live-Fallback-Tests skipped
+  - `git diff --check`: sauber
 - Finale lokale Prüfung am 23. Mai 2026:
   - `npm run lint`: bestanden
   - `npm run build`: bestanden

@@ -3,9 +3,9 @@
 ## Aktueller Arbeitsstand
 
 - aktiver lokaler Arbeitsbranch: `null-noise`
-- aktueller Stand: Mobile-UX-Abschluss vom 23. Mai 2026 ist lokal auf `null-noise` als Abschlusscommit `fix: finalize mobile ux and brand polish` vorbereitet
+- aktueller Stand: situative Discovery-UX vom 24. Mai 2026 ist lokal auf `null-noise` umgesetzt; Evidence-/TMDb-Logik und Mobile-Viewport-Reparatur bleiben lokal enthalten
 - vorheriger Stand: Startseiten-/Mobile-UI-Fix ist lokal committed (`196db83 fix: stabilize home and mobile search UI`) und als Vercel Preview bereitgestellt; Production wurde nicht angerührt
-- aktueller Mobile-UX-Abschluss ist nach lokaler Prüfung für Push und Vercel-Deploy vorgesehen
+- nicht pushen/deployen ohne explizite Freigabe; aktueller Auftrag bleibt lokal
 - Live-URL: https://null-noise.vercel.app
 - Preview-URL: https://null-noise-ezndxaczf-deresjots-projects.vercel.app
 - Preview-Hinweis: Deployment Protection/SSO ist aktiv; ohne Vercel-Login kommt `401`
@@ -29,6 +29,7 @@
 - keine offene Cloud-Datenbank
 - keine Supabase-Nutzung im aktuellen Stand
 - keine algorithmische Personalisierung
+- keine Sprache wie `Empfohlen für dich` oder `Heute passend`, weil sie Profiling suggeriert
 - kein separater HTML-Sondermodus als Primärweg
 - keine scheinpräzisen Reizwerte
 - keine harte Abhängigkeit von externen APIs ohne Fallback
@@ -82,12 +83,27 @@
   - `predictability`
   - `relief`
 - TMDb wird defensiv in Evidence übersetzt.
+- Evidence Engine v2 bewertet intern pro Achse, Konflikt, Relief-Signal und dünner Datenlage statt über ein globales Gesamturteil.
 - Genre allein bleibt schwach.
 - Mehrere passende Keywords können Confidence erhöhen.
+- Overview/Synopsis bleibt defensive Evidenz.
 - Relief ist positive Evidenz, nicht nur Abwesenheit von Warnsignalen.
 - Widerspruechliche Signale führen eher zu mixed/durchwachsen.
 - Sensorische, visuelle und emotionale Intensität bleiben intern unterscheidbar.
+- Emotionale Last ohne sensorische Dichte wird nicht automatisch `Eher intensiv`.
+- TMDb-Browse diversifiziert Candidate Pools vor der Evidence-Bewertung über Query-Strategien, Popularitäts-/Vote-Count-Fenster, ältere/neue Titel und seeded Shuffle.
+- Optionale Quellen wie Does the Dog Die und Common Sense Media bleiben ohne Keys inaktiv.
 - Sichtbar werden nur kurze Gründe, Status und vorsichtige Confidence-/Unsicherheitsformulierungen.
+
+## Discovery-Stand
+
+- Discovery fragt situativ: passt das gerade, wäre das zu viel, oder lieber vormerken?
+- Browse-Mixes nutzen ruhige, nicht-personalisierte Einstiege wie `Ruhiger Einstieg`, `Wenig Sprünge`, `Dicht, aber vorhersehbar` und `Eher vormerken`.
+- `Nicht jetzt` ist ein positives Produktmuster: `Kann gerade zu dicht sein` oder `Eher später prüfen` meint Kapazität, nicht Titelqualität.
+- Such- und Browse-Karten bleiben Vorschau; ausführlichere Gründe gehören auf Detailseiten oder in vorhandene Disclosure-Muster.
+- Detailseiten können Evidence als `Spricht eher dafür`, `Kann dagegen sprechen` und `Datenlage` erklären, ohne technische Achsen dominant sichtbar zu machen.
+- Alternativen sind situative Gegengewichte, nicht klassische Empfehlungen: ruhiger, dichter oder leichter je nach Ausgangstitel.
+- Keine Social-, Profil-, Rating-, Ranking- oder Tracking-Logik wurde ergänzt.
 
 ## UI-/UX-Prinzipien
 
@@ -113,8 +129,11 @@
 
 ## Mobile-Stand
 
-- Mobile-UX-Abschluss vom 23. Mai 2026 ist lokal umgesetzt und committed, aber nicht gepusht/deployt
+- Mobile-Viewport-Reparatur vom 24. Mai 2026 ist lokal umgesetzt, aber nicht gepusht/deployt
 - Mobile Header ist eine fixe App-Shell mit Burger-Menü, aktiver Route, Escape-Schließen und sichtbarem Fokus
+- Header, Mobile-App-Shell, Menü und `main-content` nutzen mobil denselben Content-Gutter
+- Geöffnetes Mobile-Menü bleibt im Viewport, ist deckend und vermeidet den hellen rechten Seitenstreifen
+- Der Menübutton zeigt geöffnet ein X statt drei Hamburger-Linien; aktive Route und Tastatur-Fokus sind getrennte visuelle Zustände
 - Hauptziele im mobilen Menü: Start, Suche, Erklärung/Hilfe
 - Barrierefreiheit, Datenschutz und Impressum bleiben mobil im Footer erreichbar
 - Mobile Navigation ist als opake, kontrastreiche Overlay-Navigation gegen Stacking-Context-Probleme gehärtet und liegt über Seiteninhalt/Karten
@@ -137,7 +156,7 @@
 - Suche bleibt primärer Einstieg; Richtungskacheln bleiben sekundär
 - Richtungskacheln, Ergebnisgruppen, Filter und Karten nutzen konsistent `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv`
 - mobile Ergebnislisten, Merken-/Gesehen-Bereich und Toggle wurden gegen abgeschnittene Texte und horizontale Überläufe stabilisiert
-- Ergebnis-Karten zeigen `Details`, `Merken` und `Gesehen?` mobil als gemeinsame CTA-Zeile nebeneinander, auch im 320px-Reflow-Smoke
+- Ergebnis-Karten zeigen `Details` mobil als eigene volle CTA-Zeile; `Merken` und `Gesehen?` bleiben darunter als ruhige Touch-Ziele mit mehr Abstand
 - fehlende Poster zeigen einen bewussten Platzhalter `Kein Poster verfügbar`
 - mobile Scroll-Stabilität wurde lokal verbessert
 - mobile Header-Blur reduziert / desktop-begrenzt
@@ -159,6 +178,32 @@
 
 ## Letzte finale Prüfung dieses Mobile-UX-Abschlusses
 
+- Situative Discovery-UX am 24. Mai 2026:
+  - `npm run lint`: bestanden
+  - `npm run build`: bestanden
+  - `npm run test:unit`: 15 Dateien / 85 Tests bestanden
+  - gezielt: `npx vitest run src/lib/metadata-spike.test.ts src/components/external-result-list.test.ts src/lib/detail-followups.test.ts --maxWorkers=1`: 27 Tests bestanden
+  - `npm run test:a11y`: 35 Tests bestanden
+  - `npm run test:axe-core`: 5 Tests bestanden
+  - `npx playwright test`: 35 Tests bestanden, 2 TMDb-Live-Fallback-Tests skipped
+  - lokaler Playwright-Smoke bei 390px und 430px auf `/`, `/suche`, `/suche?q=Arrival`, `/titel/mondfenster`, `/erklaerung`, `/bedienung`: kein horizontales Overflow, Mobile-Menü im Viewport
+  - `git diff --check`: sauber
+- Evidence-/TMDb-Logik am 24. Mai 2026:
+  - `npm run lint`: bestanden
+  - `npm run build`: bestanden
+  - `npm run test:unit`: 15 Dateien / 84 Tests bestanden
+  - gezielt: `npx vitest run src/lib/stimulus-evidence.test.ts src/lib/metadata-inference.test.ts src/lib/metadata-spike.test.ts --maxWorkers=1`: 38 Tests bestanden
+  - `npm run test:a11y`: 35 Tests bestanden
+  - `npm run test:axe-core`: 5 Tests bestanden
+  - `npx playwright test`: 35 Tests bestanden, 2 TMDb-Live-Fallback-Tests skipped
+  - `git diff --check`: sauber
+- Mobile-Viewport-Reparatur am 24. Mai 2026:
+  - `npm run lint`: bestanden
+  - `npm run build`: bestanden
+  - `npm run test:a11y`: 35 Tests bestanden
+  - `npm run test:axe-core`: 5 Tests bestanden
+  - `npm run test:e2e`: 35 Tests bestanden, 2 TMDb-Live-Fallback-Tests skipped
+  - lokaler Playwright-Smoke bei 390px und 430px auf `/`, `/suche`, `/suche?q=Arrival`, `/titel/mondfenster`, `/erklaerung`, `/bedienung`: kein horizontales Overflow, Menü im Viewport, opake Menüfläche, Header/Menü/Main innerhalb derselben Content-Breite, Touch-Ziele >= 44px, Kartenaktionen entdichtet
 - direkt vor der Doku-/Commit-Aktualisierung am 23. Mai 2026 erneut gelaufen:
   - `npm run lint`: bestanden
   - `npm run build`: bestanden

@@ -51,7 +51,7 @@ describe("metadata inference", () => {
     expect(preview.notes).toContain("keine Entwarnung");
   });
 
-  it("uses mapped TMDb genres to create a usable first assessment even when the synopsis stays thin", () => {
+  it("keeps genre-only TMDb metadata defensive when the synopsis stays thin", () => {
     const preview = createMetadataInferencePreview({
       externalSource: "tmdb",
       externalId: "tmdb:movie:888001",
@@ -64,11 +64,11 @@ describe("metadata inference", () => {
       genres: ["Action", "War"],
     });
 
-    expect(preview.signalState).toBe("supported");
-    expect(preview.stimulusProfile.volumeLevel).toBeGreaterThanOrEqual(2);
-    expect(preview.stimulusProfile.peakIntensity).toBe(3);
-    expect(preview.stimulusProfile.stimulusDensity).toBe(3);
-    expect(preview.notes).toContain("eher vorsichtige Passung");
+    expect(preview.signalState).toBe("mixed");
+    expect(preview.stimulusProfile.volumeLevel).toBe(2);
+    expect(preview.stimulusProfile.peakIntensity).toBe(2);
+    expect(preview.stimulusProfile.stimulusDensity).toBe(2);
+    expect(preview.notes).toContain("Keine deutlichen Hinweise");
     expect(preview.notes).toContain("Keine Szenenprüfung");
   });
 });

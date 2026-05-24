@@ -87,6 +87,7 @@ describe("stimulus evidence", () => {
 
     expect(summary.tone).toBe("mixed");
     expect(summary.note).toContain("unterschiedliche Richtungen");
+    expect(summary.conflicts.length).toBeGreaterThan(0);
   });
 
   it("keeps thin evidence weak and provisional", () => {
@@ -122,6 +123,39 @@ describe("stimulus evidence", () => {
     expect(summary.tone).toBe("intense");
     expect(summary.confidence).toBe("strong");
     expect(summary.note).not.toMatch(/\d+%|score|ranking/i);
+  });
+
+  it("keeps genre-only evidence weak and provisional", () => {
+    const summary = aggregateStimulusEvidence(
+      deriveTmdbStimulusEvidence(
+        mockTitle({
+          title: "Genre Only War",
+          synopsis: "Eine knappe Beschreibung ohne Szenenhinweise.",
+          genres: ["Action", "War"],
+        }),
+      ),
+    );
+
+    expect(summary.tone).toBe("mixed");
+    expect(summary.confidence).toBe("weak");
+    expect(summary.thinData).toBe(true);
+    expect(summary.status).toBe("Metadatenbasis");
+  });
+
+  it("lets repeated matching keywords raise confidence without relying on synopsis", () => {
+    const summary = aggregateStimulusEvidence(
+      deriveTmdbStimulusEvidence(
+        mockTitle({
+          title: "Pressure Run",
+          synopsis: "Eine sehr knappe Beschreibung.",
+          keywords: ["chase", "panic", "time pressure"],
+        }),
+      ),
+    );
+
+    expect(summary.tone).toBe("intense");
+    expect(summary.confidence).toBe("medium");
+    expect(summary.thinData).toBe(false);
   });
 
   it("keeps optional Does the Dog Die evidence as noop without flag and key", async () => {
@@ -225,12 +259,12 @@ describe("stimulus evidence", () => {
       }),
     ];
 
-    const emotionalIntenseTitles = [
+    const emotionalHeavyTitles = [
       mockTitle({
         title: "Requiem for a Dream",
         synopsis: "Abhaengigkeit, Verlust und zerfallende Hoffnung liegen schwer auf den Figuren.",
         genres: ["Drama"],
-        keywords: ["addiction", "trauma", "depression", "hallucination"],
+        keywords: ["addiction", "trauma", "depression", "isolation"],
       }),
       mockTitle({
         title: "Manchester by the Sea",
@@ -311,11 +345,11 @@ describe("stimulus evidence", () => {
       }
     });
 
-    it("marks emotionally intensive profiles without inventing audio peaks", () => {
-      for (const title of emotionalIntenseTitles) {
+    it("keeps emotional load separate from audio or visual intensity", () => {
+      for (const title of emotionalHeavyTitles) {
         const summary = createTmdbEvidenceDebugSummary(title);
 
-        expect(summary.tendency).toBe("intense");
+        expect(summary.tendency).toBe("mixed");
         expect(summary.axes.emotional_load?.direction).toBe("intensifying");
         expect(summary.axes.audio_peaks).toBeUndefined();
         expect(summary.reasons.join(" ")).toMatch(/emotional|belastendere|schwerere/i);
@@ -345,6 +379,103 @@ describe("stimulus evidence", () => {
       expect(summary.status).toContain("Keine deutlichen Hinweise gefunden");
       expect(summary.status).toContain("keine Entwarnung");
       expect(summary.status).not.toMatch(/\d+%|Score|Ranking/i);
+    });
+
+    it("calibrates named edge fixtures without visible scores or false certainty", () => {
+      const fixtures = [
+        {
+          name: "ruhig_aber_traurig",
+          expected: "mixed",
+          title: mockTitle({
+            title: "Quiet Sadness",
+            synopsis: "Eine ruhige Routine trifft auf Verlust und Trauer.",
+            genres: ["Drama"],
+            keywords: ["quiet", "routine", "grief", "loss"],
+          }),
+        },
+        {
+          name: "laut_aber_emotional_flach",
+          expected: "intense",
+          title: mockTitle({
+            title: "Loud Flat Chase",
+            synopsis: "Eine laute Verfolgung mit Explosionen und wenig emotionalem Kontext.",
+            genres: ["Action"],
+            keywords: ["explosion", "chase", "gunfire", "combat"],
+          }),
+        },
+        {
+          name: "visuell_dicht_aber_vorhersehbar",
+          expected: "mixed",
+          title: mockTitle({
+            title: "Bright Routine",
+            synopsis: "Klare Struktur trifft auf schnelle, blinkende Bilder.",
+            keywords: ["clear structure", "routine", "fast cutting", "flashing"],
+          }),
+        },
+        {
+          name: "horror_mit_relief",
+          expected: "mixed",
+          title: mockTitle({
+            title: "Soft Horror",
+            synopsis: "Eine Horrorgeschichte mit Freundschaft und heilenden Routinen.",
+            genres: ["Horror"],
+            keywords: ["horror", "friendship", "healing", "routine"],
+          }),
+        },
+        {
+          name: "drama_ohne_sensorische_last",
+          expected: "mixed",
+          title: mockTitle({
+            title: "Heavy Drama",
+            synopsis: "Trauer und Verlust bestimmen die Begegnungen.",
+            genres: ["Drama"],
+            keywords: ["grief", "loss", "isolation"],
+          }),
+        },
+        {
+          name: "action_mit_hoher_audio_last",
+          expected: "intense",
+          title: mockTitle({
+            title: "Alarm Action",
+            synopsis: "Sirenen, Explosionen und Verfolgungen halten den Druck hoch.",
+            genres: ["Action"],
+            keywords: ["alarm", "explosion", "gunfire", "chase", "panic"],
+          }),
+        },
+        {
+          name: "duenne_datenlage",
+          expected: "mixed",
+          title: mockTitle({
+            title: "Thin Data",
+            synopsis: "Eine knappe Beschreibung.",
+          }),
+        },
+        {
+          name: "widerspruechliche_metadaten",
+          expected: "mixed",
+          title: mockTitle({
+            title: "Mixed Metadata",
+            synopsis: "Sanfte Routinen treffen auf Chaos und Panik.",
+            keywords: ["gentle", "routine", "panic", "chaos"],
+          }),
+        },
+      ] as const;
+
+      for (const fixture of fixtures) {
+        const summary = aggregateStimulusEvidence(deriveTmdbStimulusEvidence(fixture.title));
+
+        expect(summary.tone, fixture.name).toBe(fixture.expected);
+        expect(summary.note, fixture.name).not.toMatch(/\d+%|Score|Ranking/i);
+
+        if (fixture.name === "duenne_datenlage") {
+          expect(summary.thinData).toBe(true);
+          expect(summary.note).toContain("Keine deutlichen Hinweise");
+        }
+
+        if (fixture.name === "widerspruechliche_metadaten") {
+          expect(summary.conflicts.length).toBeGreaterThan(0);
+        }
+      }
     });
   });
 });

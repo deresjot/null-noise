@@ -10,6 +10,11 @@ Das Evidence-Modell bereitet die vorsichtige erste Einschätzung der Reizwirkung
 
 Es gibt keine sichtbaren Scores, Prozentwerte oder Rankings.
 
+Intern arbeitet die Evidence Engine v2 mit Quelle, Achse, Signalrichtung, Stärke,
+Confidence, Begründung, Konflikten, Entlastungssignalen und dünner Datenlage.
+Diese Werte bleiben Arbeitsdaten und werden nicht als scheinpräzise Messung
+angezeigt.
+
 ## Achsen
 
 - `audio_peaks`: Hinweise auf laute Spitzen, Schüsse, Explosionen oder sprunghafte akustische Last
@@ -90,6 +95,7 @@ TMDb liefert Genres, Keywords, Overview und weitere Metadaten. Diese Daten werde
 - Genre allein bleibt schwache Evidenz.
 - Mehrere passende Keywords können Confidence erhöhen.
 - Overview/Synopsis wird nur vorsichtig ausgewertet.
+- Relief wird als positive Evidenz gewertet, nicht nur als fehlende Warnung.
 - Action, Horror oder Thriller sind keine automatische Intensiv-Garantie.
 - Drama, Comedy, Romance, Family oder Documentary sind keine automatische Ruhig-Garantie.
 
@@ -98,8 +104,34 @@ TMDb liefert Genres, Keywords, Overview und weitere Metadaten. Diese Daten werde
 - Widerspruechliche Signale führen eher zu mixed/durchwachsen.
 - Relief ist positive Evidenz, nicht nur fehlende Warnung.
 - Sensorische, visuelle und emotionale Intensität bleiben unterscheidbar.
+- Emotionale Last ohne sensorische Dichte kippt nicht automatisch auf `eher intensiv`.
+- Konfliktregeln sind wichtiger als Mittelwert oder Median; es gibt keinen globalen Median über alle Achsen.
 - Bei dünner Datenlage bleibt Confidence niedrig und der Status vorläufig.
 - Ausgabe behauptet keine objektive Audio- oder Bildmessung.
+
+## TMDb-Browse-Diversität
+
+Browse-Vorschläge werden vor der Evidence-Bewertung diversifiziert:
+
+1. TMDb Candidate Pool
+2. Query Strategy Rotation
+3. Diversity Filter
+4. Evidence Evaluation
+5. Tone Grouping
+6. Seeded Shuffle innerhalb passender Gruppen
+7. sichtbare Ausgabe
+
+Die Query-Strategien rotieren kontrolliert über Genre-Bias, Popularitätsfenster,
+Vote-Count-Fenster, ältere Titel und neuere Titel. Danach reduziert der
+Diversity Filter Duplikate, sehr ähnliche Titelprofile und offensichtliche
+Reihungswiederholungen. Die sichtbare Tendenz entsteht erst nach der Evidence
+Evaluation; Randomisierung wird nicht nachträglich auf `Eher ruhig`,
+`Eher wechselhaft` oder `Eher intensiv` geklebt.
+
+Die Randomisierung ist seeded und deterministisch. Ein Seed aus Route, Mix,
+Tone und Browse-Kontext sorgt dafür, dass Vorschläge stabil prüfbar bleiben,
+aber nicht dauerhaft immer gleich wirken. Es gibt keine Social-, Profil- oder
+Personalisierungslogik und keine dauerhafte Speicherung zuletzt gezeigter IDs.
 
 ## Sichtbare Ausgabe
 
@@ -109,6 +141,7 @@ Sichtbar werden nur:
 - kurzer Status
 - 2 bis 3 kurze Gründe
 - vorsichtige Unsicherheitsformulierung
+- situative Discovery-Labels wie `Ruhiger Einstieg`, `Eher vormerken` oder `Kann gerade zu dicht sein`
 
 Nicht sichtbar werden:
 
@@ -116,6 +149,27 @@ Nicht sichtbar werden:
 - numerische Scores
 - Prozentwerte
 - Rankings
+
+## Discovery-Nutzung
+
+Discovery nutzt die vorhandene Evidence-/TMDb-Auswertung als Entscheidungshilfe,
+nicht als personalisierte Empfehlung. Browse-Mixes und Kartenstatus fragen
+sprachlich nach der aktuellen Passung: passt das gerade, waere das zu viel,
+oder eher vormerken?
+
+Die Formulierungen bleiben bewusst nicht-personalisiert. Es gibt kein
+`Empfohlen fuer dich`, kein `Heute passend`, keine Profile und keine dauerhafte
+Historie. Browserlokale Merken-/Gesehen-Zustaende bleiben lokal und erzeugen
+keine algorithmische Personalisierung.
+
+Auf Detailseiten darf dieselbe Evidence strukturierter erklaert werden:
+
+- `Spricht eher dafuer`: entlastende, klare oder vorhersehbare Hinweise
+- `Kann dagegen sprechen`: einzelne Hinweise auf Dichte, Lautheit, visuelle oder emotionale Last
+- `Datenlage`: knappe Einordnung, ob die Einschaetzung nur aus Metadaten kommt oder duenn bleibt
+
+Diese Gruppen sind Textstruktur, keine Metrik. Technische Achsennamen,
+Balken, Tabellen, Prozentwerte und Rankings bleiben aus der sichtbaren UI raus.
 
 ## Kalibrierung
 
@@ -125,7 +179,11 @@ Die Regeln werden über lokale Unit-Fixtures kalibriert. Beispielgruppen:
 - durchwachsen/wechselhaft
 - Audio-/Action-intensiv
 - emotional intensiv
+- emotional schwer ohne sensorische Last
 - visuell dicht/intensiv
+- widersprüchliche Metadaten
+- seeded Random bleibt deterministisch
+- ähnliche TMDb-Queries werden diverser
 - dünne Datenlage
 - externe optionale Quellen ohne Keys
 
