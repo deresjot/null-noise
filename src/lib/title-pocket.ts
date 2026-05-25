@@ -104,7 +104,9 @@ export function buildTitlePocketEntryFromMetadata(
       externalSourceId: item.sourceId,
       kind: item.mediaType,
     }),
-    meta: `${getKindLabel(item.mediaType)} · ${item.releaseYear ?? "Jahr offen"}`,
+    meta: [getKindLabel(item.mediaType), item.genres?.[0], item.releaseYear ?? "Jahr offen"]
+      .filter(Boolean)
+      .join(" · "),
     posterSrc: getTmdbPosterProxyPath(item.posterPath),
     reason: getReadingReasonLine(profile),
     savedAt: 0,

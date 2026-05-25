@@ -11,6 +11,7 @@ import { buildTitlePocketEntryFromTitle } from "@/lib/title-pocket";
 import type { TitleRecord } from "@/lib/types";
 import { SearchToneScale } from "./search-tone-scale";
 import { ResultPoster } from "./result-poster";
+import { ResultCardActionIcon } from "./result-card-action-icon";
 import { TitlePocketActions } from "./title-pocket-actions";
 
 interface ResultListProps {
@@ -24,7 +25,7 @@ interface ResultListProps {
 }
 
 function formatMetaLine(title: TitleRecord): string {
-  return `${formatKind(title.external.kind)} · ${title.external.year ?? "Jahr offen"}`;
+  return [formatKind(title.external.kind), title.external.year ?? "Jahr offen"].join(" · ");
 }
 
 function getLocalPosterPath(title: TitleRecord): string | null {
@@ -133,9 +134,11 @@ export function ResultList({
                   <Link
                     aria-label={`${actionLabel === "Details" ? "Titeldaten" : "Einordnung"} zu ${title.external.title} öffnen`}
                     className={`${actionClassName} result-card-cta-button`}
+                    data-action="details"
                     href={detailPath}
                   >
-                    {actionLabel}
+                    <ResultCardActionIcon name="details" />
+                    <span>{actionLabel}</span>
                   </Link>
                 </div>
 

@@ -496,103 +496,109 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
             {`${formatKind(title.external.kind)} · ${title.external.year ?? "Jahr offen"}`}
           </p>
           <h1>{title.external.title}</h1>
-          <p className="lead">
-            {title.external.synopsis ?? "Zu diesem Titel liegt gerade nur ein knapper Abriss vor."}
-          </p>
-          <section className="detail-reading-block" aria-label="Erste Einschätzung">
-            <p className="detail-reading-kicker">Erste Einschätzung</p>
-            <p className="detail-hero-tendency">{profileTendency.label}</p>
-            <SearchToneScale
-              caption="Eher ruhig bis eher intensiv"
-              emphasis="hero"
-              mode={aggregatePresentation.state}
-              note={profileTendency.text}
-              showCaption={false}
-              showValueLabel={false}
-              value={profileTendency.tone}
-              valueLabel={profileTendency.label}
-            />
-            <p className="field-note detail-reading-basis">{aggregatePresentation.basis}</p>
-            <p className="field-note detail-hero-status">
-              <strong>{aggregatePresentation.label}.</strong> {aggregatePresentation.text}
-            </p>
-            <dl className="detail-decision-strip" aria-label="Aktueller Entscheidungsrahmen">
-              <div>
-                <dt>Richtung</dt>
-                <dd>{profileTendency.label}</dd>
-              </div>
-              <div>
-                <dt>Stand</dt>
-                <dd>{aggregatePresentation.label}</dd>
-              </div>
-              <div>
-                <dt>Rückhalt</dt>
-                <dd>{confidencePresentation.title}</dd>
-              </div>
-            </dl>
-            <ul className="plain-list detail-decision-reasons" aria-label="Kurze Gründe">
-              {decisionReasonItems.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-            <ReadingDecisionSupport
-              cautions={{
-                items: cautionHints,
-                notice:
-                  !cautionHints.length && profileTendency.tone !== "ruhig"
-                    ? "Hier wäre alles andere zu geraten."
-                    : null,
-              }}
-              comparisons={{
-                items: comparisonItems,
-                notice: followupSections.comparison.notice,
-              }}
-              decision={decision}
-            />
-            <p className="field-note detail-reading-explain-link">
-              <a href="#reading-basis">Worauf basiert das?</a>{" "}
-              <span aria-hidden="true">·</span>{" "}
-              <a href="/erklaerung">Wie funktioniert die erste Einschätzung?</a>
-            </p>
-          </section>
-          <TitlePocketActions entry={titlePocketEntry} variant="detail" />
-          <div className="detail-reading-followups" id="reading-basis">
-            <ReadingEvidenceDetails
-              entries={readingEvidenceEntries}
-              groups={readingEvidenceGroups}
-              intro="Kurz und ehrlich: Das ist eine vorsichtige erste Einschätzung aus Basisdaten und, wenn vorhanden, Rückmeldungen. Keine Szenenprüfung, keine Entwarnung."
-            />
-
-            <div id="reading-feedback">
-              {writesEnabled ? (
-                <ReadingFeedbackForm
-                  fields={[
-                    { name: "mode", value: "local" },
-                    { name: "slug", value: title.external.slug },
-                    { name: "returnPath", value: `/titel/${title.external.slug}` },
-                  ]}
-                />
-              ) : null}
-              {visibleFeedbackStatus ? (
-                <StatusPanel
-                  className="status-panel-inline"
-                  headingAs="h4"
-                  title={visibleFeedbackStatus.title}
-                  text={visibleFeedbackStatus.text}
-                  tone={visibleFeedbackStatus.tone}
-                />
-              ) : null}
-            </div>
-          </div>
         </div>
 
-        <aside className="detail-callout-panel" aria-labelledby="confidence-heading">
+        <div className="detail-hero-poster" aria-label={`Titelbild zu ${title.external.title}`}>
           <ResultPoster
             priority
             src={detailPosterPath}
             title={title.external.title}
             variant="detail"
           />
+        </div>
+
+        <section className="detail-reading-block" aria-label="Erste Einschätzung">
+          <p className="detail-reading-kicker">Erste Einschätzung</p>
+          <p className="detail-hero-tendency">{profileTendency.label}</p>
+          <SearchToneScale
+            caption="Eher ruhig bis eher intensiv"
+            emphasis="hero"
+            mode={aggregatePresentation.state}
+            note={profileTendency.text}
+            showCaption={false}
+            showValueLabel={false}
+            value={profileTendency.tone}
+            valueLabel={profileTendency.label}
+          />
+          <p className="field-note detail-reading-basis">{aggregatePresentation.basis}</p>
+          <p className="field-note detail-hero-status">
+            <strong>{aggregatePresentation.label}.</strong> {aggregatePresentation.text}
+          </p>
+          <dl className="detail-decision-strip" aria-label="Aktueller Entscheidungsrahmen">
+            <div>
+              <dt>Richtung</dt>
+              <dd>{profileTendency.label}</dd>
+            </div>
+            <div>
+              <dt>Stand</dt>
+              <dd>{aggregatePresentation.label}</dd>
+            </div>
+            <div>
+              <dt>Rückhalt</dt>
+              <dd>{confidencePresentation.title}</dd>
+            </div>
+          </dl>
+          <ul className="plain-list detail-decision-reasons" aria-label="Kurze Gründe">
+            {decisionReasonItems.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+          <ReadingDecisionSupport
+            cautions={{
+              items: cautionHints,
+              notice:
+                !cautionHints.length && profileTendency.tone !== "ruhig"
+                  ? "Hier wäre alles andere zu geraten."
+                  : null,
+            }}
+            comparisons={{
+              items: comparisonItems,
+              notice: followupSections.comparison.notice,
+            }}
+            decision={decision}
+          />
+          <p className="field-note detail-reading-explain-link">
+            <a href="#reading-basis">Worauf basiert das?</a>{" "}
+            <span aria-hidden="true">·</span>{" "}
+            <a href="/erklaerung">Wie funktioniert die erste Einschätzung?</a>
+          </p>
+        </section>
+
+        <p className="lead detail-hero-synopsis">
+          {title.external.synopsis ?? "Zu diesem Titel liegt gerade nur ein knapper Abriss vor."}
+        </p>
+
+        <TitlePocketActions entry={titlePocketEntry} variant="detail" />
+        <div className="detail-reading-followups" id="reading-basis">
+          <ReadingEvidenceDetails
+            entries={readingEvidenceEntries}
+            groups={readingEvidenceGroups}
+            intro="Kurz und ehrlich: Das ist eine vorsichtige erste Einschätzung aus Basisdaten und, wenn vorhanden, Rückmeldungen. Keine Szenenprüfung, keine Entwarnung."
+          />
+
+          <div id="reading-feedback">
+            {writesEnabled ? (
+              <ReadingFeedbackForm
+                fields={[
+                  { name: "mode", value: "local" },
+                  { name: "slug", value: title.external.slug },
+                  { name: "returnPath", value: `/titel/${title.external.slug}` },
+                ]}
+              />
+            ) : null}
+            {visibleFeedbackStatus ? (
+              <StatusPanel
+                className="status-panel-inline"
+                headingAs="h4"
+                title={visibleFeedbackStatus.title}
+                text={visibleFeedbackStatus.text}
+                tone={visibleFeedbackStatus.tone}
+              />
+            ) : null}
+          </div>
+        </div>
+
+        <aside className="detail-callout-panel" aria-labelledby="confidence-heading">
           <p className="eyebrow">Stand heute</p>
           <h2 id="confidence-heading">Worauf das gerade ruht</h2>
           <p className="confidence-callout-eyebrow">{confidencePresentation.eyebrow}</p>

@@ -9,6 +9,7 @@ import {
   storePocketEntry,
   type TitlePocketEntry,
 } from "@/lib/title-pocket";
+import { ResultCardActionIcon } from "./result-card-action-icon";
 
 type TitlePocketActionsProps = {
   entry: TitlePocketEntry;
@@ -144,10 +145,11 @@ export function TitlePocketActions({
           aria-pressed={remembered}
           className="quiet-button title-pocket-button"
           data-active={remembered ? "true" : "false"}
+          data-action="remember"
           type="button"
           onClick={toggleRemembered}
         >
-          <span aria-hidden="true" className="title-pocket-button-mark" />
+          <ResultCardActionIcon name="remember" />
           <span>{remembered ? "Gemerkt" : "Merken"}</span>
         </button>
         <button
@@ -155,10 +157,11 @@ export function TitlePocketActions({
           aria-pressed={seen}
           className="quiet-button title-pocket-button"
           data-active={seen ? "true" : "false"}
+          data-action="seen"
           type="button"
           onClick={toggleSeen}
         >
-          <span aria-hidden="true" className="title-pocket-button-mark" />
+          <ResultCardActionIcon name="seen" />
           <span>{seenButtonLabel}</span>
         </button>
       </div>

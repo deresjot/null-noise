@@ -12,6 +12,7 @@ import { getTmdbPosterProxyPath, type MetadataSpikeTitle } from "@/lib/metadata-
 import { normalizeSearchText } from "@/lib/search";
 import { buildTitlePocketEntryFromMetadata } from "@/lib/title-pocket";
 import { ResultPoster } from "./result-poster";
+import { ResultCardActionIcon } from "./result-card-action-icon";
 import { SearchToneScale } from "./search-tone-scale";
 import { TitlePocketActions } from "./title-pocket-actions";
 
@@ -28,7 +29,13 @@ function formatMediaType(value: MetadataSpikeTitle["mediaType"]): string {
 }
 
 function formatMetaLine(item: MetadataSpikeTitle): string {
-  return `${formatMediaType(item.mediaType)} · ${item.releaseYear ?? "Jahr offen"}`;
+  return [
+    formatMediaType(item.mediaType),
+    item.genres?.[0],
+    item.releaseYear ?? "Jahr offen",
+  ]
+    .filter(Boolean)
+    .join(" · ");
 }
 
 function getEditDistance(a: string, b: string): number {
@@ -158,9 +165,11 @@ function ExternalItemAction({
           <Link
             aria-label={`Einordnung zu ${item.title} öffnen`}
             className="secondary-button-link result-card-cta-button"
+            data-action="details"
             href={localPath}
           >
-            Einordnung lesen
+            <ResultCardActionIcon name="details" />
+            <span>Einordnung lesen</span>
           </Link>
         </div>
       </>
@@ -174,13 +183,17 @@ function ExternalItemAction({
           <Link
             aria-label={`Titeldaten zu ${item.title} öffnen`}
             className="secondary-button-link result-card-action-link result-card-cta-button"
+            data-action="details"
             href={getExternalDetailPath(item, query)}
           >
-            Details
+            <ResultCardActionIcon name="details" />
+            <span>Details</span>
           </Link>
         </div>
         <div className="result-card-note-zone">
-          <p className="result-card-note">Nur lesen ist hier gerade aktiv.</p>
+          <p className="result-card-note">
+            Nur Titeldaten. Lokale Einordnung ist hier deaktiviert.
+          </p>
         </div>
       </>
     );
@@ -192,9 +205,11 @@ function ExternalItemAction({
         <Link
           aria-label={`Titeldaten zu ${item.title} öffnen`}
           className="secondary-button-link result-card-action-link result-card-cta-button"
+          data-action="details"
           href={getExternalDetailPath(item, query)}
         >
-          Details
+          <ResultCardActionIcon name="details" />
+          <span>Details</span>
         </Link>
       </div>
     </>

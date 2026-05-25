@@ -17,6 +17,17 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 ## Letzte lokale Arbeitsblöcke
 
+- Mobile Detailseiten-Reihenfolge 25. Mai 2026:
+  - lokale Titel-Detailseiten setzen das Poster im DOM und visuell direkt nach Titel/H1
+  - die erste Einschätzung folgt nach dem Poster, die Kurzbeschreibung danach
+  - der frühere rechte Stand-/Confidence-Callout bleibt als restlicher Detailinhalt nach der Beschreibung erreichbar
+  - Poster-Fallbacks bleiben auf schmalen Viewports proportional und erzeugen keine übergroßen leeren Flächen
+  - Release Notes stehen lokal auf `0.8.4-detail-mobile.20260525`
+- Result-Card-Klarheit 24. Mai 2026:
+  - TMDb-Karten zeigen in der Topline jetzt das erste verfügbare Genre zwischen Format und Jahr
+  - Details, Merken und Gesehen sind im Kartenfooter als zusammengehörige, aber unterschiedlich markierte Aktionen mit Icons erkennbar
+  - Read-only-Hinweis auf externen Karten benennt jetzt konkret, dass nur Titeldaten verfügbar sind und lokale Einordnung deaktiviert ist
+  - Release Notes stehen lokal auf `0.8.4-cards.20260524`
 - Situative Discovery-UX 24. Mai 2026:
   - Browse-Mixes sprechen jetzt ruhiger von `Ruhiger Einstieg`, `Dicht, aber vorhersehbar` und `Eher vormerken` statt wie generische Ergebnislisten
   - externe Karten können `Kann gerade zu dicht sein`, `Eher vormerken` oder `Erst kurz prüfen` zeigen, ohne Titel negativ zu bewerten

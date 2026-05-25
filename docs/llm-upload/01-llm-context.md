@@ -3,7 +3,7 @@
 ## Aktueller Arbeitsstand
 
 - aktiver lokaler Arbeitsbranch: `null-noise`
-- aktueller Stand: situative Discovery-UX vom 24. Mai 2026 ist lokal auf `null-noise` umgesetzt; Evidence-/TMDb-Logik und Mobile-Viewport-Reparatur bleiben lokal enthalten
+- aktueller Stand: Mobile Detailseiten-Reihenfolge vom 25. Mai 2026 ist lokal auf `null-noise` umgesetzt; Result-Card-Klarheit, situative Discovery-UX, Evidence-/TMDb-Logik und Mobile-Viewport-Reparatur bleiben lokal enthalten
 - vorheriger Stand: Startseiten-/Mobile-UI-Fix ist lokal committed (`196db83 fix: stabilize home and mobile search UI`) und als Vercel Preview bereitgestellt; Production wurde nicht angerührt
 - nicht pushen/deployen ohne explizite Freigabe; aktueller Auftrag bleibt lokal
 - Live-URL: https://null-noise.vercel.app
@@ -101,6 +101,8 @@
 - Browse-Mixes nutzen ruhige, nicht-personalisierte Einstiege wie `Ruhiger Einstieg`, `Wenig Sprünge`, `Dicht, aber vorhersehbar` und `Eher vormerken`.
 - `Nicht jetzt` ist ein positives Produktmuster: `Kann gerade zu dicht sein` oder `Eher später prüfen` meint Kapazität, nicht Titelqualität.
 - Such- und Browse-Karten bleiben Vorschau; ausführlichere Gründe gehören auf Detailseiten oder in vorhandene Disclosure-Muster.
+- TMDb-Karten zeigen in der Topline Format, erstes verfügbares Genre und Jahr; lokale Karten erfinden kein Genre, wenn keines vorhanden ist.
+- Kartenfooter-Aktionen bleiben fingerfreundlich und unterscheidbar: Details liest, Merken legt browserlokal ab, Gesehen markiert browserlokal.
 - Detailseiten können Evidence als `Spricht eher dafür`, `Kann dagegen sprechen` und `Datenlage` erklären, ohne technische Achsen dominant sichtbar zu machen.
 - Alternativen sind situative Gegengewichte, nicht klassische Empfehlungen: ruhiger, dichter oder leichter je nach Ausgangstitel.
 - Keine Social-, Profil-, Rating-, Ranking- oder Tracking-Logik wurde ergänzt.
@@ -142,7 +144,7 @@
 - mobile Typografie, Labels, Buttons, Card-Metadaten, Footer-Links, Legal-Texte und Detailseiten-Text wurden luftiger gesetzt
 - `search-browse-link` wird als Button-CTA mit Lupe dargestellt, bleibt aber ein nativer Link
 - `search-direct-starts` hat mobil mehr Innenabstand und farbige Richtungsflächen: grün, gold, rot
-- Detailseiten zeigen mobil Poster und Synopsis, sofern vorhanden; die Reihenfolge ist Titelkopf mit Poster/Titel/Synopsis, danach Erste Einschätzung, Stand, Verfügbarkeit, Empfehlungen
+- Lokale Titel-Detailseiten zeigen mobil die Reihenfolge Titel/H1, Poster, Erste Einschätzung, Kurzbeschreibung, danach restliche Detailabschnitte.
 - Detailposter skalieren auf Mobile groß von links nach rechts; Fallbacks für fehlende Poster bleiben kompakt
 - `Zurück zur Suche` im Metadaten-Detailpfad ist ein gestalteter Button mit Zurück-Pfeil
 - Favicon, Open-Graph-/Twitter-Metadaten und Social-Image wurden auf vereinfachtes TV-Favicon und cache-gebustetes OG-Bild aktualisiert

@@ -21,6 +21,7 @@ describe("external result list poster rendering", () => {
             releaseYear: 2016,
             synopsis: "Kontaktaufnahme mit außerirdischen Besuchern.",
             posterPath: "/arrival.jpg",
+            genres: ["Science Fiction"],
           },
         ],
       }),
@@ -34,6 +35,7 @@ describe("external result list poster rendering", () => {
     expect(html).toContain("Eher wechselhaft");
     expect(html).toContain("Eher intensiv");
     expect(html).toContain("poster-thumb-frame");
+    expect(html).toContain("Film · Science Fiction · 2016");
     expect(html).toContain("Details");
     expect(html).not.toContain("Lokal anlegen");
     expect(html).toContain('aria-label="Erste Einschätzung: Eher wechselhaft"');
@@ -85,6 +87,7 @@ describe("external result list poster rendering", () => {
     );
 
     expect(html).toContain("Kann gerade zu dicht sein");
+    expect(html).toContain("Film · Action · 2024");
     expect(html).not.toMatch(/Empfohlen für dich|Heute passend|Ranking|Score/);
   });
 
@@ -136,7 +139,7 @@ describe("external result list poster rendering", () => {
       }),
     );
 
-    expect(html).toContain("Nur lesen ist hier gerade aktiv.");
+    expect(html).toContain("Nur Titeldaten. Lokale Einordnung ist hier deaktiviert.");
     expect(html).toContain("Erst kurz prüfen");
     expect(html).toContain("Details");
     expect(html).not.toContain("Lokal anlegen");

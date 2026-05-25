@@ -1,12 +1,33 @@
 import packageJson from "../../package.json";
 
 export const currentBuild = {
-  version: `${packageJson.version}-discovery.20260524`,
-  label: "Situational discovery UX",
-  releasedAt: "2026-05-24 · preview",
+  version: `${packageJson.version}-detail-mobile.20260525`,
+  label: "Mobile title detail layout",
+  releasedAt: "2026-05-25 · preview",
 };
 
 export const releaseNotes = [
+  {
+    version: `${packageJson.version}-detail-mobile.20260525`,
+    label: "Mobile title detail layout",
+    releasedAt: "2026-05-25",
+    entries: [
+      "Mobile title detail pages now place the poster directly after the title before the first assessment.",
+      "The first assessment follows the poster, with the synopsis shown after the assessment in the same semantic order.",
+      "Poster fallbacks stay proportional on narrow screens so missing artwork does not create oversized empty space.",
+      "Mobile detail ordering, focus flow and touch-friendly controls were checked at 375x667 and 430x932.",
+    ],
+  },
+  {
+    version: `${packageJson.version}-cards.20260524`,
+    label: "Result card clarity",
+    releasedAt: "2026-05-24",
+    entries: [
+      "TMDb result card toplines now include the first available genre between format and year.",
+      "Card footer actions now use clearer visual roles and icons for Details, Merken and Gesehen.",
+      "Read-only external cards explain that only title metadata is available instead of using a vague generic note.",
+    ],
+  },
   {
     version: `${packageJson.version}-discovery.20260524`,
     label: "Situational discovery UX",
