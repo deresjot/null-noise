@@ -57,6 +57,90 @@ const serviceWorkerRegistrationScript = `
 })();
 `;
 
+const focusRestoreScript = `
+(() => {
+  const storageKeyPrefix = "null-noise:last-focus:";
+  const focusableSelector = [
+    "a[href]",
+    "button:not([disabled])",
+    "input:not([disabled])",
+    "select:not([disabled])",
+    "textarea:not([disabled])",
+    "summary",
+    "[tabindex]:not([tabindex='-1'])",
+  ].join(",");
+
+  const getRouteKey = () => window.location.pathname + window.location.search + window.location.hash;
+  const getFocusables = () =>
+    Array.from(document.querySelectorAll(focusableSelector)).filter((element) => {
+      if (!(element instanceof HTMLElement)) return false;
+      if (element.hidden || element.closest("[hidden]")) return false;
+      return element.tabIndex >= 0;
+    });
+
+  const getSignature = (element) => [
+    element.tagName,
+    element.getAttribute("href") || "",
+    element.getAttribute("name") || "",
+    element.getAttribute("type") || "",
+    element.textContent ? element.textContent.trim().replace(/\\s+/g, " ").slice(0, 80) : "",
+  ].join("|");
+
+  const isReload = () => {
+    const navigation = performance.getEntriesByType("navigation")[0];
+    return navigation ? navigation.type === "reload" : performance.navigation?.type === 1;
+  };
+
+  const saveFocus = (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement) || !target.matches(focusableSelector)) return;
+
+    const focusables = getFocusables();
+    const index = focusables.indexOf(target);
+    if (index < 0) return;
+
+    try {
+      sessionStorage.setItem(
+        storageKeyPrefix + getRouteKey(),
+        JSON.stringify({ index, signature: getSignature(target) }),
+      );
+    } catch {}
+  };
+
+  const restoreFocus = () => {
+    if (!isReload()) return;
+
+    let saved = null;
+    try {
+      saved = JSON.parse(sessionStorage.getItem(storageKeyPrefix + getRouteKey()) || "null");
+    } catch {
+      saved = null;
+    }
+
+    if (!saved || typeof saved.index !== "number") return;
+
+    const focusables = getFocusables();
+    const exactMatch = focusables.find((element) => getSignature(element) === saved.signature);
+    const fallback = focusables[saved.index];
+    const target = exactMatch || fallback;
+
+    if (target instanceof HTMLElement) {
+      target.focus({ preventScroll: false });
+    }
+  };
+
+  document.addEventListener("focusin", saveFocus);
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => window.requestAnimationFrame(restoreFocus), {
+      once: true,
+    });
+  } else {
+    window.requestAnimationFrame(restoreFocus);
+  }
+})();
+`;
+
 export const metadata: Metadata = {
   metadataBase,
   title: {
@@ -116,6 +200,7 @@ export default function RootLayout({
     <html className={headingFont.variable} data-scroll-behavior="smooth" lang="de">
       <head>
         <script dangerouslySetInnerHTML={{ __html: rootHydrationGuardScript }} />
+        <script dangerouslySetInnerHTML={{ __html: focusRestoreScript }} />
         <script dangerouslySetInnerHTML={{ __html: serviceWorkerRegistrationScript }} />
       </head>
       <body>

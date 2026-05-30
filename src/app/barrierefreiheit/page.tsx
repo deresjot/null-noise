@@ -54,12 +54,85 @@ export default function BarrierefreiheitPage() {
           Das Projekt nutzt automatisierte Tests, manuelle Smoke-Tests und mobile Sichtprüfungen.
           Automatisierte Tests ersetzen keine manuelle Prüfung.
         </p>
-        <ul className="plain-list">
-          <li>Playwright-Checks auf Kernrouten.</li>
-          <li>Axe-Prüfungen über <code>@axe-core/playwright</code> und einen direkten Axe-Lauf.</li>
-          <li>Manuelle Tastatur- und Fokus-Smokes.</li>
-          <li>Mobile Prüfungen bei kleinen Viewports, unter anderem Reflow bei 320 CSS-Pixeln.</li>
-        </ul>
+        <section className="subsection" aria-labelledby="automated-tests-heading">
+          <h3 id="automated-tests-heading">Automatisierte Tests im Projekt</h3>
+          <ul className="plain-list">
+            <li>
+              <code>npm run lint</code>: ESLint mit Next-Regeln prüft unter anderem HTML-nahe
+              React-Struktur, Link-/Bildmuster und auffällige Codefehler.
+            </li>
+            <li>
+              <code>npm run build</code>: Der Next.js-Produktionsbuild prüft Typen, Routing,
+              Server-/Client-Grenzen, statische Seiten und die Manifest-/Offline-Routen.
+            </li>
+            <li>
+              <code>npm run test:unit</code>: Vitest prüft Datenlogik, Suchlogik, Evidence-Modell,
+              lokale Titel, Merken/Gesehen-Helfer, Laufzeitkonfiguration und sichere
+              Formulierungen.
+            </li>
+            <li>
+              <code>npm run test:axe-core</code>: Ein direkter axe-core-Lauf scannt Kernrouten wie
+              Start, Suche, Suche mit Query, Detailseite, Offline-Seite sowie Info- und
+              Rechtstexte.
+            </li>
+            <li>
+              <code>npm run test:a11y</code>: Playwright öffnet die App im Browser und kombiniert
+              axe-Scans mit Bedienprüfungen für Tastatur, Fokus, Skiplinks, native Disclosure,
+              mobile Navigation, Manifest und Reflow.
+            </li>
+            <li>
+              <code>npx playwright test</code>: Der vollständige Browserlauf umfasst die
+              A11y-Checks plus weitere End-to-End-Prüfungen; externe TMDb-Live-Fallbacks laufen
+              nur, wenn die nötige Umgebung verfügbar ist.
+            </li>
+          </ul>
+        </section>
+
+        <section className="subsection" aria-labelledby="background-tests-heading">
+          <h3 id="background-tests-heading">Was dabei im Hintergrund passiert</h3>
+          <p>
+            Playwright startet über die Projektkonfiguration lokal <code>npm run dev</code> auf
+            {" "}
+            <code>127.0.0.1:3000</code>, sofern dort kein Server wiederverwendet wird. Danach
+            steuert der Testbrowser echte Seiten an, wartet auf sichtbare Inhalte und führt
+            Erwartungen gegen die gerenderte Oberfläche aus.
+          </p>
+          <p>
+            Die axe-Prüfungen laufen in zwei Varianten: einmal über <code>@axe-core/playwright</code>
+            {" "}
+            und zusätzlich als direkt in die Seite injiziertes <code>axe-core</code>. Die Ergebnisse
+            werden im Testlauf als JSON-Anhang aufbereitet, damit Funde nicht nur als kurze
+            Konsolenmeldung stehen bleiben.
+          </p>
+          <p>
+            Für Browserzustände werden echte Interaktionen genutzt: Eingaben in Suchfelder,
+            Tastatur-Tab-Reihenfolge, Enter auf Skiplinks, Fokus nach Reload, Öffnen von
+            {" "}
+            <code>summary</code>-Elementen, mobile Menübedienung und kleine Viewports bis 320
+            CSS-Pixel.
+          </p>
+        </section>
+
+        <section className="subsection" aria-labelledby="test-derivation-heading">
+          <h3 id="test-derivation-heading">Wie die Tests hergeleitet wurden</h3>
+          <p>
+            Die Tests sind aus den Produkt- und A11y-Leitplanken abgeleitet: HTML-first,
+            Standardoberfläche als Primärpfad, keine rein farbliche Information, keine
+            flüchtigen Tooltip-Pflichtwege, sichtbarer Fokus, Tastaturbedienung, kleine
+            Viewports und verständliche Zustände.
+          </p>
+          <p>
+            Daraus wurden konkrete Prüfpfade gemacht: Startseite, Suche ohne Query, Suche mit
+            Query, Detailseite, Offline-Seite, Erklärung, Barrierefreiheit, Datenschutz und
+            Impressum. Jede Route prüft zuerst, ob die erwarteten Inhalte sichtbar sind; danach
+            laufen Axe- oder Interaktionschecks auf der tatsächlich gerenderten Seite.
+          </p>
+          <p>
+            Zusätzlich prüfen Unit-Tests die fachliche Grundlage hinter der Oberfläche, damit
+            sichtbare Texte nicht versehentlich zu Scores, Rankings, Scheinpräzision oder
+            reduzierender Sprache kippen.
+          </p>
+        </section>
       </section>
 
       <section className="panel section-stack" aria-labelledby="limits-heading">

@@ -436,6 +436,19 @@ test("keyboard users can reach and use the skip link", async ({ page }) => {
   await expect(page).toHaveURL(/#site-footer$/);
 });
 
+test("reload restores focus to the previously active control on the same page", async ({ page }) => {
+  await page.setViewportSize({ width: 430, height: 900 });
+  await page.goto("/suche?q=Mythbusters");
+
+  const detailsLink = page.getByRole("link", { name: "Details" }).first();
+  await detailsLink.focus();
+  await expect(detailsLink).toBeFocused();
+
+  await page.reload({ waitUntil: "networkidle" });
+
+  await expect(page.getByRole("link", { name: "Details" }).first()).toBeFocused();
+});
+
 test("explanation page uses native disclosure for deeper help", async ({ page }) => {
   await page.goto("/erklaerung");
 
@@ -541,6 +554,10 @@ test("accessibility page is reachable and explains the current testing scope", a
   await expect(consideredPanel).toContainText("HTML-first");
   await expect(consideredPanel).toContainText("sichtbarer Fokus");
   await expect(testingPanel).toContainText("Automatisierte Tests ersetzen keine manuelle Prüfung");
+  await expect(testingPanel).toContainText("Automatisierte Tests im Projekt");
+  await expect(testingPanel).toContainText("npm run test:a11y");
+  await expect(testingPanel).toContainText("Playwright startet");
+  await expect(testingPanel).toContainText("Wie die Tests hergeleitet wurden");
   await expect(limitsPanel).toContainText("Datenbasis und erste Einschätzungen bleiben unsicher");
   await expect(contactPanel).toContainText("mail@sebastianjansen.com");
   await expect(contactPanel.getByRole("link", { name: "mail@sebastianjansen.com" })).toHaveAttribute(
