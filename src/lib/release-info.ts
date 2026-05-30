@@ -14,7 +14,7 @@ export const releaseNotes = [
     entries: [
       "Manifest, theme colors and app icons now cover the installable baseline, including a maskable icon.",
       "The service worker keeps navigation requests on a local offline page when the network is unavailable.",
-      "Search clearly marks new hits and external title data as connection-dependent instead of implying offline availability.",
+      "The offline page clearly marks new hits and external title data as connection-dependent instead of implying offline availability.",
       "Merkliste and Gesehen hints remain browser-local and can still be shown on the offline page when local app code is available.",
       "Short functional transitions now support focus, hover, disclosure, activation and loading states while respecting reduced motion.",
       "The Typekit runtime stylesheet was removed, and the homepage heading order and browse-link accessible names were corrected.",

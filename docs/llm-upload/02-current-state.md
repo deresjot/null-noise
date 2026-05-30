@@ -20,7 +20,7 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 - PWA-/Offline-Basis 30. Mai 2026:
   - Manifest, Theme-Farben und PWA-Icons inklusive maskable Icon sind lokal ergänzt
   - Service Worker nutzt einen Navigation-Fallback auf `/offline`, ohne TMDb-/API-Daten offline vorzutäuschen
-  - Suche kennzeichnet fehlende Verbindung klar als Grenze für neue Treffer und externe Titeldaten
+  - Die Offline-Seite kennzeichnet fehlende Verbindung klar als Grenze für neue Treffer und externe Titeldaten
   - Merkliste-/Gesehen-Hinweise bleiben browserlokal und können auf der Offline-Seite sichtbar bleiben, wenn der lokale App-Code verfügbar ist
   - ruhige funktionale Zustandswechsel wurden für Fokus, Hover, Disclosure, Aktivierung und Lade-/Offline-Zustände ergänzt; `prefers-reduced-motion` bleibt berücksichtigt
   - Typekit-Runtime-Stylesheet wurde entfernt

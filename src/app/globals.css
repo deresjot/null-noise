@@ -2330,6 +2330,11 @@ code {
   max-width: 44rem;
 }
 
+.metadata-detail-page .detail-hero-copy > .detail-reading-block,
+.metadata-detail-page .detail-hero-copy > .detail-reading-followups {
+  grid-area: auto;
+}
+
 .detail-hero-tendency {
   margin: 0;
   color: var(--ink-heading);

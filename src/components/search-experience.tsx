@@ -252,7 +252,6 @@ function getCurrentSearchPath(): string {
 export function SearchExperience({ initialState }: { initialState: SearchPageState }) {
   const [state, setState] = useState(initialState);
   const [transitionPhase, setTransitionPhase] = useState<SearchTransitionPhase>("idle");
-  const [isOffline, setIsOffline] = useState(false);
   const [isPending, startTransition] = useTransition();
   const abortRef = useRef<AbortController | null>(null);
   const settlingTimerRef = useRef<number | null>(null);
@@ -282,21 +281,6 @@ export function SearchExperience({ initialState }: { initialState: SearchPageSta
 
     delete root.dataset.searchTransition;
   }, [transitionPhase]);
-
-  useEffect(() => {
-    const syncOnlineState = () => {
-      setIsOffline(!window.navigator.onLine);
-    };
-
-    syncOnlineState();
-    window.addEventListener("online", syncOnlineState);
-    window.addEventListener("offline", syncOnlineState);
-
-    return () => {
-      window.removeEventListener("online", syncOnlineState);
-      window.removeEventListener("offline", syncOnlineState);
-    };
-  }, []);
 
   const clearSettlingTimer = useCallback(() => {
     if (settlingTimerRef.current) {
@@ -390,7 +374,6 @@ export function SearchExperience({ initialState }: { initialState: SearchPageSta
         }
 
         setTransitionPhase("idle");
-        setIsOffline(!window.navigator.onLine);
         window.location.assign(nextPath);
       }
     },
@@ -602,14 +585,6 @@ export function SearchExperience({ initialState }: { initialState: SearchPageSta
           title={state.importStatus.title}
           text={state.importStatus.text}
           tone={state.importStatus.tone}
-        />
-      ) : null}
-
-      {isOffline ? (
-        <StatusPanel
-          title="Suche braucht Verbindung"
-          text="Du bist gerade offline. Neue Treffer und externe Titeldaten werden erst wieder geladen, wenn die Verbindung zurück ist."
-          tone="warning"
         />
       ) : null}
 
