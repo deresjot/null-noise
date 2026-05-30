@@ -141,6 +141,12 @@ test("direct axe-core scan stays clean on search browse", async ({ page }) => {
   });
 });
 
+test("direct axe-core scan stays clean on offline page", async ({ page }) => {
+  await expectNoDirectAxeViolations(page, "/offline", "offline", async () => {
+    await expect(page.getByRole("heading", { name: "Gerade keine Verbindung." })).toBeVisible();
+  });
+});
+
 test("direct axe-core scan stays clean on search query", async ({ page }) => {
   await expectNoDirectAxeViolations(page, "/suche?q=Arrival", "search-arrival", async () => {
     await expect(page.getByRole("heading", { name: 'Treffer zu „Arrival“' })).toBeVisible();

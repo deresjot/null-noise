@@ -114,7 +114,9 @@ function buildBrowsePresetPath(
 function SearchDirectStarts({ filters }: { filters: SearchFilters }) {
   return (
     <section className="search-direct-starts" aria-labelledby="search-direct-starts-heading">
-      <h3 id="search-direct-starts-heading">Richtung starten</h3>
+      <h2 className="search-direct-starts-title" id="search-direct-starts-heading">
+        Richtung starten
+      </h2>
       <p className="field-note">Wenn noch kein Titel feststeht: eine Richtung wählen.</p>
       <ul className="plain-list search-direct-starts-list">
         {browsePresets.map((preset) => {
@@ -251,7 +253,6 @@ export function SearchForm({
           <Link
             className="secondary-link search-browse-link"
             href={browsePath}
-            aria-label="Zeig mir eine Auswahl ohne Suchbegriff"
           >
             Ohne Titel stöbern
           </Link>
@@ -284,7 +285,6 @@ export function SearchForm({
           <Link
             className="secondary-link search-browse-link"
             href={browsePath}
-            aria-label="Zeig mir eine Auswahl ohne Suchbegriff"
           >
             Ohne Titel stöbern
           </Link>
@@ -346,7 +346,6 @@ export function SearchForm({
             <Link
               className="secondary-link search-browse-link"
               href={browsePath}
-              aria-label="Zeig mir eine Auswahl ohne Suchbegriff"
             >
               Auswahl zeigen
             </Link>
@@ -392,7 +391,6 @@ export function SearchForm({
         <Link
           className="secondary-link search-browse-link"
           href={browsePath}
-          aria-label="Zeig mir eine Auswahl ohne Suchbegriff"
         >
           Auswahl zeigen
         </Link>

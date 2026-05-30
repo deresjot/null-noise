@@ -103,6 +103,38 @@ test("search page browse state has no detectable axe violations", async ({ page 
   });
 });
 
+test("offline page has no detectable axe violations", async ({ page }) => {
+  await expectNoAxeViolations(page, "/offline", "offline", async () => {
+    await expect(page.getByRole("heading", { name: "Gerade keine Verbindung." })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Suche braucht Verbindung" })).toBeVisible();
+  });
+});
+
+test("web app manifest exposes installable basics", async ({ request }) => {
+  const response = await request.get("/manifest.webmanifest");
+  expect(response.ok()).toBeTruthy();
+
+  const manifest = await response.json();
+
+  expect(manifest).toMatchObject({
+    name: "null-noise",
+    short_name: "null-noise",
+    lang: "de",
+    start_url: "/",
+    scope: "/",
+    display: "standalone",
+    background_color: "#fff6e5",
+    theme_color: "#fff6e5",
+  });
+  expect(manifest.icons).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ sizes: "192x192", purpose: "any" }),
+      expect.objectContaining({ sizes: "512x512", purpose: "any" }),
+      expect.objectContaining({ sizes: "512x512", purpose: "maskable" }),
+    ]),
+  );
+});
+
 test("search page query state has no detectable axe violations", async ({ page }) => {
   await expectNoAxeViolations(page, "/suche?q=Arrival", "search-arrival", async () => {
     await expect(page.getByRole("heading", { name: 'Treffer zu „Arrival“' })).toBeVisible();
@@ -182,6 +214,8 @@ test("mobile homepage explains the first visit context without a modal", async (
   await expect(
     onboarding.getByRole("link", { name: "Wie funktioniert null-noise?" }),
   ).toHaveAttribute("href", "/erklaerung");
+  await expect(page.getByRole("heading", { name: "Richtung starten", level: 2 })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Ohne Titel stöbern", exact: true })).toBeVisible();
   await expect(page.getByRole("dialog")).toHaveCount(0);
 });
 

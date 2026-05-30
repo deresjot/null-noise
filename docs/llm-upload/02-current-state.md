@@ -17,6 +17,15 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 ## Letzte lokale Arbeitsblöcke
 
+- PWA-/Offline-Basis 30. Mai 2026:
+  - Manifest, Theme-Farben und PWA-Icons inklusive maskable Icon sind lokal ergänzt
+  - Service Worker nutzt einen Navigation-Fallback auf `/offline`, ohne TMDb-/API-Daten offline vorzutäuschen
+  - Suche kennzeichnet fehlende Verbindung klar als Grenze für neue Treffer und externe Titeldaten
+  - Merkliste-/Gesehen-Hinweise bleiben browserlokal und können auf der Offline-Seite sichtbar bleiben, wenn der lokale App-Code verfügbar ist
+  - ruhige funktionale Zustandswechsel wurden für Fokus, Hover, Disclosure, Aktivierung und Lade-/Offline-Zustände ergänzt; `prefers-reduced-motion` bleibt berücksichtigt
+  - Typekit-Runtime-Stylesheet wurde entfernt
+  - Startseiten-Heading-Reihenfolge und Browse-Linknamen wurden für die automatisierten A11y-Prüfungen korrigiert
+  - Release Notes stehen lokal auf `0.8.4-pwa.20260530`
 - Mobile Detailseiten-Reihenfolge 25. Mai 2026:
   - lokale Titel-Detailseiten setzen das Poster im DOM und visuell direkt nach Titel/H1
   - die erste Einschätzung folgt nach dem Poster, die Kurzbeschreibung danach
@@ -132,6 +141,8 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 - `src/app/globals.css`: Mobile-App-Shell, Burger-Navigation, mobile Typografie/Spacing, Detailposter-Skalierung, Footer-/Legal-Abstände, Motion- und Reduced-Motion-Regeln
 - `src/components/site-header.tsx`: clientseitige mobile Navigation, Scroll-State, Escape-Schließen, aktive Zustände
+- `src/app/manifest.ts`, `public/sw.js`, `src/app/offline/page.tsx`, `src/components/offline-pocket-summary.tsx`: lokale PWA-/Offline-Basis ohne Offline-Scheinverfügbarkeit für externe Titeldaten
+- `src/lib/release-info.ts`: technisches Release `0.8.4-pwa.20260530`
 - `src/app/titel/[slug]/page.tsx`: mobile Detail-Hierarchie mit Synopsis im Titelkopf
 - `src/app/spike/metadaten/[mediaType]/[externalId]/page.tsx`: gestalteter Zurück-zur-Suche-Button
 - `src/app/layout.tsx`, `src/app/opengraph-image.tsx`, `public/brand/favicon.svg`, `public/brand/favicon-*.png`, `public/brand/apple-touch-icon.png`, `public/og/og-null-noise-mobile-20260523.png`: Favicon und Social-Sharing-Aktualisierung
@@ -201,6 +212,13 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 ## Letzte verifizierte UI-Checks
 
+- PWA-/Offline-Basis am 30. Mai 2026:
+  - `npm run lint`: bestanden
+  - `npm run build`: bestanden
+  - `npm run test:unit`: 15 Dateien / 85 Tests bestanden
+  - `npm run test:axe-core`: 6 Tests bestanden
+  - `npm run test:a11y`: 38 Tests bestanden
+  - `npx playwright test`: 38 Tests bestanden, 2 TMDb-Live-Fallback-Tests skipped
 - Situative Discovery-UX am 24. Mai 2026:
   - gezielt: `npx vitest run src/lib/metadata-spike.test.ts src/components/external-result-list.test.ts src/lib/detail-followups.test.ts --maxWorkers=1`: 27 Tests bestanden
   - `npm run lint`: bestanden

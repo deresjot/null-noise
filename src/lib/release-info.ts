@@ -1,12 +1,26 @@
 import packageJson from "../../package.json";
 
 export const currentBuild = {
-  version: `${packageJson.version}-detail-mobile.20260525`,
-  label: "Mobile title detail layout",
-  releasedAt: "2026-05-25 · preview",
+  version: `${packageJson.version}-pwa.20260530`,
+  label: "PWA and offline baseline",
+  releasedAt: "2026-05-30 · local",
 };
 
 export const releaseNotes = [
+  {
+    version: `${packageJson.version}-pwa.20260530`,
+    label: "PWA and offline baseline",
+    releasedAt: "2026-05-30",
+    entries: [
+      "Manifest, theme colors and app icons now cover the installable baseline, including a maskable icon.",
+      "The service worker keeps navigation requests on a local offline page when the network is unavailable.",
+      "Search clearly marks new hits and external title data as connection-dependent instead of implying offline availability.",
+      "Merkliste and Gesehen hints remain browser-local and can still be shown on the offline page when local app code is available.",
+      "Short functional transitions now support focus, hover, disclosure, activation and loading states while respecting reduced motion.",
+      "The Typekit runtime stylesheet was removed, and the homepage heading order and browse-link accessible names were corrected.",
+      "Local automated checks for lint, build, unit, axe-core, a11y and Playwright passed before this handoff.",
+    ],
+  },
   {
     version: `${packageJson.version}-detail-mobile.20260525`,
     label: "Mobile title detail layout",

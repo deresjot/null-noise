@@ -39,6 +39,24 @@ const rootHydrationGuardScript = `
 })();
 `;
 
+const serviceWorkerRegistrationScript = `
+(() => {
+  if (!("serviceWorker" in navigator)) {
+    return;
+  }
+
+  const register = () => {
+    navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {});
+  };
+
+  if (document.readyState === "complete") {
+    register();
+  } else {
+    window.addEventListener("load", register, { once: true });
+  }
+})();
+`;
+
 export const metadata: Metadata = {
   metadataBase,
   title: {
@@ -47,6 +65,11 @@ export const metadata: Metadata = {
   },
   description: shareDescription,
   applicationName: siteName,
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: siteName,
+  },
   icons: {
     icon: [
       { url: "/brand/favicon.svg", type: "image/svg+xml" },
@@ -93,7 +116,7 @@ export default function RootLayout({
     <html className={headingFont.variable} data-scroll-behavior="smooth" lang="de">
       <head>
         <script dangerouslySetInnerHTML={{ __html: rootHydrationGuardScript }} />
-        <link href="https://use.typekit.net/nqa2jtt.css" rel="stylesheet" />
+        <script dangerouslySetInnerHTML={{ __html: serviceWorkerRegistrationScript }} />
       </head>
       <body>
         <SiteHeader />

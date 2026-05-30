@@ -199,15 +199,14 @@ Optional, wenn der Umfang es rechtfertigt:
 
 ## Letzter lokaler Stand vor Übergabe
 
-Situative Discovery-UX vom 24. Mai 2026, lokal umgesetzt und nicht gepusht/deployt.
+PWA-/Offline-Basis vom 30. Mai 2026, lokal umgesetzt und nicht gepusht/deployt.
 
 - `npm run lint`: bestanden
 - `npm run build`: bestanden
 - `npm run test:unit`: 15 Dateien / 85 Tests bestanden
-- gezielt: `npx vitest run src/lib/metadata-spike.test.ts src/components/external-result-list.test.ts src/lib/detail-followups.test.ts --maxWorkers=1`: 27 Tests bestanden
-- `npm run test:a11y`: 35 Tests bestanden
-- `npm run test:axe-core`: 5 Tests bestanden
-- `npx playwright test`: 35 Tests bestanden, 2 TMDb-Live-Fallback-Tests skipped
+- `npm run test:axe-core`: 6 Tests bestanden
+- `npm run test:a11y`: 38 Tests bestanden
+- `npx playwright test`: 38 Tests bestanden, 2 TMDb-Live-Fallback-Tests skipped
 - lokaler Playwright-Smoke bei 390px und 430px auf `/`, `/suche`, `/suche?q=Arrival`, `/titel/mondfenster`, `/erklaerung`, `/bedienung`: kein horizontales Overflow, Mobile-Menü im Viewport
 - `git diff --check`: sauber
 

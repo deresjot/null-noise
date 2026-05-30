@@ -446,7 +446,7 @@ code {
 
 .brand-wordmark {
   color: var(--ink-heading);
-  font-family: "omnes-pro", "Omnes", var(--font-heading);
+  font-family: var(--font-heading);
   font-size: 1.5rem;
   font-weight: 760;
   line-height: 0.95;
@@ -768,7 +768,7 @@ code {
   background: rgba(248, 251, 255, 0.92);
 }
 
-.search-direct-starts h3 {
+.search-direct-starts-title {
   margin: 0;
   color: var(--ink-heading);
   font-size: 1rem;
@@ -1872,7 +1872,6 @@ code {
   background: var(--panel-strong);
   box-shadow: 0 10px 28px rgba(30, 34, 40, 0.08);
   transition:
-    opacity var(--motion-quick),
     transform var(--motion-float),
     border-color var(--motion-smooth),
     box-shadow var(--motion-smooth),
@@ -1880,7 +1879,7 @@ code {
 }
 
 .result-card[data-title-seen="true"] {
-  opacity: 0.68;
+  color: var(--ink-soft-strong);
 }
 
 .result-card[data-title-seen="true"] .poster-thumb-image {
@@ -2192,9 +2191,31 @@ code {
 }
 
 .disclosure summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   cursor: pointer;
   font-weight: 600;
   overflow-wrap: anywhere;
+  transition:
+    color var(--motion-quick),
+    background-color var(--motion-quick);
+}
+
+.disclosure summary::after {
+  content: "";
+  display: inline-block;
+  width: 0.48rem;
+  height: 0.48rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg) translateY(-0.1rem);
+  transform-origin: center;
+  transition: transform var(--motion-quick);
+}
+
+.disclosure[open] summary::after {
+  transform: rotate(225deg) translateY(-0.1rem);
 }
 
 .disclosure[open] {
@@ -3691,7 +3712,7 @@ code {
 
 .brand-wordmark {
   color: var(--ink-heading);
-  font-family: "omnes-pro", "Omnes", var(--font-heading);
+  font-family: var(--font-heading);
   font-size: clamp(1.55rem, 2vw, 1.85rem);
   font-weight: 820;
   letter-spacing: 0;
@@ -3704,7 +3725,7 @@ code {
 }
 
 .brand-wordmark-noise {
-  font-family: "omnes-pro", "Omnes", var(--font-heading);
+  font-family: var(--font-heading);
   font-size: 1em;
   font-weight: 820;
   text-transform: none;
@@ -3939,7 +3960,7 @@ code {
   background: var(--panel-muted);
 }
 
-.search-direct-starts h3 {
+.search-direct-starts-title {
   font-size: 1.08rem;
   letter-spacing: 0;
 }
@@ -4658,7 +4679,7 @@ code {
 
 .brand-wordmark {
   color: var(--brand-ink);
-  font-family: "omnes-pro", "Omnes", var(--font-heading);
+  font-family: var(--font-heading);
   font-size: clamp(1.8rem, 2.2vw, 2.25rem);
   font-weight: 900;
   letter-spacing: 0;
@@ -5482,7 +5503,7 @@ body {
   column-gap: 0.24rem;
   align-items: center;
   color: var(--brand-ink);
-  font-family: "omnes-pro", "Omnes", var(--font-heading);
+  font-family: var(--font-heading);
   font-size: 1.48rem;
   font-weight: 950;
   line-height: 0.78;
@@ -6711,7 +6732,7 @@ body {
     background: rgba(255, 250, 240, 0.54);
   }
 
-  .search-direct-starts h3 {
+  .search-direct-starts-title {
     font-size: 0.88rem;
     line-height: 1.15;
   }
@@ -7193,7 +7214,7 @@ body {
     background: transparent;
   }
 
-  .home-page .search-direct-starts h3 {
+  .home-page .search-direct-starts-title {
     margin: 0;
     color: var(--ink-soft-strong);
     font-size: 0.72rem;
@@ -7319,7 +7340,7 @@ body {
     background: transparent;
   }
 
-  .search-form[data-variant="stage"] .search-direct-starts h3,
+  .search-form[data-variant="stage"] .search-direct-starts-title,
   .search-form[data-variant="stage"] .search-direct-starts .field-note {
     position: absolute;
     width: 1px;
@@ -8238,8 +8259,8 @@ body {
     background: transparent;
   }
 
-  .home-page .search-direct-starts h3,
-  .search-form[data-variant="stage"] .search-direct-starts h3 {
+  .home-page .search-direct-starts-title,
+  .search-form[data-variant="stage"] .search-direct-starts-title {
     position: static;
     width: auto;
     height: auto;
@@ -8610,7 +8631,7 @@ body {
   gap: 0.62rem;
 }
 
-.search-direct-starts h3 {
+.search-direct-starts-title {
   margin-bottom: 0.05rem;
 }
 
@@ -8785,8 +8806,8 @@ body {
     gap: 0.48rem;
   }
 
-  .home-page .search-direct-starts h3,
-  .search-form[data-variant="stage"] .search-direct-starts h3 {
+  .home-page .search-direct-starts-title,
+  .search-form[data-variant="stage"] .search-direct-starts-title {
     margin-bottom: 0.28rem;
     font-size: 0.92rem;
     line-height: 1.25;
@@ -10504,7 +10525,6 @@ body {
       background-color 180ms ease,
       border-color 180ms ease,
       box-shadow 180ms ease,
-      opacity 180ms ease,
       transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
@@ -10936,6 +10956,71 @@ html[data-search-transition="loading"] .search-results-page::before {
   .title-pocket-button:focus-visible .title-pocket-button-mark {
     transform: scale(1.08);
   }
+
+  .title-pocket-button:active,
+  .result-card-cta-button:active,
+  .search-local-shelf-action:active,
+  .search-local-shelf-remove:active {
+    transform: translateY(1px);
+  }
+}
+
+.offline-page {
+  width: min(880px, 100%);
+  margin-inline: auto;
+}
+
+.offline-hero {
+  max-width: 54rem;
+}
+
+.offline-panel {
+  display: grid;
+  gap: 1rem;
+}
+
+.offline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.72rem;
+}
+
+.offline-pocket-groups {
+  display: grid;
+  gap: 1rem;
+}
+
+.offline-pocket-group {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.offline-pocket-group h3 {
+  font-size: clamp(1.25rem, 2vw, 1.55rem);
+}
+
+.offline-pocket-list {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.offline-pocket-item {
+  display: grid;
+  gap: 0.18rem;
+  min-height: 4.2rem;
+  padding: 0.78rem 0.88rem;
+  border: 1px solid rgba(31, 34, 44, 0.1);
+  border-radius: var(--radius-md);
+  background: rgba(255, 253, 248, 0.82);
+}
+
+.offline-pocket-item a {
+  color: var(--ink-heading);
+  font-weight: 800;
+  text-decoration-color: rgba(25, 27, 34, 0.28);
 }
 
 @media (max-width: 760px) {
