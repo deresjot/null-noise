@@ -3,7 +3,7 @@ import packageJson from "../../package.json";
 export const currentBuild = {
   version: `${packageJson.version}-wcag-lighthouse.20260605`,
   label: "WCAG and Lighthouse polish",
-  releasedAt: "2026-06-05 · local",
+  releasedAt: "2026-06-05",
 };
 
 export const releaseNotes = [

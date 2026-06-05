@@ -200,7 +200,7 @@ Optional, wenn der Umfang es rechtfertigt:
 
 ## Letzter lokaler Stand vor Übergabe
 
-WCAG-/Mobile-Lighthouse-Prüfung vom 5. Juni 2026, lokal geprüft und nicht committed, gepusht oder deployt.
+WCAG-/Mobile-Lighthouse-Prüfung vom 5. Juni 2026, lokal geprüft, committed, gepusht und als Production bereitgestellt.
 
 - `npm run lint`: bestanden
 - `npm run build`: bestanden

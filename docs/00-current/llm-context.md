@@ -3,7 +3,7 @@
 ## Aktueller Arbeitsstand
 
 - aktiver lokaler Arbeitsbranch: `null-noise`
-- aktueller Stand: WCAG-/Mobile-Lighthouse-Prüfung vom 5. Juni 2026 ist lokal in Arbeit; vorheriger Header-Performance-/A11y-Pass ist auf `origin/null-noise` und Production bereitgestellt
+- aktueller Stand: WCAG-/Mobile-Lighthouse-Prüfung vom 5. Juni 2026 ist auf `origin/null-noise` und Production bereitgestellt
 - Release-Metadaten stehen lokal auf `0.8.4-wcag-lighthouse.20260605`
 - nicht pushen/deployen ohne explizite Freigabe
 - Live-URL: https://null-noise.vercel.app

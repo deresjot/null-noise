@@ -6,7 +6,7 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 - lokaler Branch: `null-noise`
 - lokaler Projektpfad: `/Users/deresjot/Library/CloudStorage/Dropbox/_PRIVAT/Code/git-webdev/null-noise`
-- Stand: WCAG-/Mobile-Lighthouse-Prüfung vom 5. Juni 2026 ist lokal in Arbeit; vorheriger Header-Performance-/A11y-Pass ist auf `origin/null-noise` und Production bereitgestellt
+- Stand: WCAG-/Mobile-Lighthouse-Prüfung vom 5. Juni 2026 ist auf `origin/null-noise` und Production bereitgestellt
 - Live-URL: https://null-noise.vercel.app
 - Preview-Deploys werden nach Push per Vercel CLI erzeugt; konkrete URLs stehen in der jeweiligen Übergabe und im Vercel-Inspect
 - Hinweis: Preview ist `READY`, aber Vercel Deployment Protection/SSO ist aktiv; ohne Login kommt `401`
