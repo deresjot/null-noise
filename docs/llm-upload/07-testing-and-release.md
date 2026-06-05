@@ -210,7 +210,7 @@ Header-Performance-/A11y-Pass vom 5. Juni 2026, als `377b94d refactor: isolate h
 - geprüfte Header-A11y: Skip-Link vor Navigation, Startseiten-Brand-Link, nav/list/link-Struktur, Mobile-Menü-Button mit Name/Zustand, Escape-Fokus zurück zum Button
 - geprüfte Header-CSS-Zustände: sichtbarer Fokus, aktive Route, opakes Mobile-Menü im Viewport, kein horizontaler Overflow
 - `next-env.d.ts` wurde nicht übernommen, weil der Build nur eine automatische `.next/dev`-Generatorreferenz erzeugt hatte
-- Vercel Preview: https://null-noise-48un8czq3-deresjots-projects.vercel.app
+- Vercel Preview wurde per CLI aus einem sauberen Worktree des jeweiligen Commits erzeugt; konkrete URL siehe Übergabe/Inspect
 
 PWA-/Offline-Basis vom 30. Mai 2026, lokal umgesetzt und nicht gepusht/deployt.
 

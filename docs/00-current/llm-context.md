@@ -3,11 +3,11 @@
 ## Aktueller Arbeitsstand
 
 - aktiver lokaler Arbeitsbranch: `null-noise`
-- aktueller Stand: Mobile Detailseiten-Reihenfolge vom 25. Mai 2026 ist lokal auf `null-noise` umgesetzt; Result-Card-Klarheit, situative Discovery-UX, Evidence-/TMDb-Logik und Mobile-Viewport-Reparatur bleiben lokal enthalten
-- vorheriger Stand: Startseiten-/Mobile-UI-Fix ist lokal committed (`196db83 fix: stabilize home and mobile search UI`) und als Vercel Preview bereitgestellt; Production wurde nicht angerührt
-- nicht pushen/deployen ohne explizite Freigabe; aktueller Auftrag bleibt lokal
+- aktueller Stand: Header-Performance-/A11y-Pass vom 5. Juni 2026 ist auf `origin/null-noise` gepusht und als Vercel Preview bereitgestellt; Production wurde nicht angerührt
+- Release-Metadaten stehen auf `0.8.4-header.20260605`
+- nicht pushen/deployen ohne explizite Freigabe
 - Live-URL: https://null-noise.vercel.app
-- Preview-URL: https://null-noise-ezndxaczf-deresjots-projects.vercel.app
+- Preview-Deploys werden nach Push per Vercel CLI erzeugt; konkrete URLs stehen in der jeweiligen Übergabe und im Vercel-Inspect
 - Preview-Hinweis: Deployment Protection/SSO ist aktiv; ohne Vercel-Login kommt `401`
 - v0/grüne UI liegt im Archiv-Worktree
 - `main` nicht als Arbeitsfläche verwenden
