@@ -1,12 +1,23 @@
 import packageJson from "../../package.json";
 
 export const currentBuild = {
-  version: `${packageJson.version}-header.20260605`,
-  label: "Header navigation boundary",
-  releasedAt: "2026-06-05 · preview",
+  version: `${packageJson.version}-wcag-lighthouse.20260605`,
+  label: "WCAG and Lighthouse polish",
+  releasedAt: "2026-06-05 · local",
 };
 
 export const releaseNotes = [
+  {
+    version: `${packageJson.version}-wcag-lighthouse.20260605`,
+    label: "WCAG and Lighthouse polish",
+    releasedAt: "2026-06-05",
+    entries: [
+      "The focused skip link now appears immediately instead of waiting for a transition, keeping bypass navigation visibly available as soon as it receives keyboard focus.",
+      "Obsolete pre-SVG brand lockup CSS was removed from the global stylesheet without touching the current logo, wordmark frame, focus, active-route or mobile-menu states.",
+      "Local Lighthouse mobile performance remained at 96 while the large CSS resource and unused-CSS estimate dropped slightly.",
+      "WCAG 2.2 A/AA checks on the core routes stayed clean in axe-core and Playwright-assisted keyboard, reflow, reduced-motion and text-spacing smokes.",
+    ],
+  },
   {
     version: `${packageJson.version}-header.20260605`,
     label: "Header navigation boundary",

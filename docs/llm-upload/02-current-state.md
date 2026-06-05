@@ -6,7 +6,7 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 - lokaler Branch: `null-noise`
 - lokaler Projektpfad: `/Users/deresjot/Library/CloudStorage/Dropbox/_PRIVAT/Code/git-webdev/null-noise`
-- Stand: Header-Performance-/A11y-Pass vom 5. Juni 2026 ist als `377b94d refactor: isolate header navigation client boundary` auf `origin/null-noise` gepusht und als Vercel Preview bereitgestellt
+- Stand: WCAG-/Mobile-Lighthouse-Prüfung vom 5. Juni 2026 ist lokal in Arbeit; vorheriger Header-Performance-/A11y-Pass ist auf `origin/null-noise` und Production bereitgestellt
 - Live-URL: https://null-noise.vercel.app
 - Preview-Deploys werden nach Push per Vercel CLI erzeugt; konkrete URLs stehen in der jeweiligen Übergabe und im Vercel-Inspect
 - Hinweis: Preview ist `READY`, aber Vercel Deployment Protection/SSO ist aktiv; ohne Login kommt `401`
@@ -16,6 +16,13 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 ## Letzte lokale Arbeitsblöcke
 
+- WCAG-/Mobile-Lighthouse-Prüfung 5. Juni 2026:
+  - Fokus auf dem Skip-Link ist sofort sichtbar, ohne Einblend-Transition
+  - verwaiste alte Brand-CSS-Regeln für `brand-mark`, `brand-lockup` und textbasierte `brand-wordmark` wurden aus `globals.css` entfernt
+  - aktuelle Logo-/Wortmarken-Frames, Fokuszustände, aktive Route, Mobile-Menü, Reflow und Reduced-Motion-Regeln bleiben erhalten
+  - lokale Mobile-Lighthouse-Messung bleibt bei Performance 96, Accessibility/Best Practices/SEO 100; großer CSS-Chunk sank von ca. 192 KB auf ca. 188 KB Resource
+  - WCAG-2.2-A/AA-Smoke: alle geforderten Kernrouten ohne axe-Verstöße, ohne positiven `tabindex`, ohne horizontalen Overflow bei 320/390/430 CSS-Pixeln und ohne Text-Spacing-Overflow
+  - Release Notes stehen lokal auf `0.8.4-wcag-lighthouse.20260605`
 - Header-Performance-/A11y-Pass 5. Juni 2026:
   - `SiteHeader` ist wieder ein Server Component und enthält Branding sowie Skip-Links
   - interaktive Navigation, aktiver Pfad, Mobile-Menü und Escape-Fokus leben in `SiteNavigation`
@@ -148,7 +155,7 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 - `src/app/globals.css`: Mobile-App-Shell, Burger-Navigation, mobile Typografie/Spacing, Detailposter-Skalierung, Footer-/Legal-Abstände, Motion- und Reduced-Motion-Regeln
 - `src/components/site-header.tsx`: clientseitige mobile Navigation, Scroll-State, Escape-Schließen, aktive Zustände
 - `src/app/manifest.ts`, `public/sw.js`, `src/app/offline/page.tsx`, `src/components/offline-pocket-summary.tsx`: lokale PWA-/Offline-Basis ohne Offline-Scheinverfügbarkeit für externe Titeldaten
-- `src/lib/release-info.ts`: technisches Release `0.8.4-header.20260605`
+- `src/lib/release-info.ts`: technisches Release `0.8.4-wcag-lighthouse.20260605`
 - `src/app/titel/[slug]/page.tsx`: mobile Detail-Hierarchie mit Synopsis im Titelkopf
 - `src/app/spike/metadaten/[mediaType]/[externalId]/page.tsx`: gestalteter Zurück-zur-Suche-Button
 - `src/app/layout.tsx`, `src/app/opengraph-image.tsx`, `public/brand/favicon.svg`, `public/brand/favicon-*.png`, `public/brand/apple-touch-icon.png`, `public/og/og-null-noise-mobile-20260523.png`: Favicon und Social-Sharing-Aktualisierung

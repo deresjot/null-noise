@@ -400,6 +400,7 @@ code {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
+  transition: none;
 }
 
 .site-header {
@@ -432,48 +433,6 @@ code {
 .brand:hover,
 .brand:focus-visible {
   transform: translateY(-1px);
-}
-
-.brand-mark {
-  position: relative;
-  width: 1.86rem;
-  height: 1.38rem;
-  display: inline-block;
-  flex: none;
-  overflow: visible;
-  isolation: isolate;
-}
-
-.brand-wordmark {
-  color: var(--ink-heading);
-  font-family: var(--font-heading);
-  font-size: 1.5rem;
-  font-weight: 760;
-  line-height: 0.95;
-  letter-spacing: 0.01em;
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.2rem;
-}
-
-.brand-wordmark-null {
-  letter-spacing: 0;
-}
-
-.brand-wordmark-separator {
-  color: rgba(31, 34, 44, 0.55);
-  font-size: 1.1rem;
-  line-height: 1;
-}
-
-.brand-wordmark-noise {
-  letter-spacing: 0.055em;
-  font-family: var(--font-heading);
-  font-size: 1.06em;
-  font-weight: 840;
-  text-transform: uppercase;
-  opacity: 0.96;
-  transform: translateY(-0.01em);
 }
 
 @keyframes brand-blob-orbit {
@@ -3711,47 +3670,6 @@ code {
   gap: 0.72rem;
 }
 
-.brand-lockup {
-  display: grid;
-  gap: 0.08rem;
-}
-
-.brand-mark {
-  width: 2.22rem;
-  height: 2.22rem;
-  border: 1.5px solid var(--ink-heading);
-  border-radius: 0.58rem;
-  background: #ffffff;
-  box-shadow: 3px 3px 0 rgba(95, 168, 255, 0.34);
-}
-
-.brand-wordmark {
-  color: var(--ink-heading);
-  font-family: var(--font-heading);
-  font-size: clamp(1.55rem, 2vw, 1.85rem);
-  font-weight: 820;
-  letter-spacing: 0;
-}
-
-.brand-wordmark-null,
-.brand-wordmark-noise,
-.brand-wordmark-separator {
-  letter-spacing: 0;
-}
-
-.brand-wordmark-noise {
-  font-family: var(--font-heading);
-  font-size: 1em;
-  font-weight: 820;
-  text-transform: none;
-  transform: none;
-}
-
-.brand-wordmark-separator {
-  color: var(--art-coral);
-  font-size: 1em;
-}
-
 .brand-subline {
   color: var(--ink-faint);
   font-size: 0.72rem;
@@ -4667,52 +4585,6 @@ code {
   text-decoration: none;
 }
 
-.brand:hover .brand-mark,
-.brand:focus-visible .brand-mark {
-  transform: translateY(-1px) rotate(-1deg);
-}
-
-.brand-mark {
-  display: grid;
-  flex: 0 0 auto;
-  width: 3.65rem;
-  height: 3.65rem;
-  place-items: center;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-  transform: rotate(-1.5deg);
-  transition:
-    transform var(--motion-float),
-    filter var(--motion-smooth);
-}
-
-.brand-lockup {
-  gap: 0.12rem;
-}
-
-.brand-wordmark {
-  color: var(--brand-ink);
-  font-family: var(--font-heading);
-  font-size: clamp(1.8rem, 2.2vw, 2.25rem);
-  font-weight: 900;
-  letter-spacing: 0;
-  line-height: 0.9;
-}
-
-.brand-wordmark-null,
-.brand-wordmark-noise {
-  letter-spacing: 0;
-}
-
-.brand-wordmark-separator {
-  margin-inline: 0.05rem 0.02rem;
-  color: var(--brand-face);
-  font-weight: 950;
-  letter-spacing: 0;
-}
-
 .brand-subline {
   color: var(--brand-blue-deep);
   font-size: 0.73rem;
@@ -5125,15 +4997,6 @@ html[data-search-transition="settling"] .search-sidebar .search-command-stage {
     gap: 0.7rem;
   }
 
-  .brand-mark {
-    width: 3.05rem;
-    height: 3.05rem;
-  }
-
-  .brand-wordmark {
-    font-size: 1.42rem;
-  }
-
   .brand-subline {
     font-size: 0.64rem;
   }
@@ -5453,7 +5316,6 @@ button,
 input,
 select,
 textarea,
-.brand-wordmark,
 .eyebrow,
 .card-topline,
 .result-card-reading-kicker,
@@ -5492,63 +5354,6 @@ body {
   background: #fffdf8;
   box-shadow: 7px 7px 0 var(--brand-yellow);
   transform: translateY(-1px);
-}
-
-.brand:hover .brand-mark,
-.brand:focus-visible .brand-mark {
-  transform: translateY(-1px);
-}
-
-.brand-mark {
-  width: 4.6rem;
-  height: 4.1rem;
-  transform: none;
-}
-
-.brand-lockup {
-  gap: 0.12rem;
-}
-
-.brand-wordmark {
-  display: grid;
-  grid-template-columns: auto 0.55em;
-  grid-template-areas:
-    "null slash"
-    "noise slash";
-  column-gap: 0.24rem;
-  align-items: center;
-  color: var(--brand-ink);
-  font-family: var(--font-heading);
-  font-size: 1.48rem;
-  font-weight: 950;
-  line-height: 0.78;
-  text-transform: uppercase;
-}
-
-.brand-wordmark-null {
-  grid-area: null;
-}
-
-.brand-wordmark-noise {
-  grid-area: noise;
-}
-
-.brand-wordmark-separator {
-  grid-area: slash;
-  display: inline-grid;
-  width: 0.5em;
-  min-width: 0;
-  height: 1.58em;
-  margin-inline: 0;
-  place-items: center;
-  border: 2px solid var(--brand-ink);
-  border-radius: 0.34em;
-  background: var(--brand-orange);
-  color: #ffffff;
-  font-size: 1.15em;
-  font-weight: 950;
-  line-height: 1;
-  transform: skew(-10deg);
 }
 
 .brand-subline {
@@ -5922,15 +5727,6 @@ html[data-search-transition="settling"] .result-grid > li {
   .brand {
     width: 100%;
   }
-
-  .brand-mark {
-    width: 3.75rem;
-    height: 3.35rem;
-  }
-
-  .brand-wordmark {
-    font-size: 1.48rem;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -5991,51 +5787,6 @@ html[data-search-transition="settling"] .result-grid > li {
   background: transparent;
   box-shadow: none;
   transform: none;
-}
-
-.brand:hover .brand-mark,
-.brand:focus-visible .brand-mark {
-  transform: none;
-}
-
-.brand-mark {
-  width: 2.75rem;
-  height: 2.75rem;
-  transform: none;
-}
-
-.brand-lockup {
-  gap: 0.08rem;
-}
-
-.brand-wordmark {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.26rem;
-  color: var(--brand-ink);
-  font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: clamp(1.22rem, 2vw, 1.45rem);
-  font-weight: 850;
-  line-height: 1;
-  letter-spacing: 0;
-  text-transform: uppercase;
-}
-
-.brand-wordmark-null,
-.brand-wordmark-noise {
-  display: inline;
-  grid-area: auto;
-  font-family: inherit;
-  font-size: inherit;
-  font-weight: inherit;
-  letter-spacing: 0;
-  opacity: 1;
-  text-transform: inherit;
-  transform: none;
-}
-
-.brand-wordmark-separator {
-  display: none;
 }
 
 .brand-subline {
@@ -6270,14 +6021,6 @@ body {
 }
 
 @media (max-width: 420px) {
-  .brand-mark {
-    width: 2.5rem;
-    height: 2.5rem;
-  }
-
-  .brand-wordmark {
-    font-size: 1.16rem;
-  }
 }
 
 /* Localer UI-, Content- und Brand-Fix-Pass */
@@ -6331,11 +6074,6 @@ body {
   padding-right: 0.12rem;
 }
 
-.brand:hover .brand-wordmark-image,
-.brand:focus-visible .brand-wordmark-image {
-  transform: translateY(-1px);
-}
-
 .brand-image-frame {
   display: flex;
   align-items: center;
@@ -6359,6 +6097,11 @@ body {
 .brand:hover .brand-image,
 .brand:focus-visible .brand-image {
   transform: translateY(-1px) scale(1.18);
+}
+
+.brand:hover .brand-wordmark-image,
+.brand:focus-visible .brand-wordmark-image {
+  transform: translateY(-1px);
 }
 
 .brand-wordmark-frame {
@@ -6547,16 +6290,6 @@ body {
   .brand-image-frame {
     width: clamp(3rem, 15.4vw, 3.43rem);
     min-width: clamp(3rem, 15.4vw, 3.43rem);
-  }
-
-  .brand-wordmark-frame {
-    width: clamp(6.35rem, 34vw, 7.95rem);
-    min-width: clamp(6.35rem, 34vw, 7.95rem);
-    max-width: min(46vw, 8.25rem);
-  }
-
-  .brand-wordmark-image {
-    max-width: 100%;
   }
 
   .nav-list {
@@ -7657,12 +7390,6 @@ body {
     min-width: clamp(2.52rem, 12vw, 2.9rem);
   }
 
-  .brand-wordmark-frame {
-    width: clamp(5.75rem, 30vw, 7.05rem);
-    min-width: clamp(5.75rem, 30vw, 7.05rem);
-    max-width: min(42vw, 7.05rem);
-  }
-
   #top-menu {
     justify-self: center;
   }
@@ -7939,12 +7666,6 @@ body {
   html[data-mobile-app-view="true"] .mobile-app-shell .brand-image-frame {
     width: 2.45rem;
     min-width: 2.45rem;
-  }
-
-  html[data-mobile-app-view="true"] .mobile-app-shell .brand-wordmark-frame {
-    width: 5.8rem;
-    min-width: 5.8rem;
-    max-width: 5.8rem;
   }
 
   html[data-mobile-app-view="true"] .mobile-app-shell #top-menu {
@@ -8732,12 +8453,6 @@ body {
     min-width: clamp(2.35rem, 11.2vw, 2.8rem);
   }
 
-  .brand-wordmark-frame {
-    width: clamp(5.6rem, 32vw, 7rem);
-    min-width: clamp(5.6rem, 32vw, 7rem);
-    max-width: 7rem;
-  }
-
   .home-page .hero-home-stage,
   .search-results-page {
     width: min(100%, calc(100% - 1rem));
@@ -9008,11 +8723,6 @@ body {
   .brand-image-frame {
     width: 2.2rem;
     min-width: 2.2rem;
-  }
-
-  .brand-wordmark-frame {
-    width: 5.35rem;
-    min-width: 5.35rem;
   }
 
   .result-card,
@@ -9287,12 +8997,6 @@ body {
     display: flex;
     width: 2.85rem;
     min-width: 2.85rem;
-  }
-
-  .brand-wordmark-frame {
-    width: clamp(6.8rem, 34vw, 8rem);
-    min-width: clamp(6.8rem, 34vw, 8rem);
-    max-width: 8rem;
   }
 
   .mobile-nav-list {
@@ -10204,10 +9908,6 @@ body {
 }
 
 @media (max-width: 390px) {
-  .brand-wordmark-frame {
-    width: clamp(6.3rem, 36vw, 7.4rem);
-    min-width: clamp(6.3rem, 36vw, 7.4rem);
-  }
 
   .mobile-menu-toggle {
     padding-inline: 0.7rem;
@@ -11382,9 +11082,6 @@ html[data-search-transition="loading"] .search-results-page::before {
 }
 
 @media (min-width: 391px) and (max-width: 430px) {
-  .brand-wordmark-frame {
-    width: clamp(7rem, 37vw, 8.15rem);
-  }
 }
 
 @media (max-width: 390px) {
@@ -11402,10 +11099,6 @@ html[data-search-transition="loading"] .search-results-page::before {
   .brand-image-frame {
     width: 2.42rem;
     min-width: 2.42rem;
-  }
-
-  .brand-wordmark-frame {
-    width: clamp(6.25rem, 34vw, 7.25rem);
   }
 
   .mobile-menu-toggle {
@@ -11428,10 +11121,6 @@ html[data-search-transition="loading"] .search-results-page::before {
   .mobile-menu-toggle {
     min-width: 3rem;
     padding-inline: 0.78rem;
-  }
-
-  .brand-wordmark-frame {
-    width: clamp(5.9rem, 38vw, 6.65rem);
   }
 }
 

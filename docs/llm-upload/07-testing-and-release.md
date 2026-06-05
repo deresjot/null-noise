@@ -1,6 +1,6 @@
 # Testing und Release für null-noise
 
-Stand: 24. Mai 2026
+Stand: 5. Juni 2026
 
 Diese Datei beschreibt, wie `null-noise` Accessibility testet und wo die Grenzen der Automatisierung liegen.
 
@@ -198,6 +198,19 @@ Optional, wenn der Umfang es rechtfertigt:
 - `npx playwright test`
 
 ## Letzter lokaler Stand vor Übergabe
+
+WCAG-/Mobile-Lighthouse-Prüfung vom 5. Juni 2026, lokal geprüft und nicht committed, gepusht oder deployt.
+
+- `npm run lint`: bestanden
+- `npm run build`: bestanden
+- `npm run test:unit`: bestanden
+- `npm run test:axe-core`: 6 Tests bestanden
+- `npm run test:a11y`: 44 Tests bestanden
+- `npx playwright test`: 44 Tests bestanden, 2 TMDb-Live-Fallback-Tests skipped
+- lokale Mobile-Lighthouse-Messung: Performance 96, Accessibility 100, Best Practices 100, SEO 100; großer CSS-Chunk ca. 192 KB vor dem Pass und ca. 188 KB nach dem Entfernen verwaister Brand-CSS-Regeln
+- WCAG-2.2-A/AA-Smoke auf Kernrouten: keine axe-Verstöße, keine positiven `tabindex`-Werte, kein horizontaler Overflow bei 320/390/430 CSS-Pixeln, kein Text-Spacing-Overflow
+- Skip-Link-Fokus ist sofort sichtbar; aktive Route, opakes Mobile-Menü, Escape-Fokus-Rückgabe und Reduced-Motion-Verhalten bleiben erhalten
+- `src/lib/release-info.ts` steht lokal auf `0.8.4-wcag-lighthouse.20260605`
 
 Header-Performance-/A11y-Pass vom 5. Juni 2026, als `377b94d refactor: isolate header navigation client boundary` gepusht und als Vercel Preview bereitgestellt.
 
