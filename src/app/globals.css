@@ -4359,12 +4359,10 @@ code {
 
 @keyframes card-list-change-in {
   from {
-    opacity: 0;
     transform: translateY(0.65rem) scale(0.99);
   }
 
   to {
-    opacity: 1;
     transform: translateY(0) scale(1);
   }
 }
@@ -4864,12 +4862,10 @@ code {
 
 @keyframes card-list-change-in {
   from {
-    opacity: 0;
     transform: translateY(0.4rem) scale(0.995);
   }
 
   to {
-    opacity: 1;
     transform: translateY(0) scale(1);
   }
 }
@@ -11527,4 +11523,15 @@ html[data-search-transition="loading"] .search-results-page::before {
   .mobile-menu-toggle[data-open="true"] .mobile-menu-toggle-icon span {
     transition: none;
   }
+}
+
+.result-card .card-topline,
+.result-card .result-card-reading-kicker,
+.result-card .result-card-reading-status,
+.result-card .result-card-note,
+.result-card .secondary-button-link,
+.result-card .quiet-button,
+.result-card .title-pocket-state,
+.result-card .title-pocket-feedback {
+  color: var(--ink-heading) !important;
 }

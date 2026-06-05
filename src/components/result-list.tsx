@@ -95,9 +95,10 @@ export function ResultList({
               data-tone={tendency.tone}
             >
               <Link
-                aria-label={`Poster und Einordnung zu ${title.external.title} öffnen`}
+                aria-hidden="true"
                 className="poster-thumb-link"
                 href={detailPath}
+                tabIndex={-1}
               >
                 <ResultPoster
                   sizes="(max-width: 980px) min(100vw - 2rem, 32rem), 15rem"
@@ -132,7 +133,7 @@ export function ResultList({
               <footer className="result-card-footer-zone">
                 <div className="result-card-cta-zone">
                   <Link
-                    aria-label={`${actionLabel === "Details" ? "Titeldaten" : "Einordnung"} zu ${title.external.title} öffnen`}
+                    aria-label={`${actionLabel}: ${actionLabel === "Details" ? "Titeldaten" : "Einordnung"} zu ${title.external.title} öffnen`}
                     className={`${actionClassName} result-card-cta-button`}
                     data-action="details"
                     href={detailPath}

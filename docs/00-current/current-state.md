@@ -20,8 +20,12 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
   - Fokus auf dem Skip-Link ist sofort sichtbar, ohne Einblend-Transition
   - verwaiste alte Brand-CSS-Regeln für `brand-mark`, `brand-lockup` und textbasierte `brand-wordmark` wurden aus `globals.css` entfernt
   - aktuelle Logo-/Wortmarken-Frames, Fokuszustände, aktive Route, Mobile-Menü, Reflow und Reduced-Motion-Regeln bleiben erhalten
-  - lokale Mobile-Lighthouse-Messung bleibt bei Performance 96, Accessibility/Best Practices/SEO 100; großer CSS-Chunk sank von ca. 192 KB auf ca. 188 KB Resource
-  - WCAG-2.2-A/AA-Smoke: alle geforderten Kernrouten ohne axe-Verstöße, ohne positiven `tabindex`, ohne horizontalen Overflow bei 320/390/430 CSS-Pixeln und ohne Text-Spacing-Overflow
+  - WCAG 2.2 Level AA ist als technischer Zielstandard geschärft; eine vollständige manuelle Konformitätsbewertung bleibt weiterhin separat nötig
+  - `npm run test:wcag22-aa` ergänzt eine technische WCAG-2.2-A/AA-Matrix für alle Erfolgskriterien mit Axe-, DOM-/Semantik-, Fokus-, Reflow-, Text-Spacing-, Reduced-Motion-, Target-Size-Checks oder Feature-N/A-Evidence
+  - Ergebnis-Karten behalten sichtbare Labels wie `Details`, `Merken` und `Gesehen?` im zugänglichen Namen; Card-Meta-/Action-Texte nutzen kontrastfestere Farbe
+  - Card-List-Animationen bewegen noch sanft, blenden Text aber nicht mehr per Opacity ein
+  - lokale Mobile-Lighthouse-Messung blieb stabil; großer CSS-Chunk sank von ca. 192 KB auf ca. 188 KB Resource
+  - WCAG-2.2-A/AA-Techniklauf: alle Kernrouten ohne axe-Verstöße, ohne positiven `tabindex`, ohne horizontalen Overflow bei 320/390/430 CSS-Pixeln und ohne Text-Spacing-Overflow
   - Release Notes stehen lokal auf `0.8.4-wcag-lighthouse.20260605`
 - Header-Performance-/A11y-Pass 5. Juni 2026:
   - `SiteHeader` ist wieder ein Server Component und enthält Branding sowie Skip-Links
@@ -168,7 +172,7 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 - `src/components/reading-evidence-details.tsx`, `src/app/titel/[slug]/page.tsx`, `src/app/spike/metadaten/[mediaType]/[externalId]/page.tsx`: Detail-Disclosure mit Dafür/Dagegen/Datenlage-Gruppen
 - `src/lib/detail-followups.ts`: Alternativen als situative Gegengewichte statt klassische Empfehlungssprache
 - `src/lib/release-info.ts`: technisches Release `0.8.4-discovery.20260524`
-- `tests/accessibility.spec.ts`: mobile Navigationstest auf Burger-Menü und vollständige Zielnavigation angepasst
+- `tests/accessibility.spec.ts`: mobile Navigationstest auf Burger-Menü und Zielnavigation angepasst
 - `next.config.ts`: lokale Security Header/CSP und API-Cache-Header
 - `src/lib/prisma.ts`, `src/lib/catalog-db.ts`, `src/lib/metadata-spike.ts`, `src/lib/letterboxd.ts`, `src/lib/local-titles.ts`, `src/lib/ratings.ts`: lokale `server-only`-Grenzen
 - `src/app/api/local-titles/delete/route.ts`: lokale Origin-Prüfung für schreibende Delete-Route
@@ -211,7 +215,7 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 ## Offene echte Prüfungen
 
-- vor Push/Deploy durch anderen Chat prüfen: Working Tree, Diff-Scope, keine Secrets/Recovery-/Screenshot-Artefakte, Testmatrix vollständig
+- vor Push/Deploy durch anderen Chat prüfen: Working Tree, Diff-Scope, keine Secrets/Recovery-/Screenshot-Artefakte, Testmatrix im Scope plausibel
 - nach dem lokalen Abschlusscommit erneut gelaufen: `npm run lint`, `npm run build`, `npm run test:a11y`, `npm run test:axe-core`, `npm run test:unit` und vollständiges `npx playwright test`
 - Vercel-ENV vor Deploy prüfen: serverseitige Secrets, `NULL_NOISE_RATE_LIMIT_SALT`, `NEXT_PUBLIC_SITE_URL`, Preview/Production-Unterschiede
 - nach Deploy echte Production-Header/CSP und API-Cache-Header prüfen

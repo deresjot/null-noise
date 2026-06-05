@@ -128,6 +128,7 @@
 - `details`/`summary` für ruhige Vertiefung
 - keine Tooltip-only-Inhalte
 - automatisierte Tests ersetzen keine manuelle Prüfung
+- WCAG 2.2 Level AA ist technischer Zielstandard; `npm run test:wcag22-aa` bildet eine wiederholbare technische Matrix ab, aber keine vollständige manuelle Konformitätsbewertung
 
 ## Mobile-Stand
 
@@ -152,6 +153,7 @@
 - Die freie Suche wurde gegen unklare Ausblendung durch den lokalen Schon-gesehen-Filter stabilisiert: getippte Suchergebnisse bleiben sichtbar, Browse kann weiterhin gesehene Titel ausblenden
 - Erfolgreiche TMDb-Suchen werden kurz serverseitig wiederverwendet, falls dieselbe Anfrage bei schnellen lokalen Checks anschließend upstream stolpert
 - `/barrierefreiheit` wurde auf WCAG 2.2 AA als technisches Ziel, aktuellen Status, konkrete Maßnahmen, Prüfweise, bekannte Grenzen und Kontakt fokussiert
+- die WCAG-2.2-A/AA-Matrix stärkt automatische Regression-Absicherung für Kernrouten; Screenreader-, 400%-Zoom- und echtes-Mobile-Device-Prüfung bleiben manuell
 - sanfte CSS-Transitions und optionale Ladebalken-Hooks sind ergänzt; `prefers-reduced-motion` wird respektiert
 - Opacity-Fades wurden aus Entry-Animationen entfernt, damit A11y-Kontrast-Scans nicht während halbtransparenter Texte fehlschlagen
 - Startseite erklärt jetzt direkt unter `Was passt gerade?`, wofür Null Noise gedacht ist
@@ -177,6 +179,7 @@
 - `npm run test:unit`
 - `npm run test:axe-core`
 - `npm run test:a11y`
+- `npm run test:wcag22-aa`
 - `npx playwright test`
 
 ## Letzte finale Prüfung dieses Mobile-UX-Abschlusses

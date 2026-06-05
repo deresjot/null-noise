@@ -163,7 +163,7 @@ function ExternalItemAction({
       <>
         <div className="result-card-cta-zone">
           <Link
-            aria-label={`Einordnung zu ${item.title} öffnen`}
+            aria-label={`Einordnung lesen: Einordnung zu ${item.title} öffnen`}
             className="secondary-button-link result-card-cta-button"
             data-action="details"
             href={localPath}
@@ -181,7 +181,7 @@ function ExternalItemAction({
       <>
         <div className="result-card-cta-zone">
           <Link
-            aria-label={`Titeldaten zu ${item.title} öffnen`}
+            aria-label={`Details: Titeldaten zu ${item.title} öffnen`}
             className="secondary-button-link result-card-action-link result-card-cta-button"
             data-action="details"
             href={getExternalDetailPath(item, query)}
@@ -203,7 +203,7 @@ function ExternalItemAction({
     <>
       <div className="result-card-cta-zone">
         <Link
-          aria-label={`Titeldaten zu ${item.title} öffnen`}
+          aria-label={`Details: Titeldaten zu ${item.title} öffnen`}
           className="secondary-button-link result-card-action-link result-card-cta-button"
           data-action="details"
           href={getExternalDetailPath(item, query)}
@@ -254,9 +254,10 @@ export function ExternalResultList({
               data-tone={tendency.tone}
             >
               <Link
-                aria-label={`Poster und Details zu ${item.title} öffnen`}
+                aria-hidden="true"
                 className="poster-thumb-link"
                 href={detailPath}
+                tabIndex={-1}
               >
                 <ResultPoster
                   sizes="(max-width: 980px) min(100vw - 2rem, 32rem), 15rem"

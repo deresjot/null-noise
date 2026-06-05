@@ -104,9 +104,10 @@ function PocketList({
             <li key={`${removeKind}-${item.key}`}>
               <article className="search-local-shelf-card">
                 <Link
-                  aria-label={`${title}: ${item.title} öffnen`}
+                  aria-hidden="true"
                   className="search-local-shelf-poster"
                   href={item.href}
+                  tabIndex={-1}
                 >
                   <ResultPoster sizes="6rem" src={item.posterSrc} title={item.title} />
                 </Link>

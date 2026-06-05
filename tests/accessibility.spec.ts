@@ -440,13 +440,13 @@ test("reload restores focus to the previously active control on the same page", 
   await page.setViewportSize({ width: 430, height: 900 });
   await page.goto("/suche?q=Mythbusters");
 
-  const detailsLink = page.getByRole("link", { name: "Details" }).first();
+  const detailsLink = page.locator(".result-card-cta-button").first();
   await detailsLink.focus();
   await expect(detailsLink).toBeFocused();
 
   await page.reload({ waitUntil: "networkidle" });
 
-  await expect(page.getByRole("link", { name: "Details" }).first()).toBeFocused();
+  await expect(page.locator(".result-card-cta-button").first()).toBeFocused();
 });
 
 test("explanation page uses native disclosure for deeper help", async ({ page }) => {
@@ -527,6 +527,73 @@ test("mobile navigation separates primary header links from footer metadata link
   await expect(footerLegalNav.locator('a[href="/barrierefreiheit"]')).toHaveText("Barrierefreiheit");
   await expect(footerLegalNav.locator('a[href="/datenschutz"]')).toHaveText("Datenschutz");
   await expect(footerLegalNav.locator('a[href="/impressum"]')).toHaveText("Impressum");
+});
+
+test("mobile navigation returns focus to the menu button after Escape", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 900 });
+  await page.goto("/");
+
+  const menuButton = page.getByRole("button", { name: "Menü öffnen" });
+  await menuButton.click();
+
+  const mobileNav = page.getByRole("navigation", { name: "Mobile Navigation" });
+  await expect(mobileNav).toBeVisible();
+
+  await mobileNav.getByRole("link", { name: "Suche" }).focus();
+  await page.keyboard.press("Escape");
+
+  await expect(page.getByRole("button", { name: "Menü öffnen" })).toBeFocused();
+  await expect(mobileNav).toBeHidden();
+});
+
+test("result cards keep poster links out of the keyboard flow", async ({ page }) => {
+  await page.goto("/suche?q=Arrival");
+  await expect(page.getByRole("heading", { name: 'Treffer zu „Arrival“' })).toBeVisible();
+
+  const firstPosterLink = page.locator(".result-card .poster-thumb-link").first();
+
+  await expect(firstPosterLink).toHaveAttribute("tabindex", "-1");
+  await expect(firstPosterLink).toHaveAttribute("aria-hidden", "true");
+  await expect(page.locator(".result-card .card-title a").first()).toBeVisible();
+  await expect(page.locator(".result-card-cta-button").first()).toContainText("Details");
+});
+
+test("local title buttons expose understandable pressed actions", async ({ page }) => {
+  await page.goto("/titel/mondfenster");
+
+  const rememberButton = page.getByRole("button", {
+    name: "Merken: Für später merken: Mondfenster",
+  }).first();
+  await expect(rememberButton).toHaveAttribute("aria-pressed", "false");
+
+  await rememberButton.click();
+
+  const removeRememberButton = page.getByRole("button", {
+    name: "Gemerkt: Nicht mehr für später merken: Mondfenster",
+  }).first();
+  await expect(removeRememberButton).toHaveAttribute("aria-pressed", "true");
+
+  const seenButton = page.getByRole("button", {
+    name: "Schon gesehen?: Als schon gesehen markieren: Mondfenster",
+  }).first();
+  await seenButton.click();
+
+  await expect(
+    page.getByRole("button", {
+      name: "Schon gesehen: Nicht mehr als gesehen markieren: Mondfenster",
+    }).first(),
+  ).toHaveAttribute("aria-pressed", "true");
+});
+
+test("search soft navigation exposes a concise live status", async ({ page }) => {
+  await page.goto("/suche?q=Arrival");
+  await expect(page.getByRole("heading", { name: 'Treffer zu „Arrival“' })).toBeVisible();
+
+  await page.getByRole("link", { name: "Karten" }).click();
+
+  await expect(page.locator(".search-results-live-status")).toContainText("Suche aktualisiert:");
+  await expect(page.locator(".search-results-live-status")).toContainText("externe Titel");
+  await expect(page.getByRole("heading", { name: 'Treffer zu „Arrival“' })).toBeVisible();
 });
 
 test("accessibility page is reachable and explains the current testing scope", async ({ page }) => {
@@ -620,6 +687,89 @@ test("core routes avoid horizontal overflow at 320 CSS pixels", async ({ page })
     });
 
     expect(overflow, `${route.path} overflows at 320 CSS pixels`).toBeLessThanOrEqual(1);
+  }
+});
+
+test("core routes stay stable at common mobile widths with reduced motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+
+  const routes = [
+    {
+      path: "/",
+      ready: () =>
+        page.getByRole("heading", {
+          name: "Du musst dich nicht auch noch in der Freizeit anschreien lassen.",
+        }),
+    },
+    {
+      path: "/suche",
+      ready: () => page.getByRole("heading", { name: "Noch kein Titel im Kopf?" }),
+    },
+    {
+      path: "/suche?q=Arrival",
+      ready: () => page.getByRole("heading", { name: 'Treffer zu „Arrival“' }),
+    },
+    {
+      path: "/titel/mondfenster",
+      ready: () => page.getByRole("heading", { name: "Mondfenster" }),
+    },
+    {
+      path: "/erklaerung",
+      ready: () => page.getByRole("heading", { name: "null-noise verstehen und benutzen" }),
+    },
+    {
+      path: "/bedienung",
+      ready: () => page.getByRole("heading", { name: "null-noise verstehen und benutzen" }),
+    },
+    {
+      path: "/barrierefreiheit",
+      ready: () => page.getByRole("heading", { name: "Barrierefreiheit" }),
+    },
+    {
+      path: "/datenschutz",
+      ready: () => page.getByRole("heading", { name: "Datenschutz" }),
+    },
+    {
+      path: "/impressum",
+      ready: () => page.getByRole("heading", { name: "Impressum" }),
+    },
+  ];
+
+  for (const width of [390, 430]) {
+    await page.setViewportSize({ width, height: 900 });
+
+    for (const route of routes) {
+      await page.goto(route.path);
+      await expect(route.ready()).toBeVisible();
+
+      const overflow = await page.evaluate(() => {
+        return document.documentElement.scrollWidth - document.documentElement.clientWidth;
+      });
+
+      expect(overflow, `${route.path} overflows at ${width} CSS pixels`).toBeLessThanOrEqual(1);
+    }
+
+    await page.goto("/");
+    await expect(
+      page.getByRole("heading", {
+        name: "Du musst dich nicht auch noch in der Freizeit anschreien lassen.",
+      }),
+    ).toBeVisible();
+    await page.getByRole("button", { name: "Menü öffnen" }).click();
+
+    const mobileNav = page.getByRole("navigation", { name: "Mobile Navigation" });
+    await expect(mobileNav).toBeVisible();
+
+    const box = await mobileNav.boundingBox();
+    expect(box, `mobile navigation has a box at ${width} CSS pixels`).not.toBeNull();
+    expect(box?.x ?? 0, `mobile navigation starts in the viewport at ${width}`).toBeGreaterThanOrEqual(0);
+    expect(
+      (box?.x ?? 0) + (box?.width ?? 0),
+      `mobile navigation ends in the viewport at ${width}`,
+    ).toBeLessThanOrEqual(width + 1);
+
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("button", { name: "Menü öffnen" })).toBeFocused();
   }
 });
 

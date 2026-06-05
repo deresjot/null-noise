@@ -30,6 +30,12 @@ export function TitlePocketActions({
   const [seen, setSeen] = useState(false);
   const [feedback, setFeedback] = useState<TitlePocketFeedback>(null);
   const seenButtonLabel = variant === "tile" ? (seen ? "Gesehen" : "Gesehen?") : seen ? "Schon gesehen" : "Schon gesehen?";
+  const rememberButtonLabel = remembered
+    ? `Gemerkt: Nicht mehr für später merken: ${entry.title}`
+    : `Merken: Für später merken: ${entry.title}`;
+  const seenButtonAccessibleLabel = seen
+    ? `${seenButtonLabel}: Nicht mehr als gesehen markieren: ${entry.title}`
+    : `${seenButtonLabel}: Als schon gesehen markieren: ${entry.title}`;
   const localStateLabel = useMemo(() => {
     if (remembered) {
       return "Lokal gemerkt";
@@ -141,7 +147,7 @@ export function TitlePocketActions({
       ) : null}
       <div className="title-pocket-actions-row">
         <button
-          aria-label={`${remembered ? "Merken für" : "Für später merken"} ${entry.title}`}
+          aria-label={rememberButtonLabel}
           aria-pressed={remembered}
           className="quiet-button title-pocket-button"
           data-active={remembered ? "true" : "false"}
@@ -153,7 +159,7 @@ export function TitlePocketActions({
           <span>{remembered ? "Gemerkt" : "Merken"}</span>
         </button>
         <button
-          aria-label={`${seen ? "Schon gesehen für" : "Als schon gesehen markieren für"} ${entry.title}`}
+          aria-label={seenButtonAccessibleLabel}
           aria-pressed={seen}
           className="quiet-button title-pocket-button"
           data-active={seen ? "true" : "false"}

@@ -45,7 +45,33 @@ const serviceWorkerRegistrationScript = `
     return;
   }
 
+  const localHosts = new Set(["localhost", "127.0.0.1", "::1"]);
+  const isLocalHost = localHosts.has(window.location.hostname);
+
+  const clearLocalServiceWorker = async () => {
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(registrations.map((registration) => registration.unregister()));
+
+    if ("caches" in window) {
+      const cacheNames = await caches.keys();
+      await Promise.all(
+        cacheNames
+          .filter((cacheName) => cacheName.startsWith("null-noise-"))
+          .map((cacheName) => caches.delete(cacheName)),
+      );
+    }
+  };
+
   const register = () => {
+    if (isLocalHost) {
+      clearLocalServiceWorker().catch(() => {});
+      return;
+    }
+
+    if (window.location.protocol !== "https:") {
+      return;
+    }
+
     navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {});
   };
 

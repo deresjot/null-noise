@@ -6,13 +6,13 @@ Diese Datei beschreibt, wie `null-noise` Accessibility testet und wo die Grenzen
 
 ## Ziel
 
-Accessibility wird in `null-noise` nicht über eine einzelne Aussage abgesichert, sondern über einen kleinen, wiederholbaren Prüfpfad:
+Accessibility wird in `null-noise` nicht über eine einzelne Konformitätsaussage abgesichert, sondern über einen kleinen, wiederholbaren Prüfpfad:
 
 1. automatisierte Browser-Prüfung
 2. gezielte Interaktions-Checks
 3. manuelle Prüfung vor Release
 
-Die Prüfung orientiert sich an WCAG 2.2 und den Prüfansätzen des BITV-Testverfahrens. Automatisierte Tests decken nur einen Teil der Anforderungen ab. Für reale Nutzbarkeit bleiben manuelle Prüfungen verpflichtend.
+WCAG 2.2 Level AA ist der technische Zielstandard. Die Prüfung orientiert sich zusätzlich an den Prüfansätzen des BITV-Testverfahrens. Automatisierte Tests decken nur einen Teil der Anforderungen ab. Für reale Nutzbarkeit und eine belastbare Konformitätsbewertung bleiben manuelle Prüfungen verpflichtend.
 
 ## Automatisierte Tests
 
@@ -40,6 +40,7 @@ Die Prüfung orientiert sich an WCAG 2.2 und den Prüfansätzen des BITV-Testver
   - `@axe-core/playwright` für den integrierten Browser-Check
   - direkter `axe-core`-Lauf, der `axe.min.js` explizit in die Seite injiziert und `axe.run()` ausführt
 - Severity-Ausgabe nach `critical`, `serious`, `moderate`, `minor`
+- technische WCAG-2.2-A/AA-Matrix über `npm run test:wcag22-aa`, die alle A/AA-Erfolgskriterien erfasst und pro Kriterium wiederholbare automatisierte Checks oder Feature-N/A-Evidence dokumentiert
 - Landmarken- und Heading-Struktur
 - Kontrast-Fundstellen, die axe erkennen kann
 - erkennbare Form-/Label-Probleme
@@ -50,7 +51,7 @@ Die Prüfung orientiert sich an WCAG 2.2 und den Prüfansätzen des BITV-Testver
 - Unit-Kalibrierung für Evidence Engine v2: dünne Datenlage, widersprüchliche Metadaten, Relief, Genre-only, emotionale Last ohne sensorische Dichte und deterministische TMDb-Browse-Diversität
 - Unit-Checks für situative Discovery-Copy: Browse-Mix-Namen, Nicht-jetzt-Sprache, keine sichtbaren Scores/Prozentwerte/Rankings und keine personalisierte Empfehlungssprache
 
-Diese automatisierten Prüfungen helfen besonders bei wiederholbaren Prüffeldern aus dem BITV-/WCAG-Kontext, etwa Struktur, Kontrast, Tastaturzugänglichkeit und Robustheit. Sie ersetzen aber keine vollständige manuelle Bewertung.
+Diese automatisierten Prüfungen helfen besonders bei wiederholbaren Prüffeldern aus dem BITV-/WCAG-Kontext, etwa Struktur, Kontrast, Tastaturzugänglichkeit und Robustheit. Sie stärken die Regression-Absicherung, ersetzen aber keine vollständige manuelle Bewertung und keine abschließende WCAG-Konformitätsaussage.
 
 ### Warum Severity-Buckets im Projekt wichtig sind
 
@@ -206,9 +207,11 @@ WCAG-/Mobile-Lighthouse-Prüfung vom 5. Juni 2026, lokal geprüft und nicht comm
 - `npm run test:unit`: bestanden
 - `npm run test:axe-core`: 6 Tests bestanden
 - `npm run test:a11y`: 44 Tests bestanden
-- `npx playwright test`: 44 Tests bestanden, 2 TMDb-Live-Fallback-Tests skipped
-- lokale Mobile-Lighthouse-Messung: Performance 96, Accessibility 100, Best Practices 100, SEO 100; großer CSS-Chunk ca. 192 KB vor dem Pass und ca. 188 KB nach dem Entfernen verwaister Brand-CSS-Regeln
-- WCAG-2.2-A/AA-Smoke auf Kernrouten: keine axe-Verstöße, keine positiven `tabindex`-Werte, kein horizontaler Overflow bei 320/390/430 CSS-Pixeln, kein Text-Spacing-Overflow
+- `npm run test:wcag22-aa`: 5 Tests bestanden; 55 WCAG-2.2-A/AA-Erfolgskriterien sind in der technischen Matrix erfasst und mit automatisierbaren Checks oder Feature-N/A-Evidence dokumentiert
+- `npx playwright test`: 49 Tests bestanden, 2 TMDb-Live-Fallback-Tests skipped
+- lokale Mobile-Lighthouse-Messung blieb stabil; großer CSS-Chunk ca. 192 KB vor dem Pass und ca. 188 KB nach dem Entfernen verwaister Brand-CSS-Regeln
+- WCAG-2.2-A/AA-Techniklauf auf Kernrouten: keine axe-Verstöße, keine positiven `tabindex`-Werte, kein horizontaler Overflow bei 320/390/430 CSS-Pixeln, kein Text-Spacing-Overflow; keine vollständige manuelle WCAG-Konformitätsbewertung
+- sichtbare Card-Action-Labels bleiben im zugänglichen Namen; Card-Kontrast ist stabil und Card-List-Animationen blenden Text nicht mehr per Opacity ein
 - Skip-Link-Fokus ist sofort sichtbar; aktive Route, opakes Mobile-Menü, Escape-Fokus-Rückgabe und Reduced-Motion-Verhalten bleiben erhalten
 - `src/lib/release-info.ts` steht lokal auf `0.8.4-wcag-lighthouse.20260605`
 

@@ -14,8 +14,11 @@ export const releaseNotes = [
     entries: [
       "The focused skip link now appears immediately instead of waiting for a transition, keeping bypass navigation visibly available as soon as it receives keyboard focus.",
       "Obsolete pre-SVG brand lockup CSS was removed from the global stylesheet without touching the current logo, wordmark frame, focus, active-route or mobile-menu states.",
-      "Local Lighthouse mobile performance remained at 96 while the large CSS resource and unused-CSS estimate dropped slightly.",
-      "WCAG 2.2 A/AA checks on the core routes stayed clean in axe-core and Playwright-assisted keyboard, reflow, reduced-motion and text-spacing smokes.",
+      "Local Lighthouse mobile checks remained stable while the large CSS resource and unused-CSS estimate dropped slightly.",
+      "WCAG 2.2 Level AA is sharpened as the technical target standard, with manual review still named as a boundary for real conformance assessment.",
+      "A dedicated WCAG 2.2 A/AA technical matrix now records every success criterion with repeatable automated checks or feature-based N/A evidence.",
+      "Automated regression coverage expanded across axe-core, Playwright keyboard, reflow, reduced-motion, text-spacing, target-size and mobile-menu smokes on the core route set.",
+      "Result-card action names now keep visible labels such as Details, Merken and Gesehen? inside the accessible name, while card text contrast no longer depends on opacity fades.",
     ],
   },
   {

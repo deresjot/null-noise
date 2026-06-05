@@ -1,5 +1,7 @@
 const CACHE_NAME = "null-noise-pwa-v2";
 const OFFLINE_URL = "/offline";
+const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
+const isLocalHost = LOCAL_HOSTS.has(self.location.hostname);
 const CORE_ASSETS = [
   OFFLINE_URL,
   "/manifest.webmanifest",
@@ -12,6 +14,11 @@ const CORE_ASSETS = [
 ];
 
 self.addEventListener("install", (event) => {
+  if (isLocalHost) {
+    event.waitUntil(self.skipWaiting());
+    return;
+  }
+
   event.waitUntil(
     caches
       .open(CACHE_NAME)
@@ -21,6 +28,23 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("activate", (event) => {
+  if (isLocalHost) {
+    event.waitUntil(
+      caches
+        .keys()
+        .then((cacheNames) =>
+          Promise.all(
+            cacheNames
+              .filter((cacheName) => cacheName.startsWith("null-noise-"))
+              .map((cacheName) => caches.delete(cacheName)),
+          ),
+        )
+        .then(() => self.registration.unregister())
+        .then(() => self.clients.claim()),
+    );
+    return;
+  }
+
   event.waitUntil(
     caches
       .keys()
@@ -38,6 +62,10 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const request = event.request;
   const url = new URL(request.url);
+
+  if (isLocalHost) {
+    return;
+  }
 
   if (request.method !== "GET" || url.origin !== self.location.origin) {
     return;

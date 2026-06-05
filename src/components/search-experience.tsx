@@ -508,6 +508,11 @@ export function SearchExperience({ initialState }: { initialState: SearchPageSta
   const browseClusterLabel = getBrowseClusterLabel(filters);
   const busy = transitionPhase === "loading" || isPending;
   const searchFrameItems = getSearchFrameItems(filters);
+  const liveStatusMessage = busy
+    ? "Suche wird aktualisiert."
+    : state.showBrowseState
+      ? `Browse aktualisiert: ${browseSuggestionCount} Titel im aktuellen Rahmen.`
+      : `Suche aktualisiert: ${resultsCountLine}.`;
   const searchState = useMemo(() => {
     let title = "";
     let text = "";
@@ -572,6 +577,14 @@ export function SearchExperience({ initialState }: { initialState: SearchPageSta
       onClickCapture={handleClickCapture}
       onSubmitCapture={handleSubmitCapture}
     >
+      <p
+        className="search-results-live-status"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {liveStatusMessage}
+      </p>
       {state.deleteStatus ? (
         <StatusPanel
           title={state.deleteStatus.title}
