@@ -6,10 +6,9 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 - lokaler Branch: `null-noise`
 - lokaler Projektpfad: `/Users/deresjot/Library/CloudStorage/Dropbox/_PRIVAT/Code/git-webdev/null-noise`
-- Stand: Mobile-UX-Abschluss vom 23. Mai 2026 ist lokal auf dem Branch `null-noise` als Abschlusscommit `fix: finalize mobile ux and brand polish` vorbereitet
-- vorheriger UI-Fix `196db83 fix: stabilize home and mobile search UI` ist lokal committed und als Vercel Preview bereitgestellt; der aktuelle Mobile-UX-Abschluss wird nach lokaler Prüfung gepusht und deployt
+- Stand: Header-Performance-/A11y-Pass vom 5. Juni 2026 ist als `377b94d refactor: isolate header navigation client boundary` auf `origin/null-noise` gepusht und als Vercel Preview bereitgestellt
 - Live-URL: https://null-noise.vercel.app
-- Preview-URL für den UI-Fix: https://null-noise-ezndxaczf-deresjots-projects.vercel.app
+- aktuelle Preview-URL: https://null-noise-48un8czq3-deresjots-projects.vercel.app
 - Hinweis: Preview ist `READY`, aber Vercel Deployment Protection/SSO ist aktiv; ohne Login kommt `401`
 - v0/grüne UI liegt im Archiv-Worktree und wird nicht bearbeitet
 - `main` ist keine Arbeitsfläche
@@ -17,6 +16,13 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 ## Letzte lokale Arbeitsblöcke
 
+- Header-Performance-/A11y-Pass 5. Juni 2026:
+  - `SiteHeader` ist wieder ein Server Component und enthält Branding sowie Skip-Links
+  - interaktive Navigation, aktiver Pfad, Mobile-Menü und Escape-Fokus leben in `SiteNavigation`
+  - `data-scrolled`-State und zugehörige Scroll-/CSS-Varianten wurden entfernt, ohne Fokus-, Aktivroute- oder Mobile-Menü-Zustände zu verlieren
+  - `next-env.d.ts` wurde nach dem lokalen Build bewusst reverted, weil nur eine automatisch erzeugte `.next/dev`-Referenz geändert war
+  - geprüft: `npm run lint`, `npm run build`, `npm run test:unit`, `npm run test:axe-core`, `npm run test:a11y`, `npx playwright test`
+  - Release Notes stehen auf `0.8.4-header.20260605`
 - PWA-/Offline-Basis 30. Mai 2026:
   - Manifest, Theme-Farben und PWA-Icons inklusive maskable Icon sind lokal ergänzt
   - Service Worker nutzt einen Navigation-Fallback auf `/offline`, ohne TMDb-/API-Daten offline vorzutäuschen
@@ -142,7 +148,7 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 - `src/app/globals.css`: Mobile-App-Shell, Burger-Navigation, mobile Typografie/Spacing, Detailposter-Skalierung, Footer-/Legal-Abstände, Motion- und Reduced-Motion-Regeln
 - `src/components/site-header.tsx`: clientseitige mobile Navigation, Scroll-State, Escape-Schließen, aktive Zustände
 - `src/app/manifest.ts`, `public/sw.js`, `src/app/offline/page.tsx`, `src/components/offline-pocket-summary.tsx`: lokale PWA-/Offline-Basis ohne Offline-Scheinverfügbarkeit für externe Titeldaten
-- `src/lib/release-info.ts`: technisches Release `0.8.4-pwa.20260530`
+- `src/lib/release-info.ts`: technisches Release `0.8.4-header.20260605`
 - `src/app/titel/[slug]/page.tsx`: mobile Detail-Hierarchie mit Synopsis im Titelkopf
 - `src/app/spike/metadaten/[mediaType]/[externalId]/page.tsx`: gestalteter Zurück-zur-Suche-Button
 - `src/app/layout.tsx`, `src/app/opengraph-image.tsx`, `public/brand/favicon.svg`, `public/brand/favicon-*.png`, `public/brand/apple-touch-icon.png`, `public/og/og-null-noise-mobile-20260523.png`: Favicon und Social-Sharing-Aktualisierung

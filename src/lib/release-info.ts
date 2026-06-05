@@ -1,12 +1,23 @@
 import packageJson from "../../package.json";
 
 export const currentBuild = {
-  version: `${packageJson.version}-pwa.20260530`,
-  label: "PWA and offline baseline",
-  releasedAt: "2026-05-30 · local",
+  version: `${packageJson.version}-header.20260605`,
+  label: "Header navigation boundary",
+  releasedAt: "2026-06-05 · preview",
 };
 
 export const releaseNotes = [
+  {
+    version: `${packageJson.version}-header.20260605`,
+    label: "Header navigation boundary",
+    releasedAt: "2026-06-05",
+    entries: [
+      "The site header now stays server-rendered while the interactive navigation state lives in a smaller client component.",
+      "The mobile menu keeps native button, nav, list and link semantics, with Escape returning focus to the menu button.",
+      "Scroll-state styling and unused scrolled-header CSS were removed without dropping visible focus, active-route styling or the opaque mobile menu layer.",
+      "Local validation for this pass covered lint, production build, unit tests, axe-core, a11y and the full Playwright suite before the Git push and Vercel preview deploy.",
+    ],
+  },
   {
     version: `${packageJson.version}-pwa.20260530`,
     label: "PWA and offline baseline",

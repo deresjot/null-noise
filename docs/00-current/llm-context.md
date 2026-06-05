@@ -131,7 +131,8 @@
 
 ## Mobile-Stand
 
-- Mobile-Viewport-Reparatur vom 24. Mai 2026 ist lokal umgesetzt, aber nicht gepusht/deployt
+- Header-Performance-/A11y-Pass vom 5. Juni 2026 ist auf `origin/null-noise` gepusht und als Vercel Preview bereitgestellt
+- Mobile-Viewport-Reparatur vom 24. Mai 2026 ist weiterhin Grundlage der mobilen Header-/Menüführung
 - Mobile Header ist eine fixe App-Shell mit Burger-Menü, aktiver Route, Escape-Schließen und sichtbarem Fokus
 - Header, Mobile-App-Shell, Menü und `main-content` nutzen mobil denselben Content-Gutter
 - Geöffnetes Mobile-Menü bleibt im Viewport, ist deckend und vermeidet den hellen rechten Seitenstreifen
