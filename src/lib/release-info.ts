@@ -1,22 +1,24 @@
 import packageJson from "../../package.json";
 
 export const currentBuild = {
-  version: `${packageJson.version}-contact.20260606`,
-  label: "Privacy-first contact form",
+  version: `${packageJson.version}-contact-send.20260606`,
+  label: "Privacy-first contact sending",
   releasedAt: "2026-06-06",
 };
 
 export const releaseNotes = [
   {
-    version: `${packageJson.version}-contact.20260606`,
-    label: "Privacy-first contact form",
+    version: `${packageJson.version}-contact-send.20260606`,
+    label: "Privacy-first contact sending",
     releasedAt: "2026-06-06",
     entries: [
-      "A native contact page is now reachable from the footer on every route, with message and reply email as the only required fields.",
-      "The form performs local validation with visible field errors, a focusable error summary and a polite success status without tracking, accounts, CAPTCHA or automatic storage.",
-      "No server-side mail delivery is implied yet; valid input opens a mailto handoff only after the user explicitly chooses it.",
-      "The submit control now uses the plain label Nachricht absenden, while the follow-up state clearly names that the message is prepared for sending in the user's mail app.",
+      "A native contact page is reachable from the footer on every route, with the message as the only required field and the reply email kept optional.",
+      "The form now sends through a server-side contact endpoint instead of a mailto handoff; mail provider keys stay server-only.",
+      "Local validation, server validation, visible field errors, a focusable error summary and a polite success status remain in place without tracking, accounts, CAPTCHA or durable message storage.",
+      "The submit control now uses the plain label Nachricht senden and guards against duplicate submits while keeping focus stable.",
       "The required message field now exposes a live character counter that says how many characters are still missing and switches to Mindestlänge erreicht at 10 characters without relying on color alone.",
+      "If contact mail environment variables are missing, local and test runs use a dry success path while Production returns an explicit setup error instead of a false success.",
+      "Mobile contact, footer release and WCAG matrix layouts were hardened against long text overflow at 320px, 390px and 430px.",
       "The technical WCAG 2.2 A/AA/AAA matrix now includes /kontakt as a core route and covers form labels, help text, error suggestions, status messages, keyboard flow, reflow, text spacing and target size.",
       "WCAG 2.2 AA remains the technical target standard; AAA checks stay exploratory and manual conformance review remains a separate boundary.",
     ],

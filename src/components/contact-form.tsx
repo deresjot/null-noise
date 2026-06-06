@@ -5,18 +5,11 @@ import { type FormEvent, useRef, useState } from "react";
 type ContactErrors = {
   email?: string;
   message?: string;
+  form?: string;
 };
 
 function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-}
-
-function buildMailto(email: string, message: string) {
-  const body = [message.trim(), "", `Antwortadresse: ${email.trim()}`].join("\n");
-
-  return `mailto:mail@sebastianjansen.com?subject=${encodeURIComponent(
-    "Kontakt zu null-noise",
-  )}&body=${encodeURIComponent(body)}`;
 }
 
 export function ContactForm() {
@@ -25,20 +18,25 @@ export function ContactForm() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<ContactErrors>({});
-  const [status, setStatus] = useState<"idle" | "success">("idle");
+  const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
 
   const trimmedEmail = email.trim();
   const trimmedMessage = message.trim();
   const hasErrors = Object.keys(errors).length > 0;
-  const mailtoHref = buildMailto(trimmedEmail, trimmedMessage);
   const messageLength = trimmedMessage.length;
   const remainingCharacters = Math.max(0, 10 - messageLength);
+  const tooManyCharacters = messageLength > 3000;
   const messageLengthReady = messageLength >= 10;
+  const isSubmitting = status === "submitting";
   const remainingCharactersText =
     remainingCharacters === 1 ? "Noch 1 Zeichen fehlt." : `Noch ${remainingCharacters} Zeichen fehlen.`;
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
 
     const nextErrors: ContactErrors = {};
 
@@ -46,11 +44,11 @@ export function ContactForm() {
       nextErrors.message = "Bitte schreibe eine kurze Nachricht.";
     } else if (trimmedMessage.length < 10) {
       nextErrors.message = "Bitte schreibe mindestens 10 Zeichen, damit der Kontext verständlich ist.";
+    } else if (trimmedMessage.length > 3000) {
+      nextErrors.message = "Bitte kürze die Nachricht auf höchstens 3000 Zeichen.";
     }
 
-    if (!trimmedEmail) {
-      nextErrors.email = "Bitte gib eine E-Mail-Adresse an, damit eine Antwort möglich ist.";
-    } else if (!isValidEmail(trimmedEmail)) {
+    if (trimmedEmail && !isValidEmail(trimmedEmail)) {
       nextErrors.email = "Bitte gib eine gültige E-Mail-Adresse ein, zum Beispiel name@example.com.";
     }
 
@@ -62,8 +60,58 @@ export function ContactForm() {
       return;
     }
 
-    setStatus("success");
-    window.requestAnimationFrame(() => successRef.current?.focus());
+    setStatus("submitting");
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: trimmedEmail || undefined,
+          message: trimmedMessage,
+        }),
+      });
+
+      if (!response.ok) {
+        let messageFromServer = "";
+        try {
+          const payload = (await response.json()) as { error?: string; fieldErrors?: ContactErrors };
+          if (payload.fieldErrors) {
+            setErrors(payload.fieldErrors);
+            setStatus("idle");
+            window.requestAnimationFrame(() => errorSummaryRef.current?.focus());
+            return;
+          }
+          messageFromServer = payload.error ?? "";
+        } catch {
+          messageFromServer = "";
+        }
+
+        const serverMessage =
+          response.status === 429
+            ? "Bitte warte kurz, bevor du eine weitere Nachricht sendest."
+            : response.status === 503
+              ? "Das Kontaktformular ist gerade nicht vollständig eingerichtet. Bitte versuche es später erneut."
+              : messageFromServer || "Die Nachricht konnte gerade nicht gesendet werden. Bitte versuche es später erneut.";
+
+        setErrors({ form: serverMessage });
+        setStatus("idle");
+        window.requestAnimationFrame(() => errorSummaryRef.current?.focus());
+        return;
+      }
+
+      setErrors({});
+      setStatus("success");
+      window.requestAnimationFrame(() => successRef.current?.focus());
+    } catch {
+      setErrors({
+        form: "Die Nachricht konnte wegen eines Netzwerkfehlers nicht gesendet werden. Bitte versuche es später erneut.",
+      });
+      setStatus("idle");
+      window.requestAnimationFrame(() => errorSummaryRef.current?.focus());
+    }
   }
 
   return (
@@ -77,8 +125,9 @@ export function ContactForm() {
           aria-labelledby="contact-error-summary-heading"
         >
           <h2 id="contact-error-summary-heading">Bitte prüfe die Eingaben</h2>
-          <p>Die Nachricht wurde nicht vorbereitet. Korrigiere die markierten Felder und sende erneut.</p>
+          <p>Die Nachricht wurde nicht gesendet. Korrigiere die markierten Punkte und sende erneut.</p>
           <ul className="plain-list">
+            {errors.form ? <li>{errors.form}</li> : null}
             {errors.message ? (
               <li>
                 <a href="#contact-message">{errors.message}</a>
@@ -101,31 +150,25 @@ export function ContactForm() {
           tabIndex={-1}
           aria-labelledby="contact-success-heading"
         >
-          <h2 id="contact-success-heading">Nachricht bereit zum Absenden</h2>
-          <p>
-            Die Eingaben wurden nur in diesem Browser vorbereitet und nicht gespeichert oder
-            automatisch verschickt. Sende die Nachricht im Mailprogramm ab.
-          </p>
-          <p>Mit der angegebenen E-Mail ist eine Antwort möglich, wenn du die Nachricht versendest.</p>
-          <p>
-            <a className="secondary-button-link" href={mailtoHref}>
-              Im Mailprogramm absenden
-            </a>
-          </p>
+          <h2 id="contact-success-heading">Deine Nachricht wurde gesendet.</h2>
+          {trimmedEmail ? (
+            <p>Mit der angegebenen E-Mail-Adresse ist eine direkte Antwort möglich.</p>
+          ) : (
+            <p>Du hast keine E-Mail-Adresse angegeben. Eine direkte Antwort ist deshalb nicht möglich.</p>
+          )}
         </div>
       ) : null}
 
       <div className="contact-field">
-        <label htmlFor="contact-email">E-Mail für Antwort (Pflichtfeld)</label>
+        <label htmlFor="contact-email">E-Mail für Antwort (optional)</label>
         <p id="contact-email-help" className="field-note">
-          Die Adresse wird nur für eine Antwort in dein Mailprogramm übernommen.
+          Du kannst die Nachricht ohne E-Mail-Adresse senden. Dann ist keine direkte Antwort möglich.
         </p>
         <input
           id="contact-email"
           name="email"
           type="email"
           autoComplete="email"
-          required
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           aria-describedby={errors.email ? "contact-email-help contact-email-error" : "contact-email-help"}
@@ -146,18 +189,21 @@ export function ContactForm() {
         <p
           id="contact-message-counter"
           className="contact-message-counter"
-          data-ready={messageLengthReady}
+          data-ready={messageLengthReady && !tooManyCharacters}
           aria-live="polite"
         >
-          {messageLengthReady
-            ? `${messageLength} von mindestens 10 Zeichen. Mindestlänge erreicht.`
-            : `${messageLength} von mindestens 10 Zeichen. ${remainingCharactersText}`}
+          {tooManyCharacters
+            ? `${messageLength} von maximal 3000 Zeichen. Bitte kürzen.`
+            : messageLengthReady
+              ? `${messageLength} von 10 bis 3000 Zeichen. Mindestlänge erreicht.`
+              : `${messageLength} von mindestens 10 Zeichen. ${remainingCharactersText}`}
         </p>
         <textarea
           id="contact-message"
           name="message"
           required
           minLength={10}
+          maxLength={3000}
           rows={8}
           value={message}
           onChange={(event) => setMessage(event.target.value)}
@@ -175,8 +221,8 @@ export function ContactForm() {
         ) : null}
       </div>
 
-      <button className="primary-button" type="submit">
-        Nachricht absenden
+      <button className="primary-button" type="submit" aria-disabled={isSubmitting ? "true" : undefined}>
+        {isSubmitting ? "Nachricht wird gesendet" : "Nachricht senden"}
       </button>
     </form>
   );

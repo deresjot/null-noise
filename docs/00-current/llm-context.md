@@ -3,8 +3,8 @@
 ## Aktueller Arbeitsstand
 
 - aktiver lokaler Arbeitsbranch: `null-noise`
-- aktueller Stand: datensparsames Kontaktformular vom 6. Juni 2026 ist lokal vorbereitet; Commit/Push/Deploy folgen in diesem Auftrag
-- Release-Metadaten stehen lokal auf `0.8.4-contact.20260606`
+- aktueller Stand: datensparsamer serverseitiger Kontaktversand vom 6. Juni 2026 ist lokal vorbereitet; Commit/Push/Deploy folgen in diesem Auftrag
+- Release-Metadaten stehen lokal auf `0.8.4-contact-send.20260606`
 - nicht pushen/deployen ohne explizite Freigabe
 - Live-URL: https://null-noise.vercel.app
 - Preview-Deploys werden nach Push per Vercel CLI erzeugt; konkrete URLs stehen in der jeweiligen Übergabe und im Vercel-Inspect
@@ -62,7 +62,9 @@
 - aktueller Security-Hardening-Stand ist lokal geprüft, aber noch nicht gepusht oder deployt
 - Live-Production kann daher noch ohne die lokalen Header-/CSP-, `server-only`-, Cookie- und Delete-Origin-Härtungen laufen
 - keine Accounts, keine Profile, keine Social Features, kein Tracking und keine Analytics
-- `/kontakt` nutzt ein natives, lokal validiertes Formular ohne Captcha, Tracking, Profiling oder automatische Speicherung; E-Mail ist Pflichtfeld und wird nur für die Antwort genutzt
+- `/kontakt` nutzt ein natives, lokal und serverseitig validiertes Formular ohne Captcha, Tracking, Profiling oder dauerhafte Nachrichtenspeicherung; Nachricht ist Pflicht, E-Mail ist optional und wird nur als Antwortadresse genutzt
+- `POST /api/contact` sendet serverseitig über Resend, wenn `RESEND_API_KEY` und `CONTACT_TO_EMAIL` gesetzt sind; `CONTACT_FROM_EMAIL` ist optional, Mailprovider-Schlüssel bleiben serverseitig
+- lokal/testweise kann der Kontakt-Endpunkt ohne Mail-Env trocken erfolgreich antworten; Production ohne Mail-Env zeigt einen Setup-Fehler statt falscher Erfolgsmeldung
 - keine Supabase-Integration im aktuellen Code; keine RLS-/Service-Role-Themen im Live-Stand, solange Supabase nicht eingeführt wird
 - Datenhaltung bleibt datenarm: öffentliche Titelmetadaten, stille Feedback-/Rating-Evidenz und Rate-Limit-Attempts
 - Feedback/Ratings dürfen kein Social Feature werden und erzeugen keine Nutzerprofile

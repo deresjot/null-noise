@@ -6,7 +6,7 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 - lokaler Branch: `null-noise`
 - lokaler Projektpfad: `/Users/deresjot/Library/CloudStorage/Dropbox/_PRIVAT/Code/git-webdev/null-noise`
-- Stand: datensparsames Kontaktformular vom 6. Juni 2026 ist lokal vorbereitet; Commit/Push/Deploy folgen in diesem Auftrag
+- Stand: datensparsamer serverseitiger Kontaktversand vom 6. Juni 2026 ist lokal vorbereitet; Commit/Push/Deploy folgen in diesem Auftrag
 - Live-URL: https://null-noise.vercel.app
 - Preview-Deploys werden nach Push per Vercel CLI erzeugt; konkrete URLs stehen in der jeweiligen Übergabe und im Vercel-Inspect
 - Hinweis: Preview ist `READY`, aber Vercel Deployment Protection/SSO ist aktiv; ohne Login kommt `401`
@@ -16,15 +16,17 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 ## Letzte lokale Arbeitsblöcke
 
-- Kontaktformular 6. Juni 2026:
+- Kontaktversand 6. Juni 2026:
   - neue Kernroute `/kontakt` mit nativer `form`-/`label`-/`input`-/`textarea`-/`button`-Struktur
   - Footer-Navigation führt von überall zu Kontakt; Reihenfolge: Barrierefreiheit, Kontakt, Datenschutz, Impressum
-  - Nachricht und E-Mail sind die einzigen Pflichtfelder; die E-Mail wird nur für die Antwort genutzt
-  - keine Captcha-, Tracking-, Profil-, Account-, Speicher- oder automatische Versandlogik
-  - lokale Validierung zeigt eine fokussierbare Fehlerzusammenfassung, Feldfehler, konkrete Korrekturhinweise und eine ruhige Statusmeldung
-  - gültige Eingaben werden nicht als serverseitig verschickt behauptet; stattdessen gibt es einen bewusst ausgelösten Mailprogramm-Handoff
+  - Nachricht ist das einzige Pflichtfeld; die E-Mail-Adresse ist optional und wird nur als Antwortadresse genutzt
+  - keine Captcha-, Tracking-, Profil-, Account- oder dauerhafte Nachrichtenspeicherung
+  - lokale und serverseitige Validierung zeigen eine fokussierbare Fehlerzusammenfassung, Feldfehler, konkrete Korrekturhinweise und eine ruhige Statusmeldung
+  - `POST /api/contact` sendet serverseitig über Resend, wenn `RESEND_API_KEY` und `CONTACT_TO_EMAIL` gesetzt sind; `CONTACT_FROM_EMAIL` ist optional
+  - lokal/testweise gibt es ohne Mail-Env einen trockenen Erfolg; Production ohne Mail-Env gibt einen sichtbaren Setup-Fehler statt falscher Erfolgsmeldung
+  - der frühere Mailprogramm-Handoff ist nicht mehr der primäre Versandweg
   - `/kontakt` ist in der technischen WCAG-2.2-A/AA/AAA-Matrix und den Axe-/Reflow-/Text-Spacing-/Target-Size-/Formular-Smokes enthalten
-  - Release Notes stehen lokal auf `0.8.4-contact.20260606`
+  - Release Notes stehen lokal auf `0.8.4-contact-send.20260606`
 - WCAG-/Mobile-Lighthouse-Prüfung 5. Juni 2026:
   - Fokus auf dem Skip-Link ist sofort sichtbar, ohne Einblend-Transition
   - verwaiste alte Brand-CSS-Regeln für `brand-mark`, `brand-lockup` und textbasierte `brand-wordmark` wurden aus `globals.css` entfernt

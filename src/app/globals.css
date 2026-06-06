@@ -377,11 +377,13 @@ code {
 .contact-form {
   display: grid;
   gap: 1.1rem;
+  min-width: 0;
 }
 
 .contact-field {
   display: grid;
   gap: 0.42rem;
+  min-width: 0;
 }
 
 .contact-field label {
@@ -390,8 +392,15 @@ code {
 }
 
 .contact-form textarea {
+  max-width: 100%;
   min-height: 11rem;
   line-height: 1.55;
+}
+
+.contact-form input,
+.contact-form textarea,
+.contact-form button {
+  min-width: 0;
 }
 
 .field-error {
@@ -416,10 +425,12 @@ code {
 .contact-form-success {
   display: grid;
   gap: 0.65rem;
+  min-width: 0;
   padding: 1rem;
   border: 2px solid;
   border-radius: var(--radius-sm);
   background: #ffffff;
+  overflow-wrap: anywhere;
 }
 
 .contact-form-summary {
@@ -447,6 +458,11 @@ code {
 .contact-form-summary p,
 .contact-form-success p {
   margin: 0;
+}
+
+.contact-form .primary-button[aria-disabled="true"] {
+  cursor: progress;
+  opacity: 0.82;
 }
 
 .skip-links {
@@ -11815,4 +11831,41 @@ html[data-search-transition="loading"] .search-results-page::before {
   border-color: rgba(31, 48, 74, 0.34);
   background: rgba(90, 135, 223, 0.07);
   color: #22344f;
+}
+
+/* Narrow viewport hardening for long release notes, matrix labels and form messages. */
+.mobile-experiment-build-line,
+.release-note-list,
+.wcag-level-axis,
+.wcag-level-axis-list,
+.wcag-level-axis-list li,
+.wcag-status-legend,
+.wcag-status-badge,
+.contact-form,
+.contact-field,
+.contact-field label,
+.field-note,
+.field-error {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 430px) {
+  .panel,
+  .status-panel,
+  .wcag-level-axis {
+    min-width: 0;
+  }
+
+  .mobile-experiment-footer-links,
+  .mobile-experiment-footer-legal-links,
+  .wcag-status-legend {
+    min-width: 0;
+  }
+
+  .contact-form .primary-button,
+  .contact-form .secondary-button-link {
+    width: 100%;
+    justify-content: center;
+  }
 }

@@ -45,7 +45,7 @@ WCAG 2.2 Level AA ist der technische Zielstandard. Die Prüfung orientiert sich 
 - Landmarken- und Heading-Struktur
 - Kontrast-Fundstellen, die axe erkennen kann
 - erkennbare Form-/Label-Probleme
-- Kontaktformular-Smokes für sichtbare Labels, `aria-describedby`, Pflicht-E-Mail, Pflichtnachricht, Fehlerzusammenfassung, Feldfehler, Statusmeldung, Tastaturfluss, Reflow, Text-Spacing und Target Size
+- Kontaktformular-Smokes für sichtbare Labels, `aria-describedby`, optionale Antwort-E-Mail, Pflichtnachricht, Fehlerzusammenfassung, Feldfehler, Statusmeldung, Tastaturfluss, Reflow, Text-Spacing und Target Size
 - wiederholbare Keyboard-Smoke-Checks, zum Beispiel Skip-Link und erreichbare Suchvorschläge
 - mobile Navigation mit Burger-Menü für primäre App-Ziele; Info-/Legal-Ziele bleiben im Footer erreichbar
 - kleiner Reflow-Smoke-Test auf den Kernrouten bei `320 CSS-Pixeln`, damit offensichtliches horizontales Overflow früh auffällt
@@ -139,13 +139,13 @@ Die folgenden Schritte sind der feste manuelle Prüfpfad für `null-noise`. Er e
 
 ### Route `/kontakt`
 
-- per Tastatur: Skip-Link, Footer-Link, E-Mail-Feld, Nachrichtenfeld, Submit-Button und Mailprogramm-Link nach gültiger lokaler Prüfung
+- per Tastatur: Skip-Link, Footer-Link, optionales E-Mail-Feld, Nachrichtenfeld, Submit-Button, Fehlerzusammenfassung und Erfolgsmeldung
 - Fokus: Fehlerzusammenfassung und Erfolgsmeldung erhalten nach Submit sichtbar Fokus
 - Screenreader-Smoke: Labels, Hilfetexte, Feldfehler, Fehlerzusammenfassung und Statusmeldung bleiben verständlich erfassbar
 - Reflow: Formularfelder, Hinweise und Statusboxen bleiben bei `320 CSS-Pixeln` ohne Seitwärts-Scrollen nutzbar
 - Zoom: bei `400 %` bleiben Pflicht-/Optional-Hinweise, Fehler und Submit-Button in sinnvoller Reihenfolge
-- Datenschutz: Nachricht und E-Mail sind Pflichtfelder; keine Captcha-, Tracking-, Profil-, Account-, Speicher- oder automatische Versandlogik
-- Grenze: ohne eingerichteten serverseitigen Versand wird keine erfolgreiche Zustellung behauptet; der Mailprogramm-Handoff ist bewusst und sichtbar begrenzt
+- Datenschutz: Nachricht ist Pflichtfeld, E-Mail ist optional; keine Captcha-, Tracking-, Profil-, Account- oder dauerhafte Nachrichtenspeicherung
+- Grenze: lokal/testweise kann der Kontakt-Endpunkt ohne Mail-Env trocken erfolgreich antworten; Production ohne Mail-Env muss einen sichtbaren Setup-Fehler statt falscher Erfolgsmeldung zeigen
 
 ### Tastatur
 

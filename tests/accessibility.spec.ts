@@ -580,32 +580,31 @@ test("contact page uses a privacy-first native form with clear labels and status
   await page.goto("/kontakt");
 
   await expect(page.getByRole("heading", { name: "Kontakt", level: 1 })).toBeVisible();
-  await expect(page.getByText("E-Mail-Adresse für die Antwort")).toBeVisible();
-  await expect(page.getByText("Die E-Mail-Adresse wird nur für die Antwort")).toBeVisible();
+  await expect(page.getByText("optional nach einer E-Mail-Adresse")).toBeVisible();
+  await expect(page.getByText("Die E-Mail-Adresse ist freiwillig")).toBeVisible();
   await expect(page.getByText("Es gibt kein Tracking, keine Profile")).toBeVisible();
 
   const form = page.locator("form.contact-form");
-  const email = page.getByLabel("E-Mail für Antwort (Pflichtfeld)");
+  const email = page.getByLabel("E-Mail für Antwort (optional)");
   const message = page.getByLabel("Nachricht (Pflichtfeld)");
-  const submit = page.getByRole("button", { name: "Nachricht absenden" });
+  const submit = page.getByRole("button", { name: "Nachricht senden" });
 
   await expect(form).toBeVisible();
   await expect(email).toHaveAttribute("type", "email");
   await expect(email).toHaveAttribute("autocomplete", "email");
-  await expect(email).toHaveAttribute("required", "");
   await expect(email).toHaveAttribute("aria-describedby", "contact-email-help");
   await expect(message).toHaveAttribute("required", "");
   await expect(message).toHaveAttribute("minlength", "10");
+  await expect(message).toHaveAttribute("maxlength", "3000");
   await expect(message).toHaveAttribute("aria-describedby", "contact-message-help contact-message-counter");
   await expect(page.locator("#contact-message-counter")).toContainText("Noch 10 Zeichen fehlen.");
 
   await submit.click();
   await expect(page.getByRole("heading", { name: "Bitte prüfe die Eingaben" })).toBeVisible();
   await expect(page.getByText("Fehler: Bitte schreibe eine kurze Nachricht.")).toBeVisible();
-  await expect(page.getByText("Fehler: Bitte gib eine E-Mail-Adresse an")).toBeVisible();
   await expect(page.locator(".contact-form-summary")).toBeFocused();
   await expect(message).toHaveAttribute("aria-invalid", "true");
-  await expect(email).toHaveAttribute("aria-invalid", "true");
+  await expect(email).not.toHaveAttribute("aria-invalid", "true");
 
   await email.fill("keine-adresse");
   await message.fill("Das Formular soll bitte gut bedienbar bleiben.");
@@ -615,14 +614,29 @@ test("contact page uses a privacy-first native form with clear labels and status
   await expect(page.getByText("Fehler: Bitte gib eine gültige E-Mail-Adresse ein")).toBeVisible();
   await expect(email).toHaveAttribute("aria-invalid", "true");
 
-  await email.fill("mail@example.com");
+  await email.fill("");
   await submit.click();
-  await expect(page.getByRole("heading", { name: "Nachricht bereit zum Absenden" })).toBeVisible();
-  await expect(page.getByText("Sende die Nachricht im Mailprogramm ab.")).toBeVisible();
-  await expect(page.getByRole("link", { name: "Im Mailprogramm absenden" })).toHaveAttribute(
-    "href",
-    /mailto:mail@sebastianjansen\.com/,
-  );
+  await expect(page.getByRole("heading", { name: "Deine Nachricht wurde gesendet." })).toBeVisible();
+  await expect(page.getByText("Eine direkte Antwort ist deshalb nicht möglich.")).toBeVisible();
+  await expect(form.locator('a[href^="mailto:"]')).toHaveCount(0);
+});
+
+test("contact form reports server errors without claiming delivery", async ({ page }) => {
+  await page.route("**/api/contact", async (route) => {
+    await route.fulfill({
+      status: 503,
+      contentType: "application/json",
+      body: JSON.stringify({ error: "Das Kontaktformular ist gerade nicht vollständig eingerichtet." }),
+    });
+  });
+
+  await page.goto("/kontakt");
+  await page.getByLabel("Nachricht (Pflichtfeld)").fill("Diese Nachricht ist lang genug.");
+  await page.getByRole("button", { name: "Nachricht senden" }).click();
+
+  await expect(page.getByRole("heading", { name: "Bitte prüfe die Eingaben" })).toBeVisible();
+  await expect(page.getByText("gerade nicht vollständig eingerichtet")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Deine Nachricht wurde gesendet." })).toHaveCount(0);
 });
 
 test("contact form keeps keyboard order, reflow, text spacing and target sizes stable", async ({
