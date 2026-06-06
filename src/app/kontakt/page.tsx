@@ -6,7 +6,7 @@ import { siteName } from "@/lib/constants";
 export const metadata: Metadata = {
   title: `Kontakt | ${siteName}`,
   description:
-    "Datensparsame Kontaktseite von null-noise mit optionaler E-Mail-Adresse und lokal geprüfter Nachricht.",
+    "Datensparsame Kontaktseite von null-noise mit E-Mail-Adresse für Antworten und lokal geprüfter Nachricht.",
 };
 
 export default function KontaktPage() {
@@ -24,11 +24,11 @@ export default function KontaktPage() {
       <section className="panel section-stack" aria-labelledby="contact-privacy-heading">
         <h2 id="contact-privacy-heading">Datensparsamkeit</h2>
         <p>
-          Das Formular fragt nur nach deiner Nachricht. Eine E-Mail-Adresse ist freiwillig und
-          nur nötig, wenn eine Antwort möglich sein soll.
+          Das Formular fragt nur nach deiner Nachricht und einer E-Mail-Adresse für die Antwort.
+          Es gibt keine weiteren Pflichtfelder.
         </p>
         <ul className="plain-list">
-          <li>Ohne E-Mail kann keine Antwort geschickt werden.</li>
+          <li>Die E-Mail-Adresse wird nur für die Antwort im Mailprogramm übernommen.</li>
           <li>Es gibt kein Tracking, keine Profile und keine Konto-Funktion.</li>
           <li>Die Eingaben werden hier nur lokal geprüft und nicht automatisch gespeichert.</li>
         </ul>

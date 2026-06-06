@@ -107,7 +107,7 @@ export const wcag22AaTechnicalMatrix: WcagTechnicalCriterion[] = [
     title: "Identify Input Purpose",
     level: "AA",
     technicalCoverage:
-      "Formularfelder werden auf erkennbare Namen, Labels und sinnvolle Autocomplete-/Input-Kontexte geprüft; die optionale Kontakt-E-Mail nutzt `type=email` und `autocomplete=email`.",
+      "Formularfelder werden auf erkennbare Namen, Labels und sinnvolle Autocomplete-/Input-Kontexte geprüft; die Kontakt-E-Mail ist Pflichtfeld und nutzt `type=email` sowie `autocomplete=email`.",
     status: "pass",
     wcagUrl: `${understandingBaseUrl}identify-input-purpose.html`,
   },
@@ -294,7 +294,7 @@ export const wcag22AaTechnicalMatrix: WcagTechnicalCriterion[] = [
     title: "Headings and Labels",
     level: "AA",
     technicalCoverage:
-      "Sichtbare Überschriften dürfen nicht leer sein; Kontaktformular, Buttons und Controls müssen verständliche sichtbare Labels wie `E-Mail für Antwort (optional)` und `Nachricht (Pflichtfeld)` haben.",
+      "Sichtbare Überschriften dürfen nicht leer sein; Kontaktformular, Buttons und Controls müssen verständliche sichtbare Labels wie `E-Mail für Antwort (Pflichtfeld)` und `Nachricht (Pflichtfeld)` haben.",
     status: "pass",
     wcagUrl: `${understandingBaseUrl}headings-and-labels.html`,
   },
@@ -469,7 +469,7 @@ export const wcag22AaTechnicalMatrix: WcagTechnicalCriterion[] = [
     criterion: "3.3.7",
     title: "Redundant Entry",
     level: "A",
-    technicalCoverage: "Es gibt keinen mehrstufigen Re-Entry-Flow; das Kontaktformular verlangt Nachricht und optionale E-Mail nur einmal.",
+    technicalCoverage: "Es gibt keinen mehrstufigen Re-Entry-Flow; das Kontaktformular verlangt Nachricht und E-Mail nur einmal.",
     status: "not-applicable",
     wcagUrl: `${understandingBaseUrl}redundant-entry.html`,
   },

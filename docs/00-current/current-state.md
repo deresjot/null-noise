@@ -19,7 +19,7 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 - Kontaktformular 6. Juni 2026:
   - neue Kernroute `/kontakt` mit nativer `form`-/`label`-/`input`-/`textarea`-/`button`-Struktur
   - Footer-Navigation führt von überall zu Kontakt; Reihenfolge: Barrierefreiheit, Kontakt, Datenschutz, Impressum
-  - Nachricht ist das einzige Pflichtfeld; E-Mail ist optional und nur für eine Antwort nötig
+  - Nachricht und E-Mail sind die einzigen Pflichtfelder; die E-Mail wird nur für die Antwort genutzt
   - keine Captcha-, Tracking-, Profil-, Account-, Speicher- oder automatische Versandlogik
   - lokale Validierung zeigt eine fokussierbare Fehlerzusammenfassung, Feldfehler, konkrete Korrekturhinweise und eine ruhige Statusmeldung
   - gültige Eingaben werden nicht als serverseitig verschickt behauptet; stattdessen gibt es einen bewusst ausgelösten Mailprogramm-Handoff

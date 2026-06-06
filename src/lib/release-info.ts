@@ -12,7 +12,7 @@ export const releaseNotes = [
     label: "Privacy-first contact form",
     releasedAt: "2026-06-06",
     entries: [
-      "A native contact page is now reachable from the footer on every route, with message as the only required field and optional email for replies.",
+      "A native contact page is now reachable from the footer on every route, with message and reply email as the only required fields.",
       "The form performs local validation with visible field errors, a focusable error summary and a polite success status without tracking, accounts, CAPTCHA or automatic storage.",
       "No server-side mail delivery is implied yet; valid input opens a mailto handoff only after the user explicitly chooses it.",
       "The technical WCAG 2.2 A/AA/AAA matrix now includes /kontakt as a core route and covers form labels, help text, error suggestions, status messages, keyboard flow, reflow, text spacing and target size.",

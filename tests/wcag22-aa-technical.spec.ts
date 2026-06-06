@@ -292,8 +292,8 @@ async function collectTechnicalFailures(page: Page) {
         failures.push("contact form missing native form element");
       }
 
-      if (!email || email.type !== "email" || email.autocomplete !== "email") {
-        failures.push("contact email field should be optional type=email with autocomplete=email");
+      if (!email || email.type !== "email" || email.autocomplete !== "email" || !email.required) {
+        failures.push("contact email field should be required type=email with autocomplete=email");
       }
 
       if (!message || !message.required || message.minLength < 10) {

@@ -580,18 +580,19 @@ test("contact page uses a privacy-first native form with clear labels and status
   await page.goto("/kontakt");
 
   await expect(page.getByRole("heading", { name: "Kontakt", level: 1 })).toBeVisible();
-  await expect(page.getByText("Eine E-Mail-Adresse ist freiwillig")).toBeVisible();
-  await expect(page.getByText("Ohne E-Mail kann keine Antwort geschickt werden.")).toBeVisible();
+  await expect(page.getByText("E-Mail-Adresse für die Antwort")).toBeVisible();
+  await expect(page.getByText("Die E-Mail-Adresse wird nur für die Antwort")).toBeVisible();
   await expect(page.getByText("Es gibt kein Tracking, keine Profile")).toBeVisible();
 
   const form = page.locator("form.contact-form");
-  const email = page.getByLabel("E-Mail für Antwort (optional)");
+  const email = page.getByLabel("E-Mail für Antwort (Pflichtfeld)");
   const message = page.getByLabel("Nachricht (Pflichtfeld)");
   const submit = page.getByRole("button", { name: "Nachricht lokal prüfen" });
 
   await expect(form).toBeVisible();
   await expect(email).toHaveAttribute("type", "email");
   await expect(email).toHaveAttribute("autocomplete", "email");
+  await expect(email).toHaveAttribute("required", "");
   await expect(email).toHaveAttribute("aria-describedby", "contact-email-help");
   await expect(message).toHaveAttribute("required", "");
   await expect(message).toHaveAttribute("minlength", "10");
@@ -600,20 +601,16 @@ test("contact page uses a privacy-first native form with clear labels and status
   await submit.click();
   await expect(page.getByRole("heading", { name: "Bitte prüfe die Eingaben" })).toBeVisible();
   await expect(page.getByText("Fehler: Bitte schreibe eine kurze Nachricht.")).toBeVisible();
+  await expect(page.getByText("Fehler: Bitte gib eine E-Mail-Adresse an")).toBeVisible();
   await expect(page.locator(".contact-form-summary")).toBeFocused();
   await expect(message).toHaveAttribute("aria-invalid", "true");
+  await expect(email).toHaveAttribute("aria-invalid", "true");
 
   await email.fill("keine-adresse");
   await message.fill("Das Formular soll bitte gut bedienbar bleiben.");
   await submit.click();
   await expect(page.getByText("Fehler: Bitte gib eine gültige E-Mail-Adresse ein")).toBeVisible();
   await expect(email).toHaveAttribute("aria-invalid", "true");
-
-  await email.fill("");
-  await submit.click();
-  await expect(page.getByRole("heading", { name: "Nachricht lokal geprüft" })).toBeVisible();
-  await expect(page.locator(".contact-form-success")).toContainText("Ohne E-Mail ist keine Antwort möglich.");
-  await expect(page.locator(".contact-form-success")).toBeFocused();
 
   await email.fill("mail@example.com");
   await submit.click();
@@ -794,6 +791,10 @@ test("accessibility page is reachable and explains the current testing scope", a
   await expect(testingPanel).toContainText("Playwright startet");
   await expect(testingPanel).toContainText("Wie die Tests hergeleitet wurden");
   await expect(limitsPanel).toContainText("Datenbasis und erste Einschätzungen bleiben unsicher");
+  await expect(contactPanel.getByRole("link", { name: "Kontaktformular" })).toHaveAttribute(
+    "href",
+    "/kontakt",
+  );
   await expect(contactPanel).toContainText("mail@sebastianjansen.com");
   await expect(contactPanel.getByRole("link", { name: "mail@sebastianjansen.com" })).toHaveAttribute(
     "href",

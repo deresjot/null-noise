@@ -62,7 +62,7 @@
 - aktueller Security-Hardening-Stand ist lokal geprüft, aber noch nicht gepusht oder deployt
 - Live-Production kann daher noch ohne die lokalen Header-/CSP-, `server-only`-, Cookie- und Delete-Origin-Härtungen laufen
 - keine Accounts, keine Profile, keine Social Features, kein Tracking und keine Analytics
-- `/kontakt` nutzt ein natives, lokal validiertes Formular ohne Captcha, Tracking, Profiling oder automatische Speicherung; E-Mail ist optional und nur für eine Antwort nötig
+- `/kontakt` nutzt ein natives, lokal validiertes Formular ohne Captcha, Tracking, Profiling oder automatische Speicherung; E-Mail ist Pflichtfeld und wird nur für die Antwort genutzt
 - keine Supabase-Integration im aktuellen Code; keine RLS-/Service-Role-Themen im Live-Stand, solange Supabase nicht eingeführt wird
 - Datenhaltung bleibt datenarm: öffentliche Titelmetadaten, stille Feedback-/Rating-Evidenz und Rate-Limit-Attempts
 - Feedback/Ratings dürfen kein Social Feature werden und erzeugen keine Nutzerprofile

@@ -250,9 +250,14 @@ export default function BarrierefreiheitPage() {
       <section className="panel section-stack" aria-labelledby="contact-heading">
         <h2 id="contact-heading">Kontakt</h2>
         <p>
-          Hinweise auf Barrieren oder unklare Bedienwege sind willkommen:
+          Hinweise auf Barrieren oder unklare Bedienwege sind willkommen. Nutze dafür das
+          {" "}
+          <a href="/kontakt">Kontaktformular</a>
+          {" "}
+          oder schreibe direkt an
           {" "}
           <a href="mailto:mail@sebastianjansen.com">mail@sebastianjansen.com</a>
+          .
         </p>
       </section>
     </section>

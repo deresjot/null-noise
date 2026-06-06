@@ -12,13 +12,7 @@ function isValidEmail(value: string) {
 }
 
 function buildMailto(email: string, message: string) {
-  const body = [
-    message.trim(),
-    "",
-    email.trim()
-      ? `Antwortadresse: ${email.trim()}`
-      : "Keine Antwortadresse angegeben; eine Antwort ist ohne E-Mail nicht möglich.",
-  ].join("\n");
+  const body = [message.trim(), "", `Antwortadresse: ${email.trim()}`].join("\n");
 
   return `mailto:mail@sebastianjansen.com?subject=${encodeURIComponent(
     "Kontakt zu null-noise",
@@ -49,7 +43,9 @@ export function ContactForm() {
       nextErrors.message = "Bitte schreibe mindestens 10 Zeichen, damit der Kontext verständlich ist.";
     }
 
-    if (trimmedEmail && !isValidEmail(trimmedEmail)) {
+    if (!trimmedEmail) {
+      nextErrors.email = "Bitte gib eine E-Mail-Adresse an, damit eine Antwort möglich ist.";
+    } else if (!isValidEmail(trimmedEmail)) {
       nextErrors.email = "Bitte gib eine gültige E-Mail-Adresse ein, zum Beispiel name@example.com.";
     }
 
@@ -105,11 +101,7 @@ export function ContactForm() {
             Die Eingaben wurden nur in diesem Browser geprüft und nicht gespeichert oder
             automatisch verschickt.
           </p>
-          {trimmedEmail ? (
-            <p>Mit der angegebenen E-Mail ist eine Antwort möglich, wenn du die Nachricht versendest.</p>
-          ) : (
-            <p>Ohne E-Mail ist keine Antwort möglich. Du kannst die Nachricht trotzdem absenden.</p>
-          )}
+          <p>Mit der angegebenen E-Mail ist eine Antwort möglich, wenn du die Nachricht versendest.</p>
           <p>
             <a className="secondary-button-link" href={mailtoHref}>
               Im Mailprogramm öffnen
@@ -119,15 +111,16 @@ export function ContactForm() {
       ) : null}
 
       <div className="contact-field">
-        <label htmlFor="contact-email">E-Mail für Antwort (optional)</label>
+        <label htmlFor="contact-email">E-Mail für Antwort (Pflichtfeld)</label>
         <p id="contact-email-help" className="field-note">
-          Du musst keine E-Mail angeben. Ohne E-Mail ist keine Antwort möglich.
+          Die Adresse wird nur für eine Antwort in dein Mailprogramm übernommen.
         </p>
         <input
           id="contact-email"
           name="email"
           type="email"
           autoComplete="email"
+          required
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           aria-describedby={errors.email ? "contact-email-help contact-email-error" : "contact-email-help"}
