@@ -34,6 +34,8 @@ export function ContactForm() {
   const messageLength = trimmedMessage.length;
   const remainingCharacters = Math.max(0, 10 - messageLength);
   const messageLengthReady = messageLength >= 10;
+  const remainingCharactersText =
+    remainingCharacters === 1 ? "Noch 1 Zeichen fehlt." : `Noch ${remainingCharacters} Zeichen fehlen.`;
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -149,7 +151,7 @@ export function ContactForm() {
         >
           {messageLengthReady
             ? `${messageLength} von mindestens 10 Zeichen. Mindestlänge erreicht.`
-            : `${messageLength} von mindestens 10 Zeichen. Noch ${remainingCharacters} Zeichen fehlen.`}
+            : `${messageLength} von mindestens 10 Zeichen. ${remainingCharactersText}`}
         </p>
         <textarea
           id="contact-message"
