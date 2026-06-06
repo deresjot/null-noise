@@ -8,6 +8,8 @@ type ContactErrors = {
   form?: string;
 };
 
+type ContactSuccessMode = "stored" | "sent";
+
 function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
@@ -19,6 +21,7 @@ export function ContactForm() {
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<ContactErrors>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
+  const [successMode, setSuccessMode] = useState<ContactSuccessMode>("stored");
 
   const trimmedEmail = email.trim();
   const trimmedMessage = message.trim();
@@ -102,6 +105,9 @@ export function ContactForm() {
         return;
       }
 
+      const payload = (await response.json().catch(() => ({}))) as { delivered?: boolean; stored?: boolean };
+
+      setSuccessMode(payload.delivered ? "sent" : "stored");
       setErrors({});
       setStatus("success");
       window.requestAnimationFrame(() => successRef.current?.focus());
@@ -150,7 +156,9 @@ export function ContactForm() {
           tabIndex={-1}
           aria-labelledby="contact-success-heading"
         >
-          <h2 id="contact-success-heading">Deine Nachricht wurde gesendet.</h2>
+          <h2 id="contact-success-heading">
+            {successMode === "sent" ? "Deine Nachricht wurde gesendet." : "Deine Nachricht wurde gespeichert."}
+          </h2>
           {trimmedEmail ? (
             <p>Mit der angegebenen E-Mail-Adresse ist eine direkte Antwort möglich.</p>
           ) : (

@@ -3,6 +3,8 @@ import { createHash } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 
+import { storeContactMessage } from "@/lib/contact-messages";
+
 const contactSchema = z.object({
   email: z
     .string()
@@ -49,26 +51,6 @@ function isRateLimited(request: NextRequest) {
   return current.count > rateLimitMaxRequests;
 }
 
-function hasMailConfiguration() {
-  return Boolean(process.env.RESEND_API_KEY && process.env.CONTACT_TO_EMAIL);
-}
-
-function shouldRequireMailConfiguration() {
-  return process.env.VERCEL_ENV === "production" || process.env.NODE_ENV === "production";
-}
-
-function buildContactEmailText(email: string | undefined, message: string) {
-  return [
-    "Neue Kontakt-Nachricht über null-noise.",
-    "",
-    `Antwortadresse: ${email ?? "keine angegeben"}`,
-    `Direkte Antwort möglich: ${email ? "ja" : "nein"}`,
-    "",
-    "Nachricht:",
-    message,
-  ].join("\n");
-}
-
 export async function POST(request: NextRequest) {
   let payload: unknown;
 
@@ -101,35 +83,14 @@ export async function POST(request: NextRequest) {
   const email = parsed.data.email || undefined;
   const message = parsed.data.message.trim();
 
-  if (!hasMailConfiguration()) {
-    if (shouldRequireMailConfiguration()) {
-      return NextResponse.json(
-        { error: "Das Kontaktformular ist gerade nicht vollständig eingerichtet." },
-        { status: 503 },
-      );
-    }
-
-    return NextResponse.json({ ok: true, delivered: false, mode: "development" });
+  try {
+    await storeContactMessage({ email, message });
+  } catch {
+    return NextResponse.json(
+      { error: "Die Nachricht konnte gerade nicht gespeichert werden." },
+      { status: 500 },
+    );
   }
 
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: process.env.CONTACT_FROM_EMAIL ?? "null-noise <onboarding@resend.dev>",
-      to: [process.env.CONTACT_TO_EMAIL],
-      subject: "Kontakt zu null-noise",
-      text: buildContactEmailText(email, message),
-      ...(email ? { reply_to: email } : {}),
-    }),
-  });
-
-  if (!response.ok) {
-    return NextResponse.json({ error: "Die Nachricht konnte gerade nicht gesendet werden." }, { status: 502 });
-  }
-
-  return NextResponse.json({ ok: true, delivered: true });
+  return NextResponse.json({ ok: true, delivered: false, stored: true });
 }

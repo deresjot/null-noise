@@ -679,7 +679,7 @@ test("contact page uses a privacy-first native form with clear labels and status
 
   await email.fill("");
   await submit.click();
-  await expect(page.getByRole("heading", { name: "Deine Nachricht wurde gesendet." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Deine Nachricht wurde gespeichert." })).toBeVisible();
   await expect(page.getByText("Eine direkte Antwort ist deshalb nicht möglich.")).toBeVisible();
   await expect(form.locator('a[href^="mailto:"]')).toHaveCount(0);
 });
@@ -700,6 +700,7 @@ test("contact form reports server errors without claiming delivery", async ({ pa
   await expect(page.getByRole("heading", { name: "Bitte prüfe die Eingaben" })).toBeVisible();
   await expect(page.getByText("gerade nicht vollständig eingerichtet")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Deine Nachricht wurde gesendet." })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Deine Nachricht wurde gespeichert." })).toHaveCount(0);
 });
 
 test("contact form keeps keyboard order, reflow, text spacing and target sizes stable", async ({
