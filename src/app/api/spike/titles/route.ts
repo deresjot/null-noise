@@ -6,6 +6,7 @@ import {
   getPreferredMetadataSpikeSource,
   searchMetadata,
   searchTmdbMetadata,
+  type TmdbSearchDiagnostics,
 } from "@/lib/metadata-spike";
 
 const querySchema = z.object({
@@ -34,6 +35,26 @@ function getStatusCode(kind: Awaited<ReturnType<typeof searchMetadata>>["kind"],
   }
 
   return 502;
+}
+
+function redactDiagnostics(diagnostics: TmdbSearchDiagnostics | null) {
+  if (!diagnostics) {
+    return null;
+  }
+
+  return {
+    source: diagnostics.source,
+    serverOnly: diagnostics.serverOnly,
+    requestStarted: diagnostics.requestStarted,
+    requestCount: diagnostics.requestCount,
+    attemptedQueries: diagnostics.attemptedQueries,
+    upstreamStatusCode: diagnostics.upstreamStatusCode,
+    mappingSuccessful: diagnostics.mappingSuccessful,
+    mappedItemCount: diagnostics.mappedItemCount,
+    usedRetry: diagnostics.usedRetry,
+    finalStateKind: diagnostics.finalStateKind,
+    finalReason: diagnostics.finalReason,
+  };
 }
 
 export async function GET(request: NextRequest) {
@@ -69,7 +90,7 @@ export async function GET(request: NextRequest) {
     diagnosticsRequested
       ? {
           ...result,
-          diagnostics: tmdbDiagnostics,
+          diagnostics: redactDiagnostics(tmdbDiagnostics),
         }
       : result,
     {

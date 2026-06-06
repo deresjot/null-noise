@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         error: "ungueltige_filter",
-        details: parsed.error.flatten(),
+        message: "Die Filter konnten nicht verarbeitet werden.",
       },
       { status: 400 },
     );

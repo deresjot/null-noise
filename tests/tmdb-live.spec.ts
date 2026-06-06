@@ -42,8 +42,9 @@ test.describe("TMDb live fallback", () => {
         0,
       );
       expect(fallbackPayload.diagnostics?.serverOnly).toBe(true);
-      expect(fallbackPayload.diagnostics?.tokenPresent).toBe(true);
-      expect(fallbackPayload.diagnostics?.authorizationScheme).toBe("Bearer");
+      expect(fallbackPayload.diagnostics?.tokenPresent).toBeUndefined();
+      expect(fallbackPayload.diagnostics?.authorizationScheme).toBeUndefined();
+      expect(fallbackPayload.diagnostics?.tokenLength).toBeUndefined();
       expect(fallbackPayload.diagnostics?.requestStarted).toBe(true);
       expect(fallbackPayload.diagnostics?.mappingSuccessful).toBe(true);
       expect(fallbackPayload.diagnostics?.finalStateKind).toBe("success");

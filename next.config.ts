@@ -8,6 +8,10 @@ const nextConfig: NextConfig = {
       process.env.NODE_ENV === "development"
         ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
         : "script-src 'self' 'unsafe-inline'";
+    const connectSrc =
+      process.env.NODE_ENV === "development"
+        ? "connect-src 'self' ws://localhost:* ws://127.0.0.1:*"
+        : "connect-src 'self'";
     const securityHeaders = [
       {
         key: "Content-Security-Policy",
@@ -21,7 +25,10 @@ const nextConfig: NextConfig = {
           "style-src 'self' 'unsafe-inline'",
           "font-src 'self'",
           "img-src 'self' data: blob:",
-          "connect-src 'self'",
+          connectSrc,
+          "manifest-src 'self'",
+          "worker-src 'self'",
+          "frame-src 'none'",
           "upgrade-insecure-requests",
         ].join("; "),
       },
@@ -40,6 +47,14 @@ const nextConfig: NextConfig = {
       {
         key: "X-Frame-Options",
         value: "DENY",
+      },
+      {
+        key: "Cross-Origin-Opener-Policy",
+        value: "same-origin",
+      },
+      {
+        key: "X-DNS-Prefetch-Control",
+        value: "off",
       },
     ];
 
