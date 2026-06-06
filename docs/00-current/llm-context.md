@@ -3,8 +3,8 @@
 ## Aktueller Arbeitsstand
 
 - aktiver lokaler Arbeitsbranch: `null-noise`
-- aktueller Stand: datensparsamer serverseitiger Kontaktversand vom 6. Juni 2026 ist lokal vorbereitet; Commit/Push/Deploy folgen in diesem Auftrag
-- Release-Metadaten stehen lokal auf `0.8.4-contact-send.20260606`
+- aktueller Stand: Mobile-Layout-Stabilisierung vom 6. Juni 2026 ist lokal vorbereitet; Commit/Push/Deploy folgen in diesem Auftrag
+- Release-Metadaten stehen lokal auf `0.8.4-mobile-layout.20260606`
 - nicht pushen/deployen ohne explizite Freigabe
 - Live-URL: https://null-noise.vercel.app
 - Preview-Deploys werden nach Push per Vercel CLI erzeugt; konkrete URLs stehen in der jeweiligen Übergabe und im Vercel-Inspect
@@ -137,6 +137,7 @@
 ## Mobile-Stand
 
 - WCAG-/Mobile-Lighthouse-Prüfung vom 5. Juni 2026 hält den Header-Split bei und ergänzt sofort sichtbaren Skip-Link-Fokus
+- Mobile-Layout-Stabilisierung vom 6. Juni 2026 hält Kontaktformular, WCAG-Matrix, Footer, Mobile-Menü und Result-Cards bei 320px, 390px und 430px innerhalb der sichtbaren Contentbreite; sehr schmale Result-Cards stapeln Aktionen statt sie zu quetschen
 - Mobile-Viewport-Reparatur vom 24. Mai 2026 ist weiterhin Grundlage der mobilen Header-/Menüführung
 - Mobile Header ist eine fixe App-Shell mit Burger-Menü, aktiver Route, Escape-Schließen und sichtbarem Fokus
 - Header, Mobile-App-Shell, Menü und `main-content` nutzen mobil denselben Content-Gutter

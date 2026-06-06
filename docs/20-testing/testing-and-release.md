@@ -50,6 +50,7 @@ WCAG 2.2 Level AA ist der technische Zielstandard. Die Prüfung orientiert sich 
 - mobile Navigation mit Burger-Menü für primäre App-Ziele; Info-/Legal-Ziele bleiben im Footer erreichbar
 - kleiner Reflow-Smoke-Test auf den Kernrouten bei `320 CSS-Pixeln`, damit offensichtliches horizontales Overflow früh auffällt
 - gezielter Mobile-Viewport-Smoke bei `390 CSS-Pixeln` und `430 CSS-Pixeln`: Menü im Viewport, opake Menüfläche, gemeinsame Content-Breite von Header/Menü/Main, Touch-Ziel-Höhen und entdichtete Kartenaktionen
+- verschärfter Mobile-Bounds-Smoke bei `320`, `390` und `430 CSS-Pixeln`: zentrale Cards, Formulare, WCAG-Matrix, Status-Badges, Footer-Releasebereiche und Navigation müssen mit ihrer Bounding-Box innerhalb des Viewports bleiben
 - Unit-Kalibrierung für Evidence Engine v2: dünne Datenlage, widersprüchliche Metadaten, Relief, Genre-only, emotionale Last ohne sensorische Dichte und deterministische TMDb-Browse-Diversität
 - Unit-Checks für situative Discovery-Copy: Browse-Mix-Namen, Nicht-jetzt-Sprache, keine sichtbaren Scores/Prozentwerte/Rankings und keine personalisierte Empfehlungssprache
 

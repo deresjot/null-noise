@@ -3,6 +3,35 @@ import { type Page, expect, test } from "@playwright/test";
 
 type AxeImpact = "critical" | "serious" | "moderate" | "minor";
 
+const mobileLayoutSelectors = [
+  "main",
+  ".site-main",
+  ".section-stack",
+  ".panel",
+  ".status-panel",
+  ".contact-form",
+  ".contact-field",
+  ".contact-form-summary",
+  ".contact-form-success",
+  ".wcag-level-axis",
+  ".wcag-level-axis-list",
+  ".wcag-level-axis-list li",
+  ".wcag-status-legend",
+  ".wcag-status-badge",
+  ".result-card",
+  ".result-card-title-zone",
+  ".result-card-reading-block",
+  ".result-card-footer-zone",
+  ".result-card-cta-zone",
+  ".result-card-memory-zone",
+  ".title-pocket-actions-row",
+  ".mobile-experiment-footer",
+  ".mobile-experiment-footer-body",
+  ".mobile-experiment-build-line",
+  ".mobile-experiment-footer-links",
+  ".mobile-experiment-footer-legal-links",
+];
+
 const emptyImpactCounts: Record<AxeImpact, number> = {
   critical: 0,
   serious: 0,
@@ -85,6 +114,40 @@ async function expectNoAxeViolations(
     accessibilityScanResults.violations,
     formatViolationReport(routeLabel, accessibilityScanResults.violations),
   ).toEqual([]);
+}
+
+async function expectMobileLayoutWithinViewport(page: Page, path: string, width: number) {
+  const failures = await page.evaluate((selectors) => {
+    const viewport = window.innerWidth;
+    const documentWidth = document.documentElement.scrollWidth;
+    const localFailures: string[] = [];
+
+    if (documentWidth > viewport + 1) {
+      localFailures.push(`document width ${documentWidth}px exceeds viewport ${viewport}px`);
+    }
+
+    for (const selector of selectors) {
+      for (const element of Array.from(document.querySelectorAll(selector))) {
+        const rect = element.getBoundingClientRect();
+
+        if (rect.width === 0 || rect.height === 0) {
+          continue;
+        }
+
+        const right = rect.x + rect.width;
+        if (rect.x < -1 || right > viewport + 1) {
+          const text = (element.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 80);
+          localFailures.push(
+            `${selector} ${Math.round(rect.x)}..${Math.round(right)} outside ${viewport}px "${text}"`,
+          );
+        }
+      }
+    }
+
+    return localFailures;
+  }, mobileLayoutSelectors);
+
+  expect(failures, `${path} has mobile layout overflow at ${width} CSS pixels`).toEqual([]);
 }
 
 test("homepage has no detectable axe violations", async ({ page }) => {
@@ -820,9 +883,9 @@ test("accessibility page is reachable and explains the current testing scope", a
   );
 });
 
-test("core routes avoid horizontal overflow at 320 CSS pixels", async ({ page }) => {
-  await page.setViewportSize({ width: 320, height: 900 });
-
+test("core routes keep central mobile surfaces inside 320, 390 and 430 CSS pixels", async ({
+  page,
+}) => {
   const routes = [
     {
       path: "/",
@@ -869,15 +932,14 @@ test("core routes avoid horizontal overflow at 320 CSS pixels", async ({ page })
     },
   ];
 
-  for (const route of routes) {
-    await page.goto(route.path);
-    await expect(route.ready()).toBeVisible();
+  for (const width of [320, 390, 430]) {
+    await page.setViewportSize({ width, height: 900 });
 
-    const overflow = await page.evaluate(() => {
-      return document.documentElement.scrollWidth - document.documentElement.clientWidth;
-    });
-
-    expect(overflow, `${route.path} overflows at 320 CSS pixels`).toBeLessThanOrEqual(1);
+    for (const route of routes) {
+      await page.goto(route.path);
+      await expect(route.ready()).toBeVisible();
+      await expectMobileLayoutWithinViewport(page, route.path, width);
+    }
   }
 });
 

@@ -1,12 +1,24 @@
 import packageJson from "../../package.json";
 
 export const currentBuild = {
-  version: `${packageJson.version}-contact-send.20260606`,
-  label: "Privacy-first contact sending",
+  version: `${packageJson.version}-mobile-layout.20260606`,
+  label: "Mobile layout stabilization",
   releasedAt: "2026-06-06",
 };
 
 export const releaseNotes = [
+  {
+    version: `${packageJson.version}-mobile-layout.20260606`,
+    label: "Mobile layout stabilization",
+    releasedAt: "2026-06-06",
+    entries: [
+      "Narrow mobile layouts were tightened across contact, accessibility, search results, title detail, footer and the mobile navigation without changing product logic.",
+      "The mobile menu button keeps a visible icon at 320px and the opened menu uses denser link spacing while preserving active-route and focus states.",
+      "Result cards on very narrow screens now stack poster, title, reading copy and actions instead of squeezing actions into a cramped row.",
+      "Contact form controls, WCAG matrix blocks, status badges and footer release strings are bounded to their container and can wrap safely.",
+      "Automated mobile checks now verify 320px, 390px and 430px for route-level document width plus central card, form, matrix and footer element bounds.",
+    ],
+  },
   {
     version: `${packageJson.version}-contact-send.20260606`,
     label: "Privacy-first contact sending",

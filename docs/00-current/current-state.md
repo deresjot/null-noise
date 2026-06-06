@@ -6,7 +6,7 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 - lokaler Branch: `null-noise`
 - lokaler Projektpfad: `/Users/deresjot/Library/CloudStorage/Dropbox/_PRIVAT/Code/git-webdev/null-noise`
-- Stand: datensparsamer serverseitiger Kontaktversand vom 6. Juni 2026 ist lokal vorbereitet; Commit/Push/Deploy folgen in diesem Auftrag
+- Stand: Mobile-Layout-Stabilisierung vom 6. Juni 2026 ist lokal vorbereitet; Commit/Push/Deploy folgen in diesem Auftrag
 - Live-URL: https://null-noise.vercel.app
 - Preview-Deploys werden nach Push per Vercel CLI erzeugt; konkrete URLs stehen in der jeweiligen Übergabe und im Vercel-Inspect
 - Hinweis: Preview ist `READY`, aber Vercel Deployment Protection/SSO ist aktiv; ohne Login kommt `401`
@@ -16,6 +16,13 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 ## Letzte lokale Arbeitsblöcke
 
+- Mobile-Layout-Stabilisierung 6. Juni 2026:
+  - reiner CSS-/Test-Pass ohne Produktlogikänderung für `/kontakt`, `/barrierefreiheit`, `/`, `/suche`, `/suche?q=Arrival`, `/titel/mondfenster`, Footer und Mobile Navigation
+  - Mobile-Menübutton zeigt bei 320px wieder ein sichtbares Icon; Menülinks sind kompakter und bleiben innerhalb der Contentbreite
+  - Result-Cards stapeln bei sehr schmaler Breite Poster, Titel, Einschätzung und Aktionen statt die Aktionszeile zu quetschen
+  - Kontaktformular, WCAG-Matrix, Status-Badges und Footer-Release-Strings sind auf Containerbreite begrenzt und dürfen sauber umbrechen
+  - Playwright prüft 320px, 390px und 430px zusätzlich über zentrale Element-Bounding-Boxes für Cards, Formulare, Matrix und Footer
+  - Release Notes stehen lokal auf `0.8.4-mobile-layout.20260606`
 - Kontaktversand 6. Juni 2026:
   - neue Kernroute `/kontakt` mit nativer `form`-/`label`-/`input`-/`textarea`-/`button`-Struktur
   - Footer-Navigation führt von überall zu Kontakt; Reihenfolge: Barrierefreiheit, Kontakt, Datenschutz, Impressum
