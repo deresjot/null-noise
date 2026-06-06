@@ -31,6 +31,9 @@ export function ContactForm() {
   const trimmedMessage = message.trim();
   const hasErrors = Object.keys(errors).length > 0;
   const mailtoHref = buildMailto(trimmedEmail, trimmedMessage);
+  const messageLength = trimmedMessage.length;
+  const remainingCharacters = Math.max(0, 10 - messageLength);
+  const messageLengthReady = messageLength >= 10;
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -96,15 +99,15 @@ export function ContactForm() {
           tabIndex={-1}
           aria-labelledby="contact-success-heading"
         >
-          <h2 id="contact-success-heading">Nachricht lokal geprüft</h2>
+          <h2 id="contact-success-heading">Nachricht bereit zum Absenden</h2>
           <p>
-            Die Eingaben wurden nur in diesem Browser geprüft und nicht gespeichert oder
-            automatisch verschickt.
+            Die Eingaben wurden nur in diesem Browser vorbereitet und nicht gespeichert oder
+            automatisch verschickt. Sende die Nachricht im Mailprogramm ab.
           </p>
           <p>Mit der angegebenen E-Mail ist eine Antwort möglich, wenn du die Nachricht versendest.</p>
           <p>
             <a className="secondary-button-link" href={mailtoHref}>
-              Im Mailprogramm öffnen
+              Im Mailprogramm absenden
             </a>
           </p>
         </div>
@@ -138,6 +141,16 @@ export function ContactForm() {
         <p id="contact-message-help" className="field-note">
           Schreib kurz, worum es geht. Mindestens 10 Zeichen reichen.
         </p>
+        <p
+          id="contact-message-counter"
+          className="contact-message-counter"
+          data-ready={messageLengthReady}
+          aria-live="polite"
+        >
+          {messageLengthReady
+            ? `${messageLength} von mindestens 10 Zeichen. Mindestlänge erreicht.`
+            : `${messageLength} von mindestens 10 Zeichen. Noch ${remainingCharacters} Zeichen fehlen.`}
+        </p>
         <textarea
           id="contact-message"
           name="message"
@@ -147,7 +160,9 @@ export function ContactForm() {
           value={message}
           onChange={(event) => setMessage(event.target.value)}
           aria-describedby={
-            errors.message ? "contact-message-help contact-message-error" : "contact-message-help"
+            errors.message
+              ? "contact-message-help contact-message-counter contact-message-error"
+              : "contact-message-help contact-message-counter"
           }
           aria-invalid={errors.message ? "true" : undefined}
         />
@@ -159,7 +174,7 @@ export function ContactForm() {
       </div>
 
       <button className="primary-button" type="submit">
-        Nachricht lokal prüfen
+        Nachricht absenden
       </button>
     </form>
   );

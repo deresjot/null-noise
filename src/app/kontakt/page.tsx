@@ -6,7 +6,7 @@ import { siteName } from "@/lib/constants";
 export const metadata: Metadata = {
   title: `Kontakt | ${siteName}`,
   description:
-    "Datensparsame Kontaktseite von null-noise mit E-Mail-Adresse für Antworten und lokal geprüfter Nachricht.",
+    "Datensparsame Kontaktseite von null-noise mit E-Mail-Adresse für Antworten und bewusstem Mailprogramm-Handoff.",
 };
 
 export default function KontaktPage() {
@@ -30,7 +30,7 @@ export default function KontaktPage() {
         <ul className="plain-list">
           <li>Die E-Mail-Adresse wird nur für die Antwort im Mailprogramm übernommen.</li>
           <li>Es gibt kein Tracking, keine Profile und keine Konto-Funktion.</li>
-          <li>Die Eingaben werden hier nur lokal geprüft und nicht automatisch gespeichert.</li>
+          <li>Die Eingaben werden nicht automatisch gespeichert oder verschickt.</li>
         </ul>
       </section>
 

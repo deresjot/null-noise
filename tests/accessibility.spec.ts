@@ -587,7 +587,7 @@ test("contact page uses a privacy-first native form with clear labels and status
   const form = page.locator("form.contact-form");
   const email = page.getByLabel("E-Mail für Antwort (Pflichtfeld)");
   const message = page.getByLabel("Nachricht (Pflichtfeld)");
-  const submit = page.getByRole("button", { name: "Nachricht lokal prüfen" });
+  const submit = page.getByRole("button", { name: "Nachricht absenden" });
 
   await expect(form).toBeVisible();
   await expect(email).toHaveAttribute("type", "email");
@@ -596,7 +596,8 @@ test("contact page uses a privacy-first native form with clear labels and status
   await expect(email).toHaveAttribute("aria-describedby", "contact-email-help");
   await expect(message).toHaveAttribute("required", "");
   await expect(message).toHaveAttribute("minlength", "10");
-  await expect(message).toHaveAttribute("aria-describedby", "contact-message-help");
+  await expect(message).toHaveAttribute("aria-describedby", "contact-message-help contact-message-counter");
+  await expect(page.locator("#contact-message-counter")).toContainText("Noch 10 Zeichen fehlen.");
 
   await submit.click();
   await expect(page.getByRole("heading", { name: "Bitte prüfe die Eingaben" })).toBeVisible();
@@ -608,14 +609,17 @@ test("contact page uses a privacy-first native form with clear labels and status
 
   await email.fill("keine-adresse");
   await message.fill("Das Formular soll bitte gut bedienbar bleiben.");
+  await expect(page.locator("#contact-message-counter")).toContainText("Mindestlänge erreicht.");
+  await expect(page.locator("#contact-message-counter")).toHaveAttribute("data-ready", "true");
   await submit.click();
   await expect(page.getByText("Fehler: Bitte gib eine gültige E-Mail-Adresse ein")).toBeVisible();
   await expect(email).toHaveAttribute("aria-invalid", "true");
 
   await email.fill("mail@example.com");
   await submit.click();
-  await expect(page.getByText("Mit der angegebenen E-Mail ist eine Antwort möglich")).toBeVisible();
-  await expect(page.getByRole("link", { name: "Im Mailprogramm öffnen" })).toHaveAttribute(
+  await expect(page.getByRole("heading", { name: "Nachricht bereit zum Absenden" })).toBeVisible();
+  await expect(page.getByText("Sende die Nachricht im Mailprogramm ab.")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Im Mailprogramm absenden" })).toHaveAttribute(
     "href",
     /mailto:mail@sebastianjansen\.com/,
   );

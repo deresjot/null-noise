@@ -401,6 +401,17 @@ code {
   line-height: 1.55;
 }
 
+.contact-message-counter {
+  margin: 0;
+  color: #7a1d1d;
+  font-weight: 720;
+  line-height: 1.55;
+}
+
+.contact-message-counter[data-ready="true"] {
+  color: #1c6b4b;
+}
+
 .contact-form-summary,
 .contact-form-success {
   display: grid;

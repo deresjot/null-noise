@@ -310,7 +310,7 @@ async function collectTechnicalFailures(page: Page) {
         }
       }
 
-      if (!submit || textOf(submit) !== "Nachricht lokal prüfen") {
+      if (!submit || textOf(submit) !== "Nachricht absenden") {
         failures.push("contact submit button should have a visible descriptive label");
       }
     }
