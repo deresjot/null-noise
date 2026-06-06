@@ -3,8 +3,8 @@
 ## Aktueller Arbeitsstand
 
 - aktiver lokaler Arbeitsbranch: `null-noise`
-- aktueller Stand: WCAG-/Mobile-Lighthouse-Prüfung vom 5. Juni 2026 ist auf `origin/null-noise` und Production bereitgestellt
-- Release-Metadaten stehen lokal auf `0.8.4-wcag-lighthouse.20260605`
+- aktueller Stand: datensparsames Kontaktformular vom 6. Juni 2026 ist lokal vorbereitet; Commit/Push/Deploy folgen in diesem Auftrag
+- Release-Metadaten stehen lokal auf `0.8.4-contact.20260606`
 - nicht pushen/deployen ohne explizite Freigabe
 - Live-URL: https://null-noise.vercel.app
 - Preview-Deploys werden nach Push per Vercel CLI erzeugt; konkrete URLs stehen in der jeweiligen Übergabe und im Vercel-Inspect
@@ -43,6 +43,7 @@
 - `/erklaerung`
 - `/bedienung`
 - `/barrierefreiheit`
+- `/kontakt`
 - `/datenschutz`
 - `/impressum`
 - ggf. `/spike/metadaten/...` als externer Detailpfad
@@ -61,6 +62,7 @@
 - aktueller Security-Hardening-Stand ist lokal geprüft, aber noch nicht gepusht oder deployt
 - Live-Production kann daher noch ohne die lokalen Header-/CSP-, `server-only`-, Cookie- und Delete-Origin-Härtungen laufen
 - keine Accounts, keine Profile, keine Social Features, kein Tracking und keine Analytics
+- `/kontakt` nutzt ein natives, lokal validiertes Formular ohne Captcha, Tracking, Profiling oder automatische Speicherung; E-Mail ist optional und nur für eine Antwort nötig
 - keine Supabase-Integration im aktuellen Code; keine RLS-/Service-Role-Themen im Live-Stand, solange Supabase nicht eingeführt wird
 - Datenhaltung bleibt datenarm: öffentliche Titelmetadaten, stille Feedback-/Rating-Evidenz und Rate-Limit-Attempts
 - Feedback/Ratings dürfen kein Social Feature werden und erzeugen keine Nutzerprofile
@@ -98,7 +100,7 @@
 ## Discovery-Stand
 
 - Discovery fragt situativ: passt das gerade, wäre das zu viel, oder lieber vormerken?
-- Browse-Mixes nutzen ruhige, nicht-personalisierte Einstiege wie `Ruhiger Einstieg`, `Wenig Sprünge`, `Dicht, aber vorhersehbar` und `Eher vormerken`.
+- Browse-Mixes nutzen verständliche, nicht-personalisierte Einstiege wie `Chillig`, `Mal so, mal so` und `Stressig`.
 - `Nicht jetzt` ist ein positives Produktmuster: `Kann gerade zu dicht sein` oder `Eher später prüfen` meint Kapazität, nicht Titelqualität.
 - Such- und Browse-Karten bleiben Vorschau; ausführlichere Gründe gehören auf Detailseiten oder in vorhandene Disclosure-Muster.
 - TMDb-Karten zeigen in der Topline Format, erstes verfügbares Genre und Jahr; lokale Karten erfinden kein Genre, wenn keines vorhanden ist.
@@ -180,6 +182,7 @@
 - `npm run test:axe-core`
 - `npm run test:a11y`
 - `npm run test:wcag22-aa`
+- `npm run test:wcag22-aaa`
 - `npx playwright test`
 
 ## Letzte finale Prüfung dieses Mobile-UX-Abschlusses

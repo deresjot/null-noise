@@ -1,7 +1,10 @@
 import axe from "axe-core";
 import { type Page, expect, test } from "@playwright/test";
 
+import { wcag22AaTechnicalMatrix } from "@/lib/wcag22-technical-matrix";
+
 const axeSource = axe.source;
+const wcag22Scope = process.env.WCAG22_SCOPE === "aaa" ? "aaa" : "aa";
 
 const coreRoutes = [
   { path: "/", heading: "Du musst dich nicht auch noch in der Freizeit anschreien lassen." },
@@ -15,67 +18,10 @@ const coreRoutes = [
   { path: "/erklaerung", heading: "null-noise verstehen und benutzen" },
   { path: "/bedienung", heading: "null-noise verstehen und benutzen" },
   { path: "/barrierefreiheit", heading: "Barrierefreiheit" },
+  { path: "/kontakt", heading: "Kontakt" },
   { path: "/datenschutz", heading: "Datenschutz" },
   { path: "/impressum", heading: "Impressum" },
 ];
-
-const wcag22AaCriteria = [
-  ["1.1.1", "Non-text Content", "A", "axe plus DOM alt/name/hidden checks"],
-  ["1.2.1", "Audio-only and Video-only", "A", "N/A: no audio/video/media elements on audited routes"],
-  ["1.2.2", "Captions", "A", "N/A: no prerecorded video/audio on audited routes"],
-  ["1.2.3", "Audio Description or Media Alternative", "A", "N/A: no prerecorded video on audited routes"],
-  ["1.2.4", "Captions Live", "AA", "N/A: no live audio/video on audited routes"],
-  ["1.2.5", "Audio Description", "AA", "N/A: no prerecorded video on audited routes"],
-  ["1.3.1", "Info and Relationships", "A", "axe plus landmarks/headings/forms/list/table checks"],
-  ["1.3.2", "Meaningful Sequence", "A", "DOM order, landmark and heading smoke"],
-  ["1.3.3", "Sensory Characteristics", "A", "source/DOM smoke for instructions that depend only on shape/position/color"],
-  ["1.3.4", "Orientation", "AA", "portrait/landscape viewport smoke"],
-  ["1.3.5", "Identify Input Purpose", "AA", "form-control autocomplete/name smoke"],
-  ["1.4.1", "Use of Color", "A", "axe plus active/focus state smoke"],
-  ["1.4.2", "Audio Control", "A", "N/A: no autoplay audio/media elements"],
-  ["1.4.3", "Contrast Minimum", "AA", "axe contrast checks"],
-  ["1.4.4", "Resize Text", "AA", "320px/large viewport smoke"],
-  ["1.4.5", "Images of Text", "AA", "DOM image-purpose smoke; brand image decorative inside named link"],
-  ["1.4.10", "Reflow", "AA", "320px/390px/430px overflow checks"],
-  ["1.4.11", "Non-text Contrast", "AA", "axe plus focus/control state smoke"],
-  ["1.4.12", "Text Spacing", "AA", "injected text-spacing overflow check"],
-  ["1.4.13", "Content on Hover or Focus", "AA", "no tooltip/popover hover-only content; focus smoke"],
-  ["2.1.1", "Keyboard", "A", "tab/focus and controls smoke"],
-  ["2.1.2", "No Keyboard Trap", "A", "bounded tab-cycle smoke"],
-  ["2.1.4", "Character Key Shortcuts", "A", "N/A: no custom single-character shortcuts detected"],
-  ["2.2.1", "Timing Adjustable", "A", "N/A: no session timeout/meta refresh/time-limit UI detected"],
-  ["2.2.2", "Pause, Stop, Hide", "A", "reduced-motion and moving-content smoke"],
-  ["2.3.1", "Three Flashes", "A", "N/A: no video/canvas/flash/blink content detected"],
-  ["2.4.1", "Bypass Blocks", "A", "skip-link smoke"],
-  ["2.4.2", "Page Titled", "A", "title check"],
-  ["2.4.3", "Focus Order", "A", "tab order/focus visibility smoke"],
-  ["2.4.4", "Link Purpose", "A", "accessible link-name smoke"],
-  ["2.4.5", "Multiple Ways", "AA", "header/footer navigation smoke"],
-  ["2.4.6", "Headings and Labels", "AA", "heading/control-name smoke"],
-  ["2.4.7", "Focus Visible", "AA", "computed focus visibility smoke"],
-  ["2.4.11", "Focus Not Obscured Minimum", "AA", "focused element viewport/elementFromPoint smoke"],
-  ["2.5.1", "Pointer Gestures", "A", "N/A: no multipoint/path gesture UI detected"],
-  ["2.5.2", "Pointer Cancellation", "A", "native click controls; no pointerdown-only activation detected"],
-  ["2.5.3", "Label in Name", "A", "visible text included in accessible-name smoke"],
-  ["2.5.4", "Motion Actuation", "A", "N/A: no device-motion handlers detected"],
-  ["2.5.7", "Dragging Movements", "AA", "N/A: no draggable UI detected"],
-  ["2.5.8", "Target Size Minimum", "AA", "24px target-size smoke with inline-text exceptions"],
-  ["3.1.1", "Language of Page", "A", "html lang check"],
-  ["3.1.2", "Language of Parts", "AA", "lang attribute sanity check"],
-  ["3.2.1", "On Focus", "A", "focus does not trigger route change smoke"],
-  ["3.2.2", "On Input", "A", "native form controls and explicit submit/change smoke"],
-  ["3.2.3", "Consistent Navigation", "AA", "navigation link sequence smoke"],
-  ["3.2.4", "Consistent Identification", "AA", "repeated link/control labels smoke"],
-  ["3.2.6", "Consistent Help", "A", "help/navigation route consistency smoke"],
-  ["3.3.1", "Error Identification", "A", "axe/forms/status smoke"],
-  ["3.3.2", "Labels or Instructions", "A", "label/name smoke"],
-  ["3.3.3", "Error Suggestion", "AA", "form status/error smoke"],
-  ["3.3.4", "Error Prevention Legal/Financial/Data", "AA", "N/A: no legal/financial/user-data transaction form"],
-  ["3.3.7", "Redundant Entry", "A", "N/A: no multi-step re-entry flow detected"],
-  ["3.3.8", "Accessible Authentication Minimum", "AA", "N/A: no authentication flow detected"],
-  ["4.1.2", "Name Role Value", "A", "axe plus interactive-name/state smoke"],
-  ["4.1.3", "Status Messages", "AA", "role=status/live-region smoke"],
-] as const;
 
 type RouteFinding = {
   path: string;
@@ -87,10 +33,13 @@ async function gotoReady(page: Page, route: (typeof coreRoutes)[number]) {
   await expect(page.getByRole("heading", { name: route.heading })).toBeVisible();
 }
 
-async function runAxe(page: Page) {
+async function runAxe(
+  page: Page,
+  values = ["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa", "best-practice"],
+) {
   await page.addScriptTag({ content: axeSource });
 
-  return page.evaluate(async () => {
+  return page.evaluate(async (runOnlyValues) => {
     const axeApi = (window as Window & {
       axe: {
         run: (
@@ -105,10 +54,10 @@ async function runAxe(page: Page) {
     return axeApi.run(document, {
       runOnly: {
         type: "tag",
-        values: ["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa", "best-practice"],
+        values: runOnlyValues,
       },
     });
-  });
+  }, values);
 }
 
 async function collectTechnicalFailures(page: Page) {
@@ -131,15 +80,24 @@ async function collectTechnicalFailures(page: Page) {
       );
     };
     const textOf = (element: Element) => (element.textContent ?? "").replace(/\s+/g, " ").trim();
-    const nameOf = (element: Element) =>
-      (
+    const nameOf = (element: Element) => {
+      const formLabel =
+        element instanceof HTMLInputElement ||
+        element instanceof HTMLSelectElement ||
+        element instanceof HTMLTextAreaElement
+          ? Array.from(element.labels ?? []).map(textOf).find(Boolean)
+          : undefined;
+
+      return (
         element.getAttribute("aria-label") ??
+        formLabel ??
         element.getAttribute("title") ??
         textOf(element) ??
         ""
       )
         .replace(/\s+/g, " ")
         .trim();
+    };
 
     if (document.documentElement.lang !== "de") {
       failures.push(`html lang should be de, got ${document.documentElement.lang || "empty"}`);
@@ -324,6 +282,39 @@ async function collectTechnicalFailures(page: Page) {
       failures.push("tooltip/popover found; hover/focus dismissal needs route-specific checks");
     }
 
+    if (window.location.pathname === "/kontakt") {
+      const form = document.querySelector("form.contact-form");
+      const email = document.querySelector<HTMLInputElement>("#contact-email");
+      const message = document.querySelector<HTMLTextAreaElement>("#contact-message");
+      const submit = document.querySelector<HTMLButtonElement>(".contact-form button[type='submit']");
+
+      if (!form) {
+        failures.push("contact form missing native form element");
+      }
+
+      if (!email || email.type !== "email" || email.autocomplete !== "email") {
+        failures.push("contact email field should be optional type=email with autocomplete=email");
+      }
+
+      if (!message || !message.required || message.minLength < 10) {
+        failures.push("contact message field should be required with a modest minlength");
+      }
+
+      for (const control of [email, message]) {
+        if (!control) {
+          continue;
+        }
+        const describedBy = control.getAttribute("aria-describedby") ?? "";
+        if (!describedBy.includes(`${control.id}-help`)) {
+          failures.push(`${control.id} should be connected to visible help text`);
+        }
+      }
+
+      if (!submit || textOf(submit) !== "Nachricht lokal prüfen") {
+        failures.push("contact submit button should have a visible descriptive label");
+      }
+    }
+
     document.documentElement.style.scrollBehavior = previousHtmlScrollBehavior;
     document.body.style.scrollBehavior = previousBodyScrollBehavior;
 
@@ -331,18 +322,20 @@ async function collectTechnicalFailures(page: Page) {
   });
 }
 
-test.describe("WCAG 2.2 AA technical regression matrix", () => {
+test.describe("WCAG 2.2 technical regression matrix", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(120_000);
 
-  test("documents every WCAG 2.2 A/AA success criterion in a technical matrix", async ({}, testInfo) => {
-    await testInfo.attach("wcag22-aa-technical-matrix.json", {
+  test("documents every WCAG 2.2 A/AA/AAA success criterion in a technical matrix", async ({}, testInfo) => {
+    await testInfo.attach("wcag22-technical-matrix.json", {
       body: JSON.stringify(
-        wcag22AaCriteria.map(([criterion, title, level, technicalCoverage]) => ({
-          criterion,
-          title,
-          level,
-          technicalCoverage,
+        wcag22AaTechnicalMatrix.map((criterion) => ({
+          criterion: criterion.criterion,
+          title: criterion.title,
+          level: criterion.level,
+          status: criterion.status,
+          technicalCoverage: criterion.technicalCoverage,
+          wcagUrl: criterion.wcagUrl,
         })),
         null,
         2,
@@ -350,7 +343,15 @@ test.describe("WCAG 2.2 AA technical regression matrix", () => {
       contentType: "application/json",
     });
 
-    expect(wcag22AaCriteria).toHaveLength(55);
+    expect(wcag22AaTechnicalMatrix).toHaveLength(86);
+    expect(wcag22AaTechnicalMatrix.filter((criterion) => criterion.level === "AAA")).toHaveLength(
+      31,
+    );
+    expect(wcag22AaTechnicalMatrix.find((criterion) => criterion.criterion === "1.4.6"))
+      .toMatchObject({
+        level: "AAA",
+        status: "pass",
+      });
   });
 
   test("has no axe WCAG 2.2 A/AA violations on checked routes", async ({ page }, testInfo) => {
@@ -377,6 +378,45 @@ test.describe("WCAG 2.2 AA technical regression matrix", () => {
     });
 
     expect(routeFindings.flatMap((finding) => finding.failures)).toEqual([]);
+  });
+
+  test("records current exploratory WCAG 2.2 AAA axe findings without treating AAA as the release gate", async ({
+    page,
+  }, testInfo) => {
+    test.skip(wcag22Scope === "aa", "AAA findings are exploratory and not part of the AA release gate.");
+
+    const routeFindings: Array<{
+      path: string;
+      violations: Array<{
+        id: string;
+        impact: string | null;
+        targets: string[];
+      }>;
+    }> = [];
+
+    for (const route of coreRoutes) {
+      await gotoReady(page, route);
+      const results = await runAxe(page, ["wcag2aaa"]);
+      routeFindings.push({
+        path: route.path,
+        violations: results.violations.map((violation) => ({
+          id: violation.id,
+          impact: violation.impact,
+          targets: violation.nodes.flatMap((node) => node.target).slice(0, 8),
+        })),
+      });
+    }
+
+    await testInfo.attach("wcag22-aaa-exploratory-axe-findings.json", {
+      body: JSON.stringify(routeFindings, null, 2),
+      contentType: "application/json",
+    });
+
+    const violationIds = [
+      ...new Set(routeFindings.flatMap((finding) => finding.violations.map((violation) => violation.id))),
+    ];
+
+    expect(violationIds).toEqual([]);
   });
 
   test("passes route-level semantic, media, keyboard, focus and target-size checks", async ({

@@ -1,12 +1,24 @@
 import packageJson from "../../package.json";
 
 export const currentBuild = {
-  version: `${packageJson.version}-wcag-lighthouse.20260605`,
-  label: "WCAG and Lighthouse polish",
-  releasedAt: "2026-06-05",
+  version: `${packageJson.version}-contact.20260606`,
+  label: "Privacy-first contact form",
+  releasedAt: "2026-06-06",
 };
 
 export const releaseNotes = [
+  {
+    version: `${packageJson.version}-contact.20260606`,
+    label: "Privacy-first contact form",
+    releasedAt: "2026-06-06",
+    entries: [
+      "A native contact page is now reachable from the footer on every route, with message as the only required field and optional email for replies.",
+      "The form performs local validation with visible field errors, a focusable error summary and a polite success status without tracking, accounts, CAPTCHA or automatic storage.",
+      "No server-side mail delivery is implied yet; valid input opens a mailto handoff only after the user explicitly chooses it.",
+      "The technical WCAG 2.2 A/AA/AAA matrix now includes /kontakt as a core route and covers form labels, help text, error suggestions, status messages, keyboard flow, reflow, text spacing and target size.",
+      "WCAG 2.2 AA remains the technical target standard; AAA checks stay exploratory and manual conformance review remains a separate boundary.",
+    ],
+  },
   {
     version: `${packageJson.version}-wcag-lighthouse.20260605`,
     label: "WCAG and Lighthouse polish",
@@ -72,7 +84,7 @@ export const releaseNotes = [
     label: "Situational discovery UX",
     releasedAt: "2026-05-24",
     entries: [
-      "Browse groups now use calmer situational entry points such as Ruhiger Einstieg, Dicht, aber vorhersehbar and Eher vormerken.",
+      "Browse groups now use calmer situational entry points such as Chillig, Mal so, mal so and Stressig.",
       "External result cards can surface not-now language like Kann gerade zu dicht sein without turning it into a negative rating.",
       "Detail disclosures group evidence as spricht eher dafuer, kann dagegen sprechen and Datenlage, while keeping scores, percentages and rankings hidden.",
       "Follow-up sections now frame alternatives as situational counterweights instead of classic similar-title recommendations.",

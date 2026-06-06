@@ -6,7 +6,7 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 - lokaler Branch: `null-noise`
 - lokaler Projektpfad: `/Users/deresjot/Library/CloudStorage/Dropbox/_PRIVAT/Code/git-webdev/null-noise`
-- Stand: WCAG-/Mobile-Lighthouse-Prüfung vom 5. Juni 2026 ist auf `origin/null-noise` und Production bereitgestellt
+- Stand: datensparsames Kontaktformular vom 6. Juni 2026 ist lokal vorbereitet; Commit/Push/Deploy folgen in diesem Auftrag
 - Live-URL: https://null-noise.vercel.app
 - Preview-Deploys werden nach Push per Vercel CLI erzeugt; konkrete URLs stehen in der jeweiligen Übergabe und im Vercel-Inspect
 - Hinweis: Preview ist `READY`, aber Vercel Deployment Protection/SSO ist aktiv; ohne Login kommt `401`
@@ -16,6 +16,15 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 ## Letzte lokale Arbeitsblöcke
 
+- Kontaktformular 6. Juni 2026:
+  - neue Kernroute `/kontakt` mit nativer `form`-/`label`-/`input`-/`textarea`-/`button`-Struktur
+  - Footer-Navigation führt von überall zu Kontakt; Reihenfolge: Barrierefreiheit, Kontakt, Datenschutz, Impressum
+  - Nachricht ist das einzige Pflichtfeld; E-Mail ist optional und nur für eine Antwort nötig
+  - keine Captcha-, Tracking-, Profil-, Account-, Speicher- oder automatische Versandlogik
+  - lokale Validierung zeigt eine fokussierbare Fehlerzusammenfassung, Feldfehler, konkrete Korrekturhinweise und eine ruhige Statusmeldung
+  - gültige Eingaben werden nicht als serverseitig verschickt behauptet; stattdessen gibt es einen bewusst ausgelösten Mailprogramm-Handoff
+  - `/kontakt` ist in der technischen WCAG-2.2-A/AA/AAA-Matrix und den Axe-/Reflow-/Text-Spacing-/Target-Size-/Formular-Smokes enthalten
+  - Release Notes stehen lokal auf `0.8.4-contact.20260606`
 - WCAG-/Mobile-Lighthouse-Prüfung 5. Juni 2026:
   - Fokus auf dem Skip-Link ist sofort sichtbar, ohne Einblend-Transition
   - verwaiste alte Brand-CSS-Regeln für `brand-mark`, `brand-lockup` und textbasierte `brand-wordmark` wurden aus `globals.css` entfernt
@@ -55,8 +64,8 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
   - Read-only-Hinweis auf externen Karten benennt jetzt konkret, dass nur Titeldaten verfügbar sind und lokale Einordnung deaktiviert ist
   - Release Notes stehen lokal auf `0.8.4-cards.20260524`
 - Situative Discovery-UX 24. Mai 2026:
-  - Browse-Mixes sprechen jetzt ruhiger von `Ruhiger Einstieg`, `Dicht, aber vorhersehbar` und `Eher vormerken` statt wie generische Ergebnislisten
-  - externe Karten können `Kann gerade zu dicht sein`, `Eher vormerken` oder `Erst kurz prüfen` zeigen, ohne Titel negativ zu bewerten
+  - Browse-Mixes sprechen jetzt ruhiger von `Chillig`, `Mal so, mal so` und `Stressig` statt wie generische Ergebnislisten
+  - externe Karten können `Kann gerade zu dicht sein`, `Stressig` oder `Erst kurz prüfen` zeigen, ohne Titel negativ zu bewerten
   - Detailseiten strukturieren `Worauf basiert das?` zusätzlich als `Spricht eher dafür`, `Kann dagegen sprechen` und `Datenlage`
   - Alternativen werden als situative Gegengewichte formuliert, etwa ruhiger, dichter oder leichter, nicht als personalisierte Empfehlung
   - alles bleibt aus vorhandener Evidence-/TMDb-Logik abgeleitet; keine Profile, kein Tracking, keine Social-Logik und keine neue externe Quelle
@@ -200,6 +209,7 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 - `/erklaerung`
 - `/bedienung`
 - `/barrierefreiheit`
+- `/kontakt`
 - `/datenschutz`
 - `/impressum`
 - optional: `/spike/metadaten/...`

@@ -75,6 +75,7 @@ Bevorzugte Bausteine:
 
 - Navigation: `nav`, Listen, Links, sichtbarer Skip-Link
 - Suche und Filter: `form`, `label`, `input`, `select`, `fieldset`, `legend`, Checkboxen
+- Kontakt: natives `form` mit sichtbaren `label`, verbundenen Hilfetexten, klarer Fehlerzusammenfassung und ruhiger Statusmeldung statt externer Form-Library
 - Ergebnisse: semantische Listen und Artikel
 - Detailansichten: `section`, `article`, `dl`, `ul`, klare Überschriftenstruktur
 - Erklärbare Offenlegung: bevorzugt `details` und `summary` oder klar beschriftete Buttons, wenn eine Offenlegung später wirklich nötig ist
@@ -144,6 +145,7 @@ Die erste Basis folgt dieser Strategie bereits:
 - `SiteHeader`: Landmarken, Listen-Navigation, Skip-Link
 - `SiteHeader`: verwendet seit dem Fix-Pass vom 23. April 2026 das vom Nutzer gelieferte Logo als Markenquelle; Header, Favicon, Apple-Icon und OG-Bild leiten sich aus derselben Quelle ab
 - `SearchForm`: native Formularfelder mit `fieldset` und `legend`
+- `ContactForm`: datensparsames natives Kontaktformular auf `/kontakt`; Nachricht ist Pflicht, E-Mail optional, Fehler werden direkt am Feld und in einer fokussierbaren Zusammenfassung erklärt, gültige Eingaben werden nicht als serverseitig versendet behauptet
 - `SearchPage` im leeren Zustand: zwei semantisch getrennte Browse-Bereiche mit echten Listen statt Carousel- oder Mischlogik
 - `ResultList`: semantische Trefferliste mit breiteren Tile-Artikeln statt schmalen App-Karten; Poster, Titelzone, Erste Einschätzung und Aktionen sind als getrennte Leseblöcke aufgebaut
 - `ExternalResultList`: dieselbe Tile-Sprache für externe TMDb-Titel, klar getrennt vom lokalen Stand und ohne Mischliste aus Browse und Suche

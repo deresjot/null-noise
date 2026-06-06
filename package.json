@@ -13,7 +13,8 @@
     "lint": "eslint .",
     "test:unit": "DATABASE_URL=file:./prisma/test.db NULL_NOISE_SKIP_LEGACY_IMPORT=true npm run db:push && DATABASE_URL=file:./prisma/test.db NULL_NOISE_SKIP_LEGACY_IMPORT=true vitest run --maxWorkers=1",
     "test:a11y": "playwright test tests/accessibility.spec.ts tests/axe-core-direct.spec.ts",
-    "test:wcag22-aa": "playwright test tests/wcag22-aa-technical.spec.ts",
+    "test:wcag22-aa": "WCAG22_SCOPE=aa playwright test tests/wcag22-aa-technical.spec.ts",
+    "test:wcag22-aaa": "WCAG22_SCOPE=aaa playwright test tests/wcag22-aa-technical.spec.ts",
     "test:axe-core": "playwright test tests/axe-core-direct.spec.ts",
     "test:e2e": "playwright test"
   },

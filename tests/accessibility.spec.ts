@@ -165,6 +165,11 @@ test("info and legal pages have no detectable axe violations", async ({ page }) 
       heading: "Barrierefreiheit",
     },
     {
+      path: "/kontakt",
+      label: "contact",
+      heading: "Kontakt",
+    },
+    {
       path: "/datenschutz",
       label: "privacy",
       heading: "Datenschutz",
@@ -500,8 +505,29 @@ test("footer links to the minimal legal pages", async ({ page }) => {
   await expect(footer.getByRole("link", { name: "Suche" }).first()).toBeVisible();
   await expect(footer.getByRole("link", { name: "Erklärung und Hilfe" }).first()).toBeVisible();
   await expect(footer.getByRole("link", { name: "Barrierefreiheit" }).first()).toBeVisible();
+  await expect(footer.getByRole("link", { name: "Kontakt" }).first()).toBeVisible();
   await expect(footer.getByRole("link", { name: "Datenschutz" }).first()).toBeVisible();
   await expect(footer.getByRole("link", { name: "Impressum" }).first()).toBeVisible();
+});
+
+test("footer exposes the contact page from core routes", async ({ page }) => {
+  const routes = [
+    "/",
+    "/suche",
+    "/suche?q=Arrival",
+    "/barrierefreiheit",
+    "/kontakt",
+    "/datenschutz",
+    "/impressum",
+  ];
+
+  for (const route of routes) {
+    await page.goto(route);
+    await expect(page.locator("footer").getByRole("link", { name: "Kontakt" }).first()).toHaveAttribute(
+      "href",
+      "/kontakt",
+    );
+  }
 });
 
 test("mobile navigation separates primary header links from footer metadata links", async ({ page }) => {
@@ -518,6 +544,7 @@ test("mobile navigation separates primary header links from footer metadata link
   await expect(headerNav.getByRole("link", { name: "Suche" })).toHaveAttribute("href", "/suche");
   await expect(headerNav.getByRole("link", { name: "Erklärung / Hilfe" })).toHaveAttribute("href", "/erklaerung");
   await expect(headerNav.getByRole("link", { name: "Barrierefreiheit" })).toHaveCount(0);
+  await expect(headerNav.getByRole("link", { name: "Kontakt" })).toHaveCount(0);
   await expect(headerNav.getByRole("link", { name: "Datenschutz" })).toHaveCount(0);
   await expect(headerNav.getByRole("link", { name: "Impressum" })).toHaveCount(0);
 
@@ -525,6 +552,7 @@ test("mobile navigation separates primary header links from footer metadata link
   await expect(footerProductNav.locator('a[href="/suche"]')).toHaveText("Suche");
   await expect(footerProductNav.locator('a[href="/erklaerung"]')).toHaveText("Erklärung und Hilfe");
   await expect(footerLegalNav.locator('a[href="/barrierefreiheit"]')).toHaveText("Barrierefreiheit");
+  await expect(footerLegalNav.locator('a[href="/kontakt"]')).toHaveText("Kontakt");
   await expect(footerLegalNav.locator('a[href="/datenschutz"]')).toHaveText("Datenschutz");
   await expect(footerLegalNav.locator('a[href="/impressum"]')).toHaveText("Impressum");
 });
@@ -544,6 +572,125 @@ test("mobile navigation returns focus to the menu button after Escape", async ({
 
   await expect(page.getByRole("button", { name: "Menü öffnen" })).toBeFocused();
   await expect(mobileNav).toBeHidden();
+});
+
+test("contact page uses a privacy-first native form with clear labels and status messages", async ({
+  page,
+}) => {
+  await page.goto("/kontakt");
+
+  await expect(page.getByRole("heading", { name: "Kontakt", level: 1 })).toBeVisible();
+  await expect(page.getByText("Eine E-Mail-Adresse ist freiwillig")).toBeVisible();
+  await expect(page.getByText("Ohne E-Mail kann keine Antwort geschickt werden.")).toBeVisible();
+  await expect(page.getByText("Es gibt kein Tracking, keine Profile")).toBeVisible();
+
+  const form = page.locator("form.contact-form");
+  const email = page.getByLabel("E-Mail für Antwort (optional)");
+  const message = page.getByLabel("Nachricht (Pflichtfeld)");
+  const submit = page.getByRole("button", { name: "Nachricht lokal prüfen" });
+
+  await expect(form).toBeVisible();
+  await expect(email).toHaveAttribute("type", "email");
+  await expect(email).toHaveAttribute("autocomplete", "email");
+  await expect(email).toHaveAttribute("aria-describedby", "contact-email-help");
+  await expect(message).toHaveAttribute("required", "");
+  await expect(message).toHaveAttribute("minlength", "10");
+  await expect(message).toHaveAttribute("aria-describedby", "contact-message-help");
+
+  await submit.click();
+  await expect(page.getByRole("heading", { name: "Bitte prüfe die Eingaben" })).toBeVisible();
+  await expect(page.getByText("Fehler: Bitte schreibe eine kurze Nachricht.")).toBeVisible();
+  await expect(page.locator(".contact-form-summary")).toBeFocused();
+  await expect(message).toHaveAttribute("aria-invalid", "true");
+
+  await email.fill("keine-adresse");
+  await message.fill("Das Formular soll bitte gut bedienbar bleiben.");
+  await submit.click();
+  await expect(page.getByText("Fehler: Bitte gib eine gültige E-Mail-Adresse ein")).toBeVisible();
+  await expect(email).toHaveAttribute("aria-invalid", "true");
+
+  await email.fill("");
+  await submit.click();
+  await expect(page.getByRole("heading", { name: "Nachricht lokal geprüft" })).toBeVisible();
+  await expect(page.locator(".contact-form-success")).toContainText("Ohne E-Mail ist keine Antwort möglich.");
+  await expect(page.locator(".contact-form-success")).toBeFocused();
+
+  await email.fill("mail@example.com");
+  await submit.click();
+  await expect(page.getByText("Mit der angegebenen E-Mail ist eine Antwort möglich")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Im Mailprogramm öffnen" })).toHaveAttribute(
+    "href",
+    /mailto:mail@sebastianjansen\.com/,
+  );
+});
+
+test("contact form keeps keyboard order, reflow, text spacing and target sizes stable", async ({
+  page,
+}) => {
+  for (const width of [320, 390, 430]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/kontakt");
+    await expect(page.getByRole("heading", { name: "Kontakt", level: 1 })).toBeVisible();
+
+    const overflow = await page.evaluate(() => {
+      return document.documentElement.scrollWidth - document.documentElement.clientWidth;
+    });
+    expect(overflow, `/kontakt overflows at ${width} CSS pixels`).toBeLessThanOrEqual(1);
+  }
+
+  await page.setViewportSize({ width: 320, height: 900 });
+  await page.goto("/kontakt");
+
+  const focusNames: string[] = [];
+  for (let index = 0; index < 4; index += 1) {
+    await page.keyboard.press("Tab");
+    focusNames.push(
+      await page.evaluate(() => {
+        const active = document.activeElement;
+        return (
+          active?.getAttribute("aria-label") ??
+          active?.textContent?.replace(/\s+/g, " ").trim() ??
+          active?.getAttribute("name") ??
+          active?.tagName ??
+          ""
+        );
+      }),
+    );
+  }
+  expect(focusNames.join(" ")).toContain("Zum Inhalt springen");
+
+  const targetFailures = await page.evaluate(() => {
+    const failures: string[] = [];
+    for (const element of Array.from(
+      document.querySelectorAll(".contact-form input, .contact-form textarea, .contact-form button"),
+    )) {
+      const rect = element.getBoundingClientRect();
+      if (rect.width < 24 || rect.height < 24) {
+        failures.push(`${element.tagName.toLowerCase()} ${Math.round(rect.width)}x${Math.round(rect.height)}`);
+      }
+    }
+    return failures;
+  });
+  expect(targetFailures).toEqual([]);
+
+  const spacingOverflow = await page.evaluate(() => {
+    const style = document.createElement("style");
+    style.textContent = `
+      * {
+        line-height: 1.5 !important;
+        letter-spacing: 0.12em !important;
+        word-spacing: 0.16em !important;
+      }
+      p, li, dd, dt, h1, h2, h3, h4, h5, h6, a, button, label, summary {
+        margin-bottom: 2em !important;
+      }
+    `;
+    document.head.append(style);
+    const overflow = document.documentElement.scrollWidth - document.documentElement.clientWidth;
+    style.remove();
+    return overflow;
+  });
+  expect(spacingOverflow).toBeLessThanOrEqual(1);
 });
 
 test("result cards keep poster links out of the keyboard flow", async ({ page }) => {
@@ -590,6 +737,7 @@ test("search soft navigation exposes a concise live status", async ({ page }) =>
   await expect(page.getByRole("heading", { name: 'Treffer zu „Arrival“' })).toBeVisible();
 
   await page.getByRole("link", { name: "Karten" }).click();
+  await page.waitForURL(/view=grid/);
 
   await expect(page.locator(".search-results-live-status")).toContainText("Suche aktualisiert:");
   await expect(page.locator(".search-results-live-status")).toContainText("externe Titel");
@@ -623,6 +771,26 @@ test("accessibility page is reachable and explains the current testing scope", a
   await expect(testingPanel).toContainText("Automatisierte Tests ersetzen keine manuelle Prüfung");
   await expect(testingPanel).toContainText("Automatisierte Tests im Projekt");
   await expect(testingPanel).toContainText("npm run test:a11y");
+  await expect(testingPanel).toContainText("npm run test:wcag22-aaa");
+  await expect(testingPanel).toContainText("Technische WCAG-2.2-A/AA/AAA-Matrix");
+  await expect(testingPanel).toContainText("86 WCAG-2.2-A/AA/AAA-Erfolgskriterien");
+  await expect(testingPanel).toContainText("Technischer Stand nach Level");
+  await expect(testingPanel).toContainText("Barrierefreiheit, Kontakt, Datenschutz und Impressum");
+  await expect(testingPanel).toContainText("A-Kriterien ohne automatischen Fail");
+  await expect(testingPanel).toContainText("A- und AA-Kriterien ohne automatischen Fail");
+  await expect(testingPanel).toContainText("AAA hat aktuell keinen automatischen Axe-Fail mehr");
+  await expect(testingPanel).toContainText("1.1.1 Non-text Content");
+  await expect(testingPanel).toContainText("1.4.6 Contrast Enhanced");
+  await expect(testingPanel).toContainText("Header- und Footer-Navigation");
+  await expect(testingPanel).toContainText("Automatisch: Pass");
+  await expect(testingPanel).toContainText("Manuell offen");
+  await expect(testingPanel).toContainText("Manuell offen");
+  await expect(testingPanel).toContainText("Automatisch: nicht anwendbar");
+  await expect(testingPanel).toContainText("kein AAA-Konformitätsziel");
+  await expect(
+    testingPanel.getByRole("link", { name: "2.4.5 Multiple Ways (AA)" }),
+  ).toHaveAttribute("href", "https://www.w3.org/WAI/WCAG22/Understanding/multiple-ways.html");
+  await expect(testingPanel).toContainText("keine vollständige manuelle WCAG-Konformitätsbewertung");
   await expect(testingPanel).toContainText("Playwright startet");
   await expect(testingPanel).toContainText("Wie die Tests hergeleitet wurden");
   await expect(limitsPanel).toContainText("Datenbasis und erste Einschätzungen bleiben unsicher");
@@ -667,6 +835,10 @@ test("core routes avoid horizontal overflow at 320 CSS pixels", async ({ page })
     {
       path: "/barrierefreiheit",
       ready: () => page.getByRole("heading", { name: "Barrierefreiheit" }),
+    },
+    {
+      path: "/kontakt",
+      ready: () => page.getByRole("heading", { name: "Kontakt" }),
     },
     {
       path: "/datenschutz",
@@ -724,6 +896,10 @@ test("core routes stay stable at common mobile widths with reduced motion", asyn
     {
       path: "/barrierefreiheit",
       ready: () => page.getByRole("heading", { name: "Barrierefreiheit" }),
+    },
+    {
+      path: "/kontakt",
+      ready: () => page.getByRole("heading", { name: "Kontakt" }),
     },
     {
       path: "/datenschutz",

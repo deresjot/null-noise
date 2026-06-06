@@ -1,12 +1,48 @@
 import type { Metadata } from "next";
 
 import { siteName } from "@/lib/constants";
+import {
+  wcag22AaTechnicalMatrix,
+  wcagTechnicalStatusLabels,
+} from "@/lib/wcag22-technical-matrix";
 
 export const metadata: Metadata = {
   title: `Barrierefreiheit | ${siteName}`,
   description:
     "Aktueller Stand zur Barrierefreiheit von null-noise: WCAG 2.2 AA als technisches Ziel, laufende Prüfung und bekannte Grenzen.",
 };
+
+const passedTechnicalChecks = wcag22AaTechnicalMatrix.filter((criterion) => criterion.status === "pass");
+const failedTechnicalChecks = wcag22AaTechnicalMatrix.filter((criterion) => criterion.status === "fail");
+const manualTechnicalChecks = wcag22AaTechnicalMatrix.filter(
+  (criterion) => criterion.status === "manual-review",
+);
+const notApplicableTechnicalChecks = wcag22AaTechnicalMatrix.filter(
+  (criterion) => criterion.status === "not-applicable",
+);
+const wcagLevelProgress = [
+  {
+    detail: "A-Kriterien ohne automatischen Fail und ohne manuell offene Matrixpunkte.",
+    label: "A",
+    levels: ["A"],
+    status: "reached",
+    summary: "Technisch erreicht",
+  },
+  {
+    detail: "A- und AA-Kriterien ohne automatischen Fail und ohne manuell offene Matrixpunkte.",
+    label: "AA",
+    levels: ["A", "AA"],
+    status: "reached",
+    summary: "Technisch erreicht",
+  },
+  {
+    detail: "AAA hat aktuell keinen automatischen Axe-Fail mehr; manuell offene Kriterien bleiben.",
+    label: "AAA",
+    levels: ["A", "AA", "AAA"],
+    status: "manual-open",
+    summary: "Auto-Scan ohne Fail, manuell offen",
+  },
+] as const;
 
 export default function BarrierefreiheitPage() {
   return (
@@ -88,6 +124,71 @@ export default function BarrierefreiheitPage() {
           </ul>
         </section>
 
+        <section className="subsection" aria-labelledby="wcag-matrix-heading">
+          <h3 id="wcag-matrix-heading">Technische WCAG-2.2-A/AA/AAA-Matrix</h3>
+          <p>
+            Der Gegencheck <code>npm run test:wcag22-aaa</code> erfasst alle 86
+            WCAG-2.2-A/AA/AAA-Erfolgskriterien in einer technischen Matrix. Im letzten
+            lokalen Lauf waren {passedTechnicalChecks.length} Kriterien automatisiert
+            auf Pass geprüft; {failedTechnicalChecks.length} Kriterien hatten einen
+            automatischen Fail; {manualTechnicalChecks.length} Kriterien bleiben manuell
+            offen; {notApplicableTechnicalChecks.length} Kriterien waren im geprüften
+            Feature-Scope nicht anwendbar. Das ist eine Regression-Absicherung, keine
+            vollständige manuelle WCAG-Konformitätsbewertung und kein AAA-Konformitätsziel.
+          </p>
+          <section className="wcag-level-axis" aria-labelledby="wcag-level-axis-heading">
+            <h4 id="wcag-level-axis-heading">Technischer Stand nach Level</h4>
+            <ol className="wcag-level-axis-list" aria-label="Technische WCAG-Level-Achse">
+              {wcagLevelProgress.map((level) => (
+                <li key={level.label} data-level-status={level.status}>
+                  <strong>{level.label}</strong>
+                  <span>{level.summary}</span>
+                  <small>{level.detail}</small>
+                </li>
+              ))}
+            </ol>
+          </section>
+          <ul className="wcag-status-legend" aria-label="Status-Legende">
+            <li>
+              <span className="wcag-status-badge" data-status="pass">
+                {wcagTechnicalStatusLabels.pass}
+              </span>
+            </li>
+            <li>
+              <span className="wcag-status-badge" data-status="fail">
+                {wcagTechnicalStatusLabels.fail}
+              </span>
+            </li>
+            <li>
+              <span className="wcag-status-badge" data-status="manual-review">
+                {wcagTechnicalStatusLabels["manual-review"]}
+              </span>
+            </li>
+            <li>
+              <span className="wcag-status-badge" data-status="not-applicable">
+                {wcagTechnicalStatusLabels["not-applicable"]}
+              </span>
+            </li>
+          </ul>
+          <ol className="plain-list">
+            {wcag22AaTechnicalMatrix.map((criterion) => (
+              <li key={criterion.criterion}>
+                <strong>
+                  <a href={criterion.wcagUrl}>
+                    {criterion.criterion} {criterion.title} ({criterion.level})
+                  </a>
+                </strong>
+                <br />
+                <span className="wcag-status-badge" data-status={criterion.status}>
+                  {wcagTechnicalStatusLabels[criterion.status]}
+                </span>
+                <br />
+                <span>{criterion.technicalCoverage}</span>
+              </li>
+            ))}
+          </ol>
+        </section>
+
         <section className="subsection" aria-labelledby="background-tests-heading">
           <h3 id="background-tests-heading">Was dabei im Hintergrund passiert</h3>
           <p>
@@ -123,9 +224,10 @@ export default function BarrierefreiheitPage() {
           </p>
           <p>
             Daraus wurden konkrete Prüfpfade gemacht: Startseite, Suche ohne Query, Suche mit
-            Query, Detailseite, Offline-Seite, Erklärung, Barrierefreiheit, Datenschutz und
-            Impressum. Jede Route prüft zuerst, ob die erwarteten Inhalte sichtbar sind; danach
-            laufen Axe- oder Interaktionschecks auf der tatsächlich gerenderten Seite.
+            Query, Detailseite, Offline-Seite, Erklärung, Barrierefreiheit, Kontakt,
+            Datenschutz und Impressum. Jede Route prüft zuerst, ob die erwarteten Inhalte
+            sichtbar sind; danach laufen Axe- oder Interaktionschecks auf der tatsächlich
+            gerenderten Seite.
           </p>
           <p>
             Zusätzlich prüfen Unit-Tests die fachliche Grundlage hinter der Oberfläche, damit

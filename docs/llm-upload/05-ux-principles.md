@@ -53,7 +53,7 @@ nicht `Was empfiehlt das System?`, sondern `Passt das gerade?`.
 Deshalb gelten für Browse, Suche und Alternativen:
 
 - keine Formulierungen wie `Empfohlen für dich` oder `Heute passend`
-- ruhige Mix-Namen wie `Ruhiger Einstieg`, `Wenig Sprünge`, `Dicht, aber vorhersehbar` oder `Eher vormerken`
+- verständliche Mix-Namen wie `Chillig`, `Mal so, mal so` oder `Stressig`
 - `Nicht jetzt` ist eine entlastende Einordnung, keine negative Bewertung des Titels
 - Alternativen werden als Gegengewichte formuliert: ruhiger, dichter oder leichter
 - keine Rankings, Toplisten, Prozentwerte oder scheinpräzise Reizwerte

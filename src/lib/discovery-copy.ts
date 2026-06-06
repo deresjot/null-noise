@@ -28,7 +28,7 @@ export function getSituationalDiscoveryLabel(summary: StimulusEvidenceSummary): 
   }
 
   if (summary.tone === "calm") {
-    return "Ruhiger Einstieg";
+    return "Chillig";
   }
 
   if (summary.tone === "intense") {
@@ -42,7 +42,7 @@ export function getSituationalDiscoveryLabel(summary: StimulusEvidenceSummary): 
   }
 
   if (summary.conflicts.length) {
-    return "Eher vormerken";
+    return "Stressig";
   }
 
   return "Kurz reinlesen";

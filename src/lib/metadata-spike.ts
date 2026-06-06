@@ -2561,17 +2561,17 @@ export async function browseTmdbMetadata(
   }> = [
     {
       id: "quiet",
-      title: "Ruhiger Einstieg",
+      title: "Chillig",
       description: "Wenig Druck, eher klare Form. Trotzdem kurz prüfen.",
     },
     {
       id: "balanced",
-      title: "Dicht, aber vorhersehbar",
+      title: "Mal so, mal so",
       description: "Nicht ganz leicht, aber eher mit erkennbarem Rahmen.",
     },
     {
       id: "loud",
-      title: "Eher vormerken",
+      title: "Stressig",
       description: "Kann gerade zu dicht sein. Kein Urteil über den Titel.",
     },
   ];

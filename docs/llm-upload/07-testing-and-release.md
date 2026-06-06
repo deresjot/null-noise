@@ -1,6 +1,6 @@
 # Testing und Release für null-noise
 
-Stand: 5. Juni 2026
+Stand: 6. Juni 2026
 
 Diese Datei beschreibt, wie `null-noise` Accessibility testet und wo die Grenzen der Automatisierung liegen.
 
@@ -31,6 +31,7 @@ WCAG 2.2 Level AA ist der technische Zielstandard. Die Prüfung orientiert sich 
 - `/erklaerung`
 - `/bedienung`
 - `/barrierefreiheit`
+- `/kontakt`
 - `/datenschutz`
 - `/impressum`
 
@@ -40,10 +41,11 @@ WCAG 2.2 Level AA ist der technische Zielstandard. Die Prüfung orientiert sich 
   - `@axe-core/playwright` für den integrierten Browser-Check
   - direkter `axe-core`-Lauf, der `axe.min.js` explizit in die Seite injiziert und `axe.run()` ausführt
 - Severity-Ausgabe nach `critical`, `serious`, `moderate`, `minor`
-- technische WCAG-2.2-A/AA-Matrix über `npm run test:wcag22-aa`, die alle A/AA-Erfolgskriterien erfasst und pro Kriterium wiederholbare automatisierte Checks oder Feature-N/A-Evidence dokumentiert
+- technische WCAG-2.2-A/AA-Matrix über `npm run test:wcag22-aa`, die alle A/AA-Erfolgskriterien erfasst und pro Kriterium wiederholbare automatisierte Checks oder Feature-N/A-Evidence dokumentiert; `npm run test:wcag22-aaa` erweitert denselben technischen Lauf explorativ um AAA, ohne reine AAA-Findings zur AA-Release-Gate zu machen
 - Landmarken- und Heading-Struktur
 - Kontrast-Fundstellen, die axe erkennen kann
 - erkennbare Form-/Label-Probleme
+- Kontaktformular-Smokes für sichtbare Labels, `aria-describedby`, optionale E-Mail, Pflichtnachricht, Fehlerzusammenfassung, Feldfehler, Statusmeldung, Tastaturfluss, Reflow, Text-Spacing und Target Size
 - wiederholbare Keyboard-Smoke-Checks, zum Beispiel Skip-Link und erreichbare Suchvorschläge
 - mobile Navigation mit Burger-Menü für primäre App-Ziele; Info-/Legal-Ziele bleiben im Footer erreichbar
 - kleiner Reflow-Smoke-Test auf den Kernrouten bei `320 CSS-Pixeln`, damit offensichtliches horizontales Overflow früh auffällt
@@ -100,7 +102,7 @@ Die folgenden Schritte sind der feste manuelle Prüfpfad für `null-noise`. Er e
 - Reflow: Filter und Karten stapeln sauber statt horizontal auszuweichen
 - Zoom: Browse-Einstieg und Filter bleiben in sinnvoller Reihenfolge
 - Verständlichkeit: Browse-Texte bleiben Orientierungshilfe und werden nicht zur zweiten Erklärungsebene
-- Discovery-Sprache: keine Formulierungen wie `Empfohlen für dich` oder `Heute passend`; `Eher vormerken` und `Kann gerade zu dicht sein` bleiben situativ statt wertend
+- Discovery-Sprache: keine Formulierungen wie `Empfohlen für dich` oder `Heute passend`; `Stressig` und `Kann gerade zu dicht sein` bleiben situativ statt wertend
 - Lokaler Merken-/Gesehen-Bereich: Text, Buttons und Toggle/Checkbox brechen mobil sauber um; Label und Checkbox bleiben sichtbar zusammengehörig
 - Poster: fehlende Poster zeigen den bewussten Platzhalter `Kein Poster verfügbar`
 - Labels: sichtbare Kategorien lauten konsistent `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv`
@@ -128,12 +130,22 @@ Die folgenden Schritte sind der feste manuelle Prüfpfad für `null-noise`. Er e
 
 ### Info- und Legal-Routen
 
-- Routen: `/erklaerung`, `/bedienung`, `/barrierefreiheit`, `/datenschutz`, `/impressum`
+- Routen: `/erklaerung`, `/bedienung`, `/barrierefreiheit`, `/kontakt`, `/datenschutz`, `/impressum`
 - per Tastatur: Header, mobile Navigation, Inhaltslinks und Footer-Links bleiben erreichbar
 - Reflow: lange Überschriften und Rechtstexte bleiben bei kleiner Breite lesbar
 - Kontrast: Notizen, Definitionslisten und Meta-Texte dürfen nicht nur knapp über Animation/Opacity lesbar sein
 - Mobile: Kartenabstände und Footer dürfen nicht an Außenkanten kleben
 - Mobile-Menü: geöffnetes Menü bleibt links/rechts im Viewport, zeigt keine helle Randspalte und trennt aktive Route sichtbar vom Tastatur-Fokus
+
+### Route `/kontakt`
+
+- per Tastatur: Skip-Link, Footer-Link, E-Mail-Feld, Nachrichtenfeld, Submit-Button und Mailprogramm-Link nach gültiger lokaler Prüfung
+- Fokus: Fehlerzusammenfassung und Erfolgsmeldung erhalten nach Submit sichtbar Fokus
+- Screenreader-Smoke: Labels, Hilfetexte, Feldfehler, Fehlerzusammenfassung und Statusmeldung bleiben verständlich erfassbar
+- Reflow: Formularfelder, Hinweise und Statusboxen bleiben bei `320 CSS-Pixeln` ohne Seitwärts-Scrollen nutzbar
+- Zoom: bei `400 %` bleiben Pflicht-/Optional-Hinweise, Fehler und Submit-Button in sinnvoller Reihenfolge
+- Datenschutz: Nachricht ist Pflichtfeld, E-Mail optional; keine Captcha-, Tracking-, Profil-, Account-, Speicher- oder automatische Versandlogik
+- Grenze: ohne eingerichteten serverseitigen Versand wird keine erfolgreiche Zustellung behauptet; der Mailprogramm-Handoff ist bewusst und sichtbar begrenzt
 
 ### Tastatur
 

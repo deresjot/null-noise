@@ -20,6 +20,7 @@ export function SiteFooter() {
           </nav>
           <nav className="mobile-experiment-footer-legal-links" aria-label="Rechtliches">
             <Link href="/barrierefreiheit">Barrierefreiheit</Link>
+            <Link href="/kontakt">Kontakt</Link>
             <Link href="/datenschutz">Datenschutz</Link>
             <Link href="/impressum">Impressum</Link>
           </nav>
@@ -43,6 +44,7 @@ export function SiteFooter() {
           </div>
           <div className="footer-legal-links" aria-label="Rechtliches">
             <Link href="/barrierefreiheit">Barrierefreiheit</Link>
+            <Link href="/kontakt">Kontakt</Link>
             <Link href="/datenschutz">Datenschutz</Link>
             <Link href="/impressum">Impressum</Link>
           </div>

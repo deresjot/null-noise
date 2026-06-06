@@ -177,6 +177,11 @@ test("direct axe-core scan stays clean on info and legal pages", async ({ page }
       heading: "Barrierefreiheit",
     },
     {
+      path: "/kontakt",
+      label: "contact",
+      heading: "Kontakt",
+    },
+    {
       path: "/datenschutz",
       label: "privacy",
       heading: "Datenschutz",
