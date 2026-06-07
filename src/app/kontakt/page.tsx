@@ -30,14 +30,14 @@ export default function KontaktPage() {
         <ul className="plain-list">
           <li>Die E-Mail-Adresse ist freiwillig und wird nur als Antwortadresse genutzt.</li>
           <li>Es gibt kein Tracking, keine Profile und keine Konto-Funktion.</li>
-          <li>Die Nachricht wird serverseitig gespeichert, damit sie im Adminbereich gelesen werden kann.</li>
+          <li>Die Nachricht wird serverseitig als E-Mail verschickt, nicht in einer Projektdatenbank gespeichert.</li>
         </ul>
       </section>
 
       <section className="panel section-stack" aria-labelledby="contact-form-heading">
         <h2 id="contact-form-heading">Nachricht schreiben</h2>
         <p className="field-note">
-          Deine Nachricht wird intern abgelegt. Ohne E-Mail-Adresse ist keine direkte Antwort
+          Deine Nachricht wird per E-Mail weitergeleitet. Ohne E-Mail-Adresse ist keine direkte Antwort
           möglich.
         </p>
         <ContactForm />

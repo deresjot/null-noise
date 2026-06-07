@@ -498,13 +498,52 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
           <h1>{title.external.title}</h1>
         </div>
 
-        <div className="detail-hero-poster" aria-label={`Titelbild zu ${title.external.title}`}>
-          <ResultPoster
-            priority
-            src={detailPosterPath}
-            title={title.external.title}
-            variant="detail"
-          />
+        <div className="detail-hero-rail">
+          <div className="detail-hero-poster" aria-label={`Titelbild zu ${title.external.title}`}>
+            <ResultPoster
+              priority
+              src={detailPosterPath}
+              title={title.external.title}
+              variant="detail"
+            />
+          </div>
+
+          <aside className="detail-callout-panel" aria-labelledby="confidence-heading">
+            <p className="eyebrow">Stand heute</p>
+            <h2 id="confidence-heading">Worauf das gerade ruht</h2>
+            <p className="confidence-callout-eyebrow">{confidencePresentation.eyebrow}</p>
+            <p className="confidence-callout-title">{confidencePresentation.title}</p>
+            <p>{confidencePresentation.text}</p>
+
+            <dl className="detail-list">
+              <div>
+                <dt>Status</dt>
+                <dd>{aggregatePresentation.label}</dd>
+              </div>
+              <div>
+                <dt>Grundlage</dt>
+                <dd>{formatSourceType(title.aggregation.sourceType)}</dd>
+              </div>
+              <div>
+                <dt>Rückmeldungen</dt>
+                <dd>{formatRatingCount(title.aggregation.ratingCount)}</dd>
+              </div>
+              {title.aggregation.lastReviewedAt ? (
+                <div>
+                  <dt>Zuletzt geprüft</dt>
+                  <dd>{formatDate(title.aggregation.lastReviewedAt)}</dd>
+                </div>
+              ) : null}
+            </dl>
+
+            {writesEnabled ? (
+              <p className="detail-callout-action">
+                <a className="secondary-button-link" href="#rating-heading">
+                  Eigene Einschätzung geben
+                </a>
+              </p>
+            ) : null}
+          </aside>
         </div>
 
         <section className="detail-reading-block" aria-label="Erste Einschätzung">
@@ -597,43 +636,6 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
             ) : null}
           </div>
         </div>
-
-        <aside className="detail-callout-panel" aria-labelledby="confidence-heading">
-          <p className="eyebrow">Stand heute</p>
-          <h2 id="confidence-heading">Worauf das gerade ruht</h2>
-          <p className="confidence-callout-eyebrow">{confidencePresentation.eyebrow}</p>
-          <p className="confidence-callout-title">{confidencePresentation.title}</p>
-          <p>{confidencePresentation.text}</p>
-
-          <dl className="detail-list">
-            <div>
-              <dt>Status</dt>
-              <dd>{aggregatePresentation.label}</dd>
-            </div>
-            <div>
-              <dt>Grundlage</dt>
-              <dd>{formatSourceType(title.aggregation.sourceType)}</dd>
-            </div>
-            <div>
-              <dt>Rückmeldungen</dt>
-              <dd>{formatRatingCount(title.aggregation.ratingCount)}</dd>
-            </div>
-            {title.aggregation.lastReviewedAt ? (
-              <div>
-                <dt>Zuletzt geprüft</dt>
-                <dd>{formatDate(title.aggregation.lastReviewedAt)}</dd>
-              </div>
-            ) : null}
-          </dl>
-
-          {writesEnabled ? (
-            <p className="detail-callout-action">
-              <a className="secondary-button-link" href="#rating-heading">
-                Eigene Einschätzung geben
-              </a>
-            </p>
-          ) : null}
-        </aside>
       </header>
 
       <section className="detail-grid">

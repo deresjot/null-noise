@@ -6,16 +6,24 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 - lokaler Branch: `null-noise`
 - lokaler Projektpfad: `/Users/deresjot/Library/CloudStorage/Dropbox/_PRIVAT/Code/git-webdev/null-noise`
-- Stand: Mobile-Layout-Stabilisierung vom 6. Juni 2026 ist lokal vorbereitet; Commit/Push/Deploy folgen in diesem Auftrag
+- Stand: Wochenend-Abschluss vom 7. Juni 2026 mit SMTP-Kontaktformular ist lokal vorbereitet; Commit/Push/Deploy sind fuer diesen Abschlussauftrag freigegeben
 - Live-URL: https://null-noise.vercel.app
 - Preview-Deploys werden nach Push per Vercel CLI erzeugt; konkrete URLs stehen in der jeweiligen Übergabe und im Vercel-Inspect
 - Hinweis: Preview ist `READY`, aber Vercel Deployment Protection/SSO ist aktiv; ohne Login kommt `401`
 - v0/grüne UI liegt im Archiv-Worktree und wird nicht bearbeitet
 - `main` ist keine Arbeitsfläche
-- ohne explizite Freigabe: nichts pushen, nichts deployen; weitere Commits nur mit klarem Auftrag
+- ohne explizite Freigabe: nichts pushen, nichts deployen; diese Freigabe gilt nur fuer den aktuellen Abschlussauftrag
 
 ## Letzte lokale Arbeitsblöcke
 
+- Wochenend-Abschluss / SMTP-Kontakt 7. Juni 2026:
+  - Kontaktanfragen werden nicht mehr in `/admin/kontakt`, Datei, Datenbank, temporärem Vercel-Speicher oder Blob abgelegt
+  - `POST /api/contact` sendet serverseitig per Nodemailer/SMTP; `CONTACT_TO_EMAIL` kommt nur aus der Server-Env
+  - technische Absenderadresse ist `testing@sebastianjansen.com`; Formular-E-Mail wird nur als Reply-To genutzt
+  - Pflichtnachricht, optionale E-Mail, Mindestlänge 10 Zeichen, Zeichenzähler, Honeypot, Body-Limit und leichtes Rate-Limit bleiben aktiv
+  - Datenschutz, `.env.example`, LLM-Doku, Release Notes und Kontakt-/A11y-Tests sind auf SMTP synchronisiert
+  - benoetigte Env Vars: `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=testing@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=<set-recipient-email>`, `CONTACT_FROM_EMAIL=testing@sebastianjansen.com`
+  - Release Notes stehen lokal auf `0.8.4-contact-smtp.20260607`
 - Mobile-Layout-Stabilisierung 6. Juni 2026:
   - reiner CSS-/Test-Pass ohne Produktlogikänderung für `/kontakt`, `/barrierefreiheit`, `/`, `/suche`, `/suche?q=Arrival`, `/titel/mondfenster`, Footer und Mobile Navigation
   - Mobile-Menübutton zeigt bei 320px wieder ein sichtbares Icon; Menülinks sind kompakter und bleiben innerhalb der Contentbreite
@@ -23,14 +31,14 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
   - Kontaktformular, WCAG-Matrix, Status-Badges und Footer-Release-Strings sind auf Containerbreite begrenzt und dürfen sauber umbrechen
   - Playwright prüft 320px, 390px und 430px zusätzlich über zentrale Element-Bounding-Boxes für Cards, Formulare, Matrix und Footer
   - Release Notes stehen lokal auf `0.8.4-mobile-layout.20260606`
-- Kontaktversand 6. Juni 2026:
+- Kontaktformular 6./7. Juni 2026:
   - neue Kernroute `/kontakt` mit nativer `form`-/`label`-/`input`-/`textarea`-/`button`-Struktur
   - Footer-Navigation führt von überall zu Kontakt; Reihenfolge: Barrierefreiheit, Kontakt, Datenschutz, Impressum
   - Nachricht ist das einzige Pflichtfeld; die E-Mail-Adresse ist optional und wird nur als Antwortadresse genutzt
-  - keine Captcha-, Tracking-, Profil-, Account- oder dauerhafte Nachrichtenspeicherung
+  - keine Captcha-, Tracking-, Profil- oder Account-Funktion; Nachrichten werden serverseitig per SMTP weitergeleitet
   - lokale und serverseitige Validierung zeigen eine fokussierbare Fehlerzusammenfassung, Feldfehler, konkrete Korrekturhinweise und eine ruhige Statusmeldung
-  - `POST /api/contact` sendet serverseitig über Resend, wenn `RESEND_API_KEY` und `CONTACT_TO_EMAIL` gesetzt sind; `CONTACT_FROM_EMAIL` ist optional
-  - lokal/testweise gibt es ohne Mail-Env einen trockenen Erfolg; Production ohne Mail-Env gibt einen sichtbaren Setup-Fehler statt falscher Erfolgsmeldung
+  - `POST /api/contact` sendet serverseitig ueber SMTP; Absender ist `CONTACT_FROM_EMAIL`, Zieladresse kommt nur aus `CONTACT_TO_EMAIL`
+  - Production ohne SMTP-Konfiguration gibt einen sichtbaren Versandfehler statt falscher Erfolgsmeldung
   - der frühere Mailprogramm-Handoff ist nicht mehr der primäre Versandweg
   - `/kontakt` ist in der technischen WCAG-2.2-A/AA/AAA-Matrix und den Axe-/Reflow-/Text-Spacing-/Target-Size-/Formular-Smokes enthalten
   - Release Notes stehen lokal auf `0.8.4-contact-send.20260606`

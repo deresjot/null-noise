@@ -3,9 +3,9 @@
 ## Aktueller Arbeitsstand
 
 - aktiver lokaler Arbeitsbranch: `null-noise`
-- aktueller Stand: Mobile-Layout-Stabilisierung vom 6. Juni 2026 ist lokal vorbereitet; Commit/Push/Deploy folgen in diesem Auftrag
-- Release-Metadaten stehen lokal auf `0.8.4-mobile-layout.20260606`
-- nicht pushen/deployen ohne explizite Freigabe
+- aktueller Stand: Wochenend-Abschluss vom 7. Juni 2026 mit SMTP-Kontaktformular ist lokal vorbereitet; Commit/Push/Deploy sind fuer diesen Abschlussauftrag freigegeben
+- Release-Metadaten stehen lokal auf `0.8.4-contact-smtp.20260607`
+- ohne explizite Freigabe sonst nichts pushen/deployen; diese Freigabe gilt nur fuer den aktuellen Abschlussauftrag
 - Live-URL: https://null-noise.vercel.app
 - Preview-Deploys werden nach Push per Vercel CLI erzeugt; konkrete URLs stehen in der jeweiligen Übergabe und im Vercel-Inspect
 - Preview-Hinweis: Deployment Protection/SSO ist aktiv; ohne Vercel-Login kommt `401`
@@ -59,12 +59,14 @@
 
 ## Security-/Privacy-Stand
 
-- aktueller Security-Hardening-Stand ist lokal geprüft, aber noch nicht gepusht oder deployt
-- Live-Production kann daher noch ohne die lokalen Header-/CSP-, `server-only`-, Cookie- und Delete-Origin-Härtungen laufen
+- aktueller Security-/Kontakt-Stand wird in diesem Abschlussauftrag lokal geprüft, gepusht und nach Vercel deployt
 - keine Accounts, keine Profile, keine Social Features, kein Tracking und keine Analytics
-- `/kontakt` nutzt ein natives, lokal und serverseitig validiertes Formular ohne Captcha, Tracking, Profiling oder dauerhafte Nachrichtenspeicherung; Nachricht ist Pflicht, E-Mail ist optional und wird nur als Antwortadresse genutzt
-- `POST /api/contact` sendet serverseitig über Resend, wenn `RESEND_API_KEY` und `CONTACT_TO_EMAIL` gesetzt sind; `CONTACT_FROM_EMAIL` ist optional, Mailprovider-Schlüssel bleiben serverseitig
-- lokal/testweise kann der Kontakt-Endpunkt ohne Mail-Env trocken erfolgreich antworten; Production ohne Mail-Env zeigt einen Setup-Fehler statt falscher Erfolgsmeldung
+- `/kontakt` nutzt ein natives, lokal und serverseitig validiertes Formular ohne Captcha, Tracking oder Profiling; Nachricht ist Pflicht, E-Mail ist optional und wird nur als Antwortadresse genutzt
+- `POST /api/contact` sendet serverseitig ueber SMTP; Absender ist `CONTACT_FROM_EMAIL`, Zieladresse kommt nur aus `CONTACT_TO_EMAIL`
+- technische Absenderadresse ist `testing@sebastianjansen.com`; `CONTACT_FROM_EMAIL` muss auf diese Adresse zeigen
+- benoetigte Kontakt-Env: `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=testing@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=<set-recipient-email>`, `CONTACT_FROM_EMAIL=testing@sebastianjansen.com`
+- keine Kontaktanfragen in Adminbereich, Datenbank, temporärer Datei oder Vercel Blob speichern
+- Production ohne SMTP-Konfiguration zeigt einen Versandfehler statt falscher Erfolgsmeldung
 - keine Supabase-Integration im aktuellen Code; keine RLS-/Service-Role-Themen im Live-Stand, solange Supabase nicht eingeführt wird
 - Datenhaltung bleibt datenarm: öffentliche Titelmetadaten, stille Feedback-/Rating-Evidenz und Rate-Limit-Attempts
 - Feedback/Ratings dürfen kein Social Feature werden und erzeugen keine Nutzerprofile

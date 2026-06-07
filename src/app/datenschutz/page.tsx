@@ -87,6 +87,17 @@ export default function DatenschutzPage() {
 
         <section className="panel" aria-labelledby="privacy-contact-heading">
           <h2 id="privacy-contact-heading">Kontakt</h2>
+          <p>
+            Beim Kontaktformular werden deine Nachricht und eine optional angegebene E-Mail-Adresse
+            verarbeitet, um die Kontaktanfrage zu bearbeiten. Die E-Mail-Adresse wird nur als
+            Antwortadresse genutzt.
+          </p>
+          <p>
+            Der Versand erfolgt ueber das technische Postfach testing@sebastianjansen.com beim
+            Mailhoster. null-noise speichert Kontaktanfragen nicht dauerhaft in einer
+            projektinternen Datenbank und legt fuer Kontaktanfragen keine IP-Adressen oder
+            User-Agent-Daten ab.
+          </p>
           <p>Betreiber: Sebastian Jansen</p>
           <p>Kontakt: mail@sebastianjansen.com</p>
         </section>

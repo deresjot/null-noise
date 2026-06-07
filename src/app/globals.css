@@ -391,6 +391,14 @@ code {
   font-weight: 760;
 }
 
+.contact-honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 .contact-form textarea {
   max-width: 100%;
   min-height: 11rem;
@@ -2347,6 +2355,14 @@ code {
   border: 1px solid rgba(31, 34, 44, 0.1);
   border-radius: 0.88rem;
   background: rgba(250, 246, 238, 0.74);
+}
+
+.detail-hero-rail {
+  grid-area: rail;
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+  min-width: 0;
 }
 
 .detail-hero-poster .poster-thumb-frame-detail {
@@ -9835,6 +9851,10 @@ body {
     padding: 0;
   }
 
+  .detail-hero-rail {
+    display: contents;
+  }
+
   .detail-hero-copy > .lead {
     display: block;
     margin: 0;
@@ -12024,5 +12044,63 @@ html[data-search-transition="loading"] .search-results-page::before {
   .result-grid[data-layout="grid"].mobile-media-list .title-pocket-actions-row,
   .metadata-detail-page .detail-followup-section .title-pocket-actions-row {
     grid-template-columns: 1fr;
+  }
+}
+
+.result-card-footer-zone,
+.result-grid[data-layout="grid"] .result-card-footer-zone,
+.metadata-detail-page .detail-followup-section .result-card-footer-zone {
+  border-top: 0;
+}
+
+/* Desktop repair: keep the detail aside in the right rail and align card footer feedback. */
+@media (min-width: 761px) {
+  .detail-page .detail-hero {
+    grid-template-areas:
+      "copy rail"
+      "reading rail"
+      "synopsis rail"
+      "pocket rail"
+      "basis rail";
+  }
+
+  .detail-page .detail-callout-panel {
+    grid-area: auto;
+    order: -1;
+    align-self: start;
+  }
+
+  .detail-page .detail-hero-rail > .detail-hero-poster {
+    grid-area: auto;
+  }
+
+  .result-card-footer-zone {
+    align-items: start;
+    padding-top: 0.4rem;
+  }
+
+  .result-card-cta-zone {
+    padding-top: 0.16rem;
+  }
+
+  .result-card-memory-zone {
+    display: contents;
+  }
+
+  .result-card-memory-zone .title-pocket-actions {
+    display: contents;
+  }
+
+  .result-card-memory-zone .title-pocket-actions-row {
+    grid-column: 2;
+  }
+
+  .result-card-memory-zone .title-pocket-state,
+  .result-card-memory-zone .title-pocket-feedback {
+    grid-column: 1 / -1;
+    justify-self: start;
+    width: 100%;
+    margin-top: 0;
+    text-align: left;
   }
 }

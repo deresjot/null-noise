@@ -640,6 +640,14 @@ test("mobile navigation returns focus to the menu button after Escape", async ({
 test("contact page uses a privacy-first native form with clear labels and status messages", async ({
   page,
 }) => {
+  await page.route("**/api/contact", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ ok: true, delivered: true }),
+    });
+  });
+
   await page.goto("/kontakt");
 
   await expect(page.getByRole("heading", { name: "Kontakt", level: 1 })).toBeVisible();
@@ -679,7 +687,7 @@ test("contact page uses a privacy-first native form with clear labels and status
 
   await email.fill("");
   await submit.click();
-  await expect(page.getByRole("heading", { name: "Deine Nachricht wurde gespeichert." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Deine Nachricht wurde gesendet." })).toBeVisible();
   await expect(page.getByText("Eine direkte Antwort ist deshalb nicht möglich.")).toBeVisible();
   await expect(form.locator('a[href^="mailto:"]')).toHaveCount(0);
 });
@@ -689,7 +697,7 @@ test("contact form reports server errors without claiming delivery", async ({ pa
     await route.fulfill({
       status: 503,
       contentType: "application/json",
-      body: JSON.stringify({ error: "Das Kontaktformular ist gerade nicht vollständig eingerichtet." }),
+      body: JSON.stringify({ error: "Die Nachricht konnte gerade nicht gesendet werden." }),
     });
   });
 
@@ -698,9 +706,8 @@ test("contact form reports server errors without claiming delivery", async ({ pa
   await page.getByRole("button", { name: "Nachricht senden" }).click();
 
   await expect(page.getByRole("heading", { name: "Bitte prüfe die Eingaben" })).toBeVisible();
-  await expect(page.getByText("gerade nicht vollständig eingerichtet")).toBeVisible();
+  await expect(page.getByText("gerade nicht gesendet werden")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Deine Nachricht wurde gesendet." })).toHaveCount(0);
-  await expect(page.getByRole("heading", { name: "Deine Nachricht wurde gespeichert." })).toHaveCount(0);
 });
 
 test("contact form keeps keyboard order, reflow, text spacing and target sizes stable", async ({

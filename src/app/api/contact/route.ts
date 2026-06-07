@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 
-import { storeContactMessage } from "@/lib/contact-messages";
+import { sendContactMail } from "@/lib/contact-mail";
 
 const contactSchema = z.object({
   email: z
@@ -18,8 +18,10 @@ const contactSchema = z.object({
     .trim()
     .min(10, "Bitte schreibe mindestens 10 Zeichen, damit der Kontext verständlich ist.")
     .max(3000, "Bitte kürze die Nachricht auf höchstens 3000 Zeichen."),
+  website: z.string().max(200).optional().or(z.literal("")),
 });
 
+const maxRequestBodyBytes = 8 * 1024;
 const rateLimitWindowMs = 10 * 60 * 1000;
 const rateLimitMaxRequests = 5;
 const contactRateLimit = new Map<string, { count: number; resetAt: number }>();
@@ -52,15 +54,13 @@ function isRateLimited(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  let payload: unknown;
+  const rawBody = await readLimitedJsonBody(request);
 
-  try {
-    payload = await request.json();
-  } catch {
-    return NextResponse.json({ error: "Ungültige Anfrage." }, { status: 400 });
+  if (!rawBody.ok) {
+    return NextResponse.json({ error: "Ungültige Anfrage." }, { status: rawBody.status });
   }
 
-  const parsed = contactSchema.safeParse(payload);
+  const parsed = contactSchema.safeParse(rawBody.payload);
 
   if (!parsed.success) {
     const flattened = z.flattenError(parsed.error);
@@ -76,6 +76,10 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  if (parsed.data.website) {
+    return NextResponse.json({ ok: true, delivered: true });
+  }
+
   if (isRateLimited(request)) {
     return NextResponse.json({ error: "Bitte warte kurz, bevor du eine weitere Nachricht sendest." }, { status: 429 });
   }
@@ -84,13 +88,36 @@ export async function POST(request: NextRequest) {
   const message = parsed.data.message.trim();
 
   try {
-    await storeContactMessage({ email, message });
+    await sendContactMail({ email, message, submittedAt: new Date() });
   } catch {
     return NextResponse.json(
-      { error: "Die Nachricht konnte gerade nicht gespeichert werden." },
+      { error: "Die Nachricht konnte gerade nicht gesendet werden. Bitte versuche es später erneut." },
       { status: 500 },
     );
   }
 
-  return NextResponse.json({ ok: true, delivered: false, stored: true });
+  return NextResponse.json({ ok: true, delivered: true });
+}
+
+async function readLimitedJsonBody(request: NextRequest): Promise<
+  | { ok: true; payload: unknown }
+  | { ok: false; status: 400 | 413 }
+> {
+  const contentLength = request.headers.get("content-length");
+
+  if (contentLength && Number.parseInt(contentLength, 10) > maxRequestBodyBytes) {
+    return { ok: false, status: 413 };
+  }
+
+  try {
+    const raw = await request.text();
+
+    if (new TextEncoder().encode(raw).length > maxRequestBodyBytes) {
+      return { ok: false, status: 413 };
+    }
+
+    return { ok: true, payload: JSON.parse(raw) as unknown };
+  } catch {
+    return { ok: false, status: 400 };
+  }
 }

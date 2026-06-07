@@ -58,8 +58,11 @@ export type StoredRatingAttempt = z.infer<typeof storedRatingAttemptSchema>;
 export const quickFeedbackChoiceSchema = z.enum(["calmer", "match", "stronger"]);
 export type QuickFeedbackChoice = z.infer<typeof quickFeedbackChoiceSchema>;
 
+const titleCooldownMs =
+  process.env.NODE_ENV === "development" ? 30 * 1000 : 12 * 60 * 60 * 1000;
+
 export const ratingGuardConfig = {
-  titleCooldownMs: 12 * 60 * 60 * 1000,
+  titleCooldownMs,
   titleRateLimitWindowMs: 12 * 60 * 60 * 1000,
   titleRateLimitMaxAttempts: 3,
   globalRateLimitWindowMs: 60 * 60 * 1000,

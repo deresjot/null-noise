@@ -61,7 +61,10 @@ npm run build
 npm run test:unit
 npm run test:axe-core
 npm run test:a11y
+npm run test:wcag22-aa
+npm run test:wcag22-aaa
 npx playwright test
+git diff --check
 ```
 
 Für den Mobile-UX-Abschluss vom 23. Mai 2026 liefen direkt vor der finalen lokalen Doku-/Commit-Aktualisierung grün:
@@ -86,6 +89,8 @@ Vor Commit/Deploy:
 - Secret-Werte nie in Doku, Logs, Testausgaben oder PR-Beschreibungen schreiben
 - Vercel-ENV manuell prüfen: Secrets nur serverseitig, keine unnötigen `NEXT_PUBLIC_` Variablen
 - `NULL_NOISE_RATE_LIMIT_SALT` in Production setzen, bevor öffentliche Writes/Feedback aktiv sind
+- Kontaktformular-Env in Production prüfen: `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=testing@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=<set-recipient-email>`, `CONTACT_FROM_EMAIL=testing@sebastianjansen.com`
+- Kontaktanfragen werden per SMTP verschickt; keine Adminroute, keine Datenbank, keine temporäre Datei und kein Blob-Speicher fuer Kontaktanfragen verwenden
 - `TMDB_READ_ACCESS_TOKEN` serverseitig halten; keine externen API-Keys im Client-Bundle
 - `NEXT_PUBLIC_SITE_URL` ist als öffentliche kanonische URL vertretbar; keine Secrets mit `NEXT_PUBLIC_` prefixen
 - Supabase ist aktuell nicht im Projekt; falls später eingeführt, RLS, Policies, Security Advisor und Service-Role-Grenzen vor Deploy prüfen
@@ -122,7 +127,7 @@ Empfohlenes Briefing:
 Bitte arbeite im Projekt null-noise auf dem Branch null-noise.
 Lies zuerst docs/llm-upload/00-docs-readme.md, 01-llm-context.md,
 02-current-state.md, 03-current-runbook.md und 07-testing-and-release.md.
-Ziel: Vor Git-Push und Vercel-Deploy den lokal committed Mobile-UX-Abschluss vom 23. Mai 2026 prüfen.
+Ziel: Vor Git-Push und Vercel-Deploy den aktuellen SMTP-Kontakt-/Release-Abschluss prüfen.
 Bitte nichts pushen oder deployen ohne explizite Freigabe.
 Prüfe git status/diff, Release Notes, Doku-Sync, Secrets/Artefakte,
 Tests, mobile Viewports 390px/430px und danach die Vercel-Deploy-Bereitschaft.

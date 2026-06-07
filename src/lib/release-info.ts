@@ -1,12 +1,24 @@
 import packageJson from "../../package.json";
 
 export const currentBuild = {
-  version: `${packageJson.version}-mobile-layout.20260606`,
-  label: "Mobile layout stabilization",
-  releasedAt: "2026-06-06",
+  version: `${packageJson.version}-contact-smtp.20260607`,
+  label: "SMTP contact release",
+  releasedAt: "2026-06-07",
 };
 
 export const releaseNotes = [
+  {
+    version: `${packageJson.version}-contact-smtp.20260607`,
+    label: "SMTP contact release",
+    releasedAt: "2026-06-07",
+    entries: [
+      "The contact form now sends server-side via SMTP with testing@sebastianjansen.com as the technical sender address.",
+      "Contact requests are no longer stored through an admin area, temporary file, local database or Blob storage path.",
+      "The optional form email is used only as Reply-To; the recipient stays server-side in CONTACT_TO_EMAIL.",
+      "Validation, a character counter, generic failure copy, a honeypot field, body-size limiting and lightweight rate limiting stay in place.",
+      "Privacy copy, environment examples, local tests and release documentation were synchronized for the SMTP contact boundary.",
+    ],
+  },
   {
     version: `${packageJson.version}-mobile-layout.20260606`,
     label: "Mobile layout stabilization",
@@ -29,7 +41,7 @@ export const releaseNotes = [
       "Local validation, server validation, visible field errors, a focusable error summary and a polite success status remain in place without tracking, accounts, CAPTCHA or durable message storage.",
       "The submit control now uses the plain label Nachricht senden and guards against duplicate submits while keeping focus stable.",
       "The required message field now exposes a live character counter that says how many characters are still missing and switches to Mindestlänge erreicht at 10 characters without relying on color alone.",
-      "If contact mail environment variables are missing, local and test runs use a dry success path while Production returns an explicit setup error instead of a false success.",
+      "If SMTP environment variables are missing, the API returns a generic send failure instead of a false success.",
       "Mobile contact, footer release and WCAG matrix layouts were hardened against long text overflow at 320px, 390px and 430px.",
       "The technical WCAG 2.2 A/AA/AAA matrix now includes /kontakt as a core route and covers form labels, help text, error suggestions, status messages, keyboard flow, reflow, text spacing and target size.",
       "WCAG 2.2 AA remains the technical target standard; AAA checks stay exploratory and manual conformance review remains a separate boundary.",

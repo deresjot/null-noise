@@ -8,8 +8,6 @@ type ContactErrors = {
   form?: string;
 };
 
-type ContactSuccessMode = "stored" | "sent";
-
 function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
@@ -19,9 +17,9 @@ export function ContactForm() {
   const successRef = useRef<HTMLDivElement>(null);
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [website, setWebsite] = useState("");
   const [errors, setErrors] = useState<ContactErrors>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
-  const [successMode, setSuccessMode] = useState<ContactSuccessMode>("stored");
 
   const trimmedEmail = email.trim();
   const trimmedMessage = message.trim();
@@ -74,6 +72,7 @@ export function ContactForm() {
         body: JSON.stringify({
           email: trimmedEmail || undefined,
           message: trimmedMessage,
+          website,
         }),
       });
 
@@ -95,9 +94,10 @@ export function ContactForm() {
         const serverMessage =
           response.status === 429
             ? "Bitte warte kurz, bevor du eine weitere Nachricht sendest."
-            : response.status === 503
-              ? "Das Kontaktformular ist gerade nicht vollständig eingerichtet. Bitte versuche es später erneut."
-              : messageFromServer || "Die Nachricht konnte gerade nicht gesendet werden. Bitte versuche es später erneut.";
+            : response.status === 500 || response.status === 503
+              ? "Die Nachricht konnte gerade nicht gesendet werden. Bitte versuche es später erneut."
+              : messageFromServer ||
+                "Die Nachricht konnte gerade nicht gesendet werden. Bitte versuche es später erneut.";
 
         setErrors({ form: serverMessage });
         setStatus("idle");
@@ -105,9 +105,7 @@ export function ContactForm() {
         return;
       }
 
-      const payload = (await response.json().catch(() => ({}))) as { delivered?: boolean; stored?: boolean };
-
-      setSuccessMode(payload.delivered ? "sent" : "stored");
+      await response.json().catch(() => ({}));
       setErrors({});
       setStatus("success");
       window.requestAnimationFrame(() => successRef.current?.focus());
@@ -156,9 +154,7 @@ export function ContactForm() {
           tabIndex={-1}
           aria-labelledby="contact-success-heading"
         >
-          <h2 id="contact-success-heading">
-            {successMode === "sent" ? "Deine Nachricht wurde gesendet." : "Deine Nachricht wurde gespeichert."}
-          </h2>
+          <h2 id="contact-success-heading">Deine Nachricht wurde gesendet.</h2>
           {trimmedEmail ? (
             <p>Mit der angegebenen E-Mail-Adresse ist eine direkte Antwort möglich.</p>
           ) : (
@@ -232,6 +228,18 @@ export function ContactForm() {
       <button className="primary-button" type="submit" aria-disabled={isSubmitting ? "true" : undefined}>
         {isSubmitting ? "Nachricht wird gesendet" : "Nachricht senden"}
       </button>
+      <div className="contact-honeypot" aria-hidden="true">
+        <label htmlFor="contact-website">Website</label>
+        <input
+          id="contact-website"
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={website}
+          onChange={(event) => setWebsite(event.target.value)}
+        />
+      </div>
     </form>
   );
 }
