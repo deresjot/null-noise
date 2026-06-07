@@ -3,10 +3,11 @@
 ## Aktueller Arbeitsstand
 
 - aktiver lokaler Arbeitsbranch: `null-noise`
-- aktueller Stand: Wochenend-Abschluss vom 7. Juni 2026 mit SMTP-Kontaktformular ist lokal vorbereitet; Commit/Push/Deploy sind fuer diesen Abschlussauftrag freigegeben
+- aktueller Stand: Wochenend-Abschluss vom 7. Juni 2026 mit SMTP-Kontaktformular ist committed, gepusht und nach Vercel Production deployt
 - Release-Metadaten stehen lokal auf `0.8.4-contact-smtp.20260607`
 - ohne explizite Freigabe sonst nichts pushen/deployen; diese Freigabe gilt nur fuer den aktuellen Abschlussauftrag
 - Live-URL: https://null-noise.vercel.app
+- Production-Deployment ist `READY`; konkrete Deployment-URL und Commit-Hash stehen in der Abschlussübergabe
 - Preview-Deploys werden nach Push per Vercel CLI erzeugt; konkrete URLs stehen in der jeweiligen Übergabe und im Vercel-Inspect
 - Preview-Hinweis: Deployment Protection/SSO ist aktiv; ohne Vercel-Login kommt `401`
 - v0/grüne UI liegt im Archiv-Worktree

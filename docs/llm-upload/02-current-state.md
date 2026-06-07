@@ -6,8 +6,9 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 - lokaler Branch: `null-noise`
 - lokaler Projektpfad: `/Users/deresjot/Library/CloudStorage/Dropbox/_PRIVAT/Code/git-webdev/null-noise`
-- Stand: Wochenend-Abschluss vom 7. Juni 2026 mit SMTP-Kontaktformular ist lokal vorbereitet; Commit/Push/Deploy sind fuer diesen Abschlussauftrag freigegeben
+- Stand: Wochenend-Abschluss vom 7. Juni 2026 mit SMTP-Kontaktformular ist committed, gepusht und nach Vercel Production deployt
 - Live-URL: https://null-noise.vercel.app
+- Production-Deployment ist `READY`; konkrete Deployment-URL und Commit-Hash stehen in der Abschlussübergabe
 - Preview-Deploys werden nach Push per Vercel CLI erzeugt; konkrete URLs stehen in der jeweiligen Übergabe und im Vercel-Inspect
 - Hinweis: Preview ist `READY`, aber Vercel Deployment Protection/SSO ist aktiv; ohne Login kommt `401`
 - v0/grüne UI liegt im Archiv-Worktree und wird nicht bearbeitet
