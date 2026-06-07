@@ -93,7 +93,7 @@ export default function DatenschutzPage() {
             Antwortadresse genutzt.
           </p>
           <p>
-            Der Versand erfolgt ueber das technische Postfach testing@sebastianjansen.com beim
+            Der Versand erfolgt ueber das technische Postfach mail@sebastianjansen.com beim
             Mailhoster. null-noise speichert Kontaktanfragen nicht dauerhaft in einer
             projektinternen Datenbank und legt fuer Kontaktanfragen keine IP-Adressen oder
             User-Agent-Daten ab.

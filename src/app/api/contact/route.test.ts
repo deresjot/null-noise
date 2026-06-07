@@ -38,10 +38,10 @@ beforeEach(() => {
     SMTP_HOST: "mail.hosting.de",
     SMTP_PORT: "587",
     SMTP_SECURE: "false",
-    SMTP_USER: "testing@sebastianjansen.com",
+    SMTP_USER: "mail@sebastianjansen.com",
     SMTP_PASSWORD: "test-smtp-password",
     CONTACT_TO_EMAIL: "ziel@example.com",
-    CONTACT_FROM_EMAIL: "testing@sebastianjansen.com",
+    CONTACT_FROM_EMAIL: "mail@sebastianjansen.com",
   };
   mailMock.sendMail.mockResolvedValue({ accepted: ["ziel@example.com"] });
 });
@@ -62,13 +62,13 @@ describe("contact route", () => {
       port: 587,
       secure: false,
       auth: {
-        user: "testing@sebastianjansen.com",
+        user: "mail@sebastianjansen.com",
         pass: "test-smtp-password",
       },
     });
     expect(mailMock.sendMail).toHaveBeenCalledWith(
       expect.objectContaining({
-        from: "null-noise <testing@sebastianjansen.com>",
+        from: "null-noise <mail@sebastianjansen.com>",
         to: "ziel@example.com",
         subject: "Neue Nachricht über null-noise",
       }),
@@ -124,7 +124,7 @@ describe("contact route", () => {
   });
 
   it("does not expose SMTP credentials in responses when sending fails", async () => {
-    mailMock.sendMail.mockRejectedValueOnce(new Error("SMTP auth failed for testing@sebastianjansen.com"));
+    mailMock.sendMail.mockRejectedValueOnce(new Error("SMTP auth failed for mail@sebastianjansen.com"));
 
     const response = await POST(
       contactRequest({
@@ -136,7 +136,7 @@ describe("contact route", () => {
 
     expect(response.status).toBe(500);
     expect(responseText).toContain("Die Nachricht konnte gerade nicht gesendet werden.");
-    expect(responseText).not.toContain("testing@sebastianjansen.com");
+    expect(responseText).not.toContain("mail@sebastianjansen.com");
     expect(responseText).not.toContain("test-smtp-password");
     expect(responseText).not.toContain("person@example.com");
     expect(responseText).not.toContain("Diese Nachricht darf nicht");

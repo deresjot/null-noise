@@ -20,11 +20,11 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 - Wochenend-Abschluss / SMTP-Kontakt 7. Juni 2026:
   - Kontaktanfragen werden nicht mehr in `/admin/kontakt`, Datei, Datenbank, temporärem Vercel-Speicher oder Blob abgelegt
   - `POST /api/contact` sendet serverseitig per Nodemailer/SMTP; `CONTACT_TO_EMAIL` kommt nur aus der Server-Env
-  - technische Absenderadresse ist `testing@sebastianjansen.com`; Formular-E-Mail wird nur als Reply-To genutzt
+  - technische Absenderadresse ist `mail@sebastianjansen.com`; Formular-E-Mail wird nur als Reply-To genutzt
   - Pflichtnachricht, optionale E-Mail, Mindestlänge 10 Zeichen, Zeichenzähler, Honeypot, Body-Limit und leichtes Rate-Limit bleiben aktiv
   - Datenschutz, `.env.example`, LLM-Doku, Release Notes und Kontakt-/A11y-Tests sind auf SMTP synchronisiert
-  - benoetigte Env Vars: `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=testing@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=<set-recipient-email>`, `CONTACT_FROM_EMAIL=testing@sebastianjansen.com`
-  - Release Notes stehen lokal auf `0.8.4-contact-smtp.20260607`
+  - benoetigte Env Vars: `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=<set-recipient-email>`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`
+  - Release Notes stehen lokal auf `0.8.4-contact-smtp-mailbox.20260607`
 - Mobile-Layout-Stabilisierung 6. Juni 2026:
   - reiner CSS-/Test-Pass ohne Produktlogikänderung für `/kontakt`, `/barrierefreiheit`, `/`, `/suche`, `/suche?q=Arrival`, `/titel/mondfenster`, Footer und Mobile Navigation
   - Mobile-Menübutton zeigt bei 320px wieder ein sichtbares Icon; Menülinks sind kompakter und bleiben innerhalb der Contentbreite

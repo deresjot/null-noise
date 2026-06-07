@@ -216,9 +216,9 @@ Optional, wenn der Umfang es rechtfertigt:
 Wochenend-Abschluss vom 7. Juni 2026, lokal geprüft und fuer Push/Production-Deploy vorbereitet.
 
 - Kontaktformular: serverseitiger SMTP-Versand per Nodemailer; keine Adminroute, keine Datenbank, keine temporäre Datei und kein Blob-Speicher fuer Kontaktanfragen
-- benoetigte Kontakt-Env: `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=testing@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=<set-recipient-email>`, `CONTACT_FROM_EMAIL=testing@sebastianjansen.com`
+- benoetigte Kontakt-Env: `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=<set-recipient-email>`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`
 - Datenschutz: Nachricht und optionale E-Mail werden zur Bearbeitung verarbeitet; keine IP-/User-Agent-Ablage fuer Kontaktanfragen
-- Release Notes stehen lokal auf `0.8.4-contact-smtp.20260607`
+- Release Notes stehen lokal auf `0.8.4-contact-smtp-mailbox.20260607`
 - lokale Abschlusschecks: `npm ci`, `npm run lint`, `npm run test:unit`, `npm run build`, `npm run test:a11y`, `npm run test:axe-core`, `npm run test:wcag22-aa`, `npm run test:wcag22-aaa`, `npx playwright test`, `git diff --check`
 - bekannte Warnungen in Browserläufen: bestehende Hydration-/LCP-Hinweise aus Route-Smokes; keine Kontakt-SMTP-Regression
 

@@ -1,18 +1,18 @@
 import packageJson from "../../package.json";
 
 export const currentBuild = {
-  version: `${packageJson.version}-contact-smtp.20260607`,
-  label: "SMTP contact release",
+  version: `${packageJson.version}-contact-smtp-mailbox.20260607`,
+  label: "SMTP mailbox switch",
   releasedAt: "2026-06-07",
 };
 
 export const releaseNotes = [
   {
-    version: `${packageJson.version}-contact-smtp.20260607`,
-    label: "SMTP contact release",
+    version: `${packageJson.version}-contact-smtp-mailbox.20260607`,
+    label: "SMTP mailbox switch",
     releasedAt: "2026-06-07",
     entries: [
-      "The contact form now sends server-side via SMTP with testing@sebastianjansen.com as the technical sender address.",
+      "The contact form now sends server-side via SMTP with mail@sebastianjansen.com as the technical sender address.",
       "Contact requests are no longer stored through an admin area, temporary file, local database or Blob storage path.",
       "The optional form email is used only as Reply-To; the recipient stays server-side in CONTACT_TO_EMAIL.",
       "Validation, a character counter, generic failure copy, a honeypot field, body-size limiting and lightweight rate limiting stay in place.",
