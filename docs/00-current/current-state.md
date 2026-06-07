@@ -23,8 +23,10 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
   - technische Absenderadresse ist `mail@sebastianjansen.com`; Formular-E-Mail wird nur als Reply-To genutzt
   - Pflichtnachricht, optionale E-Mail, Mindestlänge 10 Zeichen, Zeichenzähler, Honeypot, Body-Limit und leichtes Rate-Limit bleiben aktiv
   - Datenschutz, `.env.example`, LLM-Doku, Release Notes und Kontakt-/A11y-Tests sind auf SMTP synchronisiert
-  - benoetigte Env Vars: `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=<set-recipient-email>`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`
+  - benoetigte Env Vars: `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=<set-recipient-email>`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`, `NULL_NOISE_RATE_LIMIT_SALT=<set-secret>`
+  - Live-Smoke: `/`, `/kontakt`, `/datenschutz`, `/impressum` erreichbar; Kontaktformular zeigte Erfolgsmeldung; mobile Breiten 320/390/430 ohne horizontalen Overflow
   - Release Notes stehen lokal auf `0.8.4-contact-smtp-mailbox.20260607`
+  - offen fuer naechste Woche: bestehende Hydration-/LCP-Warnungen separat bewerten und entscheiden, ob `tools/` ins Projekt gehoert oder lokal bleibt
 - Mobile-Layout-Stabilisierung 6. Juni 2026:
   - reiner CSS-/Test-Pass ohne Produktlogikänderung für `/kontakt`, `/barrierefreiheit`, `/`, `/suche`, `/suche?q=Arrival`, `/titel/mondfenster`, Footer und Mobile Navigation
   - Mobile-Menübutton zeigt bei 320px wieder ein sichtbares Icon; Menülinks sind kompakter und bleiben innerhalb der Contentbreite

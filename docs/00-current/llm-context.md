@@ -60,12 +60,12 @@
 
 ## Security-/Privacy-Stand
 
-- aktueller Security-/Kontakt-Stand wird in diesem Abschlussauftrag lokal geprüft, gepusht und nach Vercel deployt
+- aktueller Security-/Kontakt-Stand ist lokal geprüft, gepusht und nach Vercel Production deployt
 - keine Accounts, keine Profile, keine Social Features, kein Tracking und keine Analytics
 - `/kontakt` nutzt ein natives, lokal und serverseitig validiertes Formular ohne Captcha, Tracking oder Profiling; Nachricht ist Pflicht, E-Mail ist optional und wird nur als Antwortadresse genutzt
 - `POST /api/contact` sendet serverseitig ueber SMTP; Absender ist `CONTACT_FROM_EMAIL`, Zieladresse kommt nur aus `CONTACT_TO_EMAIL`
 - technische Absenderadresse ist `mail@sebastianjansen.com`; `CONTACT_FROM_EMAIL` muss auf diese Adresse zeigen
-- benoetigte Kontakt-Env: `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=<set-recipient-email>`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`
+- benoetigte Kontakt-Env: `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=<set-recipient-email>`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`, `NULL_NOISE_RATE_LIMIT_SALT=<set-secret>`
 - keine Kontaktanfragen in Adminbereich, Datenbank, temporärer Datei oder Vercel Blob speichern
 - Production ohne SMTP-Konfiguration zeigt einen Versandfehler statt falscher Erfolgsmeldung
 - keine Supabase-Integration im aktuellen Code; keine RLS-/Service-Role-Themen im Live-Stand, solange Supabase nicht eingeführt wird
