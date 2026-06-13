@@ -175,6 +175,9 @@ export const metadata: Metadata = {
   },
   description: shareDescription,
   applicationName: siteName,
+  alternates: {
+    canonical: "/",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -193,6 +196,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: shareTitle,
     description: shareDescription,
+    url: "/",
     siteName,
     locale: "de_DE",
     type: "website",
