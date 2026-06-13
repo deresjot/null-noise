@@ -3,10 +3,13 @@
 ## Aktueller Arbeitsstand
 
 - aktiver lokaler Arbeitsbranch: `null-noise`
-- aktueller Stand: Wochenend-Abschluss vom 7. Juni 2026 mit SMTP-Kontaktformular ist committed, gepusht und nach Vercel Production deployt
-- Release-Metadaten stehen lokal auf `0.8.4-contact-smtp-mailbox.20260607`
+- aktueller Stand: Produktionsdomain-Umstellung vom 13. Juni 2026 ist lokal in Arbeit und vor Commit/Push/Production-Deploy zu prüfen
+- Release-Metadaten stehen lokal auf `0.8.4-production-domain.20260613`
 - ohne explizite Freigabe sonst nichts pushen/deployen; diese Freigabe gilt nur fuer den aktuellen Abschlussauftrag
-- Live-URL: https://null-noise.vercel.app
+- kanonische öffentliche Adresse: https://www.null-noise.de
+- Apex-Domain: https://null-noise.de leitet in Vercel per `308 Permanent Redirect` auf https://www.null-noise.de weiter
+- technische Vercel-Projektadresse: https://null-noise.vercel.app bleibt Production-verbunden, ist aber nicht kanonisch
+- DNS bei hosting.de: `null-noise.de A 216.198.79.1`, `www.null-noise.de CNAME 8bb5d957d3dbq7.vercel-dns-017.com`
 - Production-Deployment ist `READY`; konkrete Deployment-URL und Commit-Hash stehen in der Abschlussübergabe
 - Preview-Deploys werden nach Push per Vercel CLI erzeugt; konkrete URLs stehen in der jeweiligen Übergabe und im Vercel-Inspect
 - Preview-Hinweis: Deployment Protection/SSO ist aktiv; ohne Vercel-Login kommt `401`
@@ -65,7 +68,7 @@
 - `/kontakt` nutzt ein natives, lokal und serverseitig validiertes Formular ohne Captcha, Tracking oder Profiling; Nachricht ist Pflicht, E-Mail ist optional und wird nur als Antwortadresse genutzt
 - `POST /api/contact` sendet serverseitig ueber SMTP; Absender ist `CONTACT_FROM_EMAIL`, Zieladresse kommt nur aus `CONTACT_TO_EMAIL`
 - technische Absenderadresse ist `mail@sebastianjansen.com`; `CONTACT_FROM_EMAIL` muss auf diese Adresse zeigen
-- benoetigte Kontakt-Env: `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=<set-recipient-email>`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`, `NULL_NOISE_RATE_LIMIT_SALT=<set-secret>`
+- benoetigte Kontakt-Env: `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=hallo@null-noise.de`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`, `NULL_NOISE_RATE_LIMIT_SALT=<set-secret>`
 - keine Kontaktanfragen in Adminbereich, Datenbank, temporärer Datei oder Vercel Blob speichern
 - Production ohne SMTP-Konfiguration zeigt einen Versandfehler statt falscher Erfolgsmeldung
 - keine Supabase-Integration im aktuellen Code; keine RLS-/Service-Role-Themen im Live-Stand, solange Supabase nicht eingeführt wird
@@ -78,6 +81,7 @@
 - LocalStorage bleibt browserlokal für Merkliste/Schon-gesehen-Status und wird nicht serverseitig synchronisiert
 - serverseitige DB-/API-/Rate-Limit-Module sind lokal mit `server-only` markiert
 - Vercel-ENV muss vor Deploy manuell geprüft werden; Secret-Werte nie in Doku, Logs oder Client-Bundles ausgeben
+- Domain-Umstellung: `NEXT_PUBLIC_SITE_URL=https://www.null-noise.de` und `CONTACT_TO_EMAIL=hallo@null-noise.de` in Vercel Production setzen; `CONTACT_FROM_EMAIL` bleibt `mail@sebastianjansen.com`, solange `SMTP_USER=mail@sebastianjansen.com` ist
 - nach Deploy echte Production-Header/CSP und Live-API-Routen prüfen; lokale Tests sind keine Production-Garantie
 
 ## Evidence-Modell

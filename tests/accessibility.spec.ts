@@ -884,10 +884,10 @@ test("accessibility page is reachable and explains the current testing scope", a
     "href",
     "/kontakt",
   );
-  await expect(contactPanel).toContainText("mail@sebastianjansen.com");
-  await expect(contactPanel.getByRole("link", { name: "mail@sebastianjansen.com" })).toHaveAttribute(
+  await expect(contactPanel).toContainText("hallo@null-noise.de");
+  await expect(contactPanel.getByRole("link", { name: "hallo@null-noise.de" })).toHaveAttribute(
     "href",
-    "mailto:mail@sebastianjansen.com",
+    "mailto:hallo@null-noise.de",
   );
 });
 

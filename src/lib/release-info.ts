@@ -1,12 +1,24 @@
 import packageJson from "../../package.json";
 
 export const currentBuild = {
-  version: `${packageJson.version}-contact-smtp-mailbox.20260607`,
-  label: "SMTP mailbox switch",
-  releasedAt: "2026-06-07",
+  version: `${packageJson.version}-production-domain.20260613`,
+  label: "Production domain switch",
+  releasedAt: "2026-06-13",
 };
 
 export const releaseNotes = [
+  {
+    version: `${packageJson.version}-production-domain.20260613`,
+    label: "Production domain switch",
+    releasedAt: "2026-06-13",
+    entries: [
+      "The canonical public address is now www.null-noise.de via NEXT_PUBLIC_SITE_URL.",
+      "The apex domain null-noise.de redirects permanently to the www domain in Vercel.",
+      "Visible legal and accessibility contact copy now uses hallo@null-noise.de.",
+      "The contact form remains server-side SMTP through environment variables; no secrets or SMTP credentials are exposed in client code.",
+      "The Vercel project address null-noise.vercel.app remains only a technical non-canonical project address.",
+    ],
+  },
   {
     version: `${packageJson.version}-contact-smtp-mailbox.20260607`,
     label: "SMTP mailbox switch",

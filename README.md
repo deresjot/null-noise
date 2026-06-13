@@ -262,7 +262,7 @@ Beispiel für `.env.local`:
 ```bash
 DATABASE_URL=file:./prisma/null-noise.db
 METADATA_SPIKE_SOURCE=tmdb
-TMDB_READ_ACCESS_TOKEN=your_tmdb_read_access_token
+TMDB_READ_ACCESS_TOKEN=<set-secret>
 NULL_NOISE_ENABLE_WRITES=true
 ```
 
@@ -276,7 +276,8 @@ Für einen ersten ehrlichen Vercel-Deploy gilt bewusst:
 - Build Command: Standard-Next.js (`npm run build`)
 - Start Command: Standard-Next.js (`npm run start`)
 - erforderlich für den öffentlichen MVP: `TMDB_READ_ACCESS_TOKEN`
-- empfohlen: `NEXT_PUBLIC_SITE_URL`, damit Metadata und Open Graph auf eine feste URL zeigen; ohne diese Variable fällt der Code auf die von Vercel gesetzten Host-Variablen zurück
+- erforderlich für die kanonische Production-Adresse: `NEXT_PUBLIC_SITE_URL=https://www.null-noise.de`, damit Metadata, Open Graph und Canonical-URLs auf die öffentliche Domain zeigen
+- Kontaktformular-Env in Production: `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=hallo@null-noise.de`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`, `NULL_NOISE_RATE_LIMIT_SALT=<set-secret>`
 - optional: `DATABASE_URL`, wenn lokaler Katalog, Seed-Daten oder spätere Schreibpfade wirklich gebraucht werden
 - ohne `DATABASE_URL` bleibt die Instanz bewusst read-only und stützt sich für Suche und Detail auf den externen TMDb-Pfad
 - `NULL_NOISE_ENABLE_WRITES` sollte für die erste öffentliche Beta nicht gesetzt oder explizit `false` sein

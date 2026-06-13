@@ -6,6 +6,8 @@ import type {
 } from "@/lib/types";
 
 export const siteName = "null-noise";
+export const publicSiteUrl = "https://www.null-noise.de";
+export const publicContactEmail = "hallo@null-noise.de";
 export const siteClaim = "Du musst dich nicht auch noch in der Freizeit anschreien lassen.";
 export const siteDescription =
   "null-noise hilft beim Finden von Filmen und Serien und liest vorhandene Metadaten vorsichtig als situative Entscheidungshilfe.";

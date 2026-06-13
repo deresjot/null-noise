@@ -39,12 +39,12 @@ describe("runtime config", () => {
     expect(getMetadataBase().toString()).toBe("https://beta.null-noise.example/");
   });
 
-  it("falls back to vercel host information when no explicit site url exists", () => {
+  it("falls back to the canonical public domain when no explicit site url exists", () => {
     delete process.env.NEXT_PUBLIC_SITE_URL;
     process.env.VERCEL_PROJECT_PRODUCTION_URL = "null-noise.vercel.app";
     delete process.env.VERCEL_URL;
 
-    expect(getSiteUrl()).toBe("https://null-noise.vercel.app");
+    expect(getSiteUrl()).toBe("https://www.null-noise.de");
   });
 
   it("keeps writes enabled locally by default but disables them in production", () => {

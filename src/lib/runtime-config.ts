@@ -1,3 +1,5 @@
+import { publicSiteUrl } from "@/lib/constants";
+
 function parseBooleanEnv(value: string | undefined): boolean | null {
   if (!value) {
     return null;
@@ -39,6 +41,7 @@ function normalizeSiteUrlCandidate(value: string | undefined): string | null {
 export function getSiteUrl(): string {
   return (
     normalizeSiteUrlCandidate(process.env.NEXT_PUBLIC_SITE_URL) ??
+    normalizeSiteUrlCandidate(publicSiteUrl) ??
     normalizeSiteUrlCandidate(process.env.VERCEL_PROJECT_PRODUCTION_URL) ??
     normalizeSiteUrlCandidate(process.env.VERCEL_URL) ??
     "http://localhost:3000"

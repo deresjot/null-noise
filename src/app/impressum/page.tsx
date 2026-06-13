@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { siteName } from "@/lib/constants";
+import { publicContactEmail, publicSiteUrl, siteName } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: `Impressum | ${siteName}`,
@@ -40,12 +40,14 @@ export default function ImpressumPage() {
             </div>
             <div>
               <dt>Kontakt</dt>
-              <dd>mail@sebastianjansen.com</dd>
+              <dd>
+                <a href={`mailto:${publicContactEmail}`}>{publicContactEmail}</a>
+              </dd>
             </div>
             <div>
               <dt>Web</dt>
               <dd>
-                <a href="https://www.sebastianjansen.com">www.sebastianjansen.com</a>
+                <a href={publicSiteUrl}>www.null-noise.de</a>
               </dd>
             </div>
           </dl>

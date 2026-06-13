@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { siteName } from "@/lib/constants";
+import { publicContactEmail, siteName } from "@/lib/constants";
 import {
   wcag22AaTechnicalMatrix,
   wcagTechnicalStatusLabels,
@@ -256,7 +256,7 @@ export default function BarrierefreiheitPage() {
           {" "}
           oder schreibe direkt an
           {" "}
-          <a href="mailto:mail@sebastianjansen.com">mail@sebastianjansen.com</a>
+          <a href={`mailto:${publicContactEmail}`}>{publicContactEmail}</a>
           .
         </p>
       </section>

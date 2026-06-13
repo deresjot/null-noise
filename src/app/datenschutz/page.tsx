@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { siteName } from "@/lib/constants";
+import { publicContactEmail, siteName } from "@/lib/constants";
 import { arePublicWritesEnabled } from "@/lib/runtime-config";
 
 export const metadata: Metadata = {
@@ -93,13 +93,15 @@ export default function DatenschutzPage() {
             Antwortadresse genutzt.
           </p>
           <p>
-            Der Versand erfolgt ueber das technische Postfach mail@sebastianjansen.com beim
+            Der Versand erfolgt serverseitig ueber ein konfiguriertes technisches Postfach beim
             Mailhoster. null-noise speichert Kontaktanfragen nicht dauerhaft in einer
             projektinternen Datenbank und legt fuer Kontaktanfragen keine IP-Adressen oder
             User-Agent-Daten ab.
           </p>
           <p>Betreiber: Sebastian Jansen</p>
-          <p>Kontakt: mail@sebastianjansen.com</p>
+          <p>
+            Kontakt: <a href={`mailto:${publicContactEmail}`}>{publicContactEmail}</a>
+          </p>
         </section>
       </div>
     </section>

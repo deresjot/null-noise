@@ -6,8 +6,11 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 - lokaler Branch: `null-noise`
 - lokaler Projektpfad: `/Users/deresjot/Library/CloudStorage/Dropbox/_PRIVAT/Code/git-webdev/null-noise`
-- Stand: Wochenend-Abschluss vom 7. Juni 2026 mit SMTP-Kontaktformular ist committed, gepusht und nach Vercel Production deployt
-- Live-URL: https://null-noise.vercel.app
+- Stand: Produktionsdomain-Umstellung vom 13. Juni 2026 auf `https://www.null-noise.de` ist lokal in Arbeit und vor Commit/Push/Production-Deploy zu prüfen
+- kanonische öffentliche Adresse: https://www.null-noise.de
+- Apex-Domain: https://null-noise.de leitet in Vercel per `308 Permanent Redirect` auf https://www.null-noise.de weiter
+- technische Vercel-Projektadresse: https://null-noise.vercel.app bleibt Production-verbunden, ist aber nicht kanonisch
+- DNS bei hosting.de: `null-noise.de A 216.198.79.1`, `www.null-noise.de CNAME 8bb5d957d3dbq7.vercel-dns-017.com`
 - Production-Deployment ist `READY`; konkrete Deployment-URL und Commit-Hash stehen in der Abschlussübergabe
 - Preview-Deploys werden nach Push per Vercel CLI erzeugt; konkrete URLs stehen in der jeweiligen Übergabe und im Vercel-Inspect
 - Hinweis: Preview ist `READY`, aber Vercel Deployment Protection/SSO ist aktiv; ohne Login kommt `401`
@@ -18,14 +21,15 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 ## Letzte lokale Arbeitsblöcke
 
 - Wochenend-Abschluss / SMTP-Kontakt 7. Juni 2026:
+  - Domain-Umstellung am 13. Juni 2026: sichtbare allgemeine Kontaktadresse ist `hallo@null-noise.de`; `NEXT_PUBLIC_SITE_URL` zeigt auf `https://www.null-noise.de`; `null-noise.vercel.app` ist nur noch technische Vercel-Adresse
   - Kontaktanfragen werden nicht mehr in `/admin/kontakt`, Datei, Datenbank, temporärem Vercel-Speicher oder Blob abgelegt
   - `POST /api/contact` sendet serverseitig per Nodemailer/SMTP; `CONTACT_TO_EMAIL` kommt nur aus der Server-Env
   - technische Absenderadresse ist `mail@sebastianjansen.com`; Formular-E-Mail wird nur als Reply-To genutzt
   - Pflichtnachricht, optionale E-Mail, Mindestlänge 10 Zeichen, Zeichenzähler, Honeypot, Body-Limit und leichtes Rate-Limit bleiben aktiv
   - Datenschutz, `.env.example`, LLM-Doku, Release Notes und Kontakt-/A11y-Tests sind auf SMTP synchronisiert
-  - benoetigte Env Vars: `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=<set-recipient-email>`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`, `NULL_NOISE_RATE_LIMIT_SALT=<set-secret>`
+  - benoetigte Env Vars: `NEXT_PUBLIC_SITE_URL=https://www.null-noise.de`, `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=hallo@null-noise.de`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`, `NULL_NOISE_RATE_LIMIT_SALT=<set-secret>`, `TMDB_READ_ACCESS_TOKEN=<set-secret>`
   - Live-Smoke: `/`, `/kontakt`, `/datenschutz`, `/impressum` erreichbar; Kontaktformular zeigte Erfolgsmeldung; mobile Breiten 320/390/430 ohne horizontalen Overflow
-  - Release Notes stehen lokal auf `0.8.4-contact-smtp-mailbox.20260607`
+  - Release Notes stehen lokal auf `0.8.4-production-domain.20260613`
   - offen fuer naechste Woche: bestehende Hydration-/LCP-Warnungen separat bewerten und entscheiden, ob `tools/` ins Projekt gehoert oder lokal bleibt
 - Mobile-Layout-Stabilisierung 6. Juni 2026:
   - reiner CSS-/Test-Pass ohne Produktlogikänderung für `/kontakt`, `/barrierefreiheit`, `/`, `/suche`, `/suche?q=Arrival`, `/titel/mondfenster`, Footer und Mobile Navigation

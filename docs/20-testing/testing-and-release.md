@@ -213,12 +213,15 @@ Optional, wenn der Umfang es rechtfertigt:
 
 ## Letzter lokaler Stand vor Übergabe
 
-Wochenend-Abschluss vom 7. Juni 2026, lokal geprüft, gepusht und nach Vercel Production deployt.
+Produktionsdomain-Umstellung vom 13. Juni 2026: lokal zu prüfen, zu committen, auf `null-noise` zu pushen und erst danach nach Vercel Production zu deployen.
 
+- Domain-Stand: `https://www.null-noise.de` ist kanonisch; `https://null-noise.de` leitet in Vercel per `308 Permanent Redirect` auf `https://www.null-noise.de`; `https://null-noise.vercel.app` bleibt nur technische, nicht-kanonische Vercel-Projektadresse
+- DNS bei hosting.de: `null-noise.de A 216.198.79.1`; `www.null-noise.de CNAME 8bb5d957d3dbq7.vercel-dns-017.com`
+- Production-Env: `NEXT_PUBLIC_SITE_URL=https://www.null-noise.de`, `CONTACT_TO_EMAIL=hallo@null-noise.de`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`, `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `NULL_NOISE_RATE_LIMIT_SALT=<set-secret>`, `TMDB_READ_ACCESS_TOKEN=<set-secret>`
+- Vercel Environment Variables gelten nicht rückwirkend für alte Deployments; nach ENV-Anpassungen oder Codeänderungen ist ein neuer Production-Deploy nötig
 - Kontaktformular: serverseitiger SMTP-Versand per Nodemailer; keine Adminroute, keine Datenbank, keine temporäre Datei und kein Blob-Speicher fuer Kontaktanfragen
-- benoetigte Kontakt-Env: `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=<set-recipient-email>`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`, `NULL_NOISE_RATE_LIMIT_SALT=<set-secret>`
 - Datenschutz: Nachricht und optionale E-Mail werden zur Bearbeitung verarbeitet; keine IP-/User-Agent-Ablage fuer Kontaktanfragen
-- Release Notes stehen lokal auf `0.8.4-contact-smtp-mailbox.20260607`
+- Release Notes stehen lokal auf `0.8.4-production-domain.20260613`
 - lokale Abschlusschecks: `npm ci`, `npm run lint`, `npm run test:unit`, `npm run build`, `npm run test:a11y`, `npm run test:axe-core`, `npm run test:wcag22-aa`, `npm run test:wcag22-aaa`, `npx playwright test`, `git diff --check`
 - Live-Smoke: `/`, `/kontakt`, `/datenschutz`, `/impressum` erreichbar; Kontaktformular zeigte Erfolgsmeldung; mobile Breiten 320/390/430 ohne horizontalen Overflow
 - bekannte Warnungen in Browserläufen: bestehende Hydration-/LCP-Hinweise aus Route-Smokes; keine Kontakt-SMTP-Regression
