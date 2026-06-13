@@ -1,12 +1,48 @@
 import packageJson from "../../package.json";
 
 export const currentBuild = {
-  version: `${packageJson.version}-production-domain.20260613`,
-  label: "Production domain switch",
+  version: `${packageJson.version}-preview-gate-mobile-polish.20260613`,
+  label: "Preview gate and mobile polish",
   releasedAt: "2026-06-13",
 };
 
 export const releaseNotes = [
+  {
+    version: `${packageJson.version}-preview-gate-mobile-polish.20260613`,
+    label: "Preview gate and mobile polish",
+    releasedAt: "2026-06-13",
+    entries: [
+      "The public app is now fronted by a lightweight client-side preview gate with a centered teaser page, logo and the preview phrase.",
+      "Mobile detail pages place the detail poster directly below the title heading before the first assessment.",
+      "Mobile result-card actions stay in the text column and no longer overlap poster thumbnails.",
+      "The local remembered/seen shelf renders only groups with content, so a single Schon gesehen group uses the full shelf width.",
+      "A global navigation progress indicator appears during pending route-data loads and respects reduced-motion preferences.",
+    ],
+  },
+  {
+    version: `${packageJson.version}-mobile-search-repair.20260613`,
+    label: "Mobile search repair",
+    releasedAt: "2026-06-13",
+    entries: [
+      "Empty search URLs such as /suche?q=&tone=all&kind=all stay in the calm browse state instead of rendering a broken mixed search view.",
+      "The opened mobile menu is compact, stays inside the content width and keeps a proportional keyboard focus style on the menu button.",
+      "Mobile search result cards use the available width more fully, keep posters secondary and preserve text labels on card actions.",
+      "Footer release information remains visible but is visually quieter on narrow screens.",
+      "Loading states now use a clearer status box with visible text, a stronger indicator and reduced-motion-safe behavior.",
+    ],
+  },
+  {
+    version: `${packageJson.version}-quiet-loading.20260613`,
+    label: "Quiet loading states",
+    releasedAt: "2026-06-13",
+    entries: [
+      "Search, contact submit and app-route loading now share a quiet text-first loading state for real pending work only.",
+      "Search result updates keep existing content in place, expose one concise live status and avoid a second broad live region around the results.",
+      "The contact form keeps duplicate-submit protection and shows a calm sending state without adding artificial delay.",
+      "Loading motion stays decorative and is disabled under prefers-reduced-motion while status text remains visible.",
+      "The imprint copy now references the canonical null-noise.de domain and keeps the missing legal address as an explicit review boundary.",
+    ],
+  },
   {
     version: `${packageJson.version}-production-domain.20260613`,
     label: "Production domain switch",

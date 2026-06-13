@@ -1,6 +1,6 @@
 # Accessibility-Prinzipien für null-noise
 
-Stand: 11. April 2026
+Stand: 13. Juni 2026
 
 Diese Datei beschreibt die barrierebezogenen Grundentscheidungen für `null-noise`. Sie ist kein Marketing-Text und keine allgemeine Accessibility-Einführung, sondern die projektbezogene Referenz dafür, was wir bewusst tun und warum.
 
@@ -47,6 +47,26 @@ Wichtige Informationen dürfen nicht nur über Farbe, Intensität oder Posterbil
 ### Reduzierte Bewegung
 
 Animation ist in `null-noise` nachgeordnet. Bewegungen dürfen weder Information verstecken noch Orientierung ersetzen. `prefers-reduced-motion` wird respektiert, und Interaktionen werden nicht über Bewegung erklärt.
+
+### Lade- und Statusmeldungen
+
+Loading-UI ist ein Status, keine Dekoration. Für echte Wartezeiten gilt:
+
+- sichtbarer Text bleibt die primäre Information
+- Screenreader erhalten eine knappe Statusmeldung, aber keine parallel konkurrierenden Live-Regionen
+- laufende Suche nutzt `aria-busy`, behält vorhandene Ergebnisse sichtbar und meldet nur die Aktualisierung
+- Kontakt-Submit zeigt einen eindeutigen Sendestatus und schützt gegen Doppel-Submit
+- dekorative Ladebewegung wird unter `prefers-reduced-motion` deaktiviert
+- visuelle Loader brauchen neben Text eine klare Statusfläche oder einen vergleichbar wahrnehmbaren Indikator, damit sie nicht nur über Bewegung erkannt werden
+
+### Mobile Fokus- und Menüführung
+
+Auf kleinen Viewports bleibt Fokus sichtbar, darf aber nicht wie ein Layoutfehler wirken.
+
+- Menübutton-Fokus ist proportional zur Button-Größe
+- geöffnetes Menü bleibt innerhalb der Contentbreite und so hoch wie nötig
+- aktive Route und Tastaturfokus sind unterscheidbar
+- Fokusindikatoren werden nicht entfernt, sondern dichter gestaltet
 
 ## Warum keine Scores
 

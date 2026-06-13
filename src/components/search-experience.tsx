@@ -14,6 +14,7 @@ import {
 } from "react";
 
 import { ExternalResultList } from "@/components/external-result-list";
+import { LoadingState } from "@/components/loading-state";
 import { ResultList } from "@/components/result-list";
 import { SearchForm } from "@/components/search-form";
 import { SearchLocalShelf } from "@/components/search-local-shelf";
@@ -507,9 +508,10 @@ export function SearchExperience({ initialState }: { initialState: SearchPageSta
   const avoidanceStatusLine = getAvoidanceStatusLine(filters);
   const browseClusterLabel = getBrowseClusterLabel(filters);
   const busy = transitionPhase === "loading" || isPending;
+  const loadingStatusMessage = state.showBrowseState ? "Auswahl wird geladen." : "Suchergebnisse werden geladen.";
   const searchFrameItems = getSearchFrameItems(filters);
   const liveStatusMessage = busy
-    ? "Suche wird aktualisiert."
+    ? loadingStatusMessage
     : state.showBrowseState
       ? `Browse aktualisiert: ${browseSuggestionCount} Titel im aktuellen Rahmen.`
       : `Suche aktualisiert: ${resultsCountLine}.`;
@@ -585,6 +587,9 @@ export function SearchExperience({ initialState }: { initialState: SearchPageSta
       >
         {liveStatusMessage}
       </p>
+      {busy ? (
+        <LoadingState className="search-loading-state" label={loadingStatusMessage} />
+      ) : null}
       {state.deleteStatus ? (
         <StatusPanel
           title={state.deleteStatus.title}
@@ -602,7 +607,7 @@ export function SearchExperience({ initialState }: { initialState: SearchPageSta
       ) : null}
 
       <section className="search-results-layout">
-        <div className="search-results-main" aria-live="polite">
+        <div className="search-results-main">
           {state.showBrowseState ? (
             <section className="search-browse-state" aria-labelledby="results-heading">
               <header className="search-results-overview search-browse-intro">

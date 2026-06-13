@@ -1,6 +1,6 @@
 # UX-Prinzipien für reduzierte kognitive Last
 
-Stand: 24. Mai 2026
+Stand: 13. Juni 2026
 
 `null-noise` ist kein klassisches Entertainment-Produkt. Die Oberfläche soll nicht fesseln, sondern entlasten. Diese Datei beschreibt die UX-Prinzipien dafür.
 
@@ -69,6 +69,25 @@ Die Oberfläche soll sich ruhig verhalten.
 - kein UI, das erst beim Klicken erklärt, was es eigentlich tut
 - Meta-Elemente dürfen nicht wie Eingabefelder wirken, wenn sie nicht editierbar sind
 - Echte Steuerung soll als Steuerung lesbar sein: Umschalter, View-Toggles und Refresh-Aktionen brauchen sichtbare Affordance auch ohne Hover
+
+### Ruhige Ladezustände
+
+Ladezustände sind nur fuer echte Wartezeiten gedacht. Sie dürfen vorhandene Orientierung nicht ersetzen und sollen keine zusätzliche Reizlast erzeugen.
+
+- kein künstliches Delay, nur um einen Loader zu zeigen
+- keine lauten Spinner, blinkenden Skeletons oder flächigen Platzhalter
+- vorhandene Suchergebnisse bleiben während Soft-Navigation sichtbar
+- sichtbarer Text benennt, was gerade lädt
+- Bewegung ist rein dekorativ und wird bei `prefers-reduced-motion` abgeschaltet
+
+### Mobile Suchdichte
+
+Die mobile Suche darf nicht nur overflow-frei sein, sondern muss die knappe Breite ruhig nutzen.
+
+- leere Query-URLs bleiben ein Browse-/Discovery-Zustand, kein kaputter Zwischenzustand
+- mobile Menüs sind kompakte Overlays, keine unnötig leeren Vollscreen-Flächen
+- Result-Cards nutzen den Content-Gutter aus, halten Poster sekundär und lassen Actions mit Text sichtbar
+- Footer- und Release-Information bleibt erreichbar, aber visuell sekundär
 
 ### Sekundärinfos bleiben sekundär
 

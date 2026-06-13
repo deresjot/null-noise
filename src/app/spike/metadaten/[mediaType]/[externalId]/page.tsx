@@ -373,6 +373,14 @@ export default async function MetadataSpikeDetailPage({
         <div className="detail-hero-copy">
           <p className="eyebrow">{`${formatMediaType(item.mediaType)} · ${item.releaseYear ?? "Jahr offen"}`}</p>
           <h1>{item.title}</h1>
+          <div className="detail-hero-poster detail-hero-poster-mobile" aria-label={`Titelbild zu ${item.title}`}>
+            <ResultPoster
+              priority
+              src={getTmdbPosterProxyPath(item.posterPath, "original")}
+              title={item.title}
+              variant="detail"
+            />
+          </div>
           <section className="detail-reading-block" aria-label="Erste Einschätzung">
             <p className="detail-reading-kicker">Erste Einschätzung</p>
             <p className="detail-hero-tendency">{tendency.label}</p>
@@ -448,12 +456,14 @@ export default async function MetadataSpikeDetailPage({
         </div>
 
         <aside className="detail-callout-panel" aria-labelledby="detail-spike-heading">
-          <ResultPoster
-            priority
-            src={getTmdbPosterProxyPath(item.posterPath, "original")}
-            title={item.title}
-            variant="detail"
-          />
+          <div className="detail-callout-poster" aria-label={`Titelbild zu ${item.title}`}>
+            <ResultPoster
+              priority
+              src={getTmdbPosterProxyPath(item.posterPath, "original")}
+              title={item.title}
+              variant="detail"
+            />
+          </div>
           <p className="eyebrow">Stand heute</p>
           <h2 id="detail-spike-heading">Worauf das gerade ruht</h2>
           <p className="confidence-callout-eyebrow">{confidencePresentation.eyebrow}</p>

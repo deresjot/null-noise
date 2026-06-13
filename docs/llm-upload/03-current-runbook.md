@@ -158,6 +158,8 @@ Tests, mobile Viewports 390px/430px und danach die Vercel-Deploy-Bereitschaft.
 - Merken-/Gesehen-Bereich und Toggle umbrechen mobil sauber
 - Result-Card-Aktionen `Details`, `Merken` und `Gesehen?` stehen mobil nebeneinander und bleiben fingerfreundlich
 - getippte Suche zeigt weiterhin mehrere Treffer, auch wenn `Schon gesehene Titel hier ausblenden` lokal aktiv ist
+- `/suche?q=&tone=all&kind=all` bleibt mobil im Browse-/Discovery-Zustand, ohne leere externe Suche, ohne schmale Cards und ohne linke Loader-Artefakte
+- geöffnetes Mobile-Menü bleibt kompakt und ist nicht fullscreen-hoch
 - Detailseite zeigt mobil Poster und Synopsis, sofern Daten vorhanden sind
 - fehlende Poster wirken als bewusste kompakte Platzhalter, nicht wie kaputte Bilder
 - `Zurück zur Suche` wirkt wie ein Button mit Pfeil und bleibt tastaturbedienbar
@@ -165,4 +167,6 @@ Tests, mobile Viewports 390px/430px und danach die Vercel-Deploy-Bereitschaft.
 - bei 320 CSS-Pixeln kein horizontaler Overflow
 - bei 390px und 430px kein horizontaler Overflow; Touch-Ziele wirken fingerfreundlich
 - `prefers-reduced-motion` bleibt respektiert
+- Ladezustände nur fuer echte Wartezeiten verwenden: Such-Soft-Navigation, Kontakt-Submit und Route-Loading; kein künstliches Delay, keine lauten Spinner, keine Skeleton-Flächen
+- Screenreader-Status zu Ladezuständen knapp halten und nicht parallel mehrere große Live-Regionen ansagen lassen
 - Mobile-Scrollgefühl nach Deploy auf echtem iPhone prüfen

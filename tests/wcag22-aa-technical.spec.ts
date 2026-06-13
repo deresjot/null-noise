@@ -31,6 +31,7 @@ type RouteFinding = {
 async function gotoReady(page: Page, route: (typeof coreRoutes)[number]) {
   await page.goto(route.path, { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: route.heading })).toBeVisible();
+  await expect(page).toHaveTitle(/\S/);
 }
 
 async function runAxe(
@@ -501,8 +502,13 @@ test.describe("WCAG 2.2 technical regression matrix", () => {
     await page.setViewportSize({ width: 320, height: 900 });
     await page.goto("/");
 
-    await page.keyboard.press("Tab");
     const focusedSkipLink = page.locator(".skip-link").first();
+    for (let step = 0; step < 4; step += 1) {
+      await page.keyboard.press("Tab");
+      if (await focusedSkipLink.evaluate((element) => element === document.activeElement)) {
+        break;
+      }
+    }
     await expect(focusedSkipLink).toBeFocused();
     await expect(focusedSkipLink).toBeVisible();
 

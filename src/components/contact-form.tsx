@@ -2,6 +2,8 @@
 
 import { type FormEvent, useRef, useState } from "react";
 
+import { LoadingState } from "@/components/loading-state";
+
 type ContactErrors = {
   email?: string;
   message?: string;
@@ -226,8 +228,13 @@ export function ContactForm() {
       </div>
 
       <button className="primary-button" type="submit" aria-disabled={isSubmitting ? "true" : undefined}>
-        {isSubmitting ? "Nachricht wird gesendet" : "Nachricht senden"}
+        {isSubmitting ? <LoadingState label="Nachricht wird gesendet" variant="form" /> : "Nachricht senden"}
       </button>
+      {isSubmitting ? (
+        <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+          Nachricht wird gesendet.
+        </p>
+      ) : null}
       <div className="contact-honeypot" aria-hidden="true">
         <label htmlFor="contact-website">Website</label>
         <input

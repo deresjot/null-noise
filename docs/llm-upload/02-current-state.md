@@ -6,7 +6,7 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 - lokaler Branch: `null-noise`
 - lokaler Projektpfad: `/Users/deresjot/Library/CloudStorage/Dropbox/_PRIVAT/Code/git-webdev/null-noise`
-- Stand: Produktionsdomain-Umstellung vom 13. Juni 2026 auf `https://www.null-noise.de` ist lokal in Arbeit und vor Commit/Push/Production-Deploy zu prüfen
+- Stand: Preview-Gate-, Mobile-Layout- und Loader-Abschluss vom 13. Juni 2026; Commit, Git-Push und Vercel-Deploy sind freigegeben
 - kanonische öffentliche Adresse: https://www.null-noise.de
 - Apex-Domain: https://null-noise.de leitet in Vercel per `308 Permanent Redirect` auf https://www.null-noise.de weiter
 - technische Vercel-Projektadresse: https://null-noise.vercel.app bleibt Production-verbunden, ist aber nicht kanonisch
@@ -16,10 +16,35 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 - Hinweis: Preview ist `READY`, aber Vercel Deployment Protection/SSO ist aktiv; ohne Login kommt `401`
 - v0/grüne UI liegt im Archiv-Worktree und wird nicht bearbeitet
 - `main` ist keine Arbeitsfläche
-- ohne explizite Freigabe: nichts pushen, nichts deployen; diese Freigabe gilt nur fuer den aktuellen Abschlussauftrag
+- Preview-Gate: Die App ist clientseitig durch eine Teaser-Landingpage mit Logo, Projektbeschreibung und Passwortfeld vorgeschaltet; Phrase ist `preview`. Das ist keine Security-Grenze, sondern eine einfache Vorschau-Huerde.
 
 ## Letzte lokale Arbeitsblöcke
 
+- Preview-Gate-/Mobile-Polish-Abschluss 13. Juni 2026:
+  - Root-Layout ist mit `PreviewGate` vorgeschaltet; ohne lokalen Unlock ist nur die zentrierte Teaser-Landingpage sichtbar, nach Eingabe von `preview` wird die App lokal freigeschaltet
+  - Playwright nutzt standardmäßig `localStorage`-Unlock, damit die bestehenden App-Smokes weiter die eigentlichen Routen testen; ein eigener Preview-Gate-Test prüft die gesperrte Teaserseite und den Unlock
+  - globaler Navigationsloader zeigt `Seite lädt ...` bei ausstehenden Route-Data-Fetches und bleibt unter `prefers-reduced-motion` statisch
+  - mobile Detailseiten stellen das Poster direkt unter die `h1` und vor die erste Einschätzung; dies gilt für lokale Titel und externe Metadaten-Detailseiten
+  - mobile Result-Card-Aktionen bleiben in der Textspalte und überlagern Poster nicht mehr
+  - `search-local-shelf` rendert nur befüllte Gruppen; wenn nur `Schon gesehen` Inhalte hat, nutzt die Gruppe die volle Breite statt eine leere `Für später`-Spalte zu zeigen
+  - Release Notes stehen auf `0.8.4-preview-gate-mobile-polish.20260613`
+- Mobile-Suche-/Loader-Reparatur 13. Juni 2026:
+  - `/suche`, `/suche?q=`, `/suche?q=&tone=all&kind=all`, `/suche?q=Arrival` und `/titel/mondfenster` wurden bei 320/390/430 CSS-Pixeln lokal nachgemessen
+  - leere oder whitespace-only Query-Parameter bleiben fachlich leere Suche und rendern den ruhigen Browse-/Discovery-Zustand; es wird keine leere TMDb-Suche vorbereitet
+  - geöffnetes Mobile-Menü ist kompakt statt fullscreen-hoch, bleibt in der Contentbreite und behält unterscheidbaren aktiven Link plus proportionalen Tastaturfokus
+  - mobile Result-Cards nutzen die verfügbare Breite, halten Poster sekundär, bleiben kompakter und behalten Textlabels auf Details/Merken/Gesehen
+  - Footer-/Release-Info bleibt sichtbar, wirkt mobil aber sekundärer und kürzer
+  - Loader nutzen eine deutlichere Statusbox mit sichtbarem Text und Indikator; `prefers-reduced-motion` bleibt ohne Bewegung
+  - linke Viewport-Artefakte durch isolierte Loader-Dots wurden über die Loader-Box und Layoutmessungen abgesichert
+  - damalige Release Notes: `0.8.4-mobile-search-repair.20260613`; aktueller Abschluss ist `0.8.4-preview-gate-mobile-polish.20260613`
+- Loader-/Impressums-Wartung 13. Juni 2026:
+  - `LoadingState` bündelt ruhige, text-first Ladezustände fuer echte Wartezeiten in Suche, Kontaktformular und App-Route-Loading
+  - Such-Soft-Navigation zeigt bei Pending nur eine knappe Live-Statusmeldung plus sichtbaren Inline-Ladestatus; der Ergebnisbereich selbst ist kein breites `aria-live` mehr
+  - Kontakt-Submit zeigt `Nachricht wird gesendet`, behält Duplicate-Submit-Schutz und nutzt keine künstliche Verzögerung
+  - Route-Loading fuer App-Shell, Titel-Detail und Metadaten-Spike ist vorhanden; der alte Spike-Text `Externe Metadaten werden serverseitig geprüft` ist nicht mehr die sichtbare Hauptüberschrift
+  - Motion bleibt dekorativ und wird unter `prefers-reduced-motion` deaktiviert; Status-Text bleibt sichtbar
+  - Impressum verweist auf `www.null-noise.de` und `hallo@null-noise.de`; die fehlende ladungsfähige Anschrift bleibt als rechtlich zu prüfende Grenze dokumentiert
+  - damalige Release Notes: `0.8.4-quiet-loading.20260613`; aktueller Abschluss ist `0.8.4-preview-gate-mobile-polish.20260613`
 - Wochenend-Abschluss / SMTP-Kontakt 7. Juni 2026:
   - Domain-Umstellung am 13. Juni 2026: sichtbare allgemeine Kontaktadresse ist `hallo@null-noise.de`; `NEXT_PUBLIC_SITE_URL` zeigt auf `https://www.null-noise.de`; `null-noise.vercel.app` ist nur noch technische Vercel-Adresse
   - Kontaktanfragen werden nicht mehr in `/admin/kontakt`, Datei, Datenbank, temporärem Vercel-Speicher oder Blob abgelegt
@@ -29,7 +54,7 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
   - Datenschutz, `.env.example`, LLM-Doku, Release Notes und Kontakt-/A11y-Tests sind auf SMTP synchronisiert
   - benoetigte Env Vars: `NEXT_PUBLIC_SITE_URL=https://www.null-noise.de`, `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=hallo@null-noise.de`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`, `NULL_NOISE_RATE_LIMIT_SALT=<set-secret>`, `TMDB_READ_ACCESS_TOKEN=<set-secret>`
   - Live-Smoke: `/`, `/kontakt`, `/datenschutz`, `/impressum` erreichbar; Kontaktformular zeigte Erfolgsmeldung; mobile Breiten 320/390/430 ohne horizontalen Overflow
-  - Release Notes stehen lokal auf `0.8.4-production-domain.20260613`
+  - damaliger Release-Notes-Stand: `0.8.4-production-domain.20260613`
   - offen fuer naechste Woche: bestehende Hydration-/LCP-Warnungen separat bewerten und entscheiden, ob `tools/` ins Projekt gehoert oder lokal bleibt
 - Mobile-Layout-Stabilisierung 6. Juni 2026:
   - reiner CSS-/Test-Pass ohne Produktlogikänderung für `/kontakt`, `/barrierefreiheit`, `/`, `/suche`, `/suche?q=Arrival`, `/titel/mondfenster`, Footer und Mobile Navigation

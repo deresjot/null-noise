@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { mockTitles } from "./mock-data";
-import { filterTitles, hasSensoryFilters } from "./search";
+import { filterTitles, hasSensoryFilters, parseSearchFilters } from "./search";
 
 describe("catalog search", () => {
   it("matches exact title input for local catalog titles", () => {
@@ -48,6 +48,20 @@ describe("catalog search", () => {
         avoidDensity: false,
       }),
     ).toBe(true);
+  });
+
+  it("treats empty or whitespace-only query params as browse state", () => {
+    expect(parseSearchFilters({ q: "", tone: "all", kind: "all" })).toMatchObject({
+      q: "",
+      tone: "all",
+      kind: "all",
+    });
+
+    expect(parseSearchFilters({ q: "   ", tone: "all", kind: "all" })).toMatchObject({
+      q: "",
+      tone: "all",
+      kind: "all",
+    });
   });
 
   it("filters stronger when peak avoidance is active", () => {

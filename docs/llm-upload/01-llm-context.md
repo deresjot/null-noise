@@ -3,9 +3,9 @@
 ## Aktueller Arbeitsstand
 
 - aktiver lokaler Arbeitsbranch: `null-noise`
-- aktueller Stand: Produktionsdomain-Umstellung vom 13. Juni 2026 ist lokal in Arbeit und vor Commit/Push/Production-Deploy zu prüfen
-- Release-Metadaten stehen lokal auf `0.8.4-production-domain.20260613`
-- ohne explizite Freigabe sonst nichts pushen/deployen; diese Freigabe gilt nur fuer den aktuellen Abschlussauftrag
+- aktueller Stand: Preview-Gate-, Mobile-Layout- und Loader-Abschluss vom 13. Juni 2026; Commit, Git-Push und Vercel-Deploy sind freigegeben
+- Release-Metadaten stehen auf `0.8.4-preview-gate-mobile-polish.20260613`
+- Preview-Gate ist clientseitig vorgeschaltet: Teaser-Landingpage mit Logo, Projektbeschreibung und Passwortfeld; Phrase ist `preview`, keine Security-Grenze
 - kanonische öffentliche Adresse: https://www.null-noise.de
 - Apex-Domain: https://null-noise.de leitet in Vercel per `308 Permanent Redirect` auf https://www.null-noise.de weiter
 - technische Vercel-Projektadresse: https://null-noise.vercel.app bleibt Production-verbunden, ist aber nicht kanonisch
@@ -15,7 +15,24 @@
 - Preview-Hinweis: Deployment Protection/SSO ist aktiv; ohne Vercel-Login kommt `401`
 - v0/grüne UI liegt im Archiv-Worktree
 - `main` nicht als Arbeitsfläche verwenden
-- ohne explizite Freigabe nichts committen, pushen oder deployen
+- Deployment erfolgt über Git/Vercel auf Branch `null-noise`; Production-Deploy nach erfolgreichem Push prüfen
+
+## Aktueller UI-/Wartungsstand
+
+- Mobile Suche: `/suche?q=&tone=all&kind=all` bleibt Browse-/Discovery-Zustand, nutzt die volle mobile Contentbreite und erzeugt keinen kaputten Such-/Browse-Mischzustand.
+- Preview-Gate: Ohne lokalen Unlock ist die App durch eine zentrierte Teaser-Landingpage verdeckt; Playwright setzt für App-Smokes standardmäßig `null-noise-preview-unlocked=true` und testet den Gate separat.
+- Mobile Header: geöffnetes Menü bleibt kompakt, innerhalb der Contentbreite und unterscheidet aktive Route von Tastaturfokus; Menübutton-Fokus ist sichtbar, aber proportional.
+- Mobile Cards: Ergebnis-Cards sind dichter, Poster dominieren nicht, Aktionen behalten Text und Touch-Ziele; CTA-/Memory-Zonen überlagern Poster nicht.
+- Mobile Details: lokale und externe Detailseiten setzen das Detailposter direkt unter die `h1` und vor die erste Einschätzung.
+- Lokale Shelf: `search-local-shelf` zeigt nur befüllte Gruppen; ein einzelner `Schon gesehen`-Bereich nutzt die volle Breite.
+- Footer: Release-/Build-Info bleibt sichtbar, aber mobil sekundärer und kürzer.
+- Echte Ladezustände nutzen einen ruhigen, text-first `LoadingState` statt lauter Spinner oder Skeletons.
+- Globale Navigation zeigt bei ausstehenden Route-Data-Fetches einen sichtbaren `Seite lädt ...`-Indikator.
+- Suche, Kontakt-Submit, App-Route-Loading, Titel-Detail-Loading und Metadaten-Spike-Loading teilen denselben visuellen Statusstil.
+- Such-Soft-Navigation lässt vorhandene Ergebnisse stehen, nutzt `aria-busy` und eine einzige knappe Live-Statusmeldung; der Ergebnisbereich selbst ist kein breites Live-Region-Ziel mehr.
+- Kontakt-Submit bleibt gegen Doppel-Submit geschützt und zeigt `Nachricht wird gesendet`, ohne künstliche Verzögerung.
+- Loader-Motion ist rein dekorativ und wird unter `prefers-reduced-motion` deaktiviert; Textstatus bleibt sichtbar.
+- Das Impressum zeigt `www.null-noise.de` und `hallo@null-noise.de`; die ladungsfähige Anschrift bleibt als rechtlich zu prüfende Grenze offen.
 
 ## Produktkern
 

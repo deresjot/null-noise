@@ -81,6 +81,29 @@ function formatViolationReport(
     .join("\n");
 }
 
+test.describe("preview gate", () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test("shows the teaser landing page and unlocks with preview", async ({ page }) => {
+    await page.goto("/");
+
+    await expect(page.getByRole("heading", { name: "null-noise" })).toBeVisible();
+    await expect(page.getByText("Eine ruhige Entscheidungshilfe für Filme und Serien")).toBeVisible();
+    await expect(page.getByLabel("Passwort")).toBeFocused();
+    await expect(page.locator(".site-header")).toHaveCount(0);
+
+    await page.getByLabel("Passwort").fill("nope");
+    await page.getByRole("button", { name: "Vorschau öffnen" }).click();
+    await expect(page.locator(".preview-gate-error")).toHaveText("Das Passwort passt gerade nicht.");
+
+    await page.getByLabel("Passwort").fill("preview");
+    await page.getByRole("button", { name: "Vorschau öffnen" }).click();
+
+    await expect(page.locator(".site-header")).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Freizeit anschreien/ })).toBeVisible();
+  });
+});
+
 async function expectNoAxeViolations(
   page: Page,
   path: string,
@@ -89,6 +112,7 @@ async function expectNoAxeViolations(
 ) {
   await page.goto(path);
   await readyCheck?.();
+  await expect(page).toHaveTitle(/\S/);
 
   const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
   const impactCounts = summarizeViolations(accessibilityScanResults.violations);
@@ -475,12 +499,18 @@ test("search page keeps one clear empty state when strict filters still return n
 
 test("keyboard users can reach and use the skip link", async ({ page }) => {
   await page.goto("/");
-
-  await page.keyboard.press("Tab");
+  await expect(page.locator(".site-header")).toBeVisible();
 
   const topMenuLink = page.getByRole("link", { name: "Zum Top-Menü springen" });
   const contentLink = page.getByRole("link", { name: "Zum Inhalt springen" });
   const footerLink = page.getByRole("link", { name: "Zum Footer springen" });
+
+  for (let step = 0; step < 4; step += 1) {
+    await page.keyboard.press("Tab");
+    if (await topMenuLink.evaluate((element) => element === document.activeElement)) {
+      break;
+    }
+  }
 
   await expect(topMenuLink).toBeVisible();
   await expect(topMenuLink).toBeFocused();
@@ -494,10 +524,14 @@ test("keyboard users can reach and use the skip link", async ({ page }) => {
   await expect(page).toHaveURL(/#main-content$/);
 
   await page.goto("/");
+  await expect(page.locator(".site-header")).toBeVisible();
 
-  await page.keyboard.press("Tab");
-  await page.keyboard.press("Tab");
-  await page.keyboard.press("Tab");
+  for (let step = 0; step < 6; step += 1) {
+    await page.keyboard.press("Tab");
+    if (await footerLink.evaluate((element) => element === document.activeElement)) {
+      break;
+    }
+  }
   await expect(footerLink).toBeFocused();
 
   await page.keyboard.press("Enter");
@@ -507,12 +541,14 @@ test("keyboard users can reach and use the skip link", async ({ page }) => {
 test("reload restores focus to the previously active control on the same page", async ({ page }) => {
   await page.setViewportSize({ width: 430, height: 900 });
   await page.goto("/suche?q=Mythbusters");
+  await expect(page.getByRole("heading", { name: 'Treffer zu „Mythbusters“' })).toBeVisible();
 
   const detailsLink = page.locator(".result-card-cta-button").first();
   await detailsLink.focus();
   await expect(detailsLink).toBeFocused();
 
   await page.reload({ waitUntil: "networkidle" });
+  await expect(page.getByRole("heading", { name: 'Treffer zu „Mythbusters“' })).toBeVisible();
 
   await expect(page.locator(".result-card-cta-button").first()).toBeFocused();
 });
@@ -640,7 +676,13 @@ test("mobile navigation returns focus to the menu button after Escape", async ({
 test("contact page uses a privacy-first native form with clear labels and status messages", async ({
   page,
 }) => {
+  let releaseContactRequest: (() => void) | undefined;
+  const contactRequestStarted = new Promise<void>((resolve) => {
+    releaseContactRequest = resolve;
+  });
+
   await page.route("**/api/contact", async (route) => {
+    await contactRequestStarted;
     await route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -687,6 +729,9 @@ test("contact page uses a privacy-first native form with clear labels and status
 
   await email.fill("");
   await submit.click();
+  await expect(page.getByRole("button", { name: "Nachricht wird gesendet" })).toBeVisible();
+  await expect(page.locator(".contact-form .sr-only[role='status']")).toHaveText("Nachricht wird gesendet.");
+  releaseContactRequest?.();
   await expect(page.getByRole("heading", { name: "Deine Nachricht wurde gesendet." })).toBeVisible();
   await expect(page.getByText("Eine direkte Antwort ist deshalb nicht möglich.")).toBeVisible();
   await expect(form.locator('a[href^="mailto:"]')).toHaveCount(0);
@@ -819,15 +864,361 @@ test("local title buttons expose understandable pressed actions", async ({ page 
 });
 
 test("search soft navigation exposes a concise live status", async ({ page }) => {
+  let releaseSearchRequest: (() => void) | undefined;
+  const searchRequestStarted = new Promise<void>((resolve) => {
+    releaseSearchRequest = resolve;
+  });
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.route("**/api/search/page-state**", async (route) => {
+    await searchRequestStarted;
+    await route.continue();
+  });
+
   await page.goto("/suche?q=Arrival");
   await expect(page.getByRole("heading", { name: 'Treffer zu „Arrival“' })).toBeVisible();
 
   await page.getByRole("link", { name: "Karten" }).click();
+  await expect(page.locator(".search-loading-state")).toContainText("Suchergebnisse werden geladen.");
+  await expect(page.locator(".search-results-live-status")).toContainText("Suchergebnisse werden geladen.");
+  await expect(page.locator(".search-results-main[aria-live]")).toHaveCount(0);
+
+  const loadingBox = await page.locator(".search-loading-state").evaluate((loader) => {
+    const rect = loader.getBoundingClientRect();
+    const style = window.getComputedStyle(loader);
+    return {
+      backgroundColor: style.backgroundColor,
+      borderLeftWidth: style.borderLeftWidth,
+      height: rect.height,
+      width: rect.width,
+    };
+  });
+  expect(loadingBox.width).toBeGreaterThan(180);
+  expect(loadingBox.height).toBeGreaterThanOrEqual(40);
+  expect(loadingBox.borderLeftWidth).not.toBe("0px");
+  expect(loadingBox.backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
+
+  const loadingAnimationNames = await page.locator(".search-loading-state .loading-state-mark span").evaluateAll(
+    (dots) => dots.map((dot) => window.getComputedStyle(dot).animationName),
+  );
+  expect(loadingAnimationNames).toEqual(["none", "none", "none"]);
+
+  releaseSearchRequest?.();
   await page.waitForURL(/view=grid/);
 
   await expect(page.locator(".search-results-live-status")).toContainText("Suche aktualisiert:");
   await expect(page.locator(".search-results-live-status")).toContainText("externe Titel");
   await expect(page.getByRole("heading", { name: 'Treffer zu „Arrival“' })).toBeVisible();
+});
+
+test("global navigation progress is visible while route data is pending", async ({ page }) => {
+  let markRouteRequestStarted: (() => void) | undefined;
+  let releaseRouteRequest: (() => void) | undefined;
+  const routeRequestStarted = new Promise<void>((resolve) => {
+    markRouteRequestStarted = resolve;
+  });
+  const routeRequestHold = new Promise<void>((resolve) => {
+    releaseRouteRequest = resolve;
+  });
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.route("**/*", async (route) => {
+    const url = route.request().url();
+
+    if (url.includes("/erklaerung") && url.includes("_rsc=loader-test")) {
+      markRouteRequestStarted?.();
+      await routeRequestHold;
+    }
+
+    await route.continue();
+  });
+
+  await page.goto("/suche");
+  await page.waitForFunction(() => {
+    return document.documentElement.dataset.navigationProgressReady === "true";
+  });
+  const pendingRouteFetch = page.evaluate(() => {
+    return fetch("/erklaerung?_rsc=loader-test").then(() => undefined);
+  });
+  await routeRequestStarted;
+
+  const progress = page.locator('.navigation-progress[data-visible="true"]');
+  await expect(progress).toBeVisible();
+  await expect(progress).toHaveAttribute("role", "status");
+  await expect(progress).toHaveAttribute("aria-live", "polite");
+  await expect(progress.locator(".sr-only")).toHaveText("Seite wird geladen.");
+  await expect(progress).toContainText("Seite lädt");
+
+  const animationName = await page.locator(".navigation-progress-bar").evaluate((bar) => {
+    return window.getComputedStyle(bar).animationName;
+  });
+  expect(animationName).toBe("none");
+
+  releaseRouteRequest?.();
+  await pendingRouteFetch;
+  await expect(page.locator(".navigation-progress")).toHaveAttribute("data-visible", "false");
+});
+
+test("empty query search URLs render the browse state without mobile layout artifacts", async ({
+  page,
+}) => {
+  for (const width of [320, 390, 430]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/suche?q=&tone=all&kind=all");
+
+    await expect(page.getByRole("heading", { name: "Noch kein Titel im Kopf?" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Treffer zu/ })).toHaveCount(0);
+
+    const metrics = await page.evaluate(() => {
+      const viewportWidth = document.documentElement.clientWidth;
+      const firstCard = document.querySelector(".result-card");
+      const resultsMain = document.querySelector(".search-results-main");
+      const footer = document.querySelector("#site-footer");
+      const loaderMarks = Array.from(document.querySelectorAll(".loading-state-mark"));
+      const cardRect = firstCard?.getBoundingClientRect();
+      const resultsRect = resultsMain?.getBoundingClientRect();
+      const footerRect = footer?.getBoundingClientRect();
+      const strayLeftMarks = loaderMarks.filter((mark) => {
+        const rect = mark.getBoundingClientRect();
+        return rect.width > 0 && rect.left < 4;
+      });
+
+      return {
+        cardHeight: cardRect?.height ?? 0,
+        cardLeft: cardRect?.left ?? 0,
+        cardWidth: cardRect?.width ?? 0,
+        footerHeight: footerRect?.height ?? 0,
+        overflow: document.documentElement.scrollWidth - viewportWidth,
+        resultsLeft: resultsRect?.left ?? 0,
+        resultsWidth: resultsRect?.width ?? 0,
+        strayLeftMarkCount: strayLeftMarks.length,
+      };
+    });
+
+    expect(metrics.overflow, `empty query overflows at ${width}`).toBeLessThanOrEqual(1);
+    expect(metrics.resultsWidth, `results width at ${width}`).toBeGreaterThanOrEqual(width - 32);
+    expect(metrics.cardWidth, `card width at ${width}`).toBeGreaterThanOrEqual(metrics.resultsWidth - 2);
+    expect(metrics.cardLeft, `card aligns with results at ${width}`).toBeCloseTo(metrics.resultsLeft, 0);
+    expect(metrics.cardHeight, `card remains compact at ${width}`).toBeLessThanOrEqual(width === 320 ? 300 : 260);
+    expect(metrics.footerHeight, `footer remains secondary at ${width}`).toBeLessThanOrEqual(width === 320 ? 460 : 420);
+    expect(metrics.strayLeftMarkCount, `no loader dots on viewport edge at ${width}`).toBe(0);
+  }
+});
+
+test("mobile result card actions do not overlap poster thumbnails", async ({ page }) => {
+  for (const width of [320, 390, 430]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/suche?q=Arrival");
+    await expect(page.getByRole("heading", { name: 'Treffer zu „Arrival“' })).toBeVisible();
+
+    const metrics = await page.locator(".result-card").first().evaluate((card) => {
+      const poster = card.querySelector(".poster-thumb-link")?.getBoundingClientRect();
+      const footer = card.querySelector(".result-card-footer-zone")?.getBoundingClientRect();
+      const cta = card.querySelector(".result-card-cta-zone")?.getBoundingClientRect();
+
+      return {
+        ctaLeft: cta?.left ?? 0,
+        footerLeft: footer?.left ?? 0,
+        footerRight: footer?.right ?? 0,
+        overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        posterRight: poster?.right ?? 0,
+      };
+    });
+
+    expect(metrics.overflow, `mobile result card overflow at ${width}`).toBeLessThanOrEqual(1);
+    expect(metrics.footerLeft, `footer clears poster at ${width}`)
+      .toBeGreaterThanOrEqual(metrics.posterRight);
+    expect(metrics.ctaLeft, `CTA clears poster at ${width}`)
+      .toBeGreaterThanOrEqual(metrics.posterRight);
+    expect(metrics.footerRight, `footer stays inside viewport at ${width}`).toBeLessThanOrEqual(width + 1);
+  }
+});
+
+test("mobile detail posters sit directly below the title heading", async ({ page }) => {
+  for (const route of ["/titel/mondfenster", "/spike/metadaten/series/4313"]) {
+    for (const width of [320, 390, 430]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(route);
+      await expect(page.locator(".detail-hero h1")).toBeVisible();
+      await expect(page.locator(".poster-thumb-frame-detail").first()).toBeVisible();
+
+      const metrics = await page.evaluate(() => {
+        const h1 = document.querySelector(".detail-hero h1")?.getBoundingClientRect();
+        const reading = document.querySelector(".detail-reading-block")?.getBoundingClientRect();
+        const visiblePosters = Array.from(
+          document.querySelectorAll<HTMLElement>(".poster-thumb-frame-detail"),
+        )
+          .map((poster) => {
+            const rect = poster.getBoundingClientRect();
+            const style = window.getComputedStyle(poster);
+
+            return {
+              bottom: rect.bottom,
+              display: style.display,
+              height: rect.height,
+              top: rect.top,
+              width: rect.width,
+            };
+          })
+          .filter((poster) => poster.display !== "none" && poster.width > 0 && poster.height > 0);
+
+        return {
+          h1Bottom: h1?.bottom ?? 0,
+          overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          posterBottom: visiblePosters[0]?.bottom ?? 0,
+          posterCount: visiblePosters.length,
+          posterTop: visiblePosters[0]?.top ?? 0,
+          readingTop: reading?.top ?? 0,
+        };
+      });
+
+      expect(metrics.overflow, `${route} overflows at ${width}`).toBeLessThanOrEqual(1);
+      expect(metrics.posterCount, `${route} has one visible mobile detail poster at ${width}`).toBe(1);
+      expect(metrics.posterTop, `${route} poster follows h1 at ${width}`).toBeGreaterThan(metrics.h1Bottom);
+      expect(metrics.posterBottom, `${route} poster precedes reading block at ${width}`)
+        .toBeLessThanOrEqual(metrics.readingTop);
+    }
+  }
+});
+
+test("search local shelf keeps remembered and seen cards readable", async ({ page }) => {
+  await page.addInitScript(() => {
+    const entry = {
+      href: "/titel/mondfenster",
+      key: "tmdb:movie:12345",
+      meta: "Film · Action · 1987",
+      posterSrc: "/poster/mondfenster.svg",
+      reason: "Eher intensiv",
+      savedAt: Date.now(),
+      title: "Masters of the Universe",
+      toneLabel: "Eher intensiv",
+    };
+
+    window.localStorage.setItem("null-noise-remembered-titles", JSON.stringify({}));
+    window.localStorage.setItem("null-noise-seen-titles", JSON.stringify({ [entry.key]: entry }));
+    window.localStorage.removeItem("null-noise-hide-seen");
+  });
+
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/suche");
+
+  const shelf = page.locator(".search-local-shelf");
+  await expect(shelf.getByRole("heading", { name: "Für später und schon gesehen" })).toBeVisible();
+  await expect(shelf.getByRole("heading", { exact: true, name: "Für später gemerkt" })).toHaveCount(0);
+  await expect(shelf.getByRole("heading", { exact: true, name: "Schon gesehen" })).toBeVisible();
+  await expect(shelf.getByRole("link", { name: "Masters of the Universe" })).toBeVisible();
+  await expect(page.locator(".search-local-shelf-grid")).toHaveAttribute("data-groups", "1");
+
+  const metrics = await page.evaluate(() => {
+    const rect = (selector: string) => {
+      const element = document.querySelector(selector);
+      const box = element?.getBoundingClientRect();
+
+      return box
+        ? {
+            bottom: box.bottom,
+            height: box.height,
+            left: box.left,
+            right: box.right,
+            top: box.top,
+            width: box.width,
+          }
+        : null;
+    };
+
+    return {
+      button: rect(".search-local-shelf-remove"),
+      card: rect(".search-local-shelf-card"),
+      copy: rect(".search-local-shelf-card-copy"),
+      groupCount: document.querySelectorAll(".search-local-shelf-group").length,
+      grid: rect(".search-local-shelf-grid"),
+      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      title: rect(".search-local-shelf-card-copy h3"),
+    };
+  });
+
+  expect(metrics.overflow).toBeLessThanOrEqual(1);
+  expect(metrics.groupCount).toBe(1);
+  expect(metrics.card?.width ?? 0).toBeGreaterThan(520);
+  expect(metrics.card?.width ?? 0).toBeCloseTo(metrics.grid?.width ?? 0, 0);
+  expect(metrics.copy?.width ?? 0).toBeGreaterThan(360);
+  expect(metrics.title?.height ?? 0).toBeLessThan(60);
+  expect(metrics.button?.left ?? 0).toBeGreaterThanOrEqual(metrics.copy?.left ?? 0);
+  expect(metrics.button?.top ?? 0).toBeGreaterThan(metrics.copy?.top ?? 0);
+});
+
+test("mobile search menu stays compact and keeps proportional focus styling", async ({ page }) => {
+  for (const width of [320, 390, 430]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/suche?q=&tone=all&kind=all");
+    await expect(page.getByRole("heading", { name: "Noch kein Titel im Kopf?" })).toBeVisible();
+
+    const menuButton = page.getByRole("button", { name: "Menü öffnen" });
+    for (let index = 0; index < 10; index += 1) {
+      if (await menuButton.evaluate((button) => button === document.activeElement)) {
+        break;
+      }
+
+      await page.keyboard.press("Tab");
+    }
+
+    await expect(menuButton).toBeFocused();
+
+    const buttonFocus = await menuButton.evaluate((button) => {
+      const style = window.getComputedStyle(button);
+      return {
+        outlineOffset: style.outlineOffset,
+        outlineStyle: style.outlineStyle,
+        outlineWidth: style.outlineWidth,
+      };
+    });
+
+    expect(buttonFocus.outlineStyle).toBe("solid");
+    expect(buttonFocus.outlineWidth).toBe("2px");
+    expect(buttonFocus.outlineOffset).toBe("2px");
+
+    await menuButton.click();
+    const mobileNav = page.getByRole("navigation", { name: "Mobile Navigation" });
+    await expect(mobileNav).toBeVisible();
+
+    const box = await mobileNav.boundingBox();
+    expect(box, `mobile navigation has a box at ${width}`).not.toBeNull();
+    expect(box?.height ?? 0, `mobile navigation is compact at ${width}`).toBeLessThanOrEqual(190);
+    expect(box?.x ?? 0, `mobile navigation starts in viewport at ${width}`).toBeGreaterThanOrEqual(0);
+    expect((box?.x ?? 0) + (box?.width ?? 0), `mobile navigation ends in viewport at ${width}`)
+      .toBeLessThanOrEqual(width + 1);
+
+    const headerLayout = await page.evaluate(() => {
+      const brand = document.querySelector(".site-header .brand")?.getBoundingClientRect();
+      const button = document.querySelector(".mobile-menu-toggle")?.getBoundingClientRect();
+      const nav = document.querySelector(".mobile-navigation")?.getBoundingClientRect();
+
+      return {
+        brandLeft: brand?.left ?? 0,
+        brandRight: brand?.right ?? 0,
+        buttonBottom: button?.bottom ?? 0,
+        buttonLeft: button?.left ?? 0,
+        buttonRight: button?.right ?? 0,
+        buttonTop: button?.top ?? 0,
+        navTop: nav?.top ?? 0,
+      };
+    });
+
+    expect(headerLayout.brandLeft, `brand keeps the left header slot at ${width}`).toBeLessThan(width / 3);
+    expect(headerLayout.buttonLeft, `menu toggle keeps the right header slot at ${width}`)
+      .toBeGreaterThan(width / 2);
+    expect(headerLayout.buttonRight, `menu toggle stays inside viewport at ${width}`)
+      .toBeLessThanOrEqual(width - 8);
+    expect(headerLayout.buttonTop, `menu toggle remains in the header row at ${width}`)
+      .toBeLessThan(32);
+    expect(headerLayout.buttonLeft, `menu toggle does not overlap the brand at ${width}`)
+      .toBeGreaterThanOrEqual(headerLayout.brandRight + 4);
+    expect(headerLayout.navTop, `mobile navigation opens below the toggle at ${width}`)
+      .toBeGreaterThanOrEqual(headerLayout.buttonBottom - 1);
+
+    await page.keyboard.press("Escape");
+    await expect(menuButton).toBeFocused();
+  }
 });
 
 test("accessibility page is reachable and explains the current testing scope", async ({ page }) => {

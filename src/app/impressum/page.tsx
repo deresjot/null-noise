@@ -13,15 +13,14 @@ export default function ImpressumPage() {
         <p className="eyebrow">Rechtliches</p>
         <h1>Impressum</h1>
         <p>
-          null-noise ist ein privates Hobby- und Referenzprojekt von Sebastian Jansen. Das Projekt
-          dient der Erprobung von Vibe-Coding, digitaler Barrierefreiheit, ruhiger Web-UX
-          sowie nachvollziehbarer Reiz-Einordnung.
+          null-noise ist ein privates Hobby- und Referenzprojekt von Sebastian Jansen. Die Seite
+          erprobt digitale Barrierefreiheit, ruhige Web-UX und nachvollziehbare Reiz-Einordnung.
         </p>
       </div>
 
       <div className="content-grid">
         <section className="panel" aria-labelledby="impressum-owner-heading">
-          <h2 id="impressum-owner-heading">Anbieter / Verantwortlich</h2>
+          <h2 id="impressum-owner-heading">Angaben nach § 5 DDG</h2>
           <dl className="detail-list">
             <div>
               <dt>Name</dt>
@@ -34,8 +33,8 @@ export default function ImpressumPage() {
             <div>
               <dt>Zweck</dt>
               <dd>
-                Erprobung von Vibe-Coding, digitaler Barrierefreiheit, ruhiger Web-UX und
-                nachvollziehbarer Reiz-Einordnung.
+                Privates Hobby- und Referenzprojekt zur Erprobung digitaler Barrierefreiheit,
+                ruhiger Web-UX und nachvollziehbarer Reiz-Einordnung.
               </dd>
             </div>
             <div>
@@ -57,8 +56,8 @@ export default function ImpressumPage() {
           <h2 id="impressum-content-heading">Verantwortlich für den Inhalt</h2>
           <p>Sebastian Jansen</p>
           <p className="field-note">
-            TODO vor produktivem rechtlichen Einsatz: ladungsfähige Anschrift aus belastbarer Quelle
-            ergänzen oder rechtlich prüfen.
+            Die ladungsfähige Anschrift muss vor einer belastbaren öffentlichen Rechtsfreigabe aus
+            einer verlässlichen Quelle ergänzt oder rechtlich geprüft werden.
           </p>
         </section>
 

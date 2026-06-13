@@ -1,7 +1,9 @@
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import type { Metadata, Viewport } from "next";
 import { Fredoka } from "next/font/google";
 
+import { NavigationProgress } from "@/components/navigation-progress";
+import { PreviewGate } from "@/components/preview-gate";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { siteName } from "@/lib/constants";
@@ -117,7 +119,11 @@ const focusRestoreScript = `
     return navigation ? navigation.type === "reload" : performance.navigation?.type === 1;
   };
 
+  let isRestoringReloadFocus = isReload();
+
   const saveFocus = (event) => {
+    if (isRestoringReloadFocus) return;
+
     const target = event.target;
     if (!(target instanceof HTMLElement) || !target.matches(focusableSelector)) return;
 
@@ -133,8 +139,8 @@ const focusRestoreScript = `
     } catch {}
   };
 
-  const restoreFocus = () => {
-    if (!isReload()) return;
+  const restoreFocus = (attempt = 0) => {
+    if (!isRestoringReloadFocus) return;
 
     let saved = null;
     try {
@@ -148,11 +154,24 @@ const focusRestoreScript = `
     const focusables = getFocusables();
     const exactMatch = focusables.find((element) => getSignature(element) === saved.signature);
     const fallback = focusables[saved.index];
-    const target = exactMatch || fallback;
+    const target = exactMatch || (attempt >= 60 ? fallback : null);
 
     if (target instanceof HTMLElement) {
       target.focus({ preventScroll: false });
+      if (attempt < 10) {
+        window.setTimeout(() => restoreFocus(attempt + 1), 100);
+        return;
+      }
+      isRestoringReloadFocus = false;
+      return;
     }
+
+    if (attempt < 60) {
+      window.setTimeout(() => restoreFocus(attempt + 1), 100);
+      return;
+    }
+
+    isRestoringReloadFocus = false;
   };
 
   document.addEventListener("focusin", saveFocus);
@@ -164,6 +183,10 @@ const focusRestoreScript = `
   } else {
     window.requestAnimationFrame(restoreFocus);
   }
+
+  window.addEventListener("load", () => window.setTimeout(() => restoreFocus(0), 250), {
+    once: true,
+  });
 })();
 `;
 
@@ -234,13 +257,18 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: serviceWorkerRegistrationScript }} />
       </head>
       <body>
-        <SiteHeader />
-        <div className="site-frame">
-          <main id="main-content" className="shell site-main">
-            {children}
-          </main>
-          <SiteFooter />
-        </div>
+        <PreviewGate>
+          <SiteHeader />
+          <Suspense fallback={null}>
+            <NavigationProgress />
+          </Suspense>
+          <div className="site-frame">
+            <main id="main-content" className="shell site-main">
+              {children}
+            </main>
+            <SiteFooter />
+          </div>
+        </PreviewGate>
       </body>
     </html>
   );

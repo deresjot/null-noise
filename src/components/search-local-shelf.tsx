@@ -74,13 +74,11 @@ type ShelfFeedback = {
 } | null;
 
 function PocketList({
-  emptyLabel,
   items,
   onRemove,
   removeKind,
   title,
 }: {
-  emptyLabel: string;
   items: TitlePocketEntry[];
   onRemove: (item: TitlePocketEntry) => void;
   removeKind: "remembered" | "seen";
@@ -93,44 +91,41 @@ function PocketList({
       <div className="search-local-shelf-copy">
         <h2 id={`local-shelf-${removeKind}`}>{title}</h2>
         <p className="field-note">
-          {items.length
-            ? `${items.length} ${items.length === 1 ? "Titel" : "Titel"} bleiben lokal in diesem Browser.`
-            : emptyLabel}
+          {items.length} {items.length === 1 ? "Titel bleibt" : "Titel bleiben"} lokal in diesem
+          Browser.
         </p>
       </div>
-      {items.length ? (
-        <ul className="search-local-shelf-list">
-          {visibleItems.map((item) => (
-            <li key={`${removeKind}-${item.key}`}>
-              <article className="search-local-shelf-card">
-                <Link
-                  aria-hidden="true"
-                  className="search-local-shelf-poster"
-                  href={item.href}
-                  tabIndex={-1}
-                >
-                  <ResultPoster sizes="6rem" src={item.posterSrc} title={item.title} />
-                </Link>
-                <div className="search-local-shelf-card-copy">
-                  <p className="card-topline">{item.meta}</p>
-                  <h3>
-                    <Link href={item.href}>{item.title}</Link>
-                  </h3>
-                  <p className="field-note">{item.toneLabel}</p>
-                  <p className="field-note search-local-shelf-reason">{item.reason}</p>
-                </div>
-                <button
-                  className="quiet-button search-local-shelf-remove"
-                  type="button"
-                  onClick={() => onRemove(item)}
-                >
-                  {removeKind === "remembered" ? "Entfernen" : "Zurücknehmen"}
-                </button>
-              </article>
-            </li>
-          ))}
-        </ul>
-      ) : null}
+      <ul className="search-local-shelf-list">
+        {visibleItems.map((item) => (
+          <li key={`${removeKind}-${item.key}`}>
+            <article className="search-local-shelf-card">
+              <Link
+                aria-hidden="true"
+                className="search-local-shelf-poster"
+                href={item.href}
+                tabIndex={-1}
+              >
+                <ResultPoster sizes="6rem" src={item.posterSrc} title={item.title} />
+              </Link>
+              <div className="search-local-shelf-card-copy">
+                <p className="card-topline">{item.meta}</p>
+                <h3>
+                  <Link href={item.href}>{item.title}</Link>
+                </h3>
+                <p className="field-note">{item.toneLabel}</p>
+                <p className="field-note search-local-shelf-reason">{item.reason}</p>
+              </div>
+              <button
+                className="quiet-button search-local-shelf-remove"
+                type="button"
+                onClick={() => onRemove(item)}
+              >
+                {removeKind === "remembered" ? "Entfernen" : "Zurücknehmen"}
+              </button>
+            </article>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
@@ -172,6 +167,22 @@ export function SearchLocalShelf({
   const hasContent = useMemo(
     () => remembered.length > 0 || seen.length > 0,
     [remembered.length, seen.length],
+  );
+  const visibleGroups = useMemo(
+    () =>
+      [
+        {
+          items: remembered,
+          removeKind: "remembered" as const,
+          title: "Für später gemerkt",
+        },
+        {
+          items: seen,
+          removeKind: "seen" as const,
+          title: "Schon gesehen",
+        },
+      ].filter((group) => group.items.length > 0),
+    [remembered, seen],
   );
 
   function commitLocalChange(
@@ -294,21 +305,16 @@ export function SearchLocalShelf({
       ) : null}
 
       {hasContent ? (
-        <div className="search-local-shelf-grid">
-          <PocketList
-            emptyLabel="Noch nichts gemerkt."
-            items={remembered}
-            onRemove={(item) => handleRemoveItem("remembered", item)}
-            removeKind="remembered"
-            title="Für später gemerkt"
-          />
-          <PocketList
-            emptyLabel="Noch nichts als gesehen markiert."
-            items={seen}
-            onRemove={(item) => handleRemoveItem("seen", item)}
-            removeKind="seen"
-            title="Schon gesehen"
-          />
+        <div className="search-local-shelf-grid" data-groups={visibleGroups.length}>
+          {visibleGroups.map((group) => (
+            <PocketList
+              key={group.removeKind}
+              items={group.items}
+              onRemove={(item) => handleRemoveItem(group.removeKind, item)}
+              removeKind={group.removeKind}
+              title={group.title}
+            />
+          ))}
         </div>
       ) : (
         <p className="field-note search-local-shelf-empty">

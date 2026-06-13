@@ -1,6 +1,6 @@
 # Testing und Release für null-noise
 
-Stand: 7. Juni 2026
+Stand: 13. Juni 2026
 
 Diese Datei beschreibt, wie `null-noise` Accessibility testet und wo die Grenzen der Automatisierung liegen.
 
@@ -46,6 +46,13 @@ WCAG 2.2 Level AA ist der technische Zielstandard. Die Prüfung orientiert sich 
 - Kontrast-Fundstellen, die axe erkennen kann
 - erkennbare Form-/Label-Probleme
 - Kontaktformular-Smokes für sichtbare Labels, `aria-describedby`, optionale Antwort-E-Mail, Pflichtnachricht, Fehlerzusammenfassung, Feldfehler, Statusmeldung, Tastaturfluss, Reflow, Text-Spacing und Target Size
+- Loader-Smokes fuer echte Pending-Zustände: Kontakt-Submit, Such-Soft-Navigation, knappe Live-Statusmeldung und deaktivierte dekorative Bewegung unter `prefers-reduced-motion`
+- Preview-Gate-Smoke: Teaser-Landingpage ohne App-Header, zentriertes Logo, falsches Passwort mit Fehlermeldung und Unlock mit `preview`
+- globaler Navigationsloader-Smoke: `Seite lädt ...` bleibt sichtbar, solange Route-Daten ausstehen, und ist unter `prefers-reduced-motion` statisch
+- Mobile-Suche-Smokes fuer `/suche?q=&tone=all&kind=all`: Browse-Zustand statt kaputtem Mischzustand, kompakte Menühöhe, volle Card-Breite, sekundärer Footer und keine linken Loader-Artefakte
+- Mobile-Detail-Smoke: lokale und externe Detailseiten zeigen genau ein sichtbares Detailposter direkt unter der `h1` und vor dem ersten Einschätzungsblock
+- Mobile-Card-Smoke: Result-Card-Aktionen und Merken/Gesehen-Zonen liegen in der Textspalte und überlagern Poster nicht
+- Local-Shelf-Smoke: Nur befüllte `Für später`-/`Schon gesehen`-Gruppen werden gerendert; eine einzelne Gruppe nutzt die volle Shelf-Breite
 - wiederholbare Keyboard-Smoke-Checks, zum Beispiel Skip-Link und erreichbare Suchvorschläge
 - mobile Navigation mit Burger-Menü für primäre App-Ziele; Info-/Legal-Ziele bleiben im Footer erreichbar
 - kleiner Reflow-Smoke-Test auf den Kernrouten bei `320 CSS-Pixeln`, damit offensichtliches horizontales Overflow früh auffällt
@@ -107,6 +114,7 @@ Die folgenden Schritte sind der feste manuelle Prüfpfad für `null-noise`. Er e
 - Lokaler Merken-/Gesehen-Bereich: Text, Buttons und Toggle/Checkbox brechen mobil sauber um; Label und Checkbox bleiben sichtbar zusammengehörig
 - Poster: fehlende Poster zeigen den bewussten Platzhalter `Kein Poster verfügbar`
 - Labels: sichtbare Kategorien lauten konsistent `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv`
+- Leere Query-URLs wie `/suche?q=&tone=all&kind=all` verhalten sich wie Browse/Discovery und lösen keine leere Titelsuche aus
 
 ### Route `/suche?q=Arrival`
 
@@ -175,7 +183,9 @@ Die folgenden Schritte sind der feste manuelle Prüfpfad für `null-noise`. Er e
 - `prefers-reduced-motion`
 - sanfte Zustandswechsel sind erlaubt, solange sie kurz bleiben und keine Information verdecken
 - Entry-Animationen dürfen Text nicht über Opacity abblenden, wenn dadurch Kontrastprüfungen oder reale Lesbarkeit leiden
-- Ladebalken sind nur als dezente Überbrückung gedacht und dürfen keinen Inhalt ersetzen
+- Ladezustände sind nur als dezente Überbrückung echter Wartezeiten gedacht und dürfen keinen Inhalt ersetzen
+- Loader brauchen sichtbaren Text, knappe Screenreader-Rückmeldung und dürfen keine künstliche Wartezeit erzeugen
+- Loader müssen visuell wahrnehmbar sein, zum Beispiel als klare Statusbox mit Text und Indikator; unter `prefers-reduced-motion` bleibt der Indikator statisch
 - keine Hilfe, die nur flüchtig eingeblendet wird
 
 ### Verständlichkeit
@@ -213,7 +223,37 @@ Optional, wenn der Umfang es rechtfertigt:
 
 ## Letzter lokaler Stand vor Übergabe
 
-Produktionsdomain-Umstellung vom 13. Juni 2026: lokal zu prüfen, zu committen, auf `null-noise` zu pushen und erst danach nach Vercel Production zu deployen.
+Preview-Gate-/Mobile-Polish-Abschluss vom 13. Juni 2026: für Commit, Push und Vercel-Deploy freigegeben.
+
+- Release Notes stehen auf `0.8.4-preview-gate-mobile-polish.20260613`
+- Clientseitiger Preview-Gate vor der App: Teaser-Landingpage mit Logo, Projektbeschreibung, Passwortfeld und Phrase `preview`; keine Security-Grenze
+- Playwright setzt standardmäßig `null-noise-preview-unlocked=true`, damit App-Smokes die eigentlichen Routen prüfen; der Preview-Gate selbst hat einen separaten Test ohne Storage-State
+- Globale Navigation zeigt bei ausstehenden Route-Data-Fetches einen sichtbaren `Seite lädt ...`-Indikator und respektiert `prefers-reduced-motion`
+- Mobile Detailseiten setzen das Poster direkt unter die `h1`; externe Metadaten-Detailseiten haben dafür eine mobile Poster-Instanz und blenden das Callout-Poster mobil aus
+- Mobile Result-Card-Aktionen überlagern Poster nicht mehr
+- `search-local-shelf` rendert nur befüllte Gruppen; ein alleiniger `Schon gesehen`-Bereich nutzt die volle Breite
+
+Mobile-Suche-/Loader-Reparatur vom 13. Juni 2026: im selben Abschluss enthalten.
+
+- damalige Release Notes: `0.8.4-mobile-search-repair.20260613`; aktueller Abschluss ist `0.8.4-preview-gate-mobile-polish.20260613`
+- `/suche?q=&tone=all&kind=all` bleibt Browse-/Discovery-Zustand und erzeugt keine leere TMDb-Suche
+- Mobile-Menü ist kompakt und innerhalb der Contentbreite; Menübutton-Fokus bleibt sichtbar, aber proportional
+- mobile Result-Cards nutzen die verfügbare Breite, reduzieren Poster-Dominanz und behalten Actions mit Text
+- Footer-/Release-Info bleibt sichtbar, aber mobil sekundärer
+- Loader haben eine deutlichere Statusbox mit Text/Indikator; Reduced Motion bleibt statisch
+- linke Viewport-Artefakte durch isolierte Loader-Dots sind über Layout-/Loader-Checks abgesichert
+
+Loader-/Impressums-Wartung vom 13. Juni 2026: im Preview-Gate-/Mobile-Polish-Abschluss enthalten.
+
+- damalige Release Notes: `0.8.4-quiet-loading.20260613`; aktueller Abschluss ist `0.8.4-preview-gate-mobile-polish.20260613`
+- `LoadingState` bündelt ruhige Ladezustände fuer Suche, Kontaktformular und App-Route-Loading
+- Such-Soft-Navigation meldet Pending über eine knappe Live-Statusmeldung und einen sichtbaren Inline-Status, ohne den Ergebnisbereich als breite Live-Region zu verwenden
+- Kontakt-Submit zeigt einen ruhigen Sendestatus, bleibt gegen Doppel-Submit geschützt und erzeugt keine künstliche Wartezeit
+- Route-Loading fuer App-Shell, Titel-Detail und Metadaten-Spike ist vorhanden
+- Impressum zeigt die kanonische Domain `www.null-noise.de` und die sichtbare Kontaktadresse `hallo@null-noise.de`; die ladungsfähige Anschrift bleibt rechtlich zu prüfen
+- lokale Abschlusschecks fuer diesen Stand werden nach Doku-Sync ausgeführt und in der Übergabe dokumentiert
+
+Produktionsdomain-Umstellung vom 13. Juni 2026: lokal umgesetzt, gepusht und nach Vercel Production deployt.
 
 - Domain-Stand: `https://www.null-noise.de` ist kanonisch; `https://null-noise.de` leitet in Vercel per `308 Permanent Redirect` auf `https://www.null-noise.de`; `https://null-noise.vercel.app` bleibt nur technische, nicht-kanonische Vercel-Projektadresse
 - DNS bei hosting.de: `null-noise.de A 216.198.79.1`; `www.null-noise.de CNAME 8bb5d957d3dbq7.vercel-dns-017.com`
@@ -221,7 +261,7 @@ Produktionsdomain-Umstellung vom 13. Juni 2026: lokal zu prüfen, zu committen, 
 - Vercel Environment Variables gelten nicht rückwirkend für alte Deployments; nach ENV-Anpassungen oder Codeänderungen ist ein neuer Production-Deploy nötig
 - Kontaktformular: serverseitiger SMTP-Versand per Nodemailer; keine Adminroute, keine Datenbank, keine temporäre Datei und kein Blob-Speicher fuer Kontaktanfragen
 - Datenschutz: Nachricht und optionale E-Mail werden zur Bearbeitung verarbeitet; keine IP-/User-Agent-Ablage fuer Kontaktanfragen
-- Release Notes stehen lokal auf `0.8.4-production-domain.20260613`
+- damaliger Release-Notes-Stand: `0.8.4-production-domain.20260613`
 - lokale Abschlusschecks: `npm ci`, `npm run lint`, `npm run test:unit`, `npm run build`, `npm run test:a11y`, `npm run test:axe-core`, `npm run test:wcag22-aa`, `npm run test:wcag22-aaa`, `npx playwright test`, `git diff --check`
 - Live-Smoke: `/`, `/kontakt`, `/datenschutz`, `/impressum` erreichbar; Kontaktformular zeigte Erfolgsmeldung; mobile Breiten 320/390/430 ohne horizontalen Overflow
 - bekannte Warnungen in Browserläufen: bestehende Hydration-/LCP-Hinweise aus Route-Smokes; keine Kontakt-SMTP-Regression

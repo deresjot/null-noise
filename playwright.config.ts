@@ -11,6 +11,15 @@ export default defineConfig({
   reporter: "list",
   use: {
     baseURL: `http://127.0.0.1:${port}`,
+    storageState: {
+      cookies: [],
+      origins: [
+        {
+          localStorage: [{ name: "null-noise-preview-unlocked", value: "true" }],
+          origin: `http://127.0.0.1:${port}`,
+        },
+      ],
+    },
     trace: "on-first-retry",
   },
   webServer: {
