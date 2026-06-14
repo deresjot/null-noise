@@ -311,7 +311,7 @@ function getDetailPosterPath(title: {
     return null;
   }
 
-  return getTmdbPosterProxyPath(title.external.posterPath ?? null, "original");
+  return getTmdbPosterProxyPath(title.external.posterPath ?? null, "w780");
 }
 
 export default async function TitleDetailPage({ params, searchParams }: DetailPageProps) {

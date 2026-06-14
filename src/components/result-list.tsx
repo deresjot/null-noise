@@ -101,7 +101,6 @@ export function ResultList({
                 tabIndex={-1}
               >
                 <ResultPoster
-                  sizes="(max-width: 980px) min(100vw - 2rem, 32rem), 15rem"
                   src={getLocalPosterPath(title)}
                   title={title.external.title}
                 />

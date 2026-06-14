@@ -376,7 +376,7 @@ export default async function MetadataSpikeDetailPage({
           <div className="detail-hero-poster detail-hero-poster-mobile" aria-label={`Titelbild zu ${item.title}`}>
             <ResultPoster
               priority
-              src={getTmdbPosterProxyPath(item.posterPath, "original")}
+              src={getTmdbPosterProxyPath(item.posterPath, "w780")}
               title={item.title}
               variant="detail"
             />
@@ -459,7 +459,7 @@ export default async function MetadataSpikeDetailPage({
           <div className="detail-callout-poster" aria-label={`Titelbild zu ${item.title}`}>
             <ResultPoster
               priority
-              src={getTmdbPosterProxyPath(item.posterPath, "original")}
+              src={getTmdbPosterProxyPath(item.posterPath, "w780")}
               title={item.title}
               variant="detail"
             />

@@ -18,8 +18,8 @@ export function ResultPoster({
   const resolvedSizes =
     sizes ??
     (variant === "detail"
-      ? "(max-width: 980px) min(78vw, 34rem), 34rem"
-      : "(max-width: 760px) 100vw, (max-width: 1200px) 50vw, 25vw");
+      ? "(max-width: 760px) min(78vw, 22rem), (max-width: 1200px) 24rem, 27rem"
+      : "(max-width: 760px) 7rem, (max-width: 980px) 8rem, 13.5rem");
 
   return (
     <div className={`poster-thumb-frame poster-thumb-frame-${variant}`}>

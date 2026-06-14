@@ -2,6 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1", "localhost"],
+  images: {
+    deviceSizes: [320, 390, 430, 640, 750, 828, 1080, 1200],
+    imageSizes: [64, 96, 128, 160, 192, 256, 384, 512, 640, 768],
+    minimumCacheTTL: 60 * 60 * 24 * 31,
+  },
   reactStrictMode: true,
   async headers() {
     const scriptSrc =
@@ -75,7 +80,13 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/api/poster/tmdb/:path*",
-        headers: securityHeaders,
+        headers: [
+          ...securityHeaders,
+          {
+            key: "Cache-Control",
+            value: "public, max-age=2678400, stale-while-revalidate=604800",
+          },
+        ],
       },
     ];
   },

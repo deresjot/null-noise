@@ -46,7 +46,7 @@ export async function GET(_request: Request, { params }: PosterRouteProps) {
 
   const upstreamResponse = await fetch(upstreamUrl, {
     cache: "force-cache",
-    next: { revalidate: 60 * 60 * 24 },
+    next: { revalidate: 60 * 60 * 24 * 31 },
   });
 
   if (!upstreamResponse.ok) {
@@ -56,7 +56,7 @@ export async function GET(_request: Request, { params }: PosterRouteProps) {
   return new NextResponse(upstreamResponse.body, {
     headers: {
       "Content-Type": upstreamResponse.headers.get("content-type") ?? "image/jpeg",
-      "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
+      "Cache-Control": "public, max-age=2678400, stale-while-revalidate=604800",
     },
   });
 }

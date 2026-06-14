@@ -260,7 +260,6 @@ export function ExternalResultList({
                 tabIndex={-1}
               >
                 <ResultPoster
-                  sizes="(max-width: 980px) min(100vw - 2rem, 32rem), 15rem"
                   src={getTmdbPosterProxyPath(item.posterPath)}
                   title={item.title}
                 />
