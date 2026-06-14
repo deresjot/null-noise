@@ -6,7 +6,7 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 - lokaler Branch: `null-noise`
 - lokaler Projektpfad: `/Users/deresjot/Library/CloudStorage/Dropbox/_PRIVAT/Code/git-webdev/null-noise`
-- Stand: Preview-Gate-, Mobile-Layout- und Loader-Abschluss vom 13. Juni 2026; Commit, Git-Push und Vercel-Deploy sind freigegeben
+- Stand: lokale Postgres-Vorbereitung vom 14. Juni 2026 auf Basis des bestehenden Image-Cache-Kostenpasses; nicht committed, nicht gepusht, nicht deployed
 - kanonische öffentliche Adresse: https://www.null-noise.de
 - Apex-Domain: https://null-noise.de leitet in Vercel per `308 Permanent Redirect` auf https://www.null-noise.de weiter
 - technische Vercel-Projektadresse: https://null-noise.vercel.app bleibt Production-verbunden, ist aber nicht kanonisch
@@ -20,6 +20,31 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 ## Letzte lokale Arbeitsblöcke
 
+- Postgres-Vorbereitung 14. Juni 2026:
+  - Prisma Postgres ist in Vercel mit dem Projekt verbunden; `DATABASE_URL`, `PRISMA_DATABASE_URL` und `POSTGRES_URL` sind als Environment-Variablen fuer Production, Preview und Development vorhanden. Werte werden nicht dokumentiert.
+  - Lokale Vercel-ENV wurde in `.env.development.local` gezogen; die Datei ist gitignored und bleibt ausserhalb des Diffs.
+  - `prisma/schema.prisma` ist lokal von SQLite auf PostgreSQL umgestellt.
+  - Die Migration `20260614092921_init_postgres` wurde lokal erzeugt und gegen die Vercel-Development-DB angewendet. Production wurde nicht migriert.
+  - Eine separate Test-DB wird lokal ueber `.env.test.local` bereitgestellt; die Datei ist gitignored und Werte werden nicht dokumentiert.
+  - Die Test-DB-URL wurde nur auf Existenz, Schema `prisma+postgres`, plausible Länge, Platzhalterfreiheit und Nicht-Identität mit den bekannten Vercel-DB-URLs geprüft.
+  - Die Migration `20260614092921_init_postgres` wurde zusaetzlich gegen diese separate Test-DB angewendet; keine Seed-Daten wurden erzeugt.
+  - SQLite-Init bleibt nur als alter Hilfspfad im Repo; normale DB-Scripts laufen lokal ueber Prisma-Migrate-/Postgres-Kommandos.
+  - Unit-Tests verlangen jetzt `NULL_NOISE_TEST_DATABASE_URL` fuer eine separate, wegwerfbare Prisma-Postgres-Testdatenbank, damit keine gemeinsame Development- oder Production-DB durch Test-Reset-Logik geleert wird.
+  - Lokale Checks mit separater Test-DB: `npm run test:unit` 16 Dateien / 94 Tests bestanden; `npm run lint`, `npm run build`, `npm run test:axe-core`, `npm run test:a11y`, `npm run test:wcag22-aa` und `git diff --check` bestanden.
+  - Der globale Navigationsloader ist im inaktiven Zustand zusaetzlich `visibility: hidden`, damit Axe keinen voll transparenten Ladehinweis als Kontrastfehler bewertet.
+  - `NULL_NOISE_ENABLE_WRITES` wurde nicht aktiviert oder geändert; Production-Writes bleiben weiter inaktiv, bis Migration, Test-DB und Production-Freigabe bewusst abgeschlossen sind.
+  - Release Notes stehen lokal auf `0.8.4-postgres-prep.20260614`.
+  - Nicht committed, nicht gepusht, nicht deployed.
+- Image-Cache-Kostenpass 13. Juni 2026:
+  - Vercel meldete 75 Prozent des Free-Tier-Limits fuer Image Optimization Cache Writes im Free-Team.
+  - Wahrscheinlichste Ursache sind viele unterschiedliche TMDb-Poster in Suche/Browse/Details, jeweils mit mehreren Next-Image-Varianten durch breite `sizes`-Angaben und bisher kurze Cache-Fenster.
+  - Next Image Optimization nutzt jetzt lokal `minimumCacheTTL` von 31 Tagen und enger begrenzte `deviceSizes`/`imageSizes`, damit weniger neue Varianten entstehen.
+  - TMDb-Posterroute `/api/poster/tmdb/*` cached Poster lokal mit 31 Tagen statt 24 Stunden; TMDb-Poster ändern sich selten.
+  - Such-/Browse-Karten melden dem Image-Optimizer realistische Thumbnail-Breiten statt fast volle mobile Viewportbreiten.
+  - Detailseiten nutzen fuer TMDb-Poster `w780` statt `original`; Fallbacks und Alt-Texte bleiben erhalten.
+  - Harte Umstellung auf `unoptimized` wurde nicht umgesetzt, bleibt aber als Kosten-Notbremse offen, falls Vercel Usage weiter steigt.
+  - Der anschliessende Postgres-Block ist nun lokal vorbereitet; siehe Arbeitsblock vom 14. Juni 2026. Production-Writes bleiben dennoch inaktiv.
+  - Noch nicht committed, nicht gepusht, nicht deployed.
 - Preview-Gate-/Mobile-Polish-Abschluss 13. Juni 2026:
   - Root-Layout ist mit `PreviewGate` vorgeschaltet; ohne lokalen Unlock ist nur die zentrierte Teaser-Landingpage sichtbar, nach Eingabe von `preview` wird die App lokal freigeschaltet
   - Playwright nutzt standardmäßig `localStorage`-Unlock, damit die bestehenden App-Smokes weiter die eigentlichen Routen testen; ein eigener Preview-Gate-Test prüft die gesperrte Teaserseite und den Unlock

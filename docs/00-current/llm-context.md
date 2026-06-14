@@ -3,8 +3,8 @@
 ## Aktueller Arbeitsstand
 
 - aktiver lokaler Arbeitsbranch: `null-noise`
-- aktueller Stand: Preview-Gate-, Mobile-Layout- und Loader-Abschluss vom 13. Juni 2026; Commit, Git-Push und Vercel-Deploy sind freigegeben
-- Release-Metadaten stehen auf `0.8.4-preview-gate-mobile-polish.20260613`
+- aktueller Stand: lokale Postgres-Vorbereitung vom 14. Juni 2026 auf Basis des bestehenden Image-Cache-Kostenpasses; nicht committed, nicht gepusht, nicht deployed
+- Release-Metadaten stehen lokal auf `0.8.4-postgres-prep.20260614`
 - Preview-Gate ist clientseitig vorgeschaltet: Teaser-Landingpage mit Logo, Projektbeschreibung und Passwortfeld; Phrase ist `preview`, keine Security-Grenze
 - kanonische öffentliche Adresse: https://www.null-noise.de
 - Apex-Domain: https://null-noise.de leitet in Vercel per `308 Permanent Redirect` auf https://www.null-noise.de weiter
@@ -13,6 +13,10 @@
 - Production-Deployment ist `READY`; konkrete Deployment-URL und Commit-Hash stehen in der Abschlussübergabe
 - Preview-Deploys werden nach Push per Vercel CLI erzeugt; konkrete URLs stehen in der jeweiligen Übergabe und im Vercel-Inspect
 - Preview-Hinweis: Deployment Protection/SSO ist aktiv; ohne Vercel-Login kommt `401`
+- Vercel Image Optimization Usage beobachten: TMDb-Poster sollen wenige Varianten erzeugen, `minimumCacheTTL` steht lokal auf 31 Tagen, Detailposter nutzen `w780` statt `original`, Kartenposter melden realistische Thumbnail-`sizes`.
+- DB-/Postgres-Stand: Prisma Postgres ist in Vercel verbunden; `DATABASE_URL`, `PRISMA_DATABASE_URL` und `POSTGRES_URL` existieren fuer Production, Preview und Development. Werte nicht ausgeben oder dokumentieren.
+- Lokale DB-Vorbereitung: `.env.development.local` wurde per Vercel-ENV-Pull erzeugt und bleibt gitignored; `schema.prisma` steht lokal auf PostgreSQL; Migration `20260614092921_init_postgres` wurde gegen die Vercel-Development-DB und gegen eine separate lokale Test-DB angewendet. Production wurde nicht migriert.
+- Test-DB-Stand: `.env.test.local` ist gitignored; `NULL_NOISE_TEST_DATABASE_URL` wurde nur auf Existenz, Schema `prisma+postgres`, plausible Länge, Platzhalterfreiheit und Nicht-Identität mit den bekannten Vercel-DB-URLs geprüft. Werte nicht ausgeben oder dokumentieren.
 - v0/grüne UI liegt im Archiv-Worktree
 - `main` nicht als Arbeitsfläche verwenden
 - Deployment erfolgt über Git/Vercel auf Branch `null-noise`; Production-Deploy nach erfolgreichem Push prüfen
@@ -24,6 +28,11 @@
 - Mobile Header: geöffnetes Menü bleibt kompakt, innerhalb der Contentbreite und unterscheidet aktive Route von Tastaturfokus; Menübutton-Fokus ist sichtbar, aber proportional.
 - Mobile Cards: Ergebnis-Cards sind dichter, Poster dominieren nicht, Aktionen behalten Text und Touch-Ziele; CTA-/Memory-Zonen überlagern Poster nicht.
 - Mobile Details: lokale und externe Detailseiten setzen das Detailposter direkt unter die `h1` und vor die erste Einschätzung.
+- Poster-Kostenstand: externe TMDb-Poster laufen über `/api/poster/tmdb/*`; Karten verwenden thumbnail-realistische `sizes`, Detailposter `w780`, Fallbacks bleiben erhalten.
+- Postgres-Writes erst fortsetzen, wenn eine dedizierte wegwerfbare Test-DB als `NULL_NOISE_TEST_DATABASE_URL` vorhanden ist, `npm run test:unit` damit gruen läuft und die Production-Migration bewusst freigegeben ist; keine SQLite-Datei und keine gemeinsame Development-DB als Test- oder Production-Ersatz verwenden.
+- Aktueller lokaler Check mit Test-DB: `npm run test:unit` 16 Dateien / 94 Tests bestanden; `npm run lint`, `npm run build`, `npm run test:axe-core`, `npm run test:a11y`, `npm run test:wcag22-aa` und `git diff --check` bestanden.
+- Der globale Navigationsloader wird im inaktiven Zustand mit `visibility: hidden` aus der visuellen Kontrastprüfung genommen; sichtbar bleibt der Status nur bei echtem Pending.
+- `NULL_NOISE_ENABLE_WRITES` nicht aktivieren oder ändern, solange diese Freigabe fehlt.
 - Lokale Shelf: `search-local-shelf` zeigt nur befüllte Gruppen; ein einzelner `Schon gesehen`-Bereich nutzt die volle Breite.
 - Footer: Release-/Build-Info bleibt sichtbar, aber mobil sekundärer und kürzer.
 - Echte Ladezustände nutzen einen ruhigen, text-first `LoadingState` statt lauter Spinner oder Skeletons.

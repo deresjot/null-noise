@@ -1,12 +1,38 @@
 import packageJson from "../../package.json";
 
 export const currentBuild = {
-  version: `${packageJson.version}-preview-gate-mobile-polish.20260613`,
-  label: "Preview gate and mobile polish",
-  releasedAt: "2026-06-13",
+  version: `${packageJson.version}-postgres-prep.20260614`,
+  label: "Postgres preparation",
+  releasedAt: "2026-06-14",
 };
 
 export const releaseNotes = [
+  {
+    version: `${packageJson.version}-postgres-prep.20260614`,
+    label: "Postgres preparation",
+    releasedAt: "2026-06-14",
+    entries: [
+      "Prisma is prepared locally for PostgreSQL instead of SQLite, with the generated initial migration applied only to the Vercel Development database.",
+      "Local DB setup scripts now use Prisma migrate commands for the normal Postgres path instead of the SQLite bootstrap helper.",
+      "Unit tests now require a separate disposable Prisma Postgres test database via NULL_NOISE_TEST_DATABASE_URL so shared Development or Production data is not reset by tests.",
+      "The initial migration has been verified against the separate test database, and unit tests pass on that isolated Postgres path.",
+      "The global navigation loader is hidden with visibility while inactive so automated contrast scans do not evaluate a fully transparent loading label.",
+      "Production writes stay inactive; NULL_NOISE_ENABLE_WRITES was not changed.",
+      "No database URLs, credentials or secret values are exposed in release metadata or documentation.",
+    ],
+  },
+  {
+    version: `${packageJson.version}-image-cache-costs.20260613`,
+    label: "Image cache cost controls",
+    releasedAt: "2026-06-13",
+    entries: [
+      "TMDb poster optimization now uses a 31 day image cache TTL to reduce repeated Vercel Image Cache Writes for rarely changing poster assets.",
+      "Result-card poster sizes are constrained to thumbnail-realistic widths so mobile and desktop views request fewer oversized image variants.",
+      "Detail posters use the bounded TMDb w780 source instead of original poster assets, preserving the layout while reducing transformation weight.",
+      "The local poster proxy now advertises the same long cache window for poster responses.",
+      "Release and testing docs now call out Image Optimization usage, cache writes and poster variant discipline before deploy.",
+    ],
+  },
   {
     version: `${packageJson.version}-preview-gate-mobile-polish.20260613`,
     label: "Preview gate and mobile polish",

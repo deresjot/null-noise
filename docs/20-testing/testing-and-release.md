@@ -53,6 +53,7 @@ WCAG 2.2 Level AA ist der technische Zielstandard. Die Prüfung orientiert sich 
 - Mobile-Detail-Smoke: lokale und externe Detailseiten zeigen genau ein sichtbares Detailposter direkt unter der `h1` und vor dem ersten Einschätzungsblock
 - Mobile-Card-Smoke: Result-Card-Aktionen und Merken/Gesehen-Zonen liegen in der Textspalte und überlagern Poster nicht
 - Local-Shelf-Smoke: Nur befüllte `Für später`-/`Schon gesehen`-Gruppen werden gerendert; eine einzelne Gruppe nutzt die volle Shelf-Breite
+- Image-Usage-Smoke: TMDb-Poster sollen keine unnötig breiten Varianten anfordern; Kartenposter nutzen Thumbnail-`sizes`, Detailposter begrenzte Quellgrößen, Poster-Fallbacks und Alt-Texte bleiben erhalten
 - wiederholbare Keyboard-Smoke-Checks, zum Beispiel Skip-Link und erreichbare Suchvorschläge
 - mobile Navigation mit Burger-Menü für primäre App-Ziele; Info-/Legal-Ziele bleiben im Footer erreichbar
 - kleiner Reflow-Smoke-Test auf den Kernrouten bei `320 CSS-Pixeln`, damit offensichtliches horizontales Overflow früh auffällt
@@ -216,12 +217,38 @@ Vor einem Beta-Release oder Deploy sollten mindestens diese Schritte laufen:
 15. keine Score-/Prozent-UI
 16. Mobile-Scrollgefühl nach Deploy auf echtem iPhone prüfen
 17. Header-Branding, mobile Burger-Navigation, Startseiten-Erklärung, mobile Ergebniskarten, Merken-/Gesehen-Toggle, Detailposter/Synopsis und Poster-Fallbacks auf kleinem Viewport prüfen
+18. Vercel Image Optimization Usage prüfen: Image Cache Writes beobachten, keine unnötigen neuen TMDb-Postervarianten erzeugen, `sizes`/TTL/Poster-Quellgrößen vor Deploy gegen den tatsächlichen UI-Bedarf prüfen
 
 Optional, wenn der Umfang es rechtfertigt:
 
 - `npx playwright test`
 
 ## Letzter lokaler Stand vor Übergabe
+
+Postgres-Vorbereitung vom 14. Juni 2026: lokal vorbereitet, nicht committed, nicht gepusht, nicht deployed.
+
+- Release Notes stehen lokal auf `0.8.4-postgres-prep.20260614`
+- Prisma Postgres ist in Vercel verbunden; `DATABASE_URL`, `PRISMA_DATABASE_URL` und `POSTGRES_URL` existieren fuer Production, Preview und Development, ohne dass Werte dokumentiert werden
+- `.env.development.local` wurde lokal per Vercel-ENV-Pull erzeugt, bleibt gitignored und darf nicht in den Diff
+- `.env.test.local` stellt lokal eine separate Test-DB bereit, bleibt gitignored und darf nicht in den Diff; Werte nie ausgeben
+- `prisma/schema.prisma` steht lokal auf PostgreSQL
+- Migration `20260614092921_init_postgres` wurde erzeugt und nur gegen die Vercel-Development-DB angewendet; keine Production-Migration
+- Migration `20260614092921_init_postgres` wurde zusaetzlich gegen die separate Test-DB angewendet; keine Seed-Daten
+- Normale DB-Scripts nutzen lokal Prisma-Migrate-/Postgres-Kommandos statt SQLite-Bootstrap als Standardpfad
+- `npm run test:unit` verlangt jetzt `NULL_NOISE_TEST_DATABASE_URL` fuer eine separate, wegwerfbare Prisma-Postgres-Testdatenbank; mit der lokalen Test-DB bestanden 16 Dateien / 94 Tests
+- Der globale Navigationsloader bleibt im inaktiven Zustand `visibility: hidden`, damit Axe keinen transparenten Ladehinweis als Kontrastfehler bewertet
+- Lokale Checks bestanden: `npm run test:unit`, `npm run lint`, `npm run build`, `npm run test:axe-core`, `npm run test:a11y`, `npm run test:wcag22-aa`, `git diff --check`
+- `NULL_NOISE_ENABLE_WRITES` wurde nicht aktiviert oder geändert; Production-Writes bleiben inaktiv
+
+Image-Cache-Kostenpass vom 13. Juni 2026: lokal umgesetzt, nicht committed, nicht gepusht, nicht deployed.
+
+- Release Notes stehen lokal auf `0.8.4-image-cache-costs.20260613`
+- Vercel Image Optimization Cache Writes wurden lokal als Kostenrisiko dokumentiert
+- `next.config.ts` setzt lokal eine 31-Tage-`minimumCacheTTL` und enger begrenzte Image-Size-Listen
+- TMDb-Posterproxy cached Poster lokal mit 31 Tagen statt 24 Stunden
+- Such-/Browse-Karten nutzen thumbnail-realistische `sizes`; Detailposter nutzen `w780` statt `original`
+- Harte `unoptimized`-Umstellung ist nicht umgesetzt und bleibt nur eine spätere Notbremse, falls Usage weiter steigt
+- DB-/Postgres-Umstellung ist nun lokal vorbereitet; keine Production-Migration, keine aktivierten Production-Writes, Unit-Tests erst mit separater `NULL_NOISE_TEST_DATABASE_URL` gruen laufen lassen
 
 Preview-Gate-/Mobile-Polish-Abschluss vom 13. Juni 2026: für Commit, Push und Vercel-Deploy freigegeben.
 
