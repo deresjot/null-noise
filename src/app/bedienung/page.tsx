@@ -6,10 +6,10 @@ import { siteName } from "@/lib/constants";
 export const metadata: Metadata = {
   title: `Bedienung | ${siteName}`,
   alternates: {
-    canonical: "/erklaerung",
+    canonical: "/bedienung",
   },
   openGraph: {
-    url: "/erklaerung",
+    url: "/bedienung",
   },
 };
 
