@@ -174,6 +174,35 @@ async function expectMobileLayoutWithinViewport(page: Page, path: string, width:
   expect(failures, `${path} has mobile layout overflow at ${width} CSS pixels`).toEqual([]);
 }
 
+async function expectElementBelowHeader(page: Page, selector: string, label: string) {
+  await expect
+    .poll(
+      () =>
+        page.evaluate((targetSelector) => {
+          const header = document.querySelector(".site-header")?.getBoundingClientRect();
+          const target = document.querySelector(targetSelector)?.getBoundingClientRect();
+
+          return (target?.top ?? Number.NEGATIVE_INFINITY) >= (header?.bottom ?? 0) - 1;
+        }, selector),
+      { message: `${label} is not covered by the sticky header` },
+    )
+    .toBe(true);
+
+  const metrics = await page.evaluate((targetSelector) => {
+    const header = document.querySelector(".site-header")?.getBoundingClientRect();
+    const target = document.querySelector(targetSelector)?.getBoundingClientRect();
+
+    return {
+      headerBottom: header?.bottom ?? 0,
+      targetTop: target?.top ?? 0,
+    };
+  }, selector);
+
+  expect(metrics.targetTop, `${label} is not covered by the sticky header`).toBeGreaterThanOrEqual(
+    metrics.headerBottom - 1,
+  );
+}
+
 test("homepage has no detectable axe violations", async ({ page }) => {
   await expectNoAxeViolations(page, "/", "home", async () => {
     await expect(
@@ -1490,6 +1519,117 @@ test("core routes stay stable at common mobile widths with reduced motion", asyn
     await page.keyboard.press("Escape");
     await expect(page.getByRole("button", { name: "Menü öffnen" })).toBeFocused();
   }
+});
+
+test.describe("iPhone Pro Max mobile layout", () => {
+  test.use({
+    deviceScaleFactor: 3,
+    hasTouch: true,
+    isMobile: true,
+    userAgent:
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+    viewport: { width: 430, height: 932 },
+  });
+
+  test("keeps navigation, focus targets and bottom actions visible", async ({ page }) => {
+    await page.goto("/");
+    await expect(
+      page.getByRole("heading", {
+        name: "Du musst dich nicht auch noch in der Freizeit anschreien lassen.",
+      }),
+    ).toBeVisible();
+
+    const menuButton = page.getByRole("button", { name: "Menü öffnen" });
+    await menuButton.click();
+
+    const mobileNav = page.getByRole("navigation", { name: "Mobile Navigation" });
+    await expect(mobileNav).toBeVisible();
+    await expect(mobileNav.getByRole("link", { name: "Start" })).toBeFocused();
+
+    const menuMetrics = await page.evaluate(() => {
+      const header = document.querySelector(".site-header")?.getBoundingClientRect();
+      const nav = document.querySelector(".mobile-navigation")?.getBoundingClientRect();
+
+      return {
+        headerBottom: header?.bottom ?? 0,
+        navBottom: nav?.bottom ?? 0,
+        navLeft: nav?.left ?? 0,
+        navRight: nav?.right ?? 0,
+        navTop: nav?.top ?? 0,
+        viewportHeight: window.innerHeight,
+        viewportWidth: window.innerWidth,
+      };
+    });
+
+    expect(menuMetrics.navTop).toBeGreaterThanOrEqual(menuMetrics.headerBottom - 1);
+    expect(menuMetrics.navLeft).toBeGreaterThanOrEqual(0);
+    expect(menuMetrics.navRight).toBeLessThanOrEqual(menuMetrics.viewportWidth + 1);
+    expect(menuMetrics.navBottom).toBeLessThanOrEqual(menuMetrics.viewportHeight + 1);
+
+    await page.keyboard.press("Escape");
+    await expect(menuButton).toBeFocused();
+
+    await page.goto("/suche?q=Arrival");
+    await expect(page.getByRole("heading", { name: 'Treffer zu „Arrival“' })).toBeVisible();
+    await expectMobileLayoutWithinViewport(page, "/suche?q=Arrival", 430);
+    await expectElementBelowHeader(page, "main h1", "search heading");
+
+    await page.evaluate(() => window.scrollTo(0, 760));
+    await page.locator(".result-card-cta-button").first().click();
+    await page.waitForURL(/\/(titel|spike\/metadaten)\//);
+    await expect(page.locator(".detail-hero h1")).toBeVisible();
+
+    await expect
+      .poll(() => page.evaluate(() => Math.round(window.scrollY)), {
+        message: "detail navigation starts at the top",
+      })
+      .toBeLessThanOrEqual(2);
+    await expect(page.locator("#main-content")).toBeFocused();
+    await expectElementBelowHeader(page, ".detail-back-action", "detail back action");
+
+    const detailOrder = await page.evaluate(() => {
+      const h1 = document.querySelector(".detail-hero h1")?.getBoundingClientRect();
+      const poster = document.querySelector(".poster-thumb-frame-detail")?.getBoundingClientRect();
+      const reading = document.querySelector(".detail-reading-block")?.getBoundingClientRect();
+
+      return {
+        h1Bottom: h1?.bottom ?? 0,
+        overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        posterBottom: poster?.bottom ?? 0,
+        posterTop: poster?.top ?? 0,
+        readingTop: reading?.top ?? 0,
+      };
+    });
+
+    expect(detailOrder.overflow).toBeLessThanOrEqual(1);
+    expect(detailOrder.posterTop).toBeGreaterThan(detailOrder.h1Bottom);
+    expect(detailOrder.posterBottom).toBeLessThanOrEqual(detailOrder.readingTop);
+
+    await page.goto("/kontakt");
+    await expect(page.getByRole("heading", { name: "Kontakt", level: 1 })).toBeVisible();
+    await page.getByRole("button", { name: "Nachricht senden" }).click();
+    await expect(page.locator(".contact-form-summary")).toBeFocused();
+    await expectElementBelowHeader(page, ".contact-form-summary", "contact error summary");
+
+    await page.getByRole("button", { name: "Nachricht senden" }).scrollIntoViewIfNeeded();
+
+    const contactMetrics = await page.evaluate(() => {
+      const form = document.querySelector(".contact-form");
+      const submit = document.querySelector(".contact-form .primary-button")?.getBoundingClientRect();
+      const formStyle = form instanceof HTMLElement ? window.getComputedStyle(form) : null;
+
+      return {
+        formPaddingBottom: formStyle ? Number.parseFloat(formStyle.paddingBottom) : 0,
+        submitBottom: submit?.bottom ?? 0,
+        submitHeight: submit?.height ?? 0,
+        viewportHeight: window.innerHeight,
+      };
+    });
+
+    expect(contactMetrics.submitHeight).toBeGreaterThanOrEqual(44);
+    expect(contactMetrics.formPaddingBottom).toBeGreaterThanOrEqual(80);
+    expect(contactMetrics.submitBottom).toBeLessThanOrEqual(contactMetrics.viewportHeight);
+  });
 });
 
 test("legal pages are reachable and keep TMDb attribution separate from the profile logic", async ({
