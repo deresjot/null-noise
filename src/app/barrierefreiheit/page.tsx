@@ -10,6 +10,12 @@ export const metadata: Metadata = {
   title: `Barrierefreiheit | ${siteName}`,
   description:
     "Aktueller Stand zur Barrierefreiheit von null-noise: WCAG 2.2 AA als technisches Ziel, laufende Prüfung und bekannte Grenzen.",
+  alternates: {
+    canonical: "/barrierefreiheit",
+  },
+  openGraph: {
+    url: "/barrierefreiheit",
+  },
 };
 
 const passedTechnicalChecks = wcag22AaTechnicalMatrix.filter((criterion) => criterion.status === "pass");

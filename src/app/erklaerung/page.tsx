@@ -5,6 +5,12 @@ import { siteName } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: `Erklärung und Hilfe | ${siteName}`,
+  alternates: {
+    canonical: "/erklaerung",
+  },
+  openGraph: {
+    url: "/erklaerung",
+  },
 };
 
 export default function ExplanationPage() {

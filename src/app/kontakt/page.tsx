@@ -7,6 +7,12 @@ export const metadata: Metadata = {
   title: `Kontakt | ${siteName}`,
   description:
     "Datensparsame Kontaktseite von null-noise mit optionaler E-Mail-Adresse für Antworten.",
+  alternates: {
+    canonical: "/kontakt",
+  },
+  openGraph: {
+    url: "/kontakt",
+  },
 };
 
 export default function KontaktPage() {

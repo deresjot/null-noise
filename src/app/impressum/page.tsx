@@ -4,6 +4,12 @@ import { publicContactEmail, publicSiteUrl, siteName } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: `Impressum | ${siteName}`,
+  alternates: {
+    canonical: "/impressum",
+  },
+  openGraph: {
+    url: "/impressum",
+  },
 };
 
 export default function ImpressumPage() {

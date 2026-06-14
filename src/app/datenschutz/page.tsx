@@ -5,6 +5,12 @@ import { arePublicWritesEnabled } from "@/lib/runtime-config";
 
 export const metadata: Metadata = {
   title: `Datenschutz | ${siteName}`,
+  alternates: {
+    canonical: "/datenschutz",
+  },
+  openGraph: {
+    url: "/datenschutz",
+  },
 };
 
 export default function DatenschutzPage() {

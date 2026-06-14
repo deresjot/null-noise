@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 
 import { DetailFollowupSection } from "@/components/detail-followup-section";
 import { ExplanationPanel } from "@/components/explanation-panel";
@@ -43,6 +44,19 @@ type DetailPageProps = {
   params: Promise<{ slug: string }>;
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
+
+export async function generateMetadata({ params }: DetailPageProps): Promise<Metadata> {
+  const { slug } = await params;
+
+  return {
+    alternates: {
+      canonical: `/titel/${slug}`,
+    },
+    openGraph: {
+      url: `/titel/${slug}`,
+    },
+  };
+}
 
 type RatingStatus = {
   title: string;
