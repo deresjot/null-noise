@@ -83,6 +83,26 @@ function toCatalogStoreUnavailableError(error: unknown): CatalogStoreUnavailable
   return null;
 }
 
+async function hasCompleteSeedCatalog(client: PrismaClient): Promise<boolean> {
+  if (!mockTitleSeeds.length) {
+    return true;
+  }
+
+  const completeSeedCount = await client.externalTitle.count({
+    where: {
+      OR: mockTitleSeeds.map((seed) => ({
+        externalSource: seed.external.externalSource,
+        externalSourceId: seed.external.externalSourceId,
+      })),
+      aggregate: {
+        isNot: null,
+      },
+    },
+  });
+
+  return completeSeedCount === mockTitleSeeds.length;
+}
+
 function parseDateOnly(value?: string): Date | null {
   if (!value) {
     return null;
@@ -500,6 +520,11 @@ export async function ensureCatalogBootstrapped(client: PrismaClient = prisma): 
 
   bootstrapPromise = (async () => {
     try {
+      if (await hasCompleteSeedCatalog(client)) {
+        bootstrapCompleted = true;
+        return;
+      }
+
       await client.$transaction(
         async (tx) => {
           for (const seed of mockTitleSeeds) {
