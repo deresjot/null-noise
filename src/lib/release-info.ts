@@ -1,12 +1,26 @@
 import packageJson from "../../package.json";
 
 export const currentBuild = {
-  version: `${packageJson.version}-postgres-prep.20260614`,
-  label: "Postgres preparation",
+  version: `${packageJson.version}-production-launch.20260614`,
+  label: "Production launch",
   releasedAt: "2026-06-14",
 };
 
 export const releaseNotes = [
+  {
+    version: `${packageJson.version}-production-launch.20260614`,
+    label: "Production launch",
+    releasedAt: "2026-06-14",
+    entries: [
+      "The current Production deployment is live on www.null-noise.de with the apex domain redirecting permanently to the www domain.",
+      "The Vercel build now runs prisma generate before next build so the deployed Prisma Client matches the PostgreSQL schema instead of a cached SQLite client.",
+      "Catalog bootstrap now skips the seed transaction when the expected seed titles and aggregates already exist, reducing cold-start write pressure.",
+      "Live smoke covered core routes, catalog APIs, TMDb search APIs and the private preview gate.",
+      "Live rating smoke succeeded with a slow submit and returned the expected too-fast guard on an immediate follow-up instead of rating=error.",
+      "No environment variables were changed and no production migration was rerun during the final handoff.",
+      "The full accessibility suite should be rerun after these final hotfix commits.",
+    ],
+  },
   {
     version: `${packageJson.version}-postgres-prep.20260614`,
     label: "Postgres preparation",

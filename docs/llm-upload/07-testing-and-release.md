@@ -1,8 +1,20 @@
 # Testing und Release für null-noise
 
-Stand: 13. Juni 2026
+Stand: 14. Juni 2026
 
 Diese Datei beschreibt, wie `null-noise` Accessibility testet und wo die Grenzen der Automatisierung liegen.
+
+## Live-Abschluss 14. Juni 2026
+
+- Production ist live auf `https://null-noise-3evwpfel5-deresjots-projects.vercel.app`, aliased auf `https://www.null-noise.de`; Apex `https://null-noise.de/` redirectet per `308` auf die www-Domain.
+- Finaler gepushter Stand: `cc5ee52 fix: generate prisma client during build`.
+- Hotfix-Ursache: Vercel verwendete aus dem Build-Cache einen alten Prisma Client mit SQLite-Provider. Das Build-Script läuft jetzt als `prisma generate && next build`.
+- Katalog-Bootstrap ist cold-start-schonender: vorhandene Seed-Titel mit Aggregaten werden erkannt, bevor die Seed-Transaktion gestartet wird.
+- Live-Smoke bestanden: Kernseiten, `/api/titles`, `/api/titles/mondfenster`, `/api/search/suggestions?q=Arrival` und `/api/search/page-state?q=Arrival`.
+- Schreib-Smoke bestanden: langsamer Rating-Submit auf `/titel/mondfenster` ergab `rating=success`; direkter Folgesubmit ergab `rating=too-fast`, nicht `rating=error`.
+- Kontakt-Smoke: `/kontakt` und Formular sichtbar; keine echte Mail gesendet.
+- Keine ENV-Änderung, keine Migration, kein weiterer Seed-Lauf im Abschluss.
+- Offen: Full Accessibility-Suite nach den finalen Hotfixes erneut laufen lassen.
 
 ## Ziel
 

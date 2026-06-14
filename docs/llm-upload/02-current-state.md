@@ -6,12 +6,12 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 - lokaler Branch: `null-noise`
 - lokaler Projektpfad: `/Users/deresjot/Library/CloudStorage/Dropbox/_PRIVAT/Code/git-webdev/null-noise`
-- Stand: lokale Postgres-Vorbereitung vom 14. Juni 2026 auf Basis des bestehenden Image-Cache-Kostenpasses; nicht committed, nicht gepusht, nicht deployed
+- Stand: Production-Launch vom 14. Juni 2026 ist live auf `https://www.null-noise.de`; letzter gepushter Commit ist `cc5ee52 fix: generate prisma client during build`
 - kanonische öffentliche Adresse: https://www.null-noise.de
 - Apex-Domain: https://null-noise.de leitet in Vercel per `308 Permanent Redirect` auf https://www.null-noise.de weiter
 - technische Vercel-Projektadresse: https://null-noise.vercel.app bleibt Production-verbunden, ist aber nicht kanonisch
 - DNS bei hosting.de: `null-noise.de A 216.198.79.1`, `www.null-noise.de CNAME 8bb5d957d3dbq7.vercel-dns-017.com`
-- Production-Deployment ist `READY`; konkrete Deployment-URL und Commit-Hash stehen in der Abschlussübergabe
+- Production-Deployment ist `READY`: `https://null-noise-3evwpfel5-deresjots-projects.vercel.app`, aliased auf `https://www.null-noise.de`
 - Preview-Deploys werden nach Push per Vercel CLI erzeugt; konkrete URLs stehen in der jeweiligen Übergabe und im Vercel-Inspect
 - Hinweis: Preview ist `READY`, aber Vercel Deployment Protection/SSO ist aktiv; ohne Login kommt `401`
 - v0/grüne UI liegt im Archiv-Worktree und wird nicht bearbeitet
@@ -20,6 +20,17 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 ## Letzte lokale Arbeitsblöcke
 
+- Production-Launch-Hotfixes 14. Juni 2026:
+  - `9701747 fix: skip catalog bootstrap when seeds exist`: vorhandener Seed-Katalog mit Aggregaten wird beim Cold Start erkannt, statt erneut vollständig upserted zu werden.
+  - `b128190 chore: log catalog bootstrap failures`: nicht-sensitives Runtime-Logging fuer Katalog-Bootstrap-Fehlertypen ergänzt; keine ENV- oder Secret-Werte werden geloggt.
+  - `cc5ee52 fix: generate prisma client during build`: `npm run build` führt vor `next build` immer `prisma generate` aus, damit Vercel keinen veralteten SQLite-Prisma-Client aus dem Cache nutzt.
+  - Live-Deploy: `https://null-noise-3evwpfel5-deresjots-projects.vercel.app` ist `READY` und auf `https://www.null-noise.de` aliased; `https://null-noise.de/` redirectet per `308` auf die www-Domain.
+  - Live-Smoke: `/`, `/suche`, `/suche?q=Arrival`, `/titel/mondfenster`, `/kontakt`, `/datenschutz`, `/impressum`, `/api/titles`, `/api/titles/mondfenster`, `/api/search/suggestions?q=Arrival` und `/api/search/page-state?q=Arrival` liefern erwartete 200er-Signale.
+  - Schreib-Smoke live: langsamer Rating-Submit auf `/titel/mondfenster` endete mit `rating=success`; direkter Folgesubmit endete fachlich mit `rating=too-fast`, nicht mit `rating=error`.
+  - Kontakt-Smoke: `/kontakt` und Formular sichtbar; keine echte Mail gesendet.
+  - Production-Migration wurde nicht erneut ausgeführt; vorheriger Stand war up to date. Keine ENV geändert.
+  - Full Accessibility-Suite nach den letzten Hotfixes ist noch nachzuholen; zuletzt grün nach dem vorherigen Stand, vor den finalen Build-/Bootstrap-Hotfixes.
+  - `tools/` bleibt lokales untracked Artefakt und wird nicht angefasst.
 - Postgres-Vorbereitung 14. Juni 2026:
   - Prisma Postgres ist in Vercel mit dem Projekt verbunden; `DATABASE_URL`, `PRISMA_DATABASE_URL` und `POSTGRES_URL` sind als Environment-Variablen fuer Production, Preview und Development vorhanden. Werte werden nicht dokumentiert.
   - Lokale Vercel-ENV wurde in `.env.development.local` gezogen; die Datei ist gitignored und bleibt ausserhalb des Diffs.

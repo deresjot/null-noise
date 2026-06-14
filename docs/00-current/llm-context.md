@@ -3,23 +3,37 @@
 ## Aktueller Arbeitsstand
 
 - aktiver lokaler Arbeitsbranch: `null-noise`
-- aktueller Stand: lokale Postgres-Vorbereitung vom 14. Juni 2026 auf Basis des bestehenden Image-Cache-Kostenpasses; nicht committed, nicht gepusht, nicht deployed
-- Release-Metadaten stehen lokal auf `0.8.4-postgres-prep.20260614`
+- aktueller Stand: Production-Launch vom 14. Juni 2026 ist live auf `https://www.null-noise.de`; letzter gepushter Commit ist `cc5ee52 fix: generate prisma client during build`
+- Release-Metadaten stehen auf `0.8.4-production-launch.20260614`
 - Preview-Gate ist clientseitig vorgeschaltet: Teaser-Landingpage mit Logo, Projektbeschreibung und Passwortfeld; Phrase ist `preview`, keine Security-Grenze
 - kanonische öffentliche Adresse: https://www.null-noise.de
 - Apex-Domain: https://null-noise.de leitet in Vercel per `308 Permanent Redirect` auf https://www.null-noise.de weiter
 - technische Vercel-Projektadresse: https://null-noise.vercel.app bleibt Production-verbunden, ist aber nicht kanonisch
 - DNS bei hosting.de: `null-noise.de A 216.198.79.1`, `www.null-noise.de CNAME 8bb5d957d3dbq7.vercel-dns-017.com`
-- Production-Deployment ist `READY`; konkrete Deployment-URL und Commit-Hash stehen in der Abschlussübergabe
+- Production-Deployment ist `READY`: `https://null-noise-3evwpfel5-deresjots-projects.vercel.app`, aliased auf `https://www.null-noise.de`
 - Preview-Deploys werden nach Push per Vercel CLI erzeugt; konkrete URLs stehen in der jeweiligen Übergabe und im Vercel-Inspect
 - Preview-Hinweis: Deployment Protection/SSO ist aktiv; ohne Vercel-Login kommt `401`
 - Vercel Image Optimization Usage beobachten: TMDb-Poster sollen wenige Varianten erzeugen, `minimumCacheTTL` steht lokal auf 31 Tagen, Detailposter nutzen `w780` statt `original`, Kartenposter melden realistische Thumbnail-`sizes`.
 - DB-/Postgres-Stand: Prisma Postgres ist in Vercel verbunden; `DATABASE_URL`, `PRISMA_DATABASE_URL` und `POSTGRES_URL` existieren fuer Production, Preview und Development. Werte nicht ausgeben oder dokumentieren.
-- Lokale DB-Vorbereitung: `.env.development.local` wurde per Vercel-ENV-Pull erzeugt und bleibt gitignored; `schema.prisma` steht lokal auf PostgreSQL; Migration `20260614092921_init_postgres` wurde gegen die Vercel-Development-DB und gegen eine separate lokale Test-DB angewendet. Production wurde nicht migriert.
+- DB-Vorbereitung: `.env.development.local` wurde per Vercel-ENV-Pull erzeugt und bleibt gitignored; `schema.prisma` steht auf PostgreSQL; Migration `20260614092921_init_postgres` wurde gegen die Vercel-Development-DB und gegen eine separate lokale Test-DB angewendet. Production-Migration wurde nicht erneut ausgeführt; vorheriger Status war up to date.
 - Test-DB-Stand: `.env.test.local` ist gitignored; `NULL_NOISE_TEST_DATABASE_URL` wurde nur auf Existenz, Schema `prisma+postgres`, plausible Länge, Platzhalterfreiheit und Nicht-Identität mit den bekannten Vercel-DB-URLs geprüft. Werte nicht ausgeben oder dokumentieren.
 - v0/grüne UI liegt im Archiv-Worktree
 - `main` nicht als Arbeitsfläche verwenden
 - Deployment erfolgt über Git/Vercel auf Branch `null-noise`; Production-Deploy nach erfolgreichem Push prüfen
+
+## Live-Abschluss 14. Juni 2026
+
+- Hotfix-Commits nach Rating-Action-Fix:
+  - `9701747 fix: skip catalog bootstrap when seeds exist`
+  - `b128190 chore: log catalog bootstrap failures`
+  - `cc5ee52 fix: generate prisma client during build`
+- Ursache des Live-Katalogfehlers: Vercel nutzte aus dem Build-Cache noch einen Prisma Client mit SQLite-Provider. `npm run build` führt jetzt `prisma generate && next build` aus.
+- Katalog-Bootstrap wurde entschärft: Wenn alle erwarteten Seed-Titel samt Aggregaten vorhanden sind, wird die Seed-Transaktion beim Cold Start übersprungen.
+- Live-Smoke auf `https://www.null-noise.de`: Kernseiten, Katalog-APIs und TMDb-APIs liefern erwartete 200er-Signale.
+- Schreib-Smoke live: langsamer Rating-Submit auf `/titel/mondfenster` ergab `rating=success`; direkter Folgesubmit ergab `rating=too-fast`, nicht `rating=error`.
+- Kontakt-Smoke: Formular sichtbar; keine echte Mail gesendet.
+- Keine ENV geändert, keine Migration ausgeführt, keine Secret-Werte ausgegeben.
+- Full Accessibility-Suite nach den finalen Hotfixes ist noch offen; `tools/` bleibt untracked und wird nicht angefasst.
 
 ## Aktueller UI-/Wartungsstand
 
