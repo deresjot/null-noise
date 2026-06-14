@@ -103,8 +103,10 @@ export function NavigationProgress() {
   const timeoutRef = useRef<number | null>(null);
   const hideProgressTimeoutRef = useRef<number | null>(null);
   const progressTimeoutRefs = useRef<number[]>([]);
+  const previousRouteKeyRef = useRef<string | null>(null);
   const wasNavigatingRef = useRef(false);
   const isNavigating = isInteractionPending || activeRouteRequests > 0;
+  const routeKey = `${pathname}?${searchParams.toString()}`;
 
   const clearProgressTimers = () => {
     progressTimeoutRefs.current.forEach((timer) => window.clearTimeout(timer));
@@ -195,6 +197,43 @@ export function NavigationProgress() {
       timeoutRef.current = null;
     }
   }, [pathname, searchParams]);
+
+  useEffect(() => {
+    const previousRouteKey = previousRouteKeyRef.current;
+    previousRouteKeyRef.current = routeKey;
+
+    if (previousRouteKey === null || previousRouteKey === routeKey) {
+      return;
+    }
+
+    window.requestAnimationFrame(() => {
+      const hash = window.location.hash;
+
+      if (hash) {
+        const targetId = decodeURIComponent(hash.slice(1));
+        const target = document.getElementById(targetId);
+
+        if (target instanceof HTMLElement) {
+          if (!target.hasAttribute("tabindex")) {
+            target.setAttribute("tabindex", "-1");
+          }
+
+          target.scrollIntoView({ block: "start", inline: "nearest" });
+          target.focus({ preventScroll: true });
+        }
+
+        return;
+      }
+
+      const main = document.getElementById("main-content");
+
+      window.scrollTo({ left: 0, top: 0, behavior: "auto" });
+
+      if (main instanceof HTMLElement) {
+        main.focus({ preventScroll: true });
+      }
+    });
+  }, [routeKey]);
 
   useEffect(() => {
     document.documentElement.dataset.navigationProgressReady = "true";

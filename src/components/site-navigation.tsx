@@ -19,6 +19,7 @@ function isActivePath(pathname: string, href: string): boolean {
 export function SiteNavigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
+  const mobileMenuRef = useRef<HTMLElement | null>(null);
   const pathname = useSyncExternalStore(
     (onStoreChange) => {
       window.addEventListener("popstate", onStoreChange);
@@ -51,6 +52,10 @@ export function SiteNavigation() {
     if (!isMenuOpen) {
       return;
     }
+
+    window.requestAnimationFrame(() => {
+      mobileMenuRef.current?.querySelector<HTMLAnchorElement>("a[href]")?.focus();
+    });
 
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -104,6 +109,7 @@ export function SiteNavigation() {
         </ul>
       </nav>
       <nav
+        ref={mobileMenuRef}
         aria-label="Mobile Navigation"
         className="mobile-navigation"
         data-open={isMenuOpen ? "true" : "false"}

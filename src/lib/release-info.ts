@@ -1,12 +1,24 @@
 import packageJson from "../../package.json";
 
 export const currentBuild = {
-  version: `${packageJson.version}-content-canonical-refresh.20260614`,
-  label: "Content and canonical refresh",
+  version: `${packageJson.version}-mobile-ios-focus.20260614`,
+  label: "Mobile iOS focus and safe-area pass",
   releasedAt: "2026-06-14",
 };
 
 export const releaseNotes = [
+  {
+    version: `${packageJson.version}-mobile-ios-focus.20260614`,
+    label: "Mobile iOS focus and safe-area pass",
+    releasedAt: "2026-06-14",
+    entries: [
+      "Client-side route changes now move focus to the new main content while hash targets such as feedback messages keep their targeted scroll behavior.",
+      "Mobile header, status targets and detail back actions have explicit scroll offsets so focused content does not sit underneath the sticky header.",
+      "The contact form keeps extra bottom safe-area breathing room for iOS Safari and uses a calmer compact mobile error summary.",
+      "The mobile menu moves focus into the opened navigation and still returns focus to the toggle on Escape.",
+      "A dedicated iPhone Pro Max mobile layout smoke covers 430 by 932 CSS pixels, touch input, Mobile Safari user agent, header overlap, bottom actions and detail ordering.",
+    ],
+  },
   {
     version: `${packageJson.version}-content-canonical-refresh.20260614`,
     label: "Content and canonical refresh",

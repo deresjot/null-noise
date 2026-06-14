@@ -263,7 +263,7 @@ export default function RootLayout({
             <NavigationProgress />
           </Suspense>
           <div className="site-frame">
-            <main id="main-content" className="shell site-main">
+            <main id="main-content" className="shell site-main" tabIndex={-1}>
               {children}
             </main>
             <SiteFooter />

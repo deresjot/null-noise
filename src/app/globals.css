@@ -71,6 +71,7 @@
 html {
   color-scheme: light;
   overflow-x: clip;
+  scroll-padding-top: calc(var(--mobile-fixed-header-height, 4.75rem) + 0.9rem);
   scroll-behavior: smooth;
 }
 
@@ -174,6 +175,14 @@ h4 {
   overflow-wrap: anywhere;
 }
 
+h1,
+[id],
+.status-panel,
+.detail-back-action,
+.back-button-link {
+  scroll-margin-top: calc(var(--mobile-fixed-header-height, 4.75rem) + 0.9rem);
+}
+
 h1 {
   font-size: clamp(3.25rem, 8vw, 6.3rem);
 }
@@ -235,6 +244,11 @@ code {
   gap: clamp(3.2rem, 5vw, 5.2rem);
   min-height: calc(100vh - 8rem);
   padding: 1.2rem 0 4rem;
+  scroll-margin-top: calc(var(--mobile-fixed-header-height, 4.75rem) + 0.9rem);
+}
+
+.site-main:focus {
+  outline: 0;
 }
 
 .site-main:has(> .home-page) {
@@ -378,6 +392,7 @@ code {
   display: grid;
   gap: 1.1rem;
   min-width: 0;
+  padding-bottom: calc(1.4rem + env(safe-area-inset-bottom));
 }
 
 .contact-field {
@@ -439,6 +454,7 @@ code {
   border-radius: var(--radius-sm);
   background: #ffffff;
   overflow-wrap: anywhere;
+  scroll-margin-top: calc(var(--mobile-fixed-header-height, 4.75rem) + 0.9rem);
 }
 
 .contact-form-summary {
@@ -471,6 +487,10 @@ code {
 .contact-form .primary-button[aria-disabled="true"] {
   cursor: progress;
   opacity: 0.82;
+}
+
+.contact-form .primary-button {
+  scroll-margin-bottom: calc(5rem + env(safe-area-inset-bottom));
 }
 
 .skip-links {
@@ -3719,7 +3739,7 @@ code {
   position: relative;
   z-index: 1;
   margin-top: clamp(3.2rem, 8vw, 5.2rem);
-  padding: clamp(2.7rem, 6vw, 4.1rem) 0 3.6rem;
+  padding: clamp(2.7rem, 6vw, 4.1rem) 0 calc(3.6rem + env(safe-area-inset-bottom));
   background:
     linear-gradient(180deg, rgba(114, 135, 122, 0.14), rgba(248, 241, 231, 0.94) 14%, rgba(243, 235, 224, 0.99)),
     rgba(245, 238, 228, 0.94);
@@ -12527,6 +12547,33 @@ html[data-search-transition="loading"] .search-results-page::before {
 
 /* Mobile layout stabilization: keep narrow screens composed, not merely non-overflowing. */
 @media (max-width: 760px) {
+  .site-main {
+    padding-bottom: calc(4rem + env(safe-area-inset-bottom));
+  }
+
+  .contact-form {
+    gap: 0.9rem;
+    padding-bottom: calc(5.25rem + env(safe-area-inset-bottom));
+  }
+
+  .contact-form-summary,
+  .contact-form-success {
+    gap: 0.5rem;
+    padding: 0.82rem;
+  }
+
+  .contact-form-summary h2,
+  .contact-form-success h2 {
+    font-size: clamp(1.25rem, 7vw, 1.65rem);
+    line-height: 1.05;
+  }
+
+  .field-error,
+  .contact-message-counter {
+    font-size: 0.9rem;
+    line-height: 1.42;
+  }
+
   .site-header .mobile-navigation {
     padding-block-start: 0.58rem;
     padding-block-end: calc(0.9rem + env(safe-area-inset-bottom));
@@ -13280,5 +13327,19 @@ html[data-search-transition="loading"] .search-results-page::before {
   .search-local-shelf-remove {
     justify-self: start;
     align-self: start;
+  }
+}
+
+/* iOS mobile closure: menu layer starts below the fixed visual header, never over the toggle. */
+@media (max-width: 760px) {
+  .site-header .mobile-navigation {
+    position: fixed;
+    top: calc(var(--mobile-fixed-header-height, 4.5rem) + 0.45rem);
+    right: max(var(--mobile-content-gutter, 1rem), env(safe-area-inset-right));
+    bottom: auto;
+    left: max(var(--mobile-content-gutter, 1rem), env(safe-area-inset-left));
+    max-height: min(58dvh, 18rem);
+    border: 1px solid rgba(35, 10, 44, 0.16);
+    border-radius: 0 0 0.82rem 0.82rem;
   }
 }

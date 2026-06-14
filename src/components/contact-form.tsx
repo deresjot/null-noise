@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useRef, useState } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 
 import { LoadingState } from "@/components/loading-state";
 
@@ -12,6 +12,20 @@ type ContactErrors = {
 
 function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function moveFocusToStatus(target: HTMLDivElement | null) {
+  if (!target) {
+    return;
+  }
+
+  const header = document.querySelector(".site-header");
+  const headerBottom = header instanceof HTMLElement ? header.getBoundingClientRect().bottom : 0;
+  const targetTop = target.getBoundingClientRect().top;
+  const nextTop = Math.max(0, window.scrollY + targetTop - headerBottom - 12);
+
+  window.scrollTo({ left: 0, top: nextTop, behavior: "auto" });
+  target.focus({ preventScroll: true });
 }
 
 export function ContactForm() {
@@ -33,6 +47,17 @@ export function ContactForm() {
   const isSubmitting = status === "submitting";
   const remainingCharactersText =
     remainingCharacters === 1 ? "Noch 1 Zeichen fehlt." : `Noch ${remainingCharacters} Zeichen fehlen.`;
+
+  useEffect(() => {
+    if (hasErrors) {
+      window.requestAnimationFrame(() => moveFocusToStatus(errorSummaryRef.current));
+      return;
+    }
+
+    if (status === "success") {
+      window.requestAnimationFrame(() => moveFocusToStatus(successRef.current));
+    }
+  }, [hasErrors, status]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -59,7 +84,6 @@ export function ContactForm() {
     setStatus("idle");
 
     if (Object.keys(nextErrors).length > 0) {
-      window.requestAnimationFrame(() => errorSummaryRef.current?.focus());
       return;
     }
 
@@ -85,7 +109,6 @@ export function ContactForm() {
           if (payload.fieldErrors) {
             setErrors(payload.fieldErrors);
             setStatus("idle");
-            window.requestAnimationFrame(() => errorSummaryRef.current?.focus());
             return;
           }
           messageFromServer = payload.error ?? "";
@@ -103,20 +126,17 @@ export function ContactForm() {
 
         setErrors({ form: serverMessage });
         setStatus("idle");
-        window.requestAnimationFrame(() => errorSummaryRef.current?.focus());
         return;
       }
 
       await response.json().catch(() => ({}));
       setErrors({});
       setStatus("success");
-      window.requestAnimationFrame(() => successRef.current?.focus());
     } catch {
       setErrors({
         form: "Die Nachricht konnte wegen eines Netzwerkfehlers nicht gesendet werden. Bitte versuche es später erneut.",
       });
       setStatus("idle");
-      window.requestAnimationFrame(() => errorSummaryRef.current?.focus());
     }
   }
 
