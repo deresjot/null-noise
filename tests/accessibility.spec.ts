@@ -1122,19 +1122,35 @@ test("mobile detail posters sit directly below the title heading", async ({ page
 
 test("search local shelf keeps remembered and seen cards readable", async ({ page }) => {
   await page.addInitScript(() => {
-    const entry = {
+    const rememberedEntry = {
+      href: "/titel/mondfenster",
+      key: "tmdb:movie:54321",
+      meta: "Film · Animation · 2009",
+      posterSrc: "/poster/mondfenster.svg",
+      reason: "Eher ruhig",
+      savedAt: Date.now(),
+      title: "Ice Age 3 - Die Dinosaurier sind los",
+      toneLabel: "Eher ruhig",
+    };
+    const seenEntry = {
       href: "/titel/mondfenster",
       key: "tmdb:movie:12345",
-      meta: "Film · Action · 1987",
+      meta: "Film · Animation · 2011",
       posterSrc: "/poster/mondfenster.svg",
-      reason: "Eher intensiv",
+      reason: "Eher ruhig",
       savedAt: Date.now(),
-      title: "Masters of the Universe",
-      toneLabel: "Eher intensiv",
+      title: "Cars 2",
+      toneLabel: "Eher ruhig",
     };
 
-    window.localStorage.setItem("null-noise-remembered-titles", JSON.stringify({}));
-    window.localStorage.setItem("null-noise-seen-titles", JSON.stringify({ [entry.key]: entry }));
+    window.localStorage.setItem(
+      "null-noise-remembered-titles",
+      JSON.stringify({ [rememberedEntry.key]: rememberedEntry }),
+    );
+    window.localStorage.setItem(
+      "null-noise-seen-titles",
+      JSON.stringify({ [seenEntry.key]: seenEntry }),
+    );
     window.localStorage.removeItem("null-noise-hide-seen");
   });
 
@@ -1143,10 +1159,11 @@ test("search local shelf keeps remembered and seen cards readable", async ({ pag
 
   const shelf = page.locator(".search-local-shelf");
   await expect(shelf.getByRole("heading", { name: "Für später und schon gesehen" })).toBeVisible();
-  await expect(shelf.getByRole("heading", { exact: true, name: "Für später gemerkt" })).toHaveCount(0);
+  await expect(shelf.getByRole("heading", { exact: true, name: "Für später gemerkt" })).toBeVisible();
   await expect(shelf.getByRole("heading", { exact: true, name: "Schon gesehen" })).toBeVisible();
-  await expect(shelf.getByRole("link", { name: "Masters of the Universe" })).toBeVisible();
-  await expect(page.locator(".search-local-shelf-grid")).toHaveAttribute("data-groups", "1");
+  await expect(shelf.getByRole("link", { name: "Ice Age 3 - Die Dinosaurier sind los" })).toBeVisible();
+  await expect(shelf.getByRole("link", { name: "Cars 2" })).toBeVisible();
+  await expect(page.locator(".search-local-shelf-grid")).toHaveAttribute("data-groups", "2");
 
   const metrics = await page.evaluate(() => {
     const rect = (selector: string) => {
@@ -1177,13 +1194,19 @@ test("search local shelf keeps remembered and seen cards readable", async ({ pag
   });
 
   expect(metrics.overflow).toBeLessThanOrEqual(1);
-  expect(metrics.groupCount).toBe(1);
+  expect(metrics.groupCount).toBe(2);
   expect(metrics.card?.width ?? 0).toBeGreaterThan(520);
-  expect(metrics.card?.width ?? 0).toBeCloseTo(metrics.grid?.width ?? 0, 0);
   expect(metrics.copy?.width ?? 0).toBeGreaterThan(360);
   expect(metrics.title?.height ?? 0).toBeLessThan(60);
-  expect(metrics.button?.left ?? 0).toBeGreaterThanOrEqual(metrics.copy?.left ?? 0);
-  expect(metrics.button?.top ?? 0).toBeGreaterThan(metrics.copy?.top ?? 0);
+  expect(metrics.button?.left ?? 0).toBeGreaterThan(metrics.copy?.right ?? 0);
+  expect(Math.abs((metrics.button?.top ?? 0) - (metrics.card?.top ?? 0))).toBeLessThan(90);
+
+  await shelf.getByLabel("Schon gesehene Titel hier ausblenden").check();
+  await expect(shelf.getByRole("heading", { exact: true, name: "Für später gemerkt" })).toBeVisible();
+  await expect(shelf.getByRole("heading", { exact: true, name: "Schon gesehen" })).toHaveCount(0);
+  await expect(shelf.getByRole("link", { name: "Cars 2" })).toHaveCount(0);
+  await expect(shelf.getByText("1 schon gesehener Titel ist hier ausgeblendet.")).toBeVisible();
+  await expect(page.locator(".search-local-shelf-grid")).toHaveAttribute("data-groups", "1");
 });
 
 test("mobile search menu stays compact and keeps proportional focus styling", async ({ page }) => {

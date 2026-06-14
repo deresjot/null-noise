@@ -85,6 +85,7 @@ function PocketList({
   title: string;
 }) {
   const visibleItems = items.slice(0, 4);
+  const removeLabel = removeKind === "remembered" ? "Entfernen" : "Zurücknehmen";
 
   return (
     <section className="search-local-shelf-group" aria-labelledby={`local-shelf-${removeKind}`}>
@@ -113,14 +114,45 @@ function PocketList({
                   <Link href={item.href}>{item.title}</Link>
                 </h3>
                 <p className="field-note">{item.toneLabel}</p>
-                <p className="field-note search-local-shelf-reason">{item.reason}</p>
+                {item.reason.trim().toLowerCase() !== item.toneLabel.trim().toLowerCase() ? (
+                  <p className="field-note search-local-shelf-reason">{item.reason}</p>
+                ) : null}
               </div>
               <button
                 className="quiet-button search-local-shelf-remove"
+                data-action={removeKind}
                 type="button"
                 onClick={() => onRemove(item)}
               >
-                {removeKind === "remembered" ? "Entfernen" : "Zurücknehmen"}
+                <span className="search-local-shelf-remove-icon" aria-hidden="true">
+                  {removeKind === "remembered" ? (
+                    <svg fill="none" height="18" viewBox="0 0 24 24" width="18">
+                      <path
+                        d="M6 6l12 12M18 6 6 18"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeWidth="2.2"
+                      />
+                    </svg>
+                  ) : (
+                    <svg fill="none" height="18" viewBox="0 0 24 24" width="18">
+                      <path
+                        d="M9 8H5v4"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2.2"
+                      />
+                      <path
+                        d="M5.5 11.5A7 7 0 1 0 8 6.2"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeWidth="2.2"
+                      />
+                    </svg>
+                  )}
+                </span>
+                <span>{removeLabel}</span>
               </button>
             </article>
           </li>
@@ -177,12 +209,12 @@ export function SearchLocalShelf({
           title: "Für später gemerkt",
         },
         {
-          items: seen,
+          items: hideSeenTitles ? [] : seen,
           removeKind: "seen" as const,
           title: "Schon gesehen",
         },
       ].filter((group) => group.items.length > 0),
-    [remembered, seen],
+    [hideSeenTitles, remembered, seen],
   );
 
   function commitLocalChange(
@@ -297,14 +329,19 @@ export function SearchLocalShelf({
         </p>
       ) : null}
 
-      {hideSeenTitles && hiddenSeenCount ? (
+      {hideSeenTitles && seen.length ? (
         <p className="field-note search-local-shelf-hidden-note">
-          {hiddenSeenCount} {hiddenSeenCount === 1 ? "Titel ist" : "Titel sind"} im Browse gerade
-          ausgeblendet.
+          {seen.length}{" "}
+          {seen.length === 1 ? "schon gesehener Titel ist" : "schon gesehene Titel sind"} hier
+          ausgeblendet
+          {hiddenSeenCount
+            ? `; ${hiddenSeenCount} ${hiddenSeenCount === 1 ? "Titel ist" : "Titel sind"} auch im Browse ausgeblendet`
+            : ""}
+          .
         </p>
       ) : null}
 
-      {hasContent ? (
+      {visibleGroups.length ? (
         <div className="search-local-shelf-grid" data-groups={visibleGroups.length}>
           {visibleGroups.map((group) => (
             <PocketList
@@ -316,7 +353,7 @@ export function SearchLocalShelf({
             />
           ))}
         </div>
-      ) : (
+      ) : hasContent ? null : (
         <p className="field-note search-local-shelf-empty">
           Noch nichts gemerkt oder als gesehen markiert. Wenn du später etwas festhalten willst,
           landet es hier.
