@@ -10,7 +10,7 @@
     "db:seed": "node --import tsx prisma/seed.ts",
     "db:bootstrap": "npm run db:migrate:dev && npm run db:seed",
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint .",
     "test:unit": "node --import tsx prisma/require-test-database-url.ts && DATABASE_URL=$NULL_NOISE_TEST_DATABASE_URL NULL_NOISE_SKIP_LEGACY_IMPORT=true prisma migrate deploy && DATABASE_URL=$NULL_NOISE_TEST_DATABASE_URL NULL_NOISE_SKIP_LEGACY_IMPORT=true vitest run --maxWorkers=1",
