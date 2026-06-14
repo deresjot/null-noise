@@ -51,6 +51,11 @@ export function PreviewGate({ children }: PreviewGateProps) {
 
   return (
     <main className="preview-gate" aria-labelledby="preview-gate-heading">
+      <div className="preview-gate-atmosphere" aria-hidden="true">
+        <span className="preview-gate-glow preview-gate-glow-one" />
+        <span className="preview-gate-glow preview-gate-glow-two" />
+        <span className="preview-gate-grain" />
+      </div>
       <section className="preview-gate-panel">
         <div className="preview-gate-brand" aria-hidden="true">
           <Image
@@ -68,8 +73,7 @@ export function PreviewGate({ children }: PreviewGateProps) {
             width={1920}
           />
         </div>
-        <p className="eyebrow">Private Vorschau</p>
-        <h1 id="preview-gate-heading">null-noise</h1>
+        <h1 id="preview-gate-heading">Private Vorschau</h1>
         <p className="preview-gate-copy">
           Eine ruhige Entscheidungshilfe für Filme und Serien: erste Einschätzungen,
           grobe Reizwirkung und ein kleiner lokaler Merkbereich, ohne Konto oder Tracking.
@@ -90,7 +94,35 @@ export function PreviewGate({ children }: PreviewGateProps) {
               }}
             />
             <button className="primary-button" type="submit">
-              Vorschau öffnen
+              <svg
+                aria-hidden="true"
+                className="preview-gate-button-icon"
+                fill="none"
+                height="20"
+                viewBox="0 0 24 24"
+                width="20"
+              >
+                <path
+                  d="M7 10V8a5 5 0 0 1 10 0v2"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                />
+                <path
+                  d="M6.5 10h11A1.5 1.5 0 0 1 19 11.5v7A1.5 1.5 0 0 1 17.5 20h-11A1.5 1.5 0 0 1 5 18.5v-7A1.5 1.5 0 0 1 6.5 10Z"
+                  stroke="currentColor"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                />
+                <path
+                  d="M12 14v2.25"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeWidth="2"
+                />
+              </svg>
+              <span>Vorschau öffnen</span>
             </button>
           </div>
           {error ? (

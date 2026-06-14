@@ -87,7 +87,7 @@ test.describe("preview gate", () => {
   test("shows the teaser landing page and unlocks with preview", async ({ page }) => {
     await page.goto("/");
 
-    await expect(page.getByRole("heading", { name: "null-noise" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Private Vorschau" })).toBeVisible();
     await expect(page.getByText("Eine ruhige Entscheidungshilfe für Filme und Serien")).toBeVisible();
     await expect(page.getByLabel("Passwort")).toBeFocused();
     await expect(page.locator(".site-header")).toHaveCount(0);
