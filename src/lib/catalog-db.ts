@@ -500,13 +500,19 @@ export async function ensureCatalogBootstrapped(client: PrismaClient = prisma): 
 
   bootstrapPromise = (async () => {
     try {
-      await client.$transaction(async (tx) => {
-        for (const seed of mockTitleSeeds) {
-          await upsertTitleSeed(tx, seed);
-        }
+      await client.$transaction(
+        async (tx) => {
+          for (const seed of mockTitleSeeds) {
+            await upsertTitleSeed(tx, seed);
+          }
 
-        await importLegacyWriteStore(tx);
-      });
+          await importLegacyWriteStore(tx);
+        },
+        {
+          maxWait: 10_000,
+          timeout: 15_000,
+        },
+      );
     } catch (error) {
       const mappedError = toCatalogStoreUnavailableError(error);
 
