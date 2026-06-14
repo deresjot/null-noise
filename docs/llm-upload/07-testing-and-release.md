@@ -16,6 +16,14 @@ Diese Datei beschreibt, wie `null-noise` Accessibility testet und wo die Grenzen
 - Keine ENV-Änderung, keine Migration, kein weiterer Seed-Lauf im Abschluss.
 - Offen: Full Accessibility-Suite nach den finalen Hotfixes erneut laufen lassen.
 
+## Mobile-iOS-Fokus-/Safe-Area-Pass 14. Juni 2026
+
+- Routewechsel setzen Fokus auf den neuen Hauptinhalt und starten oben; Hash-Ziele für Feedback-/Statusbereiche bleiben gezielt erreichbar.
+- Sticky-Header-Offsets schützen `main`, Überschriften, Statusbereiche und Detail-Zurücklinks vor Überdeckung.
+- Kontakt-Fehler- und Erfolgsmeldungen erhalten sichtbar Fokus; Submit-Button und Seitenende haben zusätzliche iOS-Safe-Area-Abstände.
+- Mobile-Menü fokussiert beim Öffnen den ersten Navigationslink und gibt Fokus per Escape an den Menübutton zurück.
+- `npm run test:a11y` enthält einen iPhone-Pro-Max-Smoke mit `430 x 932` CSS-Pixeln, Touch, Mobile-Safari-User-Agent, Header-Überdeckung, Kontakt-Bottom-Actions, Detail-Reihenfolge und Overflow-Checks.
+
 ## Ziel
 
 Accessibility wird in `null-noise` nicht über eine einzelne Konformitätsaussage abgesichert, sondern über einen kleinen, wiederholbaren Prüfpfad:
@@ -71,6 +79,7 @@ WCAG 2.2 Level AA ist der technische Zielstandard. Die Prüfung orientiert sich 
 - kleiner Reflow-Smoke-Test auf den Kernrouten bei `320 CSS-Pixeln`, damit offensichtliches horizontales Overflow früh auffällt
 - gezielter Mobile-Viewport-Smoke bei `390 CSS-Pixeln` und `430 CSS-Pixeln`: Menü im Viewport, opake Menüfläche, gemeinsame Content-Breite von Header/Menü/Main, Touch-Ziel-Höhen und entdichtete Kartenaktionen
 - verschärfter Mobile-Bounds-Smoke bei `320`, `390` und `430 CSS-Pixeln`: zentrale Cards, Formulare, WCAG-Matrix, Status-Badges, Footer-Releasebereiche und Navigation müssen mit ihrer Bounding-Box innerhalb des Viewports bleiben
+- iPhone-Pro-Max-Smoke bei `430 x 932` CSS-Pixeln mit Touch und Mobile-Safari-User-Agent: Header darf Fokusziele nicht überdecken, Routewechsel starten oben, Kontakt-Submit bleibt mit Safe-Area-Abstand erreichbar, Mobile-Menü setzt Fokus sauber und Detailseiten behalten Poster/Einschätzung in der erwarteten Reihenfolge
 - Unit-Kalibrierung für Evidence Engine v2: dünne Datenlage, widersprüchliche Metadaten, Relief, Genre-only, emotionale Last ohne sensorische Dichte und deterministische TMDb-Browse-Diversität
 - Unit-Checks für situative Discovery-Copy: Browse-Mix-Namen, Nicht-jetzt-Sprache, keine sichtbaren Scores/Prozentwerte/Rankings und keine personalisierte Empfehlungssprache
 

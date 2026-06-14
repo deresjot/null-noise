@@ -20,6 +20,13 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 ## Letzte lokale Arbeitsblöcke
 
+- Mobile-iOS-Fokus-/Safe-Area-Pass 14. Juni 2026:
+  - Clientseitige Routewechsel setzen den Fokus auf den neuen Hauptinhalt und starten oben; Hash-Ziele wie Feedback-Status bleiben gezielt anspringbar.
+  - Sticky-Header-Offsets wurden für `main`, Überschriften, Statusbereiche und Detail-Zurücklinks abgesichert, damit fokussierte Inhalte nicht unter dem Header liegen.
+  - Kontakt-Fehler-/Erfolgsmeldungen scrollen sichtbar unter die Headerkante; Submit-Button und Seitenende haben zusätzliche Safe-Area-Abstände für iOS-Safari.
+  - Das geöffnete Mobile-Menü setzt Fokus in die Navigation und gibt ihn per Escape an den Menübutton zurück.
+  - Playwright ergänzt einen iPhone-Pro-Max-Smoke mit `430 x 932` CSS-Pixeln, Touch, Mobile-Safari-User-Agent und Checks für Header-Überdeckung, Bottom-Actions, Detail-Reihenfolge und Overflow.
+  - Lokale Checks: `npm run lint`, `npm run build`, `npm run test:unit`, `npm run test:axe-core`, `npm run test:a11y`, `npm run test:wcag22-aa`, `git diff --check` bestanden.
 - Production-Launch-Hotfixes 14. Juni 2026:
   - `9701747 fix: skip catalog bootstrap when seeds exist`: vorhandener Seed-Katalog mit Aggregaten wird beim Cold Start erkannt, statt erneut vollständig upserted zu werden.
   - `b128190 chore: log catalog bootstrap failures`: nicht-sensitives Runtime-Logging fuer Katalog-Bootstrap-Fehlertypen ergänzt; keine ENV- oder Secret-Werte werden geloggt.

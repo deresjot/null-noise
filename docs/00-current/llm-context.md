@@ -4,7 +4,7 @@
 
 - aktiver lokaler Arbeitsbranch: `null-noise`
 - aktueller Stand: Production-Launch vom 14. Juni 2026 ist live auf `https://www.null-noise.de`; letzter gepushter Commit ist `cc5ee52 fix: generate prisma client during build`
-- Release-Metadaten stehen auf `0.8.4-production-launch.20260614`
+- Release-Metadaten stehen auf `0.8.4-mobile-ios-focus.20260614`
 - Preview-Gate ist clientseitig vorgeschaltet: Teaser-Landingpage mit Logo, Projektbeschreibung und Passwortfeld; Phrase ist `preview`, keine Security-Grenze
 - kanonische öffentliche Adresse: https://www.null-noise.de
 - Apex-Domain: https://null-noise.de leitet in Vercel per `308 Permanent Redirect` auf https://www.null-noise.de weiter
@@ -42,6 +42,8 @@
 - Mobile Header: geöffnetes Menü bleibt kompakt, innerhalb der Contentbreite und unterscheidet aktive Route von Tastaturfokus; Menübutton-Fokus ist sichtbar, aber proportional.
 - Mobile Cards: Ergebnis-Cards sind dichter, Poster dominieren nicht, Aktionen behalten Text und Touch-Ziele; CTA-/Memory-Zonen überlagern Poster nicht.
 - Mobile Details: lokale und externe Detailseiten setzen das Detailposter direkt unter die `h1` und vor die erste Einschätzung.
+- Mobile-iOS-Pass 14. Juni 2026: Routewechsel fokussieren den neuen Hauptinhalt, Hash-/Feedback-Ziele behalten gezielten Scroll, Sticky-Header-Offsets schützen fokussierte Inhalte, Kontaktstatus scrollt sichtbar unter die Headerkante und das Formular nutzt zusätzliche iOS-Safe-Area-Abstände.
+- Mobile-Testabdeckung: `npm run test:a11y` enthält jetzt einen iPhone-Pro-Max-Smoke mit `430 x 932` CSS-Pixeln, Touch, Mobile-Safari-User-Agent, Menü-Fokus, Header-Überdeckung, Kontakt-Bottom-Actions und Detail-Reihenfolge.
 - Poster-Kostenstand: externe TMDb-Poster laufen über `/api/poster/tmdb/*`; Karten verwenden thumbnail-realistische `sizes`, Detailposter `w780`, Fallbacks bleiben erhalten.
 - Postgres-Writes erst fortsetzen, wenn eine dedizierte wegwerfbare Test-DB als `NULL_NOISE_TEST_DATABASE_URL` vorhanden ist, `npm run test:unit` damit gruen läuft und die Production-Migration bewusst freigegeben ist; keine SQLite-Datei und keine gemeinsame Development-DB als Test- oder Production-Ersatz verwenden.
 - Aktueller lokaler Check mit Test-DB: `npm run test:unit` 16 Dateien / 94 Tests bestanden; `npm run lint`, `npm run build`, `npm run test:axe-core`, `npm run test:a11y`, `npm run test:wcag22-aa` und `git diff --check` bestanden.
