@@ -542,6 +542,10 @@ export async function ensureCatalogBootstrapped(client: PrismaClient = prisma): 
       const mappedError = toCatalogStoreUnavailableError(error);
 
       if (mappedError) {
+        console.error("catalog bootstrap unavailable", {
+          code: error instanceof Prisma.PrismaClientKnownRequestError ? error.code : undefined,
+          name: error instanceof Error ? error.name : typeof error,
+        });
         throw mappedError;
       }
 
