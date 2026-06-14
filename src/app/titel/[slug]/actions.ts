@@ -1,7 +1,7 @@
 "use server";
 
 import { cookies, headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 
 import {
   appendStoredRating,
@@ -128,7 +128,8 @@ export async function submitTitleRatingAction(slug: string, formData: FormData):
       status: "accepted",
       submittedAt: new Date(now).toISOString(),
     });
-  } catch {
+  } catch (error) {
+    unstable_rethrow(error);
     redirectToRatingStatus(slug, "error");
   }
 
