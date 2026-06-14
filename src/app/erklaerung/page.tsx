@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
-import { siteName } from "@/lib/constants";
+import { publicSiteUrl, siteName } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: `Erklärung und Hilfe | ${siteName}`,
@@ -22,6 +22,10 @@ export default function ExplanationPage() {
         <p>
           null-noise ist ein privates Hobby- und Referenzprojekt von Sebastian Jansen. Die App hilft,
           Filme und Serien grob nach ihrer vermuteten Reizwirkung einzuordnen.
+        </p>
+        <p className="field-note">
+          Kanonische Live-Adresse ist <a href={publicSiteUrl}>www.null-noise.de</a>. Die Vorschau
+          ist aktuell noch mit einer einfachen privaten Vorschaltseite versehen.
         </p>
       </div>
 
@@ -61,6 +65,21 @@ export default function ExplanationPage() {
             einen eigenen kleinen Stand behalten willst.
           </li>
         </ol>
+      </section>
+
+      <section className="panel section-stack" aria-labelledby="live-heading">
+        <h2 id="live-heading">Was ist der aktuelle Stand?</h2>
+        <p>
+          Die öffentliche Adresse ist <a href={publicSiteUrl}>www.null-noise.de</a>. Die Apex-Domain
+          null-noise.de leitet dauerhaft auf diese www-Adresse weiter. Die Vercel-Projektadresse
+          bleibt nur ein technischer Hintergrundpfad und ist nicht die öffentliche kanonische Adresse.
+        </p>
+        <p>
+          Die App läuft auf Vercel mit Prisma Postgres für den lokalen Titelstand und stille
+          Einschätzungen. Externe Titeldaten werden serverseitig aus TMDb gelesen, wenn eine Suche
+          oder Detailansicht sie braucht. Kontakt läuft serverseitig per SMTP und wird nicht in einer
+          Projektdatenbank gesammelt.
+        </p>
       </section>
 
       <div className="content-grid">
@@ -179,7 +198,7 @@ export default function ExplanationPage() {
           <section aria-labelledby="workflow-heading">
             <h3 id="workflow-heading">Arbeitsweise</h3>
             <p>
-              ChatGPT 5.5 Thinking wurde für Produktlogik, Textschärfung, Barrierefreiheitsfragen und
+              ChatGPT wurde für Produktlogik, Textschärfung, Barrierefreiheitsfragen und
               Architekturentscheidungen genutzt. Codex setzt diese Entscheidungen im Repository um:
               Dateien lesen, Komponenten ändern, Tests anpassen, Builds ausführen, Fehler einordnen
               und kleine Iterationen wiederholen.
@@ -202,8 +221,8 @@ export default function ExplanationPage() {
             <p>
               Dazu kommen Next.js als Web-Framework, React für die UI-Komponenten, Node.js für die
               lokale Ausführung, Vitest für Unit-Tests, Playwright für Browser-Tests, axe-core für
-              automatisierte Barrierefreiheitsprüfungen und Prisma/SQLite für lokale
-              Datenbankpfade.
+              automatisierte Barrierefreiheitsprüfungen und Prisma Postgres für den persistierten
+              lokalen Titelstand.
             </p>
           </section>
 
@@ -216,9 +235,10 @@ export default function ExplanationPage() {
               Metadaten und null-noise-Einschätzung.
             </p>
             <p>
-              Automatisierte Prüfungen laufen mit ESLint, Next.js-Build, Vitest, Playwright und
-              axe-core. Sie prüfen unter anderem Rendering, Datenlogik, Tastaturpfade, Landmarken,
-              Reflow und erkennbare Barrierefreiheitsprobleme.
+              Automatisierte Prüfungen laufen mit ESLint, <code>prisma generate</code>, Next.js-Build,
+              Vitest, Playwright, axe-core und einer technischen WCAG-2.2-AA-Matrix. Sie prüfen unter
+              anderem Rendering, Datenlogik, Tastaturpfade, Landmarken, Reflow und erkennbare
+              Barrierefreiheitsprobleme.
             </p>
           </section>
 

@@ -1,12 +1,24 @@
 import packageJson from "../../package.json";
 
 export const currentBuild = {
-  version: `${packageJson.version}-production-launch.20260614`,
-  label: "Production launch",
+  version: `${packageJson.version}-content-canonical-refresh.20260614`,
+  label: "Content and canonical refresh",
   releasedAt: "2026-06-14",
 };
 
 export const releaseNotes = [
+  {
+    version: `${packageJson.version}-content-canonical-refresh.20260614`,
+    label: "Content and canonical refresh",
+    releasedAt: "2026-06-14",
+    entries: [
+      "Route-specific canonical metadata now points search, detail, contact, legal and help pages to their own www.null-noise.de URLs instead of the home page.",
+      "The explanation page now describes the current live address, Vercel hosting, Prisma Postgres data path, server-side TMDb reads and SMTP contact boundary.",
+      "The accessibility page now references www.null-noise.de, the current WCAG 2.2 AA technical test path and the remaining manual/device-review boundary.",
+      "Privacy, contact and imprint copy now reflect the private preview gate, visible contact address, server-side SMTP contact handling and canonical www domain.",
+      "No product logic, database schema, environment variables or write behavior changed in this content pass.",
+    ],
+  },
   {
     version: `${packageJson.version}-production-launch.20260614`,
     label: "Production launch",

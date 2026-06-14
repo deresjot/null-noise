@@ -1310,9 +1310,10 @@ test("accessibility page is reachable and explains the current testing scope", a
   await expect(testingPanel).toContainText("Automatisierte Tests ersetzen keine manuelle Prüfung");
   await expect(testingPanel).toContainText("Automatisierte Tests im Projekt");
   await expect(testingPanel).toContainText("npm run test:a11y");
+  await expect(testingPanel).toContainText("npm run test:wcag22-aa");
   await expect(testingPanel).toContainText("npm run test:wcag22-aaa");
   await expect(testingPanel).toContainText("Technische WCAG-2.2-A/AA/AAA-Matrix");
-  await expect(testingPanel).toContainText("86 WCAG-2.2-A/AA/AAA-Erfolgskriterien");
+  await expect(testingPanel).toContainText("Im aktuellen Matrixstand");
   await expect(testingPanel).toContainText("Technischer Stand nach Level");
   await expect(testingPanel).toContainText("Barrierefreiheit, Kontakt, Datenschutz und Impressum");
   await expect(testingPanel).toContainText("A-Kriterien ohne automatischen Fail");

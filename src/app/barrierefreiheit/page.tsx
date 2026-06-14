@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { publicContactEmail, siteName } from "@/lib/constants";
+import { publicContactEmail, publicSiteUrl, siteName } from "@/lib/constants";
 import {
   wcag22AaTechnicalMatrix,
   wcagTechnicalStatusLabels,
@@ -60,6 +60,10 @@ export default function BarrierefreiheitPage() {
           null-noise strebt WCAG 2.2 AA als technischen Zielstandard an. Die
           Standardoberfläche bleibt dabei der zugängliche Primärpfad.
         </p>
+        <p className="field-note">
+          Dieser Stand bezieht sich auf die kanonische Live-Adresse{" "}
+          <a href={publicSiteUrl}>www.null-noise.de</a>.
+        </p>
       </div>
 
       <section className="panel section-stack" aria-labelledby="status-heading">
@@ -69,8 +73,9 @@ export default function BarrierefreiheitPage() {
           Konformitätsprüfung und keine Behauptung vollständiger Konformität.
         </p>
         <p>
-          Prüfung und Umsetzung laufen iterativ. Gefundene Barrieren sollen in der normalen
-          Oberfläche behoben werden, nicht in einem separaten Sondermodus.
+          Die aktuellen automatisierten Checks laufen auf den Kernrouten inklusive Suche,
+          Detailseite, Kontakt, Datenschutz, Impressum und Erklärung. Gefundene Barrieren sollen in
+          der normalen Oberfläche behoben werden, nicht in einem separaten Sondermodus.
         </p>
       </section>
 
@@ -104,8 +109,9 @@ export default function BarrierefreiheitPage() {
               React-Struktur, Link-/Bildmuster und auffällige Codefehler.
             </li>
             <li>
-              <code>npm run build</code>: Der Next.js-Produktionsbuild prüft Typen, Routing,
-              Server-/Client-Grenzen, statische Seiten und die Manifest-/Offline-Routen.
+              <code>npm run build</code>: Der Build erzeugt zuerst den Prisma Client und prüft dann
+              mit Next.js Typen, Routing, Server-/Client-Grenzen, statische Seiten und die
+              Manifest-/Offline-Routen.
             </li>
             <li>
               <code>npm run test:unit</code>: Vitest prüft Datenlogik, Suchlogik, Evidence-Modell,
@@ -123,9 +129,8 @@ export default function BarrierefreiheitPage() {
               mobile Navigation, Manifest und Reflow.
             </li>
             <li>
-              <code>npx playwright test</code>: Der vollständige Browserlauf umfasst die
-              A11y-Checks plus weitere End-to-End-Prüfungen; externe TMDb-Live-Fallbacks laufen
-              nur, wenn die nötige Umgebung verfügbar ist.
+              <code>npm run test:wcag22-aa</code>: Die technische WCAG-2.2-A/AA-Matrix prüft den
+              wiederholbaren Teil der Erfolgskriterien auf den Kernrouten.
             </li>
           </ul>
         </section>
@@ -133,14 +138,15 @@ export default function BarrierefreiheitPage() {
         <section className="subsection" aria-labelledby="wcag-matrix-heading">
           <h3 id="wcag-matrix-heading">Technische WCAG-2.2-A/AA/AAA-Matrix</h3>
           <p>
-            Der Gegencheck <code>npm run test:wcag22-aaa</code> erfasst alle 86
-            WCAG-2.2-A/AA/AAA-Erfolgskriterien in einer technischen Matrix. Im letzten
-            lokalen Lauf waren {passedTechnicalChecks.length} Kriterien automatisiert
-            auf Pass geprüft; {failedTechnicalChecks.length} Kriterien hatten einen
-            automatischen Fail; {manualTechnicalChecks.length} Kriterien bleiben manuell
-            offen; {notApplicableTechnicalChecks.length} Kriterien waren im geprüften
-            Feature-Scope nicht anwendbar. Das ist eine Regression-Absicherung, keine
-            vollständige manuelle WCAG-Konformitätsbewertung und kein AAA-Konformitätsziel.
+            Der Gegencheck <code>npm run test:wcag22-aa</code> erfasst die technische
+            WCAG-2.2-A/AA-Matrix. Ergänzend kann <code>npm run test:wcag22-aaa</code> explorativ
+            auch AAA-Kriterien dokumentieren. Im aktuellen Matrixstand sind{" "}
+            {passedTechnicalChecks.length} Kriterien automatisiert auf Pass geprüft;{" "}
+            {failedTechnicalChecks.length} Kriterien haben einen automatischen Fail;{" "}
+            {manualTechnicalChecks.length} Kriterien bleiben manuell offen;{" "}
+            {notApplicableTechnicalChecks.length} Kriterien sind im geprüften Feature-Scope nicht
+            anwendbar. Das ist eine Regression-Absicherung, keine vollständige manuelle
+            WCAG-Konformitätsbewertung und kein AAA-Konformitätsziel.
           </p>
           <section className="wcag-level-axis" aria-labelledby="wcag-level-axis-heading">
             <h4 id="wcag-level-axis-heading">Technischer Stand nach Level</h4>
@@ -248,7 +254,8 @@ export default function BarrierefreiheitPage() {
         <ul className="plain-list">
           <li>Datenbasis und erste Einschätzungen bleiben unsicher.</li>
           <li>Die manuelle Prüfung ist noch nicht vollständig abgeschlossen.</li>
-          <li>Screenreader- und Mobile-Prüfung werden weiter geschärft.</li>
+          <li>Screenreader- und echte Geräteprüfung werden weiter geschärft.</li>
+          <li>Lighthouse-Werte sind hilfreich, ersetzen aber keine Bedien- und Reflow-Prüfung.</li>
           <li>Externe Dienste und externe Websites sind nicht Teil dieser Seite.</li>
         </ul>
       </section>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { ContactForm } from "@/components/contact-form";
-import { siteName } from "@/lib/constants";
+import { publicContactEmail, siteName } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: `Kontakt | ${siteName}`,
@@ -25,6 +25,9 @@ export default function KontaktPage() {
           Schreib eine kurze Nachricht, wenn dir etwas auffällt oder du eine Rückmeldung zu
           null-noise geben möchtest.
         </p>
+        <p className="field-note">
+          Sichtbare Kontaktadresse: <a href={`mailto:${publicContactEmail}`}>{publicContactEmail}</a>.
+        </p>
       </div>
 
       <section className="panel section-stack" aria-labelledby="contact-privacy-heading">
@@ -37,6 +40,7 @@ export default function KontaktPage() {
           <li>Die E-Mail-Adresse ist freiwillig und wird nur als Antwortadresse genutzt.</li>
           <li>Es gibt kein Tracking, keine Profile und keine Konto-Funktion.</li>
           <li>Die Nachricht wird serverseitig als E-Mail verschickt, nicht in einer Projektdatenbank gespeichert.</li>
+          <li>Ohne E-Mail-Adresse ist die Nachricht trotzdem möglich, nur keine direkte Antwort.</li>
         </ul>
       </section>
 

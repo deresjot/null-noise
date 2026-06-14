@@ -22,6 +22,10 @@ export default function ImpressumPage() {
           null-noise ist ein privates Hobby- und Referenzprojekt von Sebastian Jansen. Die Seite
           erprobt digitale Barrierefreiheit, ruhige Web-UX und nachvollziehbare Reiz-Einordnung.
         </p>
+        <p className="field-note">
+          Kanonische öffentliche Adresse ist <a href={publicSiteUrl}>www.null-noise.de</a>; die
+          Apex-Domain leitet auf diese Adresse weiter.
+        </p>
       </div>
 
       <div className="content-grid">
@@ -54,6 +58,10 @@ export default function ImpressumPage() {
               <dd>
                 <a href={publicSiteUrl}>www.null-noise.de</a>
               </dd>
+            </div>
+            <div>
+              <dt>Hosting</dt>
+              <dd>Vercel</dd>
             </div>
           </dl>
         </section>

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { publicContactEmail, siteName } from "@/lib/constants";
+import { publicContactEmail, publicSiteUrl, siteName } from "@/lib/constants";
 import { arePublicWritesEnabled } from "@/lib/runtime-config";
 
 export const metadata: Metadata = {
@@ -26,6 +26,10 @@ export default function DatenschutzPage() {
           bleibt bewusst datensparsam: keine Nutzerkonten, keine Profile, kein Tracking und keine
           Analytics.
         </p>
+        <p className="field-note">
+          Diese Hinweise beziehen sich auf die kanonische öffentliche Adresse{" "}
+          <a href={publicSiteUrl}>www.null-noise.de</a>.
+        </p>
       </div>
 
       <section className="panel section-stack" aria-labelledby="privacy-purpose-heading">
@@ -44,7 +48,11 @@ export default function DatenschutzPage() {
         <section className="panel" aria-labelledby="privacy-data-heading">
           <h2 id="privacy-data-heading">Datensparsame Nutzung</h2>
           <ul className="plain-list">
-            <li>Es gibt keine Nutzerkonten und keine Login-Funktion.</li>
+            <li>Es gibt keine Nutzerkonten und keine Profil-Login-Funktion.</li>
+            <li>
+              Die private Vorschau-Abfrage ist nur eine einfache lokale Vorschalthürde und kein
+              Nutzerkonto.
+            </li>
             <li>Es werden keine Profile gebildet.</li>
             <li>Es gibt kein Tracking und keine Analytics.</li>
             <li>Es gibt keine Social Features wie Kommentare, Likes oder Follower-Logik.</li>
@@ -86,7 +94,7 @@ export default function DatenschutzPage() {
           </p>
           <p>
             {writesEnabled
-              ? "Zur Begrenzung wiederholter Abgaben können funktionale Schutzmechanismen wie ein kurzer Cooldown und pseudonyme technische Begrenzung genutzt werden. IP-Adressen sollen dabei nicht roh als Profilmerkmal gespeichert werden."
+              ? "Zur Begrenzung wiederholter Abgaben werden funktionale Schutzmechanismen wie Cooldown und pseudonyme technische Begrenzung genutzt. IP-Adressen werden dabei nicht roh als Profilmerkmal angezeigt oder als Nutzerprofil verwendet."
               : "Rate-Limit- oder Cooldown-Mechanismen für öffentliche Schreibpfade sind deshalb auf dieser Instanz nicht der aktive Nutzungspfad."}
           </p>
         </section>
@@ -99,9 +107,9 @@ export default function DatenschutzPage() {
             Antwortadresse genutzt.
           </p>
           <p>
-            Der Versand erfolgt serverseitig ueber ein konfiguriertes technisches Postfach beim
+            Der Versand erfolgt serverseitig über ein konfiguriertes technisches Postfach beim
             Mailhoster. null-noise speichert Kontaktanfragen nicht dauerhaft in einer
-            projektinternen Datenbank und legt fuer Kontaktanfragen keine IP-Adressen oder
+            projektinternen Datenbank und legt für Kontaktanfragen keine IP-Adressen oder
             User-Agent-Daten ab.
           </p>
           <p>Betreiber: Sebastian Jansen</p>
