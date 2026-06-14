@@ -949,6 +949,35 @@ test("global navigation progress is visible while route data is pending", async 
   await expect(progress.locator(".sr-only")).toHaveText("Seite wird geladen.");
   await expect(progress).toContainText("Seite lädt");
 
+  const progressPlacement = await page.evaluate(() => {
+    const header = document.querySelector(".site-header");
+    const progressElement = document.querySelector(".navigation-progress");
+    const headerBox = header?.getBoundingClientRect();
+    const progressBox = progressElement?.getBoundingClientRect();
+
+    return {
+      headerBottom: headerBox?.bottom ?? 0,
+      progressTop: progressBox?.top ?? 0,
+      progressWidth: progressBox?.width ?? 0,
+      viewportWidth: document.documentElement.clientWidth,
+    };
+  });
+  expect(Math.abs(progressPlacement.progressTop - progressPlacement.headerBottom)).toBeLessThanOrEqual(2);
+  expect(progressPlacement.progressWidth).toBeCloseTo(progressPlacement.viewportWidth, 0);
+
+  const earlyProgressValue = await page.locator(".navigation-progress").evaluate((element) => {
+    return Number.parseFloat(window.getComputedStyle(element).getPropertyValue("--navigation-progress-value"));
+  });
+
+  await page.waitForTimeout(420);
+
+  const laterProgressValue = await page.locator(".navigation-progress").evaluate((element) => {
+    return Number.parseFloat(window.getComputedStyle(element).getPropertyValue("--navigation-progress-value"));
+  });
+
+  expect(earlyProgressValue).toBeGreaterThan(0);
+  expect(laterProgressValue).toBeGreaterThan(earlyProgressValue);
+
   const animationName = await page.locator(".navigation-progress-bar").evaluate((bar) => {
     return window.getComputedStyle(bar).animationName;
   });
@@ -956,6 +985,16 @@ test("global navigation progress is visible while route data is pending", async 
 
   releaseRouteRequest?.();
   await pendingRouteFetch;
+  await page.waitForFunction(() => {
+    const progress = document.querySelector(".navigation-progress");
+    if (!(progress instanceof HTMLElement)) {
+      return false;
+    }
+
+    return Number.parseFloat(
+      window.getComputedStyle(progress).getPropertyValue("--navigation-progress-value"),
+    ) >= 0.98;
+  });
   await expect(page.locator(".navigation-progress")).toHaveAttribute("data-visible", "false");
 });
 

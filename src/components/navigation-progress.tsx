@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
 function isModifiedClick(event: MouseEvent): boolean {
@@ -97,8 +97,93 @@ export function NavigationProgress() {
   const searchParams = useSearchParams();
   const [isInteractionPending, setIsInteractionPending] = useState(false);
   const [activeRouteRequests, setActiveRouteRequests] = useState(0);
+  const [isProgressVisible, setIsProgressVisible] = useState(false);
+  const [headerBottom, setHeaderBottom] = useState(0);
+  const [progressValue, setProgressValue] = useState(0.08);
   const timeoutRef = useRef<number | null>(null);
+  const hideProgressTimeoutRef = useRef<number | null>(null);
+  const progressTimeoutRefs = useRef<number[]>([]);
+  const wasNavigatingRef = useRef(false);
   const isNavigating = isInteractionPending || activeRouteRequests > 0;
+
+  const clearProgressTimers = () => {
+    progressTimeoutRefs.current.forEach((timer) => window.clearTimeout(timer));
+    progressTimeoutRefs.current = [];
+  };
+
+  useEffect(() => {
+    const measureHeader = () => {
+      const header = document.querySelector(".site-header");
+      const bottom = header instanceof HTMLElement ? header.getBoundingClientRect().bottom : 0;
+
+      setHeaderBottom(Math.max(0, Math.round(bottom)));
+    };
+
+    measureHeader();
+    window.addEventListener("resize", measureHeader);
+    window.addEventListener("scroll", measureHeader, { passive: true });
+
+    const header = document.querySelector(".site-header");
+    const observer =
+      header instanceof HTMLElement && "ResizeObserver" in window
+        ? new ResizeObserver(measureHeader)
+        : null;
+
+    if (header instanceof HTMLElement) {
+      observer?.observe(header);
+    }
+
+    return () => {
+      window.removeEventListener("resize", measureHeader);
+      window.removeEventListener("scroll", measureHeader);
+      observer?.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (hideProgressTimeoutRef.current) {
+      window.clearTimeout(hideProgressTimeoutRef.current);
+      hideProgressTimeoutRef.current = null;
+    }
+
+    clearProgressTimers();
+
+    const wasNavigating = wasNavigatingRef.current;
+    wasNavigatingRef.current = isNavigating;
+
+    if (isNavigating) {
+      progressTimeoutRefs.current = [
+        window.setTimeout(() => {
+          setIsProgressVisible(true);
+          setProgressValue(0.12);
+        }, 0),
+        window.setTimeout(() => setProgressValue(0.36), 90),
+        window.setTimeout(() => setProgressValue(0.58), 360),
+        window.setTimeout(() => setProgressValue(0.76), 900),
+        window.setTimeout(() => setProgressValue(0.88), 1800),
+      ];
+
+      return;
+    }
+
+    if (wasNavigating || isProgressVisible) {
+      progressTimeoutRefs.current = [
+        window.setTimeout(() => {
+          setIsProgressVisible(true);
+          setProgressValue(1);
+        }, 0),
+      ];
+      hideProgressTimeoutRef.current = window.setTimeout(() => {
+        setIsProgressVisible(false);
+        setProgressValue(0.08);
+        hideProgressTimeoutRef.current = null;
+      }, 560);
+    }
+
+    return () => {
+      clearProgressTimers();
+    };
+  }, [isNavigating, isProgressVisible]);
 
   useEffect(() => {
     window.queueMicrotask(() => {
@@ -220,16 +305,28 @@ export function NavigationProgress() {
       if (timeoutRef.current) {
         window.clearTimeout(timeoutRef.current);
       }
+
+      if (hideProgressTimeoutRef.current) {
+        window.clearTimeout(hideProgressTimeoutRef.current);
+      }
+
+      clearProgressTimers();
     };
   }, []);
+
+  const progressStyle = {
+    "--navigation-progress-top": `${headerBottom}px`,
+    "--navigation-progress-value": progressValue,
+  } as CSSProperties;
 
   return (
     <div
       aria-atomic="true"
       aria-live="polite"
       className="navigation-progress"
-      data-visible={isNavigating ? "true" : "false"}
+      data-visible={isProgressVisible ? "true" : "false"}
       role="status"
+      style={progressStyle}
     >
       <span className="sr-only">{isNavigating ? "Seite wird geladen." : ""}</span>
       <span className="navigation-progress-box" aria-hidden="true">

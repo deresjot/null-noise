@@ -10841,56 +10841,67 @@ body {
 .navigation-progress {
   position: fixed;
   z-index: 1200;
-  top: calc(var(--mobile-fixed-header-height, 4.55rem) + 0.55rem);
-  right: max(1rem, env(safe-area-inset-right));
-  display: grid;
-  justify-items: end;
-  width: min(17rem, calc(100vw - 2rem));
+  top: var(--navigation-progress-top, var(--mobile-fixed-header-height, 5.55rem));
+  right: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 0.3rem;
   opacity: 0;
   pointer-events: none;
-  transform: translateY(-0.35rem);
+  transform: translateY(-100%);
+  visibility: hidden;
   transition:
-    opacity 140ms ease,
-    transform 140ms ease;
+    opacity 90ms ease,
+    transform 120ms ease,
+    visibility 0s linear 120ms;
 }
 
 .navigation-progress[data-visible="true"] {
   opacity: 1;
   transform: translateY(0);
+  visibility: visible;
+  transition-delay: 0s;
 }
 
 .navigation-progress-box {
-  display: grid;
+  display: block;
   width: 100%;
-  gap: 0.36rem;
-  padding: 0.55rem 0.62rem;
-  border: 1px solid rgba(21, 87, 212, 0.28);
-  border-left: 0.34rem solid #1557d4;
-  border-radius: 0.62rem;
-  background: #f7fbff;
-  color: var(--ink-heading);
-  box-shadow: 0 12px 28px rgba(24, 26, 33, 0.14);
+  height: 100%;
+  background: transparent;
+  color: transparent;
 }
 
 .navigation-progress-track {
   position: relative;
   display: block;
   width: 100%;
-  height: 0.42rem;
+  height: 100%;
   overflow: hidden;
-  border-radius: 999px;
-  background: rgba(21, 87, 212, 0.14);
+  border-radius: 0;
+  background: rgba(21, 87, 212, 0.12);
+  box-shadow: 0 1px 0 rgba(35, 10, 44, 0.08);
 }
 
 .navigation-progress-bar {
   position: absolute;
-  inset: 0 auto 0 0;
-  width: 46%;
+  inset: 0;
+  width: 100%;
   border-radius: inherit;
-  background: #1557d4;
+  background: linear-gradient(90deg, #1557d4, #5a87df 62%, #ff6a2b);
+  transform: scaleX(var(--navigation-progress-value, 0.08));
+  transform-origin: left center;
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .navigation-progress-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
   font-size: 0.82rem;
   font-weight: 800;
   line-height: 1.2;
@@ -10910,10 +10921,6 @@ body {
     animation: loading-state-step 960ms cubic-bezier(0.22, 1, 0.36, 1) infinite;
   }
 
-  .navigation-progress[data-visible="true"] .navigation-progress-bar {
-    animation: navigation-progress-sweep 1120ms cubic-bezier(0.22, 1, 0.36, 1) infinite;
-  }
-
   .loading-state-mark span:nth-child(2) {
     animation-delay: 120ms;
   }
@@ -10923,17 +10930,10 @@ body {
   }
 }
 
-@keyframes navigation-progress-sweep {
-  0% {
-    transform: translateX(-110%);
-  }
-
-  55% {
-    transform: translateX(58%);
-  }
-
-  100% {
-    transform: translateX(240%);
+@media (prefers-reduced-motion: reduce) {
+  .navigation-progress,
+  .navigation-progress-bar {
+    transition: none;
   }
 }
 
