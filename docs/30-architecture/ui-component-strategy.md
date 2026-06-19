@@ -122,7 +122,11 @@ Jede übernommene oder inspirierte Komponente wird nicht nur optisch, sondern fu
 - Fokusprüfung: sichtbar, kontrastreich, nicht überschrieben
 - Screenreader-Sinnhaftigkeit: Landmarken, Beschriftungen, Statuswechsel
 - Reflow/Zoom: 320 CSS Pixel, 400 Prozent Zoom
-- Motion: Verhalten mit `prefers-reduced-motion`
+- Motion: Verhalten mit `prefers-reduced-motion`; späte CSS-Regeln dürfen reduzierte Bewegung nicht wieder überschreiben
+- Systemdarstellung: Dark Mode über semantische Tokens, Forced Colors über Systemfarben und echte Rahmen
+- Brand-Assets bleiben dieselben SVGs wie im Normalmodus; Forced Colors darf nur ihre Farbauflösung auf Systemfarben ändern, nicht Form, Proportionen oder Anordnung ersetzen
+- Aktive Navigation, Buttons und Filter kennzeichnen Auswahl über das ganze Control und dessen Rahmen; verschachtelte Textlabels, Badges oder Pseudoelemente dürfen keine eigene Mini-Fläche hinter der Beschriftung erzeugen
+- `.result-card-footer-zone` muss Aktionen und Metadaten mit `min-width: 0`, `max-width: 100%` und Wrapping innerhalb der Kartenbreite halten, statt Inhalt nur per Overflow abzuschneiden
 - No-JS-Pfad: ergibt die Grundfunktion weiterhin Sinn?
 - Touch/Mobil: ausreichend große Zielgrößen und stabile Reihenfolge
 
@@ -146,7 +150,7 @@ Die erste Basis folgt dieser Strategie bereits:
 - `SiteHeader`: verwendet seit dem Fix-Pass vom 23. April 2026 das vom Nutzer gelieferte Logo als Markenquelle; Header, Favicon, Apple-Icon und OG-Bild leiten sich aus derselben Quelle ab
 - `SearchForm`: native Formularfelder mit `fieldset` und `legend`
 - `ContactForm`: datensparsames natives Kontaktformular auf `/kontakt`; Nachricht ist Pflicht, E-Mail ist optional, Fehler werden direkt am Feld und in einer fokussierbaren Zusammenfassung erklärt, gültige Eingaben gehen an `POST /api/contact` statt an einen Mailprogramm-Handoff
-- `SearchPage` im leeren Zustand: zwei semantisch getrennte Browse-Bereiche mit echten Listen statt Carousel- oder Mischlogik
+- `SearchPage` im leeren Zustand: drei semantisch getrennte Browse-Cluster mit echten Listen statt Carousel- oder Mischlogik; sichtbare Labels lauten `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv`
 - `ResultList`: semantische Trefferliste mit breiteren Tile-Artikeln statt schmalen App-Karten; Poster, Titelzone, Erste Einschätzung und Aktionen sind als getrennte Leseblöcke aufgebaut
 - `ExternalResultList`: dieselbe Tile-Sprache für externe TMDb-Titel, klar getrennt vom lokalen Stand und ohne Mischliste aus Browse und Suche
 - `SearchToneScale`: Detailseiten nutzen weiter eine textlich beschriftete ruhige Pegelanzeige; Karten arbeiten dagegen reduzierter mit Achse und Marker als Vorschau statt mit zweiter Erklärungsebene. Sichtbare Labels lauten konsistent `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv`.

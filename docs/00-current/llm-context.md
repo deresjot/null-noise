@@ -3,8 +3,8 @@
 ## Aktueller Arbeitsstand
 
 - aktiver lokaler Arbeitsbranch: `null-noise`
-- aktueller Stand: Production-Launch vom 14. Juni 2026 ist live auf `https://www.null-noise.de`; letzter gepushter Commit ist `cc5ee52 fix: generate prisma client during build`
-- Release-Metadaten stehen auf `0.8.4-mobile-ios-focus.20260614`
+- aktueller Stand: Forced-Colors-Display-Pass vom 19. Juni 2026 baut auf dem Production-Launch vom 14. Juni 2026 auf; Commit- und Deployment-Details stehen in der jeweiligen Übergabe.
+- Release-Metadaten stehen auf `0.8.4-forced-colors.20260619`
 - Preview-Gate ist clientseitig vorgeschaltet: Teaser-Landingpage mit Logo, Projektbeschreibung und Passwortfeld; Phrase ist `preview`, keine Security-Grenze
 - kanonische öffentliche Adresse: https://www.null-noise.de
 - Apex-Domain: https://null-noise.de leitet in Vercel per `308 Permanent Redirect` auf https://www.null-noise.de weiter
@@ -43,6 +43,7 @@
 - Mobile Cards: Ergebnis-Cards sind dichter, Poster dominieren nicht, Aktionen behalten Text und Touch-Ziele; CTA-/Memory-Zonen überlagern Poster nicht.
 - Mobile Details: lokale und externe Detailseiten setzen das Detailposter direkt unter die `h1` und vor die erste Einschätzung.
 - Mobile-iOS-Pass 14. Juni 2026: Routewechsel fokussieren den neuen Hauptinhalt, Hash-/Feedback-Ziele behalten gezielten Scroll, Sticky-Header-Offsets schützen fokussierte Inhalte, Kontaktstatus scrollt sichtbar unter die Headerkante und das Formular nutzt zusätzliche iOS-Safe-Area-Abstände.
+- Forced-Colors-Pass 19. Juni 2026: Header-Branding bleibt das bestehende Logo plus Wortmarke und nutzt in den SVGs Systemfarben; aktive Navigation/Buttons/Filter haben keinen separaten Mini-Hintergrund hinter der Beschriftung; `.result-card-footer-zone` bleibt in Forced Colors innerhalb der Karte.
 - Mobile-Testabdeckung: `npm run test:a11y` enthält jetzt einen iPhone-Pro-Max-Smoke mit `430 x 932` CSS-Pixeln, Touch, Mobile-Safari-User-Agent, Menü-Fokus, Header-Überdeckung, Kontakt-Bottom-Actions und Detail-Reihenfolge.
 - Poster-Kostenstand: externe TMDb-Poster laufen über `/api/poster/tmdb/*`; Karten verwenden thumbnail-realistische `sizes`, Detailposter `w780`, Fallbacks bleiben erhalten.
 - Postgres-Writes erst fortsetzen, wenn eine dedizierte wegwerfbare Test-DB als `NULL_NOISE_TEST_DATABASE_URL` vorhanden ist, `npm run test:unit` damit gruen läuft und die Production-Migration bewusst freigegeben ist; keine SQLite-Datei und keine gemeinsame Development-DB als Test- oder Production-Ersatz verwenden.
@@ -151,7 +152,8 @@
 ## Discovery-Stand
 
 - Discovery fragt situativ: passt das gerade, wäre das zu viel, oder lieber vormerken?
-- Browse-Mixes nutzen verständliche, nicht-personalisierte Einstiege wie `Chillig`, `Mal so, mal so` und `Stressig`.
+- Browse-Cluster nutzen die gleichwertigen Kategorien `Eher ruhig`, `Eher wechselhaft` und `Eher intensiv`.
+- Die Cluster sind keine Skala, kein Ranking und keine Ampel: Überschrift, sichtbares Label, Beschreibung, Containergrenze, Abstand und Listenstruktur tragen die Bedeutung auch ohne Farbe.
 - `Nicht jetzt` ist ein positives Produktmuster: `Kann gerade zu dicht sein` oder `Eher später prüfen` meint Kapazität, nicht Titelqualität.
 - Such- und Browse-Karten bleiben Vorschau; ausführlichere Gründe gehören auf Detailseiten oder in vorhandene Disclosure-Muster.
 - TMDb-Karten zeigen in der Topline Format, erstes verfügbares Genre und Jahr; lokale Karten erfinden kein Genre, wenn keines vorhanden ist.
@@ -178,6 +180,9 @@
 - sichtbarer Fokus
 - keine rein visuelle Codierung
 - reduzierte Bewegung respektieren
+- Reduced Motion wird spät in der CSS-Kaskade abgesichert; spätere Mobile-/Preview-/Loader-/Search-Regeln dürfen Animationen nicht wieder einschalten.
+- Dark Mode läuft über semantische Farb-Tokens, nicht über separate Komponentenlogik.
+- Forced Colors nutzt Systemfarben und echte Rahmen; `forced-color-adjust: none` nicht zum Erzwingen von Brandingfarben einsetzen. Bestehende SVG-Brandassets duerfen interne Forced-Colors-Systemfarben fuer echte Sichtbarkeit nutzen.
 - `details`/`summary` für ruhige Vertiefung
 - keine Tooltip-only-Inhalte
 - automatisierte Tests ersetzen keine manuelle Prüfung
@@ -209,6 +214,8 @@
 - `/barrierefreiheit` wurde auf WCAG 2.2 AA als technisches Ziel, aktuellen Status, konkrete Maßnahmen, Prüfweise, bekannte Grenzen und Kontakt fokussiert
 - die WCAG-2.2-A/AA-Matrix stärkt automatische Regression-Absicherung für Kernrouten; Screenreader-, 400%-Zoom- und echtes-Mobile-Device-Prüfung bleiben manuell
 - sanfte CSS-Transitions und optionale Ladebalken-Hooks sind ergänzt; `prefers-reduced-motion` wird respektiert
+- Darstellungsmodi sind lokal zu prüfen: Light, Dark, Reduced Motion, Dark plus Reduced Motion, Forced Colors, Forced Colors plus Reduced Motion, 320/390/430x932 CSS-Pixel und 200/400 Prozent Zoom
+- Edge/macOS-Forced-Colors-Smoke fuer die aktuelle Korrektur: `/suche?view=grid&tone=calm&avoidPeaks=true` bei `430 x 932` CSS-Pixeln; Windows High Contrast in Microsoft Edge unter Windows bleibt separat manuell zu bestaetigen.
 - Opacity-Fades wurden aus Entry-Animationen entfernt, damit A11y-Kontrast-Scans nicht während halbtransparenter Texte fehlschlagen
 - Startseite erklärt jetzt direkt unter `Was passt gerade?`, wofür Null Noise gedacht ist
 - Header-Branding zeigt auf Mobile und Desktop Icon-Logo plus Wortmarke; die Brand sitzt links innerhalb der Contentbreite und nicht end-to-end am Viewport

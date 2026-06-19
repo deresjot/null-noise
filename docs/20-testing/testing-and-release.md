@@ -1,6 +1,6 @@
 # Testing und Release für null-noise
 
-Stand: 14. Juni 2026
+Stand: 19. Juni 2026
 
 Diese Datei beschreibt, wie `null-noise` Accessibility testet und wo die Grenzen der Automatisierung liegen.
 
@@ -33,6 +33,15 @@ Accessibility wird in `null-noise` nicht über eine einzelne Konformitätsaussag
 3. manuelle Prüfung vor Release
 
 WCAG 2.2 Level AA ist der technische Zielstandard. Die Prüfung orientiert sich zusätzlich an den Prüfansätzen des BITV-Testverfahrens. Automatisierte Tests decken nur einen Teil der Anforderungen ab. Für reale Nutzbarkeit und eine belastbare Konformitätsbewertung bleiben manuelle Prüfungen verpflichtend.
+
+## Darstellungsmodi 19. Juni 2026
+
+- Reduced Motion wurde repariert: Ursache war eine zu frühe globale Absicherung, die durch spätere CSS-Blöcke für Mobile-Menü, Preview-Gate, Search-Transitions, Loader und Navigationsfortschritt wieder überschrieben wurde.
+- Automatisierte Playwright-Checks emulieren `reducedMotion: "reduce"` und prüfen berechnete Styles statt nur das Vorhandensein der Media Query.
+- Dark Mode wird über `prefers-color-scheme: dark` und semantische Design-Tokens geprüft.
+- Forced Colors wird, soweit Playwright/Chromium das zuverlässig emulieren kann, strukturell geprüft: vorhandene `forced-colors`-Regeln, Systemfarben, sichtbare Rahmen/Fokuszustände und keine unnötige Verwendung von `forced-color-adjust: none`.
+- Fuer die Forced-Colors-Korrektur vom 19. Juni 2026 wurde Microsoft Edge unter macOS mit `forcedColors: active` auf `/suche?view=grid&tone=calm&avoidPeaks=true` visuell geprüft: bestehendes Brand-Logo plus Wortmarke sichtbar, aktive Navigation/Buttons/Filter ohne labelgroße Zusatzfläche, `.result-card-footer-zone` innerhalb der Karte.
+- Eine echte manuelle Windows-High-Contrast-Prüfung in Microsoft Edge unter Windows bleibt separat nachzuholen; automatische Emulation und Edge/macOS-Smoke ersetzen diese Prüfung nicht.
 
 ## Automatisierte Tests
 
@@ -69,6 +78,8 @@ WCAG 2.2 Level AA ist der technische Zielstandard. Die Prüfung orientiert sich 
 - Loader-Smokes fuer echte Pending-Zustände: Kontakt-Submit, Such-Soft-Navigation, knappe Live-Statusmeldung und deaktivierte dekorative Bewegung unter `prefers-reduced-motion`
 - Preview-Gate-Smoke: Teaser-Landingpage ohne App-Header, zentriertes Logo, falsches Passwort mit Fehlermeldung und Unlock mit `preview`
 - globaler Navigationsloader-Smoke: `Seite lädt ...` bleibt sichtbar, solange Route-Daten ausstehen, und ist unter `prefers-reduced-motion` statisch
+- Darstellungsmodus-Smokes: Reduced Motion ohne dekorative Animationen/Transitions, Dark Mode für Kernflächen/Formulare/Cluster/Poster und strukturelle Forced-Colors-Checks
+- Cluster-Smoke: `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv` sind sichtbare, semantisch getrennte Bereiche mit Überschrift, Label, Beschreibung und Ergebnislisten; bei `320 CSS-Pixeln` entsteht kein horizontales Overflow
 - Mobile-Suche-Smokes fuer `/suche?q=&tone=all&kind=all`: Browse-Zustand statt kaputtem Mischzustand, kompakte Menühöhe, volle Card-Breite, sekundärer Footer und keine linken Loader-Artefakte
 - Mobile-Detail-Smoke: lokale und externe Detailseiten zeigen genau ein sichtbares Detailposter direkt unter der `h1` und vor dem ersten Einschätzungsblock
 - Mobile-Card-Smoke: Result-Card-Aktionen und Merken/Gesehen-Zonen liegen in der Textspalte und überlagern Poster nicht
@@ -132,7 +143,7 @@ Die folgenden Schritte sind der feste manuelle Prüfpfad für `null-noise`. Er e
 - Reflow: Filter und Karten stapeln sauber statt horizontal auszuweichen
 - Zoom: Browse-Einstieg und Filter bleiben in sinnvoller Reihenfolge
 - Verständlichkeit: Browse-Texte bleiben Orientierungshilfe und werden nicht zur zweiten Erklärungsebene
-- Discovery-Sprache: keine Formulierungen wie `Empfohlen für dich` oder `Heute passend`; `Stressig` und `Kann gerade zu dicht sein` bleiben situativ statt wertend
+- Discovery-Sprache: keine Formulierungen wie `Empfohlen für dich` oder `Heute passend`; `Kann gerade zu dicht sein` bleibt situativ statt wertend
 - Lokaler Merken-/Gesehen-Bereich: Text, Buttons und Toggle/Checkbox brechen mobil sauber um; Label und Checkbox bleiben sichtbar zusammengehörig
 - Poster: fehlende Poster zeigen den bewussten Platzhalter `Kein Poster verfügbar`
 - Labels: sichtbare Kategorien lauten konsistent `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv`
@@ -204,11 +215,31 @@ Die folgenden Schritte sind der feste manuelle Prüfpfad für `null-noise`. Er e
 
 - `prefers-reduced-motion`
 - sanfte Zustandswechsel sind erlaubt, solange sie kurz bleiben und keine Information verdecken
+- unter `prefers-reduced-motion: reduce`: kein animiertes Scrollen, keine Transform-, Opacity- oder Größenanimation, keine laufenden View-Transition-/Loader-Animationen
 - Entry-Animationen dürfen Text nicht über Opacity abblenden, wenn dadurch Kontrastprüfungen oder reale Lesbarkeit leiden
 - Ladezustände sind nur als dezente Überbrückung echter Wartezeiten gedacht und dürfen keinen Inhalt ersetzen
 - Loader brauchen sichtbaren Text, knappe Screenreader-Rückmeldung und dürfen keine künstliche Wartezeit erzeugen
 - Loader müssen visuell wahrnehmbar sein, zum Beispiel als klare Statusbox mit Text und Indikator; unter `prefers-reduced-motion` bleibt der Indikator statisch
 - keine Hilfe, die nur flüchtig eingeblendet wird
+
+### Lokale Testmatrix Darstellungsmodi
+
+Auf localhost prüfen:
+
+- Light Mode
+- Dark Mode
+- Reduced Motion
+- Dark Mode plus Reduced Motion
+- Forced Colors/Windows High Contrast in Microsoft Edge unter Windows
+- Forced Colors plus Reduced Motion
+- Edge/macOS-Forced-Colors-Smoke auf `/suche?view=grid&tone=calm&avoidPeaks=true` bei `430 x 932 CSS-Pixel`
+- Mobile `320 CSS-Pixel`
+- Mobile `390 CSS-Pixel`
+- Mobile `430 x 932 CSS-Pixel`
+- Browserzoom `200 %`
+- Browserzoom `400 %`
+
+Dabei prüfen: Hintergrund, Text, Links/besuchte Links, Fokus/Skip-Link, aktive Route, Hover, ausgewählte Filter, Checkboxen, Selects, Inputs, Buttons, deaktivierte Buttons, Lade-/Fehler-/Erfolgsmeldungen, Mobile-Menü, Kategorie-Cluster, Poster/Fallbacks, `details`/`summary`, Header, Footer, Preview-Gate, Kontaktformular, Suchseite und Detailseite.
 
 ### Verständlichkeit
 

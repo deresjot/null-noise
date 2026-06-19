@@ -146,15 +146,16 @@ Tests, mobile Viewports 390px/430px und danach die Vercel-Deploy-Bereitschaft.
 - Header/Branding zeigt Icon-Logo plus Wortmarke auf Mobile und Desktop
 - Header-Brand und Menübutton sind unabhängig vom Breakpoint an der Contentbreite ausgerichtet, nicht end-to-end am Viewport-Rand
 - Logo/Wortmarke führt von Unterseiten zurück zur Startseite
-- Mobile Header-App-Shell hat symmetrische Innenabstände und schrumpft smooth beim Scrollen
+- Mobile Header-App-Shell hat symmetrische Innenabstände; unter Reduced Motion darf keine Header- oder Menübewegung übrig bleiben
 - Burger-Menü öffnet und schließt per Button, Link-Klick und Escape; Fokus bleibt sichtbar
 - Burger-Menü enthält mobil nur Start, Suche und Erklärung/Hilfe; Barrierefreiheit, Datenschutz und Impressum stehen im Footer
 - Burger-Menü liegt sichtbar über Seiteninhalt, Ergebnisgruppen und Detailkarten
 - Startseite enthält kurze Erklärung unter `Was passt gerade?`
 - Suche bleibt primärer Einstieg; Richtungskacheln bleiben sekundär
 - `Ohne Titel stöbern` / `Auswahl zeigen` wirkt als Button-CTA mit Icon, nicht wie ein schwacher Textlink
-- `Richtung starten` hat ausreichend Innenabstand; die drei Richtungen sind grün, gold und rot markiert
+- `Richtung starten` hat ausreichend Innenabstand; die drei Richtungen sind nicht nur über Farbe unterscheidbar
 - sichtbare Richtungskacheln/Labels: `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv`
+- Browse-Cluster auf `/suche` haben jeweils Überschrift, sichtbares Textlabel, Beschreibung, echte Begrenzung und Listenstruktur
 - Merken-/Gesehen-Bereich und Toggle umbrechen mobil sauber
 - Result-Card-Aktionen `Details`, `Merken` und `Gesehen?` stehen mobil nebeneinander und bleiben fingerfreundlich
 - getippte Suche zeigt weiterhin mehrere Treffer, auch wenn `Schon gesehene Titel hier ausblenden` lokal aktiv ist
@@ -167,6 +168,9 @@ Tests, mobile Viewports 390px/430px und danach die Vercel-Deploy-Bereitschaft.
 - bei 320 CSS-Pixeln kein horizontaler Overflow
 - bei 390px und 430px kein horizontaler Overflow; Touch-Ziele wirken fingerfreundlich
 - `prefers-reduced-motion` bleibt respektiert
+- Dark Mode, Reduced Motion, Dark plus Reduced Motion, Forced Colors, Forced Colors plus Reduced Motion, 320/390/430x932 CSS-Pixel sowie 200/400 Prozent Zoom lokal prüfen
+- Fuer Forced Colors zusaetzlich die Suchroute `/suche?view=grid&tone=calm&avoidPeaks=true` in Microsoft Edge unter macOS bei `430 x 932` CSS-Pixeln prüfen: bestehendes Header-Logo plus Wortmarke sichtbar, aktive Navigation/Buttons/Filter ohne labelgroße Zusatzfläche, `.result-card-footer-zone` innerhalb der Karte
+- Windows High Contrast in Microsoft Edge unter Windows ist eine eigene manuelle Prüfung; Chromium-/Edge-macOS-Emulation nur als strukturellen und visuellen Smoke werten
 - Ladezustände nur fuer echte Wartezeiten verwenden: Such-Soft-Navigation, Kontakt-Submit und Route-Loading; kein künstliches Delay, keine lauten Spinner, keine Skeleton-Flächen
 - Screenreader-Status zu Ladezuständen knapp halten und nicht parallel mehrere große Live-Regionen ansagen lassen
 - Mobile-Scrollgefühl nach Deploy auf echtem iPhone prüfen

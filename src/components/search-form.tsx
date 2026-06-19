@@ -79,17 +79,17 @@ type BrowsePreset = {
 const browsePresets: BrowsePreset[] = [
   {
     id: "calm",
-    label: "Chillig",
+    label: "Eher ruhig",
     filters: { tone: "calm" },
   },
   {
     id: "balanced",
-    label: "Mal so, mal so",
+    label: "Eher wechselhaft",
     filters: { tone: "balanced" },
   },
   {
     id: "intense",
-    label: "Stressig",
+    label: "Eher intensiv",
     filters: { tone: "intense" },
   },
 ];

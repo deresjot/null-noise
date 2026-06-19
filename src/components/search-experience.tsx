@@ -688,14 +688,16 @@ export function SearchExperience({ initialState }: { initialState: SearchPageSta
                         <section
                           key={section.id}
                           className="search-results-group search-browse-cluster-group"
+                          aria-describedby={`browse-${section.id}-description`}
                           aria-labelledby={`browse-${section.id}-heading`}
                           data-browse-id={section.id}
                           data-cluster-step={String(Math.min(index, 2))}
                         >
                           <header className="search-results-group-header">
-                            <p className="eyebrow">Externe Titelseiten</p>
+                            <p className="eyebrow">Orientierungskategorie</p>
+                            <p className="search-browse-cluster-visible-label">{section.title}</p>
                             <h2 id={`browse-${section.id}-heading`}>{section.title}</h2>
-                            <p className="field-note">
+                            <p className="field-note" id={`browse-${section.id}-description`}>
                               {section.description}
                             </p>
                           </header>

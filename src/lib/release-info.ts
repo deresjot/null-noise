@@ -1,12 +1,24 @@
 import packageJson from "../../package.json";
 
 export const currentBuild = {
-  version: `${packageJson.version}-mobile-ios-focus.20260614`,
-  label: "Mobile iOS focus and safe-area pass",
-  releasedAt: "2026-06-14",
+  version: `${packageJson.version}-forced-colors.20260619`,
+  label: "Forced Colors display pass",
+  releasedAt: "2026-06-19",
 };
 
 export const releaseNotes = [
+  {
+    version: `${packageJson.version}-forced-colors.20260619`,
+    label: "Forced Colors display pass",
+    releasedAt: "2026-06-19",
+    entries: [
+      "Forced Colors/High Contrast rendering now keeps the existing header logo and wordmark visible by letting the original SVG assets resolve to system colors.",
+      "Active navigation, direct-start buttons and search filters use the whole control for the selected state instead of a separate label-sized background.",
+      "Result-card footer zones wrap actions and metadata inside the card boundary under Forced Colors without clipping their content.",
+      "The browse clusters, dark-mode tokens and reduced-motion safeguards remain covered by Playwright accessibility checks.",
+      "Microsoft Edge on macOS was used for a forced-colors smoke on the affected search route; a separate manual Windows High Contrast pass remains the real Windows-specific confirmation.",
+    ],
+  },
   {
     version: `${packageJson.version}-mobile-ios-focus.20260614`,
     label: "Mobile iOS focus and safe-area pass",
@@ -224,7 +236,7 @@ export const releaseNotes = [
     label: "Situational discovery UX",
     releasedAt: "2026-05-24",
     entries: [
-      "Browse groups now use calmer situational entry points such as Chillig, Mal so, mal so and Stressig.",
+      "Browse groups now use the visible orientation categories Eher ruhig, Eher wechselhaft and Eher intensiv.",
       "External result cards can surface not-now language like Kann gerade zu dicht sein without turning it into a negative rating.",
       "Detail disclosures group evidence as spricht eher dafuer, kann dagegen sprechen and Datenlage, while keeping scores, percentages and rankings hidden.",
       "Follow-up sections now frame alternatives as situational counterweights instead of classic similar-title recommendations.",

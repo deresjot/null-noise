@@ -1,6 +1,6 @@
 # UX-Prinzipien für reduzierte kognitive Last
 
-Stand: 13. Juni 2026
+Stand: 19. Juni 2026
 
 `null-noise` ist kein klassisches Entertainment-Produkt. Die Oberfläche soll nicht fesseln, sondern entlasten. Diese Datei beschreibt die UX-Prinzipien dafür.
 
@@ -53,7 +53,7 @@ nicht `Was empfiehlt das System?`, sondern `Passt das gerade?`.
 Deshalb gelten für Browse, Suche und Alternativen:
 
 - keine Formulierungen wie `Empfohlen für dich` oder `Heute passend`
-- verständliche Mix-Namen wie `Chillig`, `Mal so, mal so` oder `Stressig`
+- sichtbare Orientierungskategorien `Eher ruhig`, `Eher wechselhaft` und `Eher intensiv`
 - `Nicht jetzt` ist eine entlastende Einordnung, keine negative Bewertung des Titels
 - Alternativen werden als Gegengewichte formuliert: ruhiger, dichter oder leichter
 - keine Rankings, Toplisten, Prozentwerte oder scheinpräzise Reizwerte
@@ -79,6 +79,16 @@ Ladezustände sind nur fuer echte Wartezeiten gedacht. Sie dürfen vorhandene Or
 - vorhandene Suchergebnisse bleiben während Soft-Navigation sichtbar
 - sichtbarer Text benennt, was gerade lädt
 - Bewegung ist rein dekorativ und wird bei `prefers-reduced-motion` abgeschaltet
+
+### Robuste Darstellung
+
+Die Standardoberfläche muss in heller Darstellung, systemweitem Dark Mode, Windows High Contrast/Forced Colors, Reduced Motion, Zoom und kleinen Viewports dieselben Inhalte in derselben Reihenfolge behalten.
+
+- keine zweite Accessibility-, Dark-Mode- oder High-Contrast-Oberfläche
+- wichtige Zustände zusätzlich über Text, Struktur, Rahmen oder Position
+- aktive Navigation, Buttons und Filter zeigen Auswahl über das ganze Control, nicht über eine kleine Fläche nur hinter der Beschriftung
+- Cluster sind echte Inhaltsbereiche mit Überschrift, sichtbarem Label, Beschreibung und Listenstruktur
+- Schatten, Farbe und Bewegung dürfen nie die einzige Gruppierung oder Statusinformation sein
 
 ### Mobile Suchdichte
 

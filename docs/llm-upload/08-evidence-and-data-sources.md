@@ -141,7 +141,7 @@ Sichtbar werden nur:
 - kurzer Status
 - 2 bis 3 kurze Gründe
 - vorsichtige Unsicherheitsformulierung
-- situative Discovery-Labels wie `Chillig`, `Stressig` oder `Kann gerade zu dicht sein`
+- situative Discovery-Labels wie `Eher ruhig`, `Eher wechselhaft` oder `Kann gerade zu dicht sein`
 
 Nicht sichtbar werden:
 

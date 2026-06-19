@@ -6,7 +6,7 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 - lokaler Branch: `null-noise`
 - lokaler Projektpfad: `/Users/deresjot/Library/CloudStorage/Dropbox/_PRIVAT/Code/git-webdev/null-noise`
-- Stand: Production-Launch vom 14. Juni 2026 ist live auf `https://www.null-noise.de`; letzter gepushter Commit ist `cc5ee52 fix: generate prisma client during build`
+- Stand: Forced-Colors-Display-Pass vom 19. Juni 2026 baut auf dem Production-Launch vom 14. Juni 2026 auf; Commit- und Deployment-Details stehen in der jeweiligen Übergabe.
 - kanonische öffentliche Adresse: https://www.null-noise.de
 - Apex-Domain: https://null-noise.de leitet in Vercel per `308 Permanent Redirect` auf https://www.null-noise.de weiter
 - technische Vercel-Projektadresse: https://null-noise.vercel.app bleibt Production-verbunden, ist aber nicht kanonisch
@@ -20,6 +20,17 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 ## Letzte lokale Arbeitsblöcke
 
+- Display-Robustheit 19. Juni 2026:
+  - Forced-Colors-/High-Contrast-Korrekturen sind lokal abgeschlossen: Header-Branding nutzt weiterhin exakt die bestehenden SVG-Assets, deren interne Forced-Colors-Regeln auf Systemfarben auflösen.
+  - Aktive Navigation, Richtungskacheln, Direct-Start-Buttons und Suchfilter zeigen den ausgewählten Zustand über den ganzen Button beziehungsweise dessen Rahmen; labelgroße Zusatzflächen hinter der Beschriftung wurden entfernt.
+  - `.result-card-footer-zone` bricht Metadaten und Aktionen unter Forced Colors innerhalb der Kartenbreite um, statt Inhalte rechts aus der Karte herauslaufen zu lassen.
+  - Microsoft Edge unter macOS wurde mit `forcedColors: active` auf `/suche?view=grid&tone=calm&avoidPeaks=true` visuell geprüft; die echte Windows-High-Contrast-Prüfung in Microsoft Edge unter Windows bleibt separat.
+  - Reduced Motion greift jetzt am Ende der CSS-Kaskade. Ursache des Problems war, dass frühere `@media (prefers-reduced-motion: reduce)`-Regeln durch spätere Animations-/Transition-Blöcke für Mobile-Menü, Preview-Gate, Search-Transitions, Loader und Navigationsfortschritt wieder überschrieben wurden.
+  - Unter Reduced Motion bleiben Statusinformationen sichtbar, aber dekorative Animationen, View Transitions, Transform-/Opacity-/Größenübergänge und animiertes Scrollen werden unterbunden.
+  - Dark Mode nutzt zentrale semantische Farb-Tokens für Seite, Flächen, Text, Rahmen, Links, Fokus, Formulare, Statusflächen, disabled States und Clusterflächen.
+  - Forced Colors nutzt Systemfarben und echte Rahmen; `forced-color-adjust: none` wird nicht eingesetzt, um Projektfarben zu erzwingen. Eine echte Windows-High-Contrast-Prüfung in Microsoft Edge unter Windows ist noch offen und wird nicht durch die Chromium-/Edge-macOS-Emulation ersetzt.
+  - Browse-Cluster heißen sichtbar `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv` und sind eigene semantische Bereiche mit Überschrift, dauerhaft sichtbarem Label, Beschreibung, Begrenzung und Listenstruktur.
+  - Automatisierte Playwright-Checks prüfen Reduced Motion, Dark Mode, Cluster-Struktur/Mobile-Overflow und strukturelle Forced-Colors-Eigenschaften.
 - Mobile-iOS-Fokus-/Safe-Area-Pass 14. Juni 2026:
   - Clientseitige Routewechsel setzen den Fokus auf den neuen Hauptinhalt und starten oben; Hash-Ziele wie Feedback-Status bleiben gezielt anspringbar.
   - Sticky-Header-Offsets wurden für `main`, Überschriften, Statusbereiche und Detail-Zurücklinks abgesichert, damit fokussierte Inhalte nicht unter dem Header liegen.
@@ -156,8 +167,8 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
   - Read-only-Hinweis auf externen Karten benennt jetzt konkret, dass nur Titeldaten verfügbar sind und lokale Einordnung deaktiviert ist
   - Release Notes stehen lokal auf `0.8.4-cards.20260524`
 - Situative Discovery-UX 24. Mai 2026:
-  - Browse-Mixes sprechen jetzt ruhiger von `Chillig`, `Mal so, mal so` und `Stressig` statt wie generische Ergebnislisten
-  - externe Karten können `Kann gerade zu dicht sein`, `Stressig` oder `Erst kurz prüfen` zeigen, ohne Titel negativ zu bewerten
+  - frühere Browse-Mixnamen wurden im Display-Robustheitsblock vom 19. Juni 2026 durch `Eher ruhig`, `Eher wechselhaft` und `Eher intensiv` ersetzt
+  - externe Karten können `Kann gerade zu dicht sein`, `Eher wechselhaft` oder `Erst kurz prüfen` zeigen, ohne Titel negativ zu bewerten
   - Detailseiten strukturieren `Worauf basiert das?` zusätzlich als `Spricht eher dafür`, `Kann dagegen sprechen` und `Datenlage`
   - Alternativen werden als situative Gegengewichte formuliert, etwa ruhiger, dichter oder leichter, nicht als personalisierte Empfehlung
   - alles bleibt aus vorhandener Evidence-/TMDb-Logik abgeleitet; keine Profile, kein Tracking, keine Social-Logik und keine neue externe Quelle

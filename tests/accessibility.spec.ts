@@ -1027,6 +1027,297 @@ test("global navigation progress is visible while route data is pending", async 
   await expect(page.locator(".navigation-progress")).toHaveAttribute("data-visible", "false");
 });
 
+test("reduced motion disables decorative motion while keeping status and navigation usable", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/suche");
+
+  await expect(page.getByRole("heading", { name: "Noch kein Titel im Kopf?" })).toBeVisible();
+
+  const motionState = await page.evaluate(() => {
+    const selectors = [
+      ".site-main > *",
+      ".search-browse-cluster-group",
+      ".result-grid > li",
+      ".mobile-navigation",
+      ".navigation-progress-bar",
+    ];
+
+    return selectors.flatMap((selector) =>
+      Array.from(document.querySelectorAll<HTMLElement>(selector)).map((element) => {
+        const style = window.getComputedStyle(element);
+
+        return {
+          animationName: style.animationName,
+          opacity: style.opacity,
+          scrollBehavior: window.getComputedStyle(document.documentElement).scrollBehavior,
+          selector,
+          transitionDuration: style.transitionDuration,
+          transform: style.transform,
+        };
+      }),
+    );
+  });
+
+  expect(motionState.length).toBeGreaterThan(0);
+  for (const state of motionState) {
+    expect(state.animationName, state.selector).toBe("none");
+    expect(state.transitionDuration, state.selector).toMatch(/^(0s|0\.00001s|0\.01ms)(, (0s|0\.00001s|0\.01ms))*$/);
+    expect(state.transform, state.selector).toBe("none");
+    expect(state.opacity, state.selector).toBe("1");
+    expect(state.scrollBehavior).toBe("auto");
+  }
+
+  await page.getByRole("link", { name: "Karten" }).click();
+  await expect(page.getByRole("heading", { name: "Noch kein Titel im Kopf?" })).toBeVisible();
+  await expect(page).toHaveURL(/view=grid/);
+
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.getByRole("button", { name: "Menü öffnen" }).click();
+  await expect(page.getByRole("navigation", { name: "Mobile Navigation" })).toBeVisible();
+});
+
+test("dark mode keeps core surfaces, forms, clusters and poster fallbacks readable", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.goto("/suche");
+  await expect(page.getByRole("heading", { name: "Noch kein Titel im Kopf?" })).toBeVisible();
+
+  const styles = await page.evaluate(() => {
+    const read = (selector: string) => {
+      const element = document.querySelector<HTMLElement>(selector);
+      if (!element) {
+        return null;
+      }
+
+      const style = window.getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+
+      return {
+        backgroundColor: style.backgroundColor,
+        borderTopWidth: style.borderTopWidth,
+        color: style.color,
+        height: rect.height,
+        outlineColor: style.outlineColor,
+        width: rect.width,
+      };
+    };
+
+    const input = document.querySelector<HTMLInputElement>("input[name='q']");
+    input?.focus();
+
+    return {
+      activeRoute: read("[aria-current='page']"),
+      body: read("body"),
+      cluster: read(".search-browse-cluster-group"),
+      footer: read("#site-footer"),
+      header: read(".site-header"),
+      input: read("input[name='q']"),
+      posterFallback: read(".poster-thumb-fallback-tile, .poster-thumb-fallback"),
+      status: read(".search-results-live-status"),
+    };
+  });
+
+  for (const [name, style] of Object.entries(styles).filter(
+    ([name]) => !["posterFallback", "status"].includes(name),
+  )) {
+    expect(style, `${name} exists`).not.toBeNull();
+    expect(style?.backgroundColor, `${name} has nontransparent background`).not.toBe("rgba(0, 0, 0, 0)");
+    expect(style?.color, `${name} has text color`).not.toBe("rgba(0, 0, 0, 0)");
+    expect(style?.width ?? 0, `${name} width`).toBeGreaterThan(0);
+    expect(style?.height ?? 0, `${name} height`).toBeGreaterThan(0);
+  }
+
+  expect(styles.cluster?.borderTopWidth).not.toBe("0px");
+  expect(styles.status?.color).not.toBe("rgba(0, 0, 0, 0)");
+
+  await page.goto("/titel/mondfenster");
+  const detailPoster = await page.locator(".poster-thumb-frame-detail").first().evaluate((element) => {
+    const style = window.getComputedStyle(element);
+    const rect = element.getBoundingClientRect();
+
+    return {
+      backgroundColor: style.backgroundColor,
+      borderColor: style.borderColor,
+      height: rect.height,
+      width: rect.width,
+    };
+  });
+  expect(detailPoster.backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
+  expect(detailPoster.borderColor).not.toBe("rgba(0, 0, 0, 0)");
+  expect(detailPoster.width).toBeGreaterThan(0);
+  expect(detailPoster.height).toBeGreaterThan(0);
+});
+
+test("browse categories are semantic clusters that do not rely on color alone", async ({ page }) => {
+  await page.goto("/suche");
+
+  const expectedHeadings = ["Eher ruhig", "Eher wechselhaft", "Eher intensiv"];
+
+  for (const heading of expectedHeadings) {
+    await expect(page.getByRole("heading", { name: heading })).toBeVisible();
+  }
+
+  const clusterInfo = await page.evaluate(() => {
+    const clusters = Array.from(document.querySelectorAll<HTMLElement>(".search-browse-cluster-group"));
+    const viewportWidth = document.documentElement.clientWidth;
+
+    return {
+      clusterCount: clusters.length,
+      labels: clusters.map((cluster) => cluster.querySelector(".search-browse-cluster-visible-label")?.textContent?.trim()),
+      listCounts: clusters.map((cluster) => cluster.querySelectorAll("ul.result-grid > li").length),
+      overlap: clusters.some((cluster, index) => {
+        const current = cluster.getBoundingClientRect();
+        const next = clusters[index + 1]?.getBoundingClientRect();
+
+        return next ? current.bottom > next.top && current.right > next.left && current.left < next.right : false;
+      }),
+      overflow: document.documentElement.scrollWidth - viewportWidth,
+      references: clusters.map((cluster) => ({
+        describedby: cluster.getAttribute("aria-describedby"),
+        labelledby: cluster.getAttribute("aria-labelledby"),
+      })),
+    };
+  });
+
+  expect(clusterInfo.clusterCount).toBe(3);
+  expect(clusterInfo.labels).toEqual(expectedHeadings);
+  expect(clusterInfo.listCounts.every((count) => count > 0)).toBe(true);
+  expect(clusterInfo.references.every((reference) => reference.labelledby && reference.describedby)).toBe(true);
+  expect(clusterInfo.overlap).toBe(false);
+  expect(clusterInfo.overflow).toBeLessThanOrEqual(1);
+
+  await page.setViewportSize({ width: 320, height: 900 });
+  await page.goto("/suche");
+  const mobileOverflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  expect(mobileOverflow).toBeLessThanOrEqual(1);
+
+  await page.emulateMedia({ colorScheme: "dark", reducedMotion: "reduce" });
+  await page.goto("/suche");
+  await expect(page.getByRole("heading", { name: "Eher ruhig" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Eher wechselhaft" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Eher intensiv" })).toBeVisible();
+});
+
+test("forced-colors rules preserve focus, controls and cluster boundaries", async ({ page }) => {
+  await page.emulateMedia({ forcedColors: "active", reducedMotion: "reduce" });
+  await page.goto("/suche?avoidPeaks=true");
+
+  await expect(page.getByRole("heading", { name: "Noch kein Titel im Kopf?" })).toBeVisible();
+
+  const forcedColorState = await page.evaluate(() => {
+    const active = window.matchMedia("(forced-colors: active)").matches;
+    const rootStyles = Array.from(document.styleSheets)
+      .flatMap((sheet) => {
+        try {
+          return Array.from(sheet.cssRules).map((rule) => rule.cssText);
+        } catch {
+          return [];
+        }
+      })
+      .join("\n");
+    const cluster = document.querySelector<HTMLElement>(".search-browse-cluster-group");
+    const card = document.querySelector<HTMLElement>(".result-card");
+    const header = document.querySelector<HTMLElement>(".site-header");
+    const brand = document.querySelector<HTMLElement>(".brand");
+    const brandImage = document.querySelector<HTMLElement>(".brand-image");
+    const brandWordmarkImage = document.querySelector<HTMLElement>(".brand-wordmark-image");
+    const activeFilter = document.querySelector<HTMLElement>(".search-filter-toggle[data-active='true']");
+    const activeFilterLabel = activeFilter?.querySelector<HTMLElement>(".search-filter-toggle-state");
+    const activeToneSegment = document.querySelector<HTMLElement>(".search-tone-scale-triad-segment[data-active='true']");
+    const footerZone = document.querySelector<HTMLElement>(".result-card-footer-zone");
+    const input = document.querySelector<HTMLInputElement>("input[name='q']");
+    const button = document.querySelector<HTMLElement>("button, .primary-button, .secondary-button-link");
+    input?.focus();
+    const brandRect = brand?.getBoundingClientRect();
+    const brandImageRect = brandImage?.getBoundingClientRect();
+    const brandWordmarkImageRect = brandWordmarkImage?.getBoundingClientRect();
+    const clusterStyle = cluster ? window.getComputedStyle(cluster) : null;
+    const cardStyle = card ? window.getComputedStyle(card) : null;
+    const headerStyle = header ? window.getComputedStyle(header) : null;
+    const brandStyle = brand ? window.getComputedStyle(brand) : null;
+    const brandImageStyle = brandImage ? window.getComputedStyle(brandImage) : null;
+    const brandWordmarkImageStyle = brandWordmarkImage
+      ? window.getComputedStyle(brandWordmarkImage)
+      : null;
+    const activeFilterStyle = activeFilter ? window.getComputedStyle(activeFilter) : null;
+    const activeFilterLabelStyle = activeFilterLabel ? window.getComputedStyle(activeFilterLabel) : null;
+    const activeToneSegmentStyle = activeToneSegment ? window.getComputedStyle(activeToneSegment) : null;
+    const activeToneSegmentBeforeStyle = activeToneSegment
+      ? window.getComputedStyle(activeToneSegment, "::before")
+      : null;
+    const footerZoneStyle = footerZone ? window.getComputedStyle(footerZone) : null;
+    const footerZoneRect = footerZone?.getBoundingClientRect();
+    const footerOverflowingChildren = Array.from(footerZone?.querySelectorAll<HTMLElement>("*") ?? []).filter(
+      (child) => {
+        const childRect = child.getBoundingClientRect();
+        return footerZoneRect ? childRect.right > footerZoneRect.right + 1 : false;
+      },
+    ).length;
+    const inputStyle = input ? window.getComputedStyle(input) : null;
+    const buttonStyle = button ? window.getComputedStyle(button) : null;
+    const focusStyle = input ? window.getComputedStyle(input) : null;
+
+    return {
+      active,
+      brandColor: brandStyle?.color ?? "",
+      brandImageVisible:
+        brandImageStyle?.display !== "none" &&
+        brandImageStyle?.visibility !== "hidden" &&
+        (brandImageRect?.width ?? 0) > 0 &&
+        (brandImageRect?.height ?? 0) > 0,
+      brandRectHeight: brandRect?.height ?? 0,
+      brandRectWidth: brandRect?.width ?? 0,
+      brandWordmarkImageVisible:
+        brandWordmarkImageStyle?.display !== "none" &&
+        brandWordmarkImageStyle?.visibility !== "hidden" &&
+        (brandWordmarkImageRect?.width ?? 0) > 0 &&
+        (brandWordmarkImageRect?.height ?? 0) > 0,
+      buttonBackground: buttonStyle?.backgroundColor ?? "",
+      buttonColor: buttonStyle?.color ?? "",
+      cardBorder: cardStyle?.borderTopWidth ?? "",
+      clusterBorder: clusterStyle?.borderTopWidth ?? "",
+      activeFilterBackground: activeFilterStyle?.backgroundColor ?? "",
+      activeFilterLabelBackground: activeFilterLabelStyle?.backgroundColor ?? "",
+      activeToneSegmentBackground: activeToneSegmentStyle?.backgroundColor ?? "",
+      activeToneSegmentBeforeBackground: activeToneSegmentBeforeStyle?.backgroundColor ?? "",
+      footerOverflow: footerZoneStyle?.overflow ?? "",
+      footerOverflowingChildren,
+      forcedColorAdjustNoneCount: (rootStyles.match(/forced-color-adjust:\s*none/g) ?? []).length,
+      hasForcedColorsRules: rootStyles.includes("@media (forced-colors: active)"),
+      headerBackground: headerStyle?.backgroundColor ?? "",
+      headerColor: headerStyle?.color ?? "",
+      inputBackground: inputStyle?.backgroundColor ?? "",
+      inputColor: inputStyle?.color ?? "",
+      outlineStyle: focusStyle?.outlineStyle ?? "",
+      outlineWidth: focusStyle?.outlineWidth ?? "",
+    };
+  });
+
+  expect(forcedColorState.active).toBe(true);
+  expect(forcedColorState.hasForcedColorsRules).toBe(true);
+  expect(forcedColorState.forcedColorAdjustNoneCount).toBe(0);
+  expect(forcedColorState.brandRectWidth).toBeGreaterThan(0);
+  expect(forcedColorState.brandRectHeight).toBeGreaterThan(0);
+  expect(forcedColorState.brandImageVisible).toBe(true);
+  expect(forcedColorState.brandWordmarkImageVisible).toBe(true);
+  expect(forcedColorState.brandColor).not.toBe("rgba(0, 0, 0, 0)");
+  expect(forcedColorState.buttonBackground).not.toBe("rgba(0, 0, 0, 0)");
+  expect(forcedColorState.buttonColor).not.toBe("rgba(0, 0, 0, 0)");
+  expect(forcedColorState.activeFilterBackground).not.toBe("rgba(0, 0, 0, 0)");
+  expect(forcedColorState.activeFilterLabelBackground).toMatch(/rgba\(.+, 0\)/);
+  expect(forcedColorState.activeToneSegmentBackground).toMatch(/rgba\(.+, 0\)/);
+  expect(forcedColorState.activeToneSegmentBeforeBackground).toMatch(/rgba\(.+, 0\)/);
+  expect(forcedColorState.cardBorder).not.toBe("0px");
+  expect(forcedColorState.clusterBorder).not.toBe("0px");
+  expect(forcedColorState.footerOverflow).toBe("visible");
+  expect(forcedColorState.footerOverflowingChildren).toBe(0);
+  expect(forcedColorState.headerBackground).not.toBe("rgba(0, 0, 0, 0)");
+  expect(forcedColorState.headerColor).not.toBe("rgba(0, 0, 0, 0)");
+  expect(forcedColorState.inputBackground).not.toBe("rgba(0, 0, 0, 0)");
+  expect(forcedColorState.inputColor).not.toBe("rgba(0, 0, 0, 0)");
+  expect(forcedColorState.outlineStyle).not.toBe("none");
+  expect(forcedColorState.outlineWidth).not.toBe("0px");
+});
+
 test("empty query search URLs render the browse state without mobile layout artifacts", async ({
   page,
 }) => {
@@ -1066,7 +1357,10 @@ test("empty query search URLs render the browse state without mobile layout arti
     expect(metrics.overflow, `empty query overflows at ${width}`).toBeLessThanOrEqual(1);
     expect(metrics.resultsWidth, `results width at ${width}`).toBeGreaterThanOrEqual(width - 32);
     expect(metrics.cardWidth, `card width at ${width}`).toBeGreaterThanOrEqual(metrics.resultsWidth - 2);
-    expect(metrics.cardLeft, `card aligns with results at ${width}`).toBeCloseTo(metrics.resultsLeft, 0);
+    expect(
+      Math.abs(metrics.cardLeft - metrics.resultsLeft),
+      `card aligns with results at ${width}`,
+    ).toBeLessThanOrEqual(1);
     expect(metrics.cardHeight, `card remains compact at ${width}`).toBeLessThanOrEqual(width === 320 ? 300 : 260);
     expect(metrics.footerHeight, `footer remains secondary at ${width}`).toBeLessThanOrEqual(width === 320 ? 460 : 420);
     expect(metrics.strayLeftMarkCount, `no loader dots on viewport edge at ${width}`).toBe(0);

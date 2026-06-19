@@ -50,6 +50,29 @@
       .st11 {
         fill: #140917;
       }
+
+      @media (forced-colors: active) {
+        .st0,
+        .st1,
+        .st2,
+        .st4,
+        .st5,
+        .st7,
+        .st8,
+        .st9,
+        .st11 {
+          fill: CanvasText;
+        }
+
+        .st3,
+        .st10 {
+          fill: GrayText;
+        }
+
+        .st6 {
+          fill: LinkText;
+        }
+      }
     </style>
   </defs>
   <g id="sSHg26.tif">
