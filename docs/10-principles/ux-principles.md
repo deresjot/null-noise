@@ -1,6 +1,6 @@
 # UX-Prinzipien für reduzierte kognitive Last
 
-Stand: 19. Juni 2026
+Stand: 20. Juni 2026
 
 `null-noise` ist kein klassisches Entertainment-Produkt. Die Oberfläche soll nicht fesseln, sondern entlasten. Diese Datei beschreibt die UX-Prinzipien dafür.
 
@@ -82,9 +82,9 @@ Ladezustände sind nur fuer echte Wartezeiten gedacht. Sie dürfen vorhandene Or
 
 ### Robuste Darstellung
 
-Die Standardoberfläche muss in heller Darstellung, systemweitem Dark Mode, Windows High Contrast/Forced Colors, Reduced Motion, Zoom und kleinen Viewports dieselben Inhalte in derselben Reihenfolge behalten.
+Die Standardoberfläche muss in heller Darstellung, bei systemweiter Dark-Präferenz ohne automatischen Themewechsel, in Windows High Contrast/Forced Colors, Reduced Motion, Zoom und kleinen Viewports dieselben Inhalte in derselben Reihenfolge behalten.
 
-- keine zweite Accessibility-, Dark-Mode- oder High-Contrast-Oberfläche
+- keine zweite Accessibility- oder High-Contrast-Oberfläche und keine automatische Dark-Mode-Oberfläche ohne expliziten, getesteten Theme-Schalter
 - wichtige Zustände zusätzlich über Text, Struktur, Rahmen oder Position
 - aktive Navigation, Buttons und Filter zeigen Auswahl über das ganze Control, nicht über eine kleine Fläche nur hinter der Beschriftung
 - Cluster sind echte Inhaltsbereiche mit Überschrift, sichtbarem Label, Beschreibung und Listenstruktur
@@ -95,13 +95,14 @@ Die Standardoberfläche muss in heller Darstellung, systemweitem Dark Mode, Wind
 Die mobile Suche darf nicht nur overflow-frei sein, sondern muss die knappe Breite ruhig nutzen.
 
 - leere Query-URLs bleiben ein Browse-/Discovery-Zustand, kein kaputter Zwischenzustand
-- mobile Menüs sind kompakte Overlays, keine unnötig leeren Vollscreen-Flächen
+- mobile Menüs sind vollflächige Navigationsebenen mit klarer Fokusführung, nicht lose über Inhalt schwebende Zusatzboxen
+- mobile Brand-Lockups behalten zwischen geschlossenem Header und geöffnetem Menü dieselbe visuelle Größe, Grundlinie und Nähe zwischen Icon-Logo und Wortmarke
 - Result-Cards nutzen den Content-Gutter aus, halten Poster sekundär und lassen Actions mit Text sichtbar
-- Footer- und Release-Information bleibt erreichbar, aber visuell sekundär
+- Footer-Information bleibt sekundär und kompakt; die vollständige Release-Historie gehört auf `/changelog`, nicht dauerhaft in den Footer
 
 ### Sekundärinfos bleiben sekundär
 
-Nicht alles muss sofort sichtbar sein. Aber Vertiefung darf nicht unauffindbar oder flüchtig werden. Deshalb arbeitet `null-noise` mit sichtbarer Primärinformation und ruhiger Offenlegung über `details` und `summary`.
+Nicht alles muss sofort sichtbar sein. Aber Vertiefung darf nicht unauffindbar oder flüchtig werden. Deshalb arbeitet `null-noise` mit sichtbarer Primärinformation und ruhiger Offenlegung über `details` und `summary`, etwa in der vollständigen Release-Historie auf `/changelog`.
 
 ### Erste Einschätzung auf Karten bleibt Vorschau
 

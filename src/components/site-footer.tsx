@@ -1,18 +1,19 @@
 import Link from "next/link";
 
-import { currentBuild, releaseNotes } from "@/lib/release-info";
+import { currentBuild } from "@/lib/release-info";
 
 export function SiteFooter() {
   return (
     <footer className="site-footer" id="site-footer">
-      <details className="mobile-experiment-footer" open>
-        <summary>{`Build ${currentBuild.version} · Release Notes`}</summary>
+      <div className="mobile-experiment-footer">
         <div className="mobile-experiment-footer-body">
           <p className="mobile-experiment-build-line">
             <strong>{`Build ${currentBuild.version}`}</strong>
-            {` · ${currentBuild.label} · Released ${currentBuild.releasedAt}`}
+            {` · ${currentBuild.releasedAt}`}
           </p>
-          <p className="field-note">Private Beta. Reiz-Einschätzungen bleiben vorläufig.</p>
+          <Link className="footer-changelog-link" href="/changelog">
+            Release Notes / Changelog
+          </Link>
           <nav className="mobile-experiment-footer-links" aria-label="Produktnavigation">
             <Link href="/">Start</Link>
             <Link href="/suche">Suche</Link>
@@ -25,7 +26,7 @@ export function SiteFooter() {
             <Link href="/impressum">Impressum</Link>
           </nav>
         </div>
-      </details>
+      </div>
       <div className="shell footer-stage">
         <section className="footer-atmosphere" aria-labelledby="privacy-summary-heading">
           <div className="footer-signoff">
@@ -52,28 +53,12 @@ export function SiteFooter() {
           <div className="footer-meta-runway">
             <p className="build-line">
               <strong>{`Build ${currentBuild.version}`}</strong>
-              {` · ${currentBuild.label} · Released ${currentBuild.releasedAt}`}
+              {` · ${currentBuild.releasedAt}`}
             </p>
             <p className="field-note">Private Beta. Reiz-Einschätzungen bleiben vorläufig.</p>
-
-            <details className="disclosure footer-changelog">
-              <summary>Release Notes / Changelog</summary>
-              <div className="release-notes">
-                {releaseNotes.map((release) => (
-                  <section key={release.version} aria-labelledby={`release-${release.version}`}>
-                    <h3 id={`release-${release.version}`}>
-                      {`v${release.version} · ${release.label}`}
-                    </h3>
-                    <p className="field-note">{`Released ${release.releasedAt}`}</p>
-                    <ul className="plain-list">
-                      {release.entries.map((entry) => (
-                        <li key={entry}>{entry}</li>
-                      ))}
-                    </ul>
-                  </section>
-                ))}
-              </div>
-            </details>
+            <Link className="footer-changelog-link" href="/changelog">
+              Release Notes / Changelog
+            </Link>
           </div>
         </section>
       </div>

@@ -611,17 +611,34 @@ test("metadata spike path stays clearly separated from the main product flow", a
   await expect(page.getByText("TMDb liefert hier nur Katalog-Metadaten.")).toBeVisible();
 });
 
-test("footer exposes the current build version and changelog", async ({ page }) => {
+test("footer exposes compact build metadata and links to the changelog", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.locator("footer .build-line")).toContainText("Build");
+  const buildLine = page.locator("footer .build-line");
 
-  const changelog = page
-    .locator("summary")
-    .filter({ hasText: "Release Notes / Changelog" });
+  await expect(buildLine).toHaveText(/Build 0\.8\.4-mobile-brand-changelog\.20260620 · 2026-06-20/);
+  await expect(buildLine).not.toContainText("Motion, Forced Colors and UI flow pass");
+  await expect(page.locator("footer .release-note")).toHaveCount(0);
+  await expect(page.locator("footer").getByRole("link", { name: "Release Notes / Changelog" })).toHaveAttribute(
+    "href",
+    "/changelog",
+  );
+});
 
-  await changelog.click();
-  await expect(page.locator(".release-notes h3").first()).toContainText("v");
+test("changelog page exposes the full release history", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.goto("/changelog");
+
+  await expect(page.getByRole("heading", { name: "Release Notes / Changelog" })).toBeVisible();
+  const releaseNotes = page.locator(".changelog-page .release-note");
+  expect(await releaseNotes.count()).toBeGreaterThan(20);
+  await expect(releaseNotes.first()).toContainText("mobile-brand-changelog.20260620");
+  await expect(releaseNotes.first()).toContainText("Mobile brand and changelog documentation pass");
+  await expect(page.locator(".changelog-page")).toContainText("Mobile title detail layout");
+
+  const oldestRelease = releaseNotes.last();
+  await oldestRelease.locator("summary").click();
+  await expect(oldestRelease.locator(".release-note-panel")).toBeVisible();
 });
 
 test("footer links to the minimal legal pages", async ({ page }) => {
@@ -665,16 +682,21 @@ test("mobile navigation separates primary header links from footer metadata link
   await page.getByRole("button", { name: "Menü" }).click();
 
   const headerNav = page.getByRole("navigation", { name: "Mobile Navigation" });
-  const footerProductNav = page.getByRole("navigation", { name: "Produktnavigation" });
-  const footerLegalNav = page.getByRole("navigation", { name: "Rechtliches" }).first();
 
-  await expect(headerNav.getByRole("link", { name: "Start" })).toHaveAttribute("href", "/");
-  await expect(headerNav.getByRole("link", { name: "Suche" })).toHaveAttribute("href", "/suche");
-  await expect(headerNav.getByRole("link", { name: "Erklärung / Hilfe" })).toHaveAttribute("href", "/erklaerung");
+  await expect(headerNav.getByRole("link", { exact: true, name: "Start" })).toHaveAttribute("href", "/");
+  await expect(headerNav.getByRole("link", { exact: true, name: "Suche" })).toHaveAttribute("href", "/suche");
+  await expect(headerNav.getByRole("link", { exact: true, name: "Erklärung / Hilfe" })).toHaveAttribute("href", "/erklaerung");
   await expect(headerNav.getByRole("link", { name: "Barrierefreiheit" })).toHaveCount(0);
   await expect(headerNav.getByRole("link", { name: "Kontakt" })).toHaveCount(0);
   await expect(headerNav.getByRole("link", { name: "Datenschutz" })).toHaveCount(0);
   await expect(headerNav.getByRole("link", { name: "Impressum" })).toHaveCount(0);
+  await expect(page.getByRole("navigation", { name: "Produktnavigation" })).toHaveCount(0);
+
+  await headerNav.getByRole("button", { name: "Schließen" }).click();
+  await expect(headerNav).toBeHidden();
+
+  const footerProductNav = page.getByRole("navigation", { name: "Produktnavigation" });
+  const footerLegalNav = page.getByRole("navigation", { name: "Rechtliches" }).first();
 
   await expect(footerProductNav.locator('a[href="/"]')).toHaveText("Start");
   await expect(footerProductNav.locator('a[href="/suche"]')).toHaveText("Suche");
@@ -694,12 +716,48 @@ test("mobile navigation returns focus to the menu button after Escape", async ({
 
   const mobileNav = page.getByRole("navigation", { name: "Mobile Navigation" });
   await expect(mobileNav).toBeVisible();
+  await expect(mobileNav.getByRole("button", { name: "Schließen" })).toBeFocused();
 
   await mobileNav.getByRole("link", { name: "Suche" }).focus();
   await page.keyboard.press("Escape");
 
   await expect(page.getByRole("button", { name: "Menü öffnen" })).toBeFocused();
   await expect(mobileNav).toBeHidden();
+});
+
+test("detail feedback submits in place and focuses success or error status", async ({ page }) => {
+  await page.goto("/titel/mondfenster");
+
+  const initialUrl = page.url();
+  await page.route("**/api/title-feedback", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ status: "success" }),
+    });
+  });
+
+  await page.getByRole("button", { name: "Eher ruhig" }).click();
+
+  const successStatus = page.getByRole("status").filter({ hasText: "Rückmeldung übernommen" });
+  await expect(successStatus).toBeVisible();
+  await expect(successStatus).toBeFocused();
+  expect(page.url()).toBe(initialUrl);
+
+  await page.unroute("**/api/title-feedback");
+  await page.route("**/api/title-feedback", async (route) => {
+    await route.fulfill({
+      status: 400,
+      contentType: "application/json",
+      body: JSON.stringify({ status: "invalid" }),
+    });
+  });
+
+  await page.getByRole("button", { name: "Eher intensiv" }).click();
+  const errorStatus = page.getByRole("alert").filter({ hasText: "Die Rückmeldung war nicht vollständig" });
+  await expect(errorStatus).toBeVisible();
+  await expect(errorStatus).toBeFocused();
+  expect(page.url()).toBe(initialUrl);
 });
 
 test("contact page uses a privacy-first native form with clear labels and status messages", async ({
@@ -1076,7 +1134,7 @@ test("reduced motion disables decorative motion while keeping status and navigat
   await expect(page.getByRole("navigation", { name: "Mobile Navigation" })).toBeVisible();
 });
 
-test("dark mode keeps core surfaces, forms, clusters and poster fallbacks readable", async ({ page }) => {
+test("dark color preference does not switch the product out of its light theme", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "dark" });
   await page.goto("/suche");
   await expect(page.getByRole("heading", { name: "Noch kein Titel im Kopf?" })).toBeVisible();
@@ -1095,6 +1153,7 @@ test("dark mode keeps core surfaces, forms, clusters and poster fallbacks readab
         backgroundColor: style.backgroundColor,
         borderTopWidth: style.borderTopWidth,
         color: style.color,
+        colorScheme: style.colorScheme,
         height: rect.height,
         outlineColor: style.outlineColor,
         width: rect.width,
@@ -1103,6 +1162,7 @@ test("dark mode keeps core surfaces, forms, clusters and poster fallbacks readab
 
     const input = document.querySelector<HTMLInputElement>("input[name='q']");
     input?.focus();
+    const rootStyle = window.getComputedStyle(document.documentElement);
 
     return {
       activeRoute: read("[aria-current='page']"),
@@ -1112,12 +1172,15 @@ test("dark mode keeps core surfaces, forms, clusters and poster fallbacks readab
       header: read(".site-header"),
       input: read("input[name='q']"),
       posterFallback: read(".poster-thumb-fallback-tile, .poster-thumb-fallback"),
+      rootColorScheme: rootStyle.colorScheme,
+      rootPageColor: rootStyle.getPropertyValue("--color-page").trim(),
+      rootSurfaceColor: rootStyle.getPropertyValue("--color-surface").trim(),
       status: read(".search-results-live-status"),
     };
   });
 
   for (const [name, style] of Object.entries(styles).filter(
-    ([name]) => !["posterFallback", "status"].includes(name),
+    ([name]) => !["posterFallback", "rootColorScheme", "rootPageColor", "rootSurfaceColor", "status"].includes(name),
   )) {
     expect(style, `${name} exists`).not.toBeNull();
     expect(style?.backgroundColor, `${name} has nontransparent background`).not.toBe("rgba(0, 0, 0, 0)");
@@ -1126,6 +1189,11 @@ test("dark mode keeps core surfaces, forms, clusters and poster fallbacks readab
     expect(style?.height ?? 0, `${name} height`).toBeGreaterThan(0);
   }
 
+  expect(styles.rootColorScheme).toBe("light");
+  expect(styles.rootPageColor).toBe("#fff6e5");
+  expect(styles.rootSurfaceColor).toBe("#fffdf8");
+  expect(styles.body?.backgroundColor).toBe("rgb(255, 246, 229)");
+  expect(styles.body?.color).toBe("rgb(52, 40, 66)");
   expect(styles.cluster?.borderTopWidth).not.toBe("0px");
   expect(styles.status?.color).not.toBe("rgba(0, 0, 0, 0)");
 
@@ -1330,11 +1398,16 @@ test("empty query search URLs render the browse state without mobile layout arti
 
     const metrics = await page.evaluate(() => {
       const viewportWidth = document.documentElement.clientWidth;
-      const firstCard = document.querySelector(".result-card");
+      const firstCard = document.querySelector(".search-results-group .result-card");
+      const groupHeader = document.querySelector(".search-results-group .search-results-group-header");
+      const groupHeaderStyle = groupHeader ? window.getComputedStyle(groupHeader) : null;
+      const groupHeaderHeading = groupHeader?.querySelector("h2");
       const resultsMain = document.querySelector(".search-results-main");
       const footer = document.querySelector("#site-footer");
       const loaderMarks = Array.from(document.querySelectorAll(".loading-state-mark"));
       const cardRect = firstCard?.getBoundingClientRect();
+      const groupHeaderRect = groupHeader?.getBoundingClientRect();
+      const groupHeaderHeadingRect = groupHeaderHeading?.getBoundingClientRect();
       const resultsRect = resultsMain?.getBoundingClientRect();
       const footerRect = footer?.getBoundingClientRect();
       const strayLeftMarks = loaderMarks.filter((mark) => {
@@ -1347,6 +1420,13 @@ test("empty query search URLs render the browse state without mobile layout arti
         cardLeft: cardRect?.left ?? 0,
         cardWidth: cardRect?.width ?? 0,
         footerHeight: footerRect?.height ?? 0,
+        groupHeaderLeft: groupHeaderRect?.left ?? 0,
+        groupHeaderContentLeft: groupHeaderHeadingRect?.left ?? 0,
+        groupHeaderPaddingBottom: Number.parseFloat(groupHeaderStyle?.paddingBottom ?? "0"),
+        groupHeaderPaddingLeft: Number.parseFloat(groupHeaderStyle?.paddingLeft ?? "0"),
+        groupHeaderPaddingRight: Number.parseFloat(groupHeaderStyle?.paddingRight ?? "0"),
+        groupHeaderPaddingTop: Number.parseFloat(groupHeaderStyle?.paddingTop ?? "0"),
+        groupHeaderWidth: groupHeaderRect?.width ?? 0,
         overflow: document.documentElement.scrollWidth - viewportWidth,
         resultsLeft: resultsRect?.left ?? 0,
         resultsWidth: resultsRect?.width ?? 0,
@@ -1356,11 +1436,23 @@ test("empty query search URLs render the browse state without mobile layout arti
 
     expect(metrics.overflow, `empty query overflows at ${width}`).toBeLessThanOrEqual(1);
     expect(metrics.resultsWidth, `results width at ${width}`).toBeGreaterThanOrEqual(width - 32);
-    expect(metrics.cardWidth, `card width at ${width}`).toBeGreaterThanOrEqual(metrics.resultsWidth - 2);
+    expect(metrics.cardWidth, `card width at ${width}`).toBeGreaterThanOrEqual(
+      metrics.resultsWidth - metrics.groupHeaderPaddingLeft - metrics.groupHeaderPaddingRight - 4,
+    );
+    expect(metrics.groupHeaderPaddingLeft, `group header has horizontal padding at ${width}`)
+      .toBeGreaterThanOrEqual(width === 320 ? 11 : 13);
+    expect(metrics.groupHeaderPaddingRight, `group header has horizontal padding at ${width}`)
+      .toBeGreaterThanOrEqual(width === 320 ? 11 : 13);
+    expect(metrics.groupHeaderPaddingTop, `group header has vertical padding at ${width}`).toBeGreaterThanOrEqual(12);
+    expect(metrics.groupHeaderPaddingBottom, `group header has vertical padding at ${width}`).toBeGreaterThanOrEqual(12);
+    expect(Math.abs(metrics.groupHeaderContentLeft - metrics.cardLeft), `group header content aligns with cards at ${width}`)
+      .toBeLessThanOrEqual(1);
+    expect(metrics.groupHeaderWidth, `group header width follows cards at ${width}`)
+      .toBeLessThanOrEqual(metrics.resultsWidth + 1);
     expect(
-      Math.abs(metrics.cardLeft - metrics.resultsLeft),
-      `card aligns with results at ${width}`,
-    ).toBeLessThanOrEqual(1);
+      Math.abs(metrics.cardLeft - (metrics.resultsLeft + metrics.groupHeaderPaddingLeft)),
+      `card aligns with padded result content at ${width}`,
+    ).toBeLessThanOrEqual(2);
     expect(metrics.cardHeight, `card remains compact at ${width}`).toBeLessThanOrEqual(width === 320 ? 300 : 260);
     expect(metrics.footerHeight, `footer remains secondary at ${width}`).toBeLessThanOrEqual(width === 320 ? 460 : 420);
     expect(metrics.strayLeftMarkCount, `no loader dots on viewport edge at ${width}`).toBe(0);
@@ -1532,7 +1624,7 @@ test("search local shelf keeps remembered and seen cards readable", async ({ pag
   await expect(page.locator(".search-local-shelf-grid")).toHaveAttribute("data-groups", "1");
 });
 
-test("mobile search menu stays compact and keeps proportional focus styling", async ({ page }) => {
+test("mobile search menu opens as a full-screen navigation mode", async ({ page }) => {
   for (const width of [320, 390, 430]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/suche?q=&tone=all&kind=all");
@@ -1562,44 +1654,126 @@ test("mobile search menu stays compact and keeps proportional focus styling", as
     expect(buttonFocus.outlineWidth).toBe("2px");
     expect(buttonFocus.outlineOffset).toBe("2px");
 
+    const closedHeaderState = await page.evaluate(() => {
+      const header = document.querySelector(".site-header .header-inner")?.getBoundingClientRect();
+      const brand = document.querySelector(".site-header .brand")?.getBoundingClientRect();
+      const logo = document.querySelector(".site-header .brand-image-frame")?.getBoundingClientRect();
+      const wordmark = document.querySelector(".site-header .brand-wordmark-frame")?.getBoundingClientRect();
+      const button = document.querySelector(".mobile-menu-toggle")?.getBoundingClientRect();
+
+      return {
+        brandCenter: brand ? brand.top + brand.height / 2 : 0,
+        buttonCenter: button ? button.top + button.height / 2 : 0,
+        buttonRight: button?.right ?? 0,
+        headerLeft: header?.left ?? 0,
+        headerRight: header?.right ?? 0,
+        logoLeft: logo?.left ?? 0,
+        logoRight: logo?.right ?? 0,
+        logoHeight: logo?.height ?? 0,
+        logoWidth: logo?.width ?? 0,
+        wordmarkLeft: wordmark?.left ?? 0,
+        wordmarkHeight: wordmark?.height ?? 0,
+        wordmarkWidth: wordmark?.width ?? 0,
+      };
+    });
+
+    expect(closedHeaderState.logoLeft, `closed header logo follows content axis at ${width}`)
+      .toBeGreaterThanOrEqual(closedHeaderState.headerLeft - 1);
+    expect(closedHeaderState.logoLeft, `closed header logo does not drift from content axis at ${width}`)
+      .toBeLessThanOrEqual(closedHeaderState.headerLeft + 8);
+    expect(closedHeaderState.wordmarkLeft - closedHeaderState.logoRight, `closed header brand gap at ${width}`)
+      .toBeGreaterThanOrEqual(5);
+    expect(closedHeaderState.wordmarkLeft - closedHeaderState.logoRight, `closed header brand gap at ${width}`)
+      .toBeLessThanOrEqual(12);
+    expect(Math.abs(closedHeaderState.brandCenter - closedHeaderState.buttonCenter), `brand and menu baseline align at ${width}`)
+      .toBeLessThanOrEqual(4);
+    expect(closedHeaderState.buttonRight, `menu button stays on the right content axis at ${width}`)
+      .toBeLessThanOrEqual(closedHeaderState.headerRight + 1);
+
     await menuButton.click();
     const mobileNav = page.getByRole("navigation", { name: "Mobile Navigation" });
     await expect(mobileNav).toBeVisible();
+    await expect(mobileNav.getByRole("button", { name: "Schließen" })).toBeFocused();
+    await expect(mobileNav.getByRole("link", { name: "Null Noise – Startseite" })).toBeVisible();
 
     const box = await mobileNav.boundingBox();
     expect(box, `mobile navigation has a box at ${width}`).not.toBeNull();
-    expect(box?.height ?? 0, `mobile navigation is compact at ${width}`).toBeLessThanOrEqual(190);
-    expect(box?.x ?? 0, `mobile navigation starts in viewport at ${width}`).toBeGreaterThanOrEqual(0);
+    expect(box?.height ?? 0, `mobile navigation fills the viewport at ${width}`).toBeGreaterThanOrEqual(880);
+    expect(box?.x ?? 0, `mobile navigation starts at the viewport edge at ${width}`).toBeLessThanOrEqual(1);
     expect((box?.x ?? 0) + (box?.width ?? 0), `mobile navigation ends in viewport at ${width}`)
       .toBeLessThanOrEqual(width + 1);
 
-    const headerLayout = await page.evaluate(() => {
+    const menuState = await page.evaluate(() => {
       const brand = document.querySelector(".site-header .brand")?.getBoundingClientRect();
       const button = document.querySelector(".mobile-menu-toggle")?.getBoundingClientRect();
       const nav = document.querySelector(".mobile-navigation")?.getBoundingClientRect();
+      const navBrand = document.querySelector(".mobile-navigation-brand")?.getBoundingClientRect();
+      const navLogo = document.querySelector(".mobile-navigation-brand-image")?.getBoundingClientRect();
+      const navWordmark = document.querySelector(".mobile-navigation-brand-wordmark")?.getBoundingClientRect();
+      const navHead = document.querySelector(".mobile-navigation-head")?.getBoundingClientRect();
+      const firstNavLink = document.querySelector(".mobile-nav-list a")?.getBoundingClientRect();
+      const beforeScroll = window.scrollY;
+
+      window.scrollBy(0, 320);
 
       return {
         brandLeft: brand?.left ?? 0,
         brandRight: brand?.right ?? 0,
-        buttonBottom: button?.bottom ?? 0,
         buttonLeft: button?.left ?? 0,
         buttonRight: button?.right ?? 0,
         buttonTop: button?.top ?? 0,
+        bodyPosition: window.getComputedStyle(document.body).position,
+        bodyTop: window.getComputedStyle(document.body).top,
+        firstNavLinkTop: firstNavLink?.top ?? 0,
+        navBrandLeft: navBrand?.left ?? 0,
+        navBrandWidth: navBrand?.width ?? 0,
+        navHeadBottom: navHead?.bottom ?? 0,
+        navLogoHeight: navLogo?.height ?? 0,
+        navLogoWidth: navLogo?.width ?? 0,
+        navWordmarkHeight: navWordmark?.height ?? 0,
+        navWordmarkWidth: navWordmark?.width ?? 0,
         navTop: nav?.top ?? 0,
+        scrollChanged: window.scrollY !== beforeScroll,
       };
     });
 
-    expect(headerLayout.brandLeft, `brand keeps the left header slot at ${width}`).toBeLessThan(width / 3);
-    expect(headerLayout.buttonLeft, `menu toggle keeps the right header slot at ${width}`)
+    expect(menuState.brandLeft, `brand keeps the left header slot at ${width}`).toBeLessThan(width / 3);
+    expect(menuState.buttonLeft, `menu toggle keeps the right header slot at ${width}`)
       .toBeGreaterThan(width / 2);
-    expect(headerLayout.buttonRight, `menu toggle stays inside viewport at ${width}`)
+    expect(menuState.buttonRight, `menu toggle stays inside viewport at ${width}`)
       .toBeLessThanOrEqual(width - 8);
-    expect(headerLayout.buttonTop, `menu toggle remains in the header row at ${width}`)
+    expect(menuState.buttonTop, `menu toggle remains in the header row at ${width}`)
       .toBeLessThan(32);
-    expect(headerLayout.buttonLeft, `menu toggle does not overlap the brand at ${width}`)
-      .toBeGreaterThanOrEqual(headerLayout.brandRight + 4);
-    expect(headerLayout.navTop, `mobile navigation opens below the toggle at ${width}`)
-      .toBeGreaterThanOrEqual(headerLayout.buttonBottom - 1);
+    expect(menuState.buttonLeft, `menu toggle does not overlap the brand at ${width}`)
+      .toBeGreaterThanOrEqual(menuState.brandRight + 4);
+    expect(menuState.navTop, `mobile navigation covers the viewport at ${width}`).toBeLessThanOrEqual(1);
+    expect(menuState.navBrandLeft, `mobile menu brand aligns with the content axis at ${width}`)
+      .toBeGreaterThanOrEqual(width <= 320 ? 12 : 14);
+    expect(menuState.navBrandWidth, `mobile menu brand has real width at ${width}`).toBeGreaterThan(120);
+    expect(menuState.navLogoWidth, `mobile menu logo is visible at ${width}`).toBeGreaterThan(28);
+    expect(menuState.navLogoHeight, `mobile menu logo is visible at ${width}`).toBeGreaterThan(24);
+    expect(Math.abs(menuState.navLogoWidth - closedHeaderState.logoWidth), `open menu logo width matches closed header at ${width}`)
+      .toBeLessThanOrEqual(1);
+    expect(Math.abs(menuState.navLogoHeight - closedHeaderState.logoHeight), `open menu logo height matches closed header at ${width}`)
+      .toBeLessThanOrEqual(1);
+    expect(Math.abs(menuState.navWordmarkWidth - closedHeaderState.wordmarkWidth), `open menu wordmark width matches closed header at ${width}`)
+      .toBeLessThanOrEqual(1);
+    expect(Math.abs(menuState.navWordmarkHeight - closedHeaderState.wordmarkHeight), `open menu wordmark height matches closed header at ${width}`)
+      .toBeLessThanOrEqual(1);
+    expect(menuState.navWordmarkHeight, `mobile menu wordmark is visible at ${width}`).toBeGreaterThan(24);
+    expect(menuState.firstNavLinkTop, `mobile links sit below the menu header at ${width}`)
+      .toBeGreaterThanOrEqual(menuState.navHeadBottom + 12);
+    expect(menuState.firstNavLinkTop, `mobile links are not vertically centered at ${width}`)
+      .toBeLessThan(240);
+    expect(menuState.bodyPosition, `page is fixed while menu is open at ${width}`).toBe("fixed");
+    expect(menuState.bodyTop, `page stores its scroll offset while menu is open at ${width}`).toMatch(/^-?\d+px$/);
+    expect(menuState.scrollChanged, `underlying page does not scroll at ${width}`).toBe(false);
+
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await expect(mobileNav.locator(":focus")).toHaveCount(1);
 
     await page.keyboard.press("Escape");
     await expect(menuButton).toBeFocused();
@@ -1838,7 +2012,7 @@ test.describe("iPhone Pro Max mobile layout", () => {
 
     const mobileNav = page.getByRole("navigation", { name: "Mobile Navigation" });
     await expect(mobileNav).toBeVisible();
-    await expect(mobileNav.getByRole("link", { name: "Start" })).toBeFocused();
+    await expect(mobileNav.getByRole("button", { name: "Schließen" })).toBeFocused();
 
     const menuMetrics = await page.evaluate(() => {
       const header = document.querySelector(".site-header")?.getBoundingClientRect();
@@ -1855,10 +2029,10 @@ test.describe("iPhone Pro Max mobile layout", () => {
       };
     });
 
-    expect(menuMetrics.navTop).toBeGreaterThanOrEqual(menuMetrics.headerBottom - 1);
+    expect(menuMetrics.navTop).toBeLessThanOrEqual(1);
     expect(menuMetrics.navLeft).toBeGreaterThanOrEqual(0);
     expect(menuMetrics.navRight).toBeLessThanOrEqual(menuMetrics.viewportWidth + 1);
-    expect(menuMetrics.navBottom).toBeLessThanOrEqual(menuMetrics.viewportHeight + 1);
+    expect(menuMetrics.navBottom).toBeGreaterThanOrEqual(menuMetrics.viewportHeight - 8);
 
     await page.keyboard.press("Escape");
     await expect(menuButton).toBeFocused();

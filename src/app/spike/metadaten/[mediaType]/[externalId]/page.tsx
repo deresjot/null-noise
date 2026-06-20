@@ -435,15 +435,7 @@ export default async function MetadataSpikeDetailPage({
                     { name: "sourceId", value: String(item.sourceId) },
                     { name: "returnPath", value: returnPath },
                   ]}
-                />
-              ) : null}
-              {visibleFeedbackStatus ? (
-                <StatusPanel
-                  className="status-panel-inline"
-                  headingAs="h4"
-                  title={visibleFeedbackStatus.title}
-                  text={visibleFeedbackStatus.text}
-                  tone={visibleFeedbackStatus.tone}
+                  initialStatus={visibleFeedbackStatus}
                 />
               ) : null}
             </div>

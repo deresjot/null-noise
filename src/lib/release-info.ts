@@ -1,12 +1,39 @@
 import packageJson from "../../package.json";
 
 export const currentBuild = {
-  version: `${packageJson.version}-forced-colors.20260619`,
-  label: "Forced Colors display pass",
-  releasedAt: "2026-06-19",
+  version: `${packageJson.version}-mobile-brand-changelog.20260620`,
+  label: "Mobile brand and changelog documentation pass",
+  releasedAt: "2026-06-20",
 };
 
 export const releaseNotes = [
+  {
+    version: `${packageJson.version}-mobile-brand-changelog.20260620`,
+    label: "Mobile brand and changelog documentation pass",
+    releasedAt: "2026-06-20",
+    entries: [
+      "Release Notes / Changelog moved out of the footer to the dedicated /changelog documentation route, rendered from the existing release metadata with native details/summary sections.",
+      "The footer now shows only compact build metadata with build version and release date, plus a link to the changelog page.",
+      "The mobile header brand lockup now uses matching logo and wordmark frame heights, shared proportions and no mobile transform scaling.",
+      "The opened full-screen mobile navigation now uses the same logo, wordmark dimensions and spacing as the closed mobile header.",
+      "Mobile menu open and close states now have a short visual transition while prefers-reduced-motion keeps the navigation static.",
+      "Playwright coverage now verifies the changelog route, compact footer metadata, mobile brand consistency, menu focus behavior, reduced motion and central mobile layout bounds.",
+    ],
+  },
+  {
+    version: `${packageJson.version}-motion-forced-colors-ui.20260620`,
+    label: "Motion, Forced Colors and UI flow pass",
+    releasedAt: "2026-06-20",
+    entries: [
+      "The normal product theme now stays in the light color system even when the browser prefers dark mode; automatic color adaptation is reserved for real Forced Colors/High Contrast contexts.",
+      "Reduced Motion is protected late in the cascade so mobile navigation, preview gate, search transitions, loaders, route progress and view transitions cannot re-enable decorative movement.",
+      "The mobile navigation now opens as a full-screen navigation layer with scroll lock, inert page content, Escape/close handling, focus trapping and focus return to the menu button.",
+      "Reading feedback submits in place when JavaScript is available, focuses the success or error status, keeps the no-JS redirect fallback and avoids duplicate status regions.",
+      "Footer release notes are now a real accordion: each changelog entry has its own button, panel, expanded state and reachable text.",
+      "Detail posters, browse cards, result-card hierarchy, footer actions and card metadata were tightened so mobile, compact browse and Forced Colors layouts stay readable without clipping.",
+      "Playwright coverage now checks footer changelog disclosure, in-place feedback status, full-screen mobile navigation, dark-preference light-theme stability, Reduced Motion and Forced Colors structure.",
+    ],
+  },
   {
     version: `${packageJson.version}-forced-colors.20260619`,
     label: "Forced Colors display pass",

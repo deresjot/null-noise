@@ -123,7 +123,7 @@ Jede übernommene oder inspirierte Komponente wird nicht nur optisch, sondern fu
 - Screenreader-Sinnhaftigkeit: Landmarken, Beschriftungen, Statuswechsel
 - Reflow/Zoom: 320 CSS Pixel, 400 Prozent Zoom
 - Motion: Verhalten mit `prefers-reduced-motion`; späte CSS-Regeln dürfen reduzierte Bewegung nicht wieder überschreiben
-- Systemdarstellung: Dark Mode über semantische Tokens, Forced Colors über Systemfarben und echte Rahmen
+- Systemdarstellung: normale Light-/Dark-Präferenzen ändern die Produktoberfläche nicht automatisch; Forced Colors nutzt Systemfarben und echte Rahmen
 - Brand-Assets bleiben dieselben SVGs wie im Normalmodus; Forced Colors darf nur ihre Farbauflösung auf Systemfarben ändern, nicht Form, Proportionen oder Anordnung ersetzen
 - Aktive Navigation, Buttons und Filter kennzeichnen Auswahl über das ganze Control und dessen Rahmen; verschachtelte Textlabels, Badges oder Pseudoelemente dürfen keine eigene Mini-Fläche hinter der Beschriftung erzeugen
 - `.result-card-footer-zone` muss Aktionen und Metadaten mit `min-width: 0`, `max-width: 100%` und Wrapping innerhalb der Kartenbreite halten, statt Inhalt nur per Overflow abzuschneiden
@@ -159,13 +159,15 @@ Die erste Basis folgt dieser Strategie bereits:
 - `ExplanationPanel`: direkt sichtbare Erklärung statt versteckter Tooltip-Mechanik
 - `ReadingEvidenceDetails`: nativer `details`-/`summary`-Block für die Frage `Worauf basiert das?`, damit Vertiefung im Produkt erklärbar bleibt, ohne neue Custom-Accordion-Logik aufzubauen
 - `ReadingDecisionSupport`: kleiner Entscheidungsblock mit `Passt das gerade?`, `Im Vergleich zu …` und `Könnte kippen, weil …`; bleibt ein normaler Informationsblock statt eines neuen Widgets oder KPI-Moduls
-- `ReadingFeedbackForm`: kleiner, anonymer Rückkanal mit echten `button`-Elementen und einfacher Server-Action-Logik statt sozialer Bewertungs-UI oder Client-Widget
+- `ReadingFeedbackForm`: kleiner, anonymer Rückkanal mit echten `button`-Elementen; JavaScript sendet inline, fokussiert Erfolg oder Fehler und hält den serverseitigen Redirect-Fallback für No-JS erhalten
 - `DetailFollowupSection`: kleiner Folgeempfehlungsbereich auf Detailseiten mit normaler Überschrift und derselben Tile-Sprache wie in Suche/Browse statt neuer Empfehlungs-Widgetlogik
 - `TitlePocketActions`: lokales `Merken` und `Schon gesehen` über echte Buttons mit sichtbarem Text statt Icon-only-Merken oder impliziter Watchlist-Mimik
 - `SearchLocalShelf`: kleiner lokaler Abschnitt auf `/suche` für gemerkte und gesehene Titel; bleibt semantische Listen- und Formularstruktur statt Client-seitiger Board- oder Drawer-Mechanik. Der mobile Toggle `Schon gesehene Titel hier ausblenden` muss mit Checkbox und Label sichtbar zusammenbleiben und sauber umbrechen.
 - `Home Hero`: `Was passt gerade?` plus kurze Erklärung macht den Zweck von Null Noise beim Einstieg sichtbar; Suche bleibt der primäre Pfad, Richtungskacheln bleiben sekundär.
 - Spike-Detailseiten: visuelle Beruhigung wurde über Hierarchie und Verdichtung gelöst (Spaltengewichtung, kompaktere Followup-Karten, ruhigere Provider-Einbindung) statt über neue Widgets, zusätzliche Interaktionsmodi oder zweite Darstellungssysteme
 - `Inline-Status statt Toast`: kleine Rückmeldungen wie `Für später gemerkt.` oder `Neue Auswahl, gleicher Rahmen.` bleiben direkt am betroffenen Bereich und werden nicht als globale Notification-Mechanik aufgebaut
+- `SiteNavigation`: Mobile Navigation ist eine vollflächige Navigationsebene mit nativer Linkliste, Schließen-Button, Escape-Handling, Scroll-Lock, inertem Seiteninhalt, Fokusfalle und Fokus-Rückkehr zum Menübutton. Geschlossener Header und geöffnetes Menü teilen dieselben mobilen Brand-Proportionen; die Open-/Close-Transition läuft nur außerhalb von Reduced Motion.
+- `/changelog`: Release-Historie ist eine eigene Dokumentationsroute und rendert Release-Metadaten mit nativen `details`-/`summary`-Elementen. Der Footer bleibt bewusst kompakt und zeigt nur aktuelle Buildnummer, Datum und Link zur Historie.
 - `Search-Browse-Intro`: Ansicht und `Neu mischen` sind als kleine, aber klar lesbare Aktionsblöcke umgesetzt; Meta-Beschriftung und Steuerung bleiben sichtbar getrennt
 - `Erklärungsseite`: native Disclosure-Muster für vertiefende Informationen statt Custom-Accordion
 

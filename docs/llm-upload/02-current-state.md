@@ -6,7 +6,7 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 - lokaler Branch: `null-noise`
 - lokaler Projektpfad: `/Users/deresjot/Library/CloudStorage/Dropbox/_PRIVAT/Code/git-webdev/null-noise`
-- Stand: Forced-Colors-Display-Pass vom 19. Juni 2026 baut auf dem Production-Launch vom 14. Juni 2026 auf; Commit- und Deployment-Details stehen in der jeweiligen Übergabe.
+- Stand: Mobile-Brand-/Changelog-Dokumentationspass vom 20. Juni 2026 baut auf dem Motion-/Forced-Colors-/UI-Flow-Pass vom 20. Juni 2026, dem Forced-Colors-Display-Pass vom 19. Juni 2026 und dem Production-Launch vom 14. Juni 2026 auf; Commit- und Deployment-Details stehen in der jeweiligen Übergabe.
 - kanonische öffentliche Adresse: https://www.null-noise.de
 - Apex-Domain: https://null-noise.de leitet in Vercel per `308 Permanent Redirect` auf https://www.null-noise.de weiter
 - technische Vercel-Projektadresse: https://null-noise.vercel.app bleibt Production-verbunden, ist aber nicht kanonisch
@@ -20,6 +20,23 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 ## Letzte lokale Arbeitsblöcke
 
+- Mobile-Brand-/Changelog-Dokumentationspass 20. Juni 2026:
+  - Release Notes und Changelog sind aus dem Footer auf die eigene Route `/changelog` ausgelagert. Die Seite rendert die vorhandenen Release-Metadaten als dynamische Dokumentation mit nativen `details`-/`summary`-Elementen.
+  - Der Footer zeigt nur noch die kompakte aktuelle Build-Zeile mit Buildnummer und Datum sowie einen Link zur vollständigen Changelog-Seite.
+  - Mobile Header-Branding nutzt für geschlossenes und geöffnetes Menü dieselben Logo-/Wortmarken-SVGs, gemeinsame Frame-Höhen, stabile Proportionen und einen engen Abstand ohne mobile Transform-Skalierung.
+  - Das mobile Vollbildmenü öffnet und schließt sichtbar über `data-state="open"`/`"closing"`; unter `prefers-reduced-motion: reduce` bleibt der Zustandswechsel ohne dekorative Animation.
+  - Playwright-Checks decken Changelog-Route, kompakten Footer, mobile Brand-Maße bei 320/390/430 CSS-Pixeln, Menü-Fokusführung, Menü-Transition und Reduced Motion ab.
+  - Lokale Checks vor Git/Vercel-Deploy: `npm run lint`, `npm run build`, `npm run test:a11y`, `npm run test:wcag22-aa` und `git diff --check` bestanden. `npm run test:unit` bleibt ohne `NULL_NOISE_TEST_DATABASE_URL` blockiert.
+  - Release Notes stehen lokal auf `0.8.4-mobile-brand-changelog.20260620`.
+- Motion-/Forced-Colors-/UI-Flow-Pass 20. Juni 2026:
+  - Normale Browser-Farbschemata bleiben in der hellen Produktoberfläche. `prefers-color-scheme: dark` schaltet keine dunkle UI mehr; automatische Farbanpassung passiert nur noch in echten Forced-Colors-/High-Contrast-Kontexten.
+  - Reduced Motion bleibt spät in der CSS-Kaskade abgesichert, damit Mobile-Menü, Preview-Gate, Search-Transitions, Loader, Navigationsfortschritt und View Transitions dekorative Bewegung nicht wieder aktivieren.
+  - Mobile Navigation öffnet jetzt als vollflächige Navigationsebene mit Scroll-Lock, inertem Seiteninhalt, Fokusfalle, sichtbarem Schließen, Escape-Handling und Fokus-Rückkehr zum Menübutton.
+  - Bewertungs-/Feedbackformulare auf Detailseiten senden mit JavaScript inline, fokussieren Erfolg oder Fehler, behalten den No-JS-Redirect-Fallback und vermeiden doppelte Statusbereiche.
+  - Footer-Release-Notes wurden zunächst als Akkordeon repariert und im anschließenden Mobile-Brand-/Changelog-Pass auf die eigene Route `/changelog` ausgelagert.
+  - Detailposter, Browse-Karten, Result-Card-Hierarchie, Footer-Aktionen und Kartenmetadaten wurden für Mobile, kompakte Browse-Zustände und Forced Colors gegen Clipping und unklare Gruppierung gehärtet.
+  - Lokale Checks: `npm run lint`, `npm run build`, `npm run test:a11y`, `npm run test:wcag22-aa` sowie ein gezielter Playwright-Lauf für Dark-Präferenz-ohne-Themewechsel und Forced Colors bestanden. `npm run test:unit` bleibt ohne `NULL_NOISE_TEST_DATABASE_URL` blockiert.
+  - Release Notes stehen lokal auf `0.8.4-motion-forced-colors-ui.20260620`.
 - Display-Robustheit 19. Juni 2026:
   - Forced-Colors-/High-Contrast-Korrekturen sind lokal abgeschlossen: Header-Branding nutzt weiterhin exakt die bestehenden SVG-Assets, deren interne Forced-Colors-Regeln auf Systemfarben auflösen.
   - Aktive Navigation, Richtungskacheln, Direct-Start-Buttons und Suchfilter zeigen den ausgewählten Zustand über den ganzen Button beziehungsweise dessen Rahmen; labelgroße Zusatzflächen hinter der Beschriftung wurden entfernt.
@@ -27,10 +44,10 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
   - Microsoft Edge unter macOS wurde mit `forcedColors: active` auf `/suche?view=grid&tone=calm&avoidPeaks=true` visuell geprüft; die echte Windows-High-Contrast-Prüfung in Microsoft Edge unter Windows bleibt separat.
   - Reduced Motion greift jetzt am Ende der CSS-Kaskade. Ursache des Problems war, dass frühere `@media (prefers-reduced-motion: reduce)`-Regeln durch spätere Animations-/Transition-Blöcke für Mobile-Menü, Preview-Gate, Search-Transitions, Loader und Navigationsfortschritt wieder überschrieben wurden.
   - Unter Reduced Motion bleiben Statusinformationen sichtbar, aber dekorative Animationen, View Transitions, Transform-/Opacity-/Größenübergänge und animiertes Scrollen werden unterbunden.
-  - Dark Mode nutzt zentrale semantische Farb-Tokens für Seite, Flächen, Text, Rahmen, Links, Fokus, Formulare, Statusflächen, disabled States und Clusterflächen.
+  - Der damalige Dark-Mode-Token-Ansatz wurde am 20. Juni 2026 zurückgenommen: normale Light-/Dark-Präferenzen ändern die Produktfarben nicht automatisch.
   - Forced Colors nutzt Systemfarben und echte Rahmen; `forced-color-adjust: none` wird nicht eingesetzt, um Projektfarben zu erzwingen. Eine echte Windows-High-Contrast-Prüfung in Microsoft Edge unter Windows ist noch offen und wird nicht durch die Chromium-/Edge-macOS-Emulation ersetzt.
   - Browse-Cluster heißen sichtbar `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv` und sind eigene semantische Bereiche mit Überschrift, dauerhaft sichtbarem Label, Beschreibung, Begrenzung und Listenstruktur.
-  - Automatisierte Playwright-Checks prüfen Reduced Motion, Dark Mode, Cluster-Struktur/Mobile-Overflow und strukturelle Forced-Colors-Eigenschaften.
+  - Automatisierte Playwright-Checks prüfen Reduced Motion, stabile Light-Darstellung trotz Dark-Präferenz, Cluster-Struktur/Mobile-Overflow und strukturelle Forced-Colors-Eigenschaften.
 - Mobile-iOS-Fokus-/Safe-Area-Pass 14. Juni 2026:
   - Clientseitige Routewechsel setzen den Fokus auf den neuen Hauptinhalt und starten oben; Hash-Ziele wie Feedback-Status bleiben gezielt anspringbar.
   - Sticky-Header-Offsets wurden für `main`, Überschriften, Statusbereiche und Detail-Zurücklinks abgesichert, damit fokussierte Inhalte nicht unter dem Header liegen.

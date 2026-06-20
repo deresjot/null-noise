@@ -1,6 +1,6 @@
 # Accessibility-Prinzipien für null-noise
 
-Stand: 19. Juni 2026
+Stand: 20. Juni 2026
 
 Diese Datei beschreibt die barrierebezogenen Grundentscheidungen für `null-noise`. Sie ist kein Marketing-Text und keine allgemeine Accessibility-Einführung, sondern die projektbezogene Referenz dafür, was wir bewusst tun und warum.
 
@@ -48,11 +48,11 @@ Wichtige Informationen dürfen nicht nur über Farbe, Intensität oder Posterbil
 
 Animation ist in `null-noise` nachgeordnet. Bewegungen dürfen weder Information verstecken noch Orientierung ersetzen. `prefers-reduced-motion` wird respektiert, und Interaktionen werden nicht über Bewegung erklärt.
 
-Die Reparatur vom 19. Juni 2026 setzt die Reduced-Motion-Absicherung bewusst spät in der CSS-Kaskade. Ursache war, dass frühere Reduced-Motion-Regeln durch spätere Animations- und Transition-Blöcke wieder überholt wurden. Unter `prefers-reduced-motion: reduce` gelten deshalb: kein animiertes Scrollen, keine dekorativen Transform-/Opacity-/Größenanimationen, keine View-Transition-Animationen und keine laufenden Loader-Dots. Status-Text und Fokusführung bleiben erhalten.
+Die Reparatur vom 19. Juni 2026 setzt die Reduced-Motion-Absicherung bewusst spät in der CSS-Kaskade. Ursache war, dass frühere Reduced-Motion-Regeln durch spätere Animations- und Transition-Blöcke wieder überholt wurden. Unter `prefers-reduced-motion: reduce` gelten deshalb: kein animiertes Scrollen, keine dekorativen Transform-/Opacity-/Größenanimationen, keine View-Transition-Animationen, keine laufenden Loader-Dots und keine Mobile-Menü-Open-/Close-Animation. Status-Text und Fokusführung bleiben erhalten.
 
-### Dark Mode und Forced Colors
+### Farbschemata und Forced Colors
 
-Systemweiter Dark Mode wird über semantische Design-Tokens abgebildet. Komponenten sollen Tokens nutzen statt eigene Hell-/Dunkel-Entscheidungen zu treffen.
+Normale Browser-Präferenzen für Light oder Dark Mode schalten die Produktoberfläche nicht automatisch um. `null-noise` bleibt im normalen Farbschema bewusst hell, solange es keinen expliziten, getesteten Theme-Schalter gibt. Komponenten sollen deshalb keine eigenen `prefers-color-scheme`-Farblogiken einführen.
 
 Windows High Contrast/Edge Forced Colors ist ein eigener Darstellungsmodus. Dort dürfen Systemfarben wie `Canvas`, `CanvasText`, `ButtonFace`, `ButtonText`, `Field`, `FieldText`, `Highlight`, `HighlightText`, `LinkText` und `VisitedText` greifen. `forced-color-adjust: none` wird nicht genutzt, um Brandingfarben zu erzwingen. Bestehende SVGs, insbesondere Brand-Assets, müssen mit Systemfarben oder `currentColor` sichtbar bleiben. Struktur, Fokus, aktive Zustände, Formulare, Karten und Cluster brauchen echte Rahmen und sichtbare Textlabels.
 
@@ -72,7 +72,8 @@ Loading-UI ist ein Status, keine Dekoration. Für echte Wartezeiten gilt:
 Auf kleinen Viewports bleibt Fokus sichtbar, darf aber nicht wie ein Layoutfehler wirken.
 
 - Menübutton-Fokus ist proportional zur Button-Größe
-- geöffnetes Menü bleibt innerhalb der Contentbreite und so hoch wie nötig
+- geöffnetes Menü ist eine vollflächige Navigationsebene mit sichtbarem Schließen, Scroll-Lock, inertem Seiteninhalt, Fokusfalle und Fokus-Rückkehr zum Menübutton
+- Logo und Wortmarke bleiben im geschlossenen und geöffneten mobilen Header sichtbar, gleich hoch geführt und in der normalen Fokusreihenfolge ungestört
 - aktive Route und Tastaturfokus sind unterscheidbar
 - Fokusindikatoren werden nicht entfernt, sondern dichter gestaltet
 

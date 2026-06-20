@@ -3,8 +3,8 @@
 ## Aktueller Arbeitsstand
 
 - aktiver lokaler Arbeitsbranch: `null-noise`
-- aktueller Stand: Forced-Colors-Display-Pass vom 19. Juni 2026 baut auf dem Production-Launch vom 14. Juni 2026 auf; Commit- und Deployment-Details stehen in der jeweiligen Übergabe.
-- Release-Metadaten stehen auf `0.8.4-forced-colors.20260619`
+- aktueller Stand: Mobile-Brand-/Changelog-Dokumentationspass vom 20. Juni 2026 baut auf dem Motion-/Forced-Colors-/UI-Flow-Pass vom 20. Juni 2026, dem Forced-Colors-Display-Pass vom 19. Juni 2026 und dem Production-Launch vom 14. Juni 2026 auf; Commit- und Deployment-Details stehen in der jeweiligen Übergabe.
+- Release-Metadaten stehen auf `0.8.4-mobile-brand-changelog.20260620`
 - Preview-Gate ist clientseitig vorgeschaltet: Teaser-Landingpage mit Logo, Projektbeschreibung und Passwortfeld; Phrase ist `preview`, keine Security-Grenze
 - kanonische öffentliche Adresse: https://www.null-noise.de
 - Apex-Domain: https://null-noise.de leitet in Vercel per `308 Permanent Redirect` auf https://www.null-noise.de weiter
@@ -39,19 +39,24 @@
 
 - Mobile Suche: `/suche?q=&tone=all&kind=all` bleibt Browse-/Discovery-Zustand, nutzt die volle mobile Contentbreite und erzeugt keinen kaputten Such-/Browse-Mischzustand.
 - Preview-Gate: Ohne lokalen Unlock ist die App durch eine zentrierte Teaser-Landingpage verdeckt; Playwright setzt für App-Smokes standardmäßig `null-noise-preview-unlocked=true` und testet den Gate separat.
-- Mobile Header: geöffnetes Menü bleibt kompakt, innerhalb der Contentbreite und unterscheidet aktive Route von Tastaturfokus; Menübutton-Fokus ist sichtbar, aber proportional.
+- Mobile Header: geschlossenes und geöffnetes Menü nutzen dieselbe Brand-Lockup-Logik mit gleichen Logo-/Wortmarken-Frame-Höhen, stabilem Abstand und unveränderten SVG-Assets.
+- Geöffnetes Menü ist eine vollflächige Navigationsebene mit sichtbarem Schließen, Scroll-Lock, inertem Seiteninhalt, Fokusfalle und Fokus-Rückkehr zum Menübutton.
 - Mobile Cards: Ergebnis-Cards sind dichter, Poster dominieren nicht, Aktionen behalten Text und Touch-Ziele; CTA-/Memory-Zonen überlagern Poster nicht.
 - Mobile Details: lokale und externe Detailseiten setzen das Detailposter direkt unter die `h1` und vor die erste Einschätzung.
 - Mobile-iOS-Pass 14. Juni 2026: Routewechsel fokussieren den neuen Hauptinhalt, Hash-/Feedback-Ziele behalten gezielten Scroll, Sticky-Header-Offsets schützen fokussierte Inhalte, Kontaktstatus scrollt sichtbar unter die Headerkante und das Formular nutzt zusätzliche iOS-Safe-Area-Abstände.
 - Forced-Colors-Pass 19. Juni 2026: Header-Branding bleibt das bestehende Logo plus Wortmarke und nutzt in den SVGs Systemfarben; aktive Navigation/Buttons/Filter haben keinen separaten Mini-Hintergrund hinter der Beschriftung; `.result-card-footer-zone` bleibt in Forced Colors innerhalb der Karte.
+- UI-/A11y-Pass 20. Juni 2026: `prefers-color-scheme: dark` schaltet nicht mehr automatisch in eine dunkle Produktoberfläche; nur echte Forced-Colors-/High-Contrast-Kontexte dürfen Farben auf Systemfarben umstellen.
+- Mobile Navigation ist jetzt eine vollflächige Navigationsebene mit Scroll-Lock, inertem Seiteninhalt, Fokusfalle, Schließen/Escape, Fokus-Rückkehr zum Menübutton und sichtbarer Open-/Close-Transition. Unter Reduced Motion wird diese Transition deaktiviert.
+- Detail-Feedback sendet clientseitig inline, fokussiert Erfolg oder Fehler, behält den No-JS-Redirect-Fallback und vermeidet doppelte Statusbereiche.
+- Changelog/Release Notes liegen auf `/changelog` als eigene Dokumentationsroute mit nativen `details`-/`summary`-Einträgen; der Footer zeigt nur Buildnummer, Datum und den Link zur vollständigen Historie.
 - Mobile-Testabdeckung: `npm run test:a11y` enthält jetzt einen iPhone-Pro-Max-Smoke mit `430 x 932` CSS-Pixeln, Touch, Mobile-Safari-User-Agent, Menü-Fokus, Header-Überdeckung, Kontakt-Bottom-Actions und Detail-Reihenfolge.
 - Poster-Kostenstand: externe TMDb-Poster laufen über `/api/poster/tmdb/*`; Karten verwenden thumbnail-realistische `sizes`, Detailposter `w780`, Fallbacks bleiben erhalten.
 - Postgres-Writes erst fortsetzen, wenn eine dedizierte wegwerfbare Test-DB als `NULL_NOISE_TEST_DATABASE_URL` vorhanden ist, `npm run test:unit` damit gruen läuft und die Production-Migration bewusst freigegeben ist; keine SQLite-Datei und keine gemeinsame Development-DB als Test- oder Production-Ersatz verwenden.
-- Aktueller lokaler Check mit Test-DB: `npm run test:unit` 16 Dateien / 94 Tests bestanden; `npm run lint`, `npm run build`, `npm run test:axe-core`, `npm run test:a11y`, `npm run test:wcag22-aa` und `git diff --check` bestanden.
+- Aktuelle lokale Checks vor Git/Vercel-Deploy am 20. Juni 2026: `npm run lint`, `npm run build`, `npm run test:a11y`, `npm run test:wcag22-aa` und `git diff --check` bestanden. `npm run test:unit` bleibt ohne `NULL_NOISE_TEST_DATABASE_URL` blockiert.
 - Der globale Navigationsloader wird im inaktiven Zustand mit `visibility: hidden` aus der visuellen Kontrastprüfung genommen; sichtbar bleibt der Status nur bei echtem Pending.
 - `NULL_NOISE_ENABLE_WRITES` nicht aktivieren oder ändern, solange diese Freigabe fehlt.
 - Lokale Shelf: `search-local-shelf` zeigt nur befüllte Gruppen; ein einzelner `Schon gesehen`-Bereich nutzt die volle Breite.
-- Footer: Release-/Build-Info bleibt sichtbar, aber mobil sekundärer und kürzer.
+- Footer: aktuelle Buildnummer und Datum bleiben sichtbar, die vollständige Release-Historie liegt auf `/changelog`.
 - Echte Ladezustände nutzen einen ruhigen, text-first `LoadingState` statt lauter Spinner oder Skeletons.
 - Globale Navigation zeigt bei ausstehenden Route-Data-Fetches einen sichtbaren `Seite lädt ...`-Indikator.
 - Suche, Kontakt-Submit, App-Route-Loading, Titel-Detail-Loading und Metadaten-Spike-Loading teilen denselben visuellen Statusstil.
@@ -181,7 +186,7 @@
 - keine rein visuelle Codierung
 - reduzierte Bewegung respektieren
 - Reduced Motion wird spät in der CSS-Kaskade abgesichert; spätere Mobile-/Preview-/Loader-/Search-Regeln dürfen Animationen nicht wieder einschalten.
-- Dark Mode läuft über semantische Farb-Tokens, nicht über separate Komponentenlogik.
+- Normale Light-/Dark-Präferenzen ändern die Produktfarben nicht automatisch; die Standardoberfläche bleibt light, solange kein expliziter Theme-Schalter eingeführt wird.
 - Forced Colors nutzt Systemfarben und echte Rahmen; `forced-color-adjust: none` nicht zum Erzwingen von Brandingfarben einsetzen. Bestehende SVG-Brandassets duerfen interne Forced-Colors-Systemfarben fuer echte Sichtbarkeit nutzen.
 - `details`/`summary` für ruhige Vertiefung
 - keine Tooltip-only-Inhalte
@@ -195,7 +200,8 @@
 - Mobile-Viewport-Reparatur vom 24. Mai 2026 ist weiterhin Grundlage der mobilen Header-/Menüführung
 - Mobile Header ist eine fixe App-Shell mit Burger-Menü, aktiver Route, Escape-Schließen und sichtbarem Fokus
 - Header, Mobile-App-Shell, Menü und `main-content` nutzen mobil denselben Content-Gutter
-- Geöffnetes Mobile-Menü bleibt im Viewport, ist deckend und vermeidet den hellen rechten Seitenstreifen
+- Geöffnetes Mobile-Menü bleibt im Viewport, ist deckend, vermeidet den hellen rechten Seitenstreifen und behält Logo/Wortmarke in derselben Höhe und Proportion wie der geschlossene Header
+- Mobile Menüöffnung und -schließung haben eine kurze visuelle Transition; bei `prefers-reduced-motion: reduce` entfällt diese Bewegung
 - Der Menübutton zeigt geöffnet ein X statt drei Hamburger-Linien; aktive Route und Tastatur-Fokus sind getrennte visuelle Zustände
 - Hauptziele im mobilen Menü: Start, Suche, Erklärung/Hilfe
 - Barrierefreiheit, Datenschutz und Impressum bleiben mobil im Footer erreichbar
@@ -214,11 +220,11 @@
 - `/barrierefreiheit` wurde auf WCAG 2.2 AA als technisches Ziel, aktuellen Status, konkrete Maßnahmen, Prüfweise, bekannte Grenzen und Kontakt fokussiert
 - die WCAG-2.2-A/AA-Matrix stärkt automatische Regression-Absicherung für Kernrouten; Screenreader-, 400%-Zoom- und echtes-Mobile-Device-Prüfung bleiben manuell
 - sanfte CSS-Transitions und optionale Ladebalken-Hooks sind ergänzt; `prefers-reduced-motion` wird respektiert
-- Darstellungsmodi sind lokal zu prüfen: Light, Dark, Reduced Motion, Dark plus Reduced Motion, Forced Colors, Forced Colors plus Reduced Motion, 320/390/430x932 CSS-Pixel und 200/400 Prozent Zoom
+- Darstellungsmodi sind lokal zu prüfen: Light, Dark-Präferenz ohne Themewechsel, Reduced Motion, Reduced Motion plus Dark-Präferenz, Forced Colors, Forced Colors plus Reduced Motion, 320/390/430x932 CSS-Pixel und 200/400 Prozent Zoom
 - Edge/macOS-Forced-Colors-Smoke fuer die aktuelle Korrektur: `/suche?view=grid&tone=calm&avoidPeaks=true` bei `430 x 932` CSS-Pixeln; Windows High Contrast in Microsoft Edge unter Windows bleibt separat manuell zu bestaetigen.
 - Opacity-Fades wurden aus Entry-Animationen entfernt, damit A11y-Kontrast-Scans nicht während halbtransparenter Texte fehlschlagen
 - Startseite erklärt jetzt direkt unter `Was passt gerade?`, wofür Null Noise gedacht ist
-- Header-Branding zeigt auf Mobile und Desktop Icon-Logo plus Wortmarke; die Brand sitzt links innerhalb der Contentbreite und nicht end-to-end am Viewport
+- Header-Branding zeigt auf Mobile und Desktop Icon-Logo plus Wortmarke; die Brand sitzt links innerhalb der Contentbreite und nicht end-to-end am Viewport. Auf Mobile haben Icon-Frame und Wortmarken-Frame dieselbe Höhe.
 - Suche bleibt primärer Einstieg; Richtungskacheln bleiben sekundär
 - Richtungskacheln, Ergebnisgruppen, Filter und Karten nutzen konsistent `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv`
 - mobile Ergebnislisten, Merken-/Gesehen-Bereich und Toggle wurden gegen abgeschnittene Texte und horizontale Überläufe stabilisiert

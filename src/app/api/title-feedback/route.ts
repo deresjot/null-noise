@@ -56,6 +56,21 @@ function buildFeedbackRedirect(request: NextRequest, returnPath: string, status:
   return fallbackUrl;
 }
 
+function wantsJsonResponse(request: NextRequest): boolean {
+  return (
+    request.headers.get("x-requested-with") === "fetch" ||
+    request.headers.get("accept")?.includes("application/json") === true
+  );
+}
+
+function buildFeedbackResponse(request: NextRequest, returnPath: string, status: string): NextResponse {
+  if (wantsJsonResponse(request)) {
+    return NextResponse.json({ status });
+  }
+
+  return NextResponse.redirect(buildFeedbackRedirect(request, returnPath, status), 303);
+}
+
 function parseRecentRatingsCookie(value: string | undefined): Record<string, number> {
   if (!value) {
     return {};
@@ -102,14 +117,11 @@ export async function POST(request: NextRequest) {
     typeof formData.get("returnPath") === "string" ? String(formData.get("returnPath")) : "/suche";
 
   if (!parsed.success) {
-    return NextResponse.redirect(buildFeedbackRedirect(request, returnPath, "invalid"), 303);
+    return buildFeedbackResponse(request, returnPath, "invalid");
   }
 
   if (!arePublicWritesEnabled()) {
-    return NextResponse.redirect(
-      buildFeedbackRedirect(request, parsed.data.returnPath, "inactive"),
-      303,
-    );
+    return buildFeedbackResponse(request, parsed.data.returnPath, "inactive");
   }
 
   let slug = parsed.data.mode === "local" ? parsed.data.slug : null;
@@ -123,10 +135,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (detailState.kind !== "success") {
-      return NextResponse.redirect(
-        buildFeedbackRedirect(request, parsed.data.returnPath, "error"),
-        303,
-      );
+      return buildFeedbackResponse(request, parsed.data.returnPath, "error");
     }
 
     try {
@@ -134,21 +143,18 @@ export async function POST(request: NextRequest) {
       slug = localSeedState.seed.external.slug;
       revalidateExternalPath = `/spike/metadaten/${parsed.data.mediaType}/${parsed.data.sourceId}`;
     } catch {
-      return NextResponse.redirect(
-        buildFeedbackRedirect(request, parsed.data.returnPath, "error"),
-        303,
-      );
+      return buildFeedbackResponse(request, parsed.data.returnPath, "error");
     }
   }
 
   if (!slug) {
-    return NextResponse.redirect(buildFeedbackRedirect(request, parsed.data.returnPath, "invalid"), 303);
+    return buildFeedbackResponse(request, parsed.data.returnPath, "invalid");
   }
 
   const { data: title } = await getTitleBySlugState(slug);
 
   if (!title) {
-    return NextResponse.redirect(buildFeedbackRedirect(request, parsed.data.returnPath, "error"), 303);
+    return buildFeedbackResponse(request, parsed.data.returnPath, "error");
   }
 
   const recentRatings = parseRecentRatingsCookie(request.cookies.get(recentRatingsCookieName)?.value);
@@ -196,7 +202,7 @@ export async function POST(request: NextRequest) {
             ? "too-fast"
             : "limited";
 
-      return NextResponse.redirect(buildFeedbackRedirect(request, parsed.data.returnPath, status), 303);
+      return buildFeedbackResponse(request, parsed.data.returnPath, status);
     }
 
     await appendStoredRating(
@@ -214,7 +220,7 @@ export async function POST(request: NextRequest) {
       submittedAt: new Date(now).toISOString(),
     });
   } catch {
-    return NextResponse.redirect(buildFeedbackRedirect(request, parsed.data.returnPath, "error"), 303);
+    return buildFeedbackResponse(request, parsed.data.returnPath, "error");
   }
 
   recentRatings[slug] = now;
@@ -224,10 +230,7 @@ export async function POST(request: NextRequest) {
     revalidatePath(revalidateExternalPath);
   }
 
-  const response = NextResponse.redirect(
-    buildFeedbackRedirect(request, parsed.data.returnPath, "success"),
-    303,
-  );
+  const response = buildFeedbackResponse(request, parsed.data.returnPath, "success");
   response.cookies.set(recentRatingsCookieName, serializeRecentRatingsCookie(recentRatings), {
     httpOnly: true,
     sameSite: "lax",

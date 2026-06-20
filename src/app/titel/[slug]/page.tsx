@@ -637,15 +637,7 @@ export default async function TitleDetailPage({ params, searchParams }: DetailPa
                   { name: "slug", value: title.external.slug },
                   { name: "returnPath", value: `/titel/${title.external.slug}` },
                 ]}
-              />
-            ) : null}
-            {visibleFeedbackStatus ? (
-              <StatusPanel
-                className="status-panel-inline"
-                headingAs="h4"
-                title={visibleFeedbackStatus.title}
-                text={visibleFeedbackStatus.text}
-                tone={visibleFeedbackStatus.tone}
+                initialStatus={visibleFeedbackStatus}
               />
             ) : null}
           </div>

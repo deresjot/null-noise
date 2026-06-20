@@ -24,10 +24,12 @@ git worktree list
 ```sh
 lsof -i :3000 || true
 rm -rf .next
-npm run dev -- --hostname 127.0.0.1 --port 3000
+npm run dev -- --hostname 0.0.0.0 --port 3000
 ```
 
 Bei belegtem Port 3000 den konkreten lokalen Prozess nur nach Prüfung beenden.
+
+Lokal im Browser `http://localhost:3000` verwenden, nicht `https://localhost:3000`. Safari kann sonst je nach Cache/HSTS/HTTPS-Erwartung so wirken, als sei localhost nicht erreichbar, obwohl der Next-Dev-Server läuft.
 
 Sichere Kurzvariante, wenn klar ist, dass der Prozess zum lokalen Dev-Server gehört:
 
@@ -115,9 +117,9 @@ Nach Deploy:
 
 Vor Commit/Deploy zusätzlich prüfen:
 
-- sichtbare Release Notes und Footer-Metadaten in `src/lib/release-info.ts` aktualisieren, bevor ein Push oder Vercel-Deploy vorbereitet wird
+- sichtbare Release Notes, `/changelog` und Footer-Metadaten in `src/lib/release-info.ts` aktualisieren, bevor ein Push oder Vercel-Deploy vorbereitet wird
 - Doku-Übergabe synchron halten: `docs/00-current/*`, `docs/20-testing/testing-and-release.md` und die jeweiligen Dateien in `docs/llm-upload/`
-- relevante Footer-/Changelog-Tests anpassen, falls sichtbare Texte geändert wurden
+- relevante Footer-/Changelog-Tests anpassen, falls sichtbare Texte oder Release-Historie geändert wurden
 - keine Recovery-/Screenshot-/ZIP-Dateien committen
 - keine API-Keys oder lokalen Env-Dateien committen
 - Security-/Privacy-Checks aus diesem Runbook durchführen
@@ -146,7 +148,8 @@ Tests, mobile Viewports 390px/430px und danach die Vercel-Deploy-Bereitschaft.
 - Header/Branding zeigt Icon-Logo plus Wortmarke auf Mobile und Desktop
 - Header-Brand und Menübutton sind unabhängig vom Breakpoint an der Contentbreite ausgerichtet, nicht end-to-end am Viewport-Rand
 - Logo/Wortmarke führt von Unterseiten zurück zur Startseite
-- Mobile Header-App-Shell hat symmetrische Innenabstände; unter Reduced Motion darf keine Header- oder Menübewegung übrig bleiben
+- Mobile Header-App-Shell hat symmetrische Innenabstände; Logo und Wortmarke haben mobil im geschlossenen und geöffneten Header dieselbe Frame-Höhe und stabile Abstände
+- Unter Reduced Motion darf keine dekorative Header- oder Menübewegung übrig bleiben
 - Burger-Menü öffnet und schließt per Button, Link-Klick und Escape; Fokus bleibt sichtbar
 - Burger-Menü enthält mobil nur Start, Suche und Erklärung/Hilfe; Barrierefreiheit, Datenschutz und Impressum stehen im Footer
 - Burger-Menü liegt sichtbar über Seiteninhalt, Ergebnisgruppen und Detailkarten
@@ -160,7 +163,8 @@ Tests, mobile Viewports 390px/430px und danach die Vercel-Deploy-Bereitschaft.
 - Result-Card-Aktionen `Details`, `Merken` und `Gesehen?` stehen mobil nebeneinander und bleiben fingerfreundlich
 - getippte Suche zeigt weiterhin mehrere Treffer, auch wenn `Schon gesehene Titel hier ausblenden` lokal aktiv ist
 - `/suche?q=&tone=all&kind=all` bleibt mobil im Browse-/Discovery-Zustand, ohne leere externe Suche, ohne schmale Cards und ohne linke Loader-Artefakte
-- geöffnetes Mobile-Menü bleibt kompakt und ist nicht fullscreen-hoch
+- geöffnetes Mobile-Menü ist eine vollflächige Navigationsebene mit sichtbarem Schließen, Scroll-Lock, Fokusfalle, Fokus-Rückkehr zum Menübutton und kurzer Open-/Close-Transition
+- Footer zeigt nur Buildnummer und Datum; die vollständige Release-Historie ist über `/changelog` erreichbar
 - Detailseite zeigt mobil Poster und Synopsis, sofern Daten vorhanden sind
 - fehlende Poster wirken als bewusste kompakte Platzhalter, nicht wie kaputte Bilder
 - `Zurück zur Suche` wirkt wie ein Button mit Pfeil und bleibt tastaturbedienbar
@@ -168,7 +172,7 @@ Tests, mobile Viewports 390px/430px und danach die Vercel-Deploy-Bereitschaft.
 - bei 320 CSS-Pixeln kein horizontaler Overflow
 - bei 390px und 430px kein horizontaler Overflow; Touch-Ziele wirken fingerfreundlich
 - `prefers-reduced-motion` bleibt respektiert
-- Dark Mode, Reduced Motion, Dark plus Reduced Motion, Forced Colors, Forced Colors plus Reduced Motion, 320/390/430x932 CSS-Pixel sowie 200/400 Prozent Zoom lokal prüfen
+- Light, Dark-Präferenz ohne Themewechsel, Reduced Motion, Reduced Motion plus Dark-Präferenz, Forced Colors, Forced Colors plus Reduced Motion, 320/390/430x932 CSS-Pixel sowie 200/400 Prozent Zoom lokal prüfen
 - Fuer Forced Colors zusaetzlich die Suchroute `/suche?view=grid&tone=calm&avoidPeaks=true` in Microsoft Edge unter macOS bei `430 x 932` CSS-Pixeln prüfen: bestehendes Header-Logo plus Wortmarke sichtbar, aktive Navigation/Buttons/Filter ohne labelgroße Zusatzfläche, `.result-card-footer-zone` innerhalb der Karte
 - Windows High Contrast in Microsoft Edge unter Windows ist eine eigene manuelle Prüfung; Chromium-/Edge-macOS-Emulation nur als strukturellen und visuellen Smoke werten
 - Ladezustände nur fuer echte Wartezeiten verwenden: Such-Soft-Navigation, Kontakt-Submit und Route-Loading; kein künstliches Delay, keine lauten Spinner, keine Skeleton-Flächen

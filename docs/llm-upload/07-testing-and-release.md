@@ -1,6 +1,6 @@
 # Testing und Release für null-noise
 
-Stand: 19. Juni 2026
+Stand: 20. Juni 2026
 
 Diese Datei beschreibt, wie `null-noise` Accessibility testet und wo die Grenzen der Automatisierung liegen.
 
@@ -38,7 +38,7 @@ WCAG 2.2 Level AA ist der technische Zielstandard. Die Prüfung orientiert sich 
 
 - Reduced Motion wurde repariert: Ursache war eine zu frühe globale Absicherung, die durch spätere CSS-Blöcke für Mobile-Menü, Preview-Gate, Search-Transitions, Loader und Navigationsfortschritt wieder überschrieben wurde.
 - Automatisierte Playwright-Checks emulieren `reducedMotion: "reduce"` und prüfen berechnete Styles statt nur das Vorhandensein der Media Query.
-- Dark Mode wird über `prefers-color-scheme: dark` und semantische Design-Tokens geprüft.
+- Stand 20. Juni 2026: `prefers-color-scheme: dark` darf die Produktoberfläche nicht mehr automatisch dunkel färben; Playwright prüft, dass die normale Light-Darstellung trotz Dark-Präferenz stabil bleibt.
 - Forced Colors wird, soweit Playwright/Chromium das zuverlässig emulieren kann, strukturell geprüft: vorhandene `forced-colors`-Regeln, Systemfarben, sichtbare Rahmen/Fokuszustände und keine unnötige Verwendung von `forced-color-adjust: none`.
 - Fuer die Forced-Colors-Korrektur vom 19. Juni 2026 wurde Microsoft Edge unter macOS mit `forcedColors: active` auf `/suche?view=grid&tone=calm&avoidPeaks=true` visuell geprüft: bestehendes Brand-Logo plus Wortmarke sichtbar, aktive Navigation/Buttons/Filter ohne labelgroße Zusatzfläche, `.result-card-footer-zone` innerhalb der Karte.
 - Eine echte manuelle Windows-High-Contrast-Prüfung in Microsoft Edge unter Windows bleibt separat nachzuholen; automatische Emulation und Edge/macOS-Smoke ersetzen diese Prüfung nicht.
@@ -78,15 +78,18 @@ WCAG 2.2 Level AA ist der technische Zielstandard. Die Prüfung orientiert sich 
 - Loader-Smokes fuer echte Pending-Zustände: Kontakt-Submit, Such-Soft-Navigation, knappe Live-Statusmeldung und deaktivierte dekorative Bewegung unter `prefers-reduced-motion`
 - Preview-Gate-Smoke: Teaser-Landingpage ohne App-Header, zentriertes Logo, falsches Passwort mit Fehlermeldung und Unlock mit `preview`
 - globaler Navigationsloader-Smoke: `Seite lädt ...` bleibt sichtbar, solange Route-Daten ausstehen, und ist unter `prefers-reduced-motion` statisch
-- Darstellungsmodus-Smokes: Reduced Motion ohne dekorative Animationen/Transitions, Dark Mode für Kernflächen/Formulare/Cluster/Poster und strukturelle Forced-Colors-Checks
+- Darstellungsmodus-Smokes: Reduced Motion ohne dekorative Animationen/Transitions, Dark-Präferenz ohne automatischen Themewechsel und strukturelle Forced-Colors-Checks
 - Cluster-Smoke: `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv` sind sichtbare, semantisch getrennte Bereiche mit Überschrift, Label, Beschreibung und Ergebnislisten; bei `320 CSS-Pixeln` entsteht kein horizontales Overflow
-- Mobile-Suche-Smokes fuer `/suche?q=&tone=all&kind=all`: Browse-Zustand statt kaputtem Mischzustand, kompakte Menühöhe, volle Card-Breite, sekundärer Footer und keine linken Loader-Artefakte
+- Mobile-Suche-Smokes fuer `/suche?q=&tone=all&kind=all`: Browse-Zustand statt kaputtem Mischzustand, vollflächige Mobile-Navigation mit Fokusführung, volle Card-Breite, sekundärer Footer und keine linken Loader-Artefakte
 - Mobile-Detail-Smoke: lokale und externe Detailseiten zeigen genau ein sichtbares Detailposter direkt unter der `h1` und vor dem ersten Einschätzungsblock
 - Mobile-Card-Smoke: Result-Card-Aktionen und Merken/Gesehen-Zonen liegen in der Textspalte und überlagern Poster nicht
 - Local-Shelf-Smoke: Nur befüllte `Für später`-/`Schon gesehen`-Gruppen werden gerendert; eine einzelne Gruppe nutzt die volle Shelf-Breite
 - Image-Usage-Smoke: TMDb-Poster sollen keine unnötig breiten Varianten anfordern; Kartenposter nutzen Thumbnail-`sizes`, Detailposter begrenzte Quellgrößen, Poster-Fallbacks und Alt-Texte bleiben erhalten
 - wiederholbare Keyboard-Smoke-Checks, zum Beispiel Skip-Link und erreichbare Suchvorschläge
-- mobile Navigation mit Burger-Menü für primäre App-Ziele; Info-/Legal-Ziele bleiben im Footer erreichbar
+- mobile Navigation mit Burger-Menü für primäre App-Ziele; Logo und Wortmarke bleiben im geschlossenen und geöffneten mobilen Header gleich hoch, stabil ausgerichtet und mit engerem Abstand sichtbar
+- Mobile-Menü-Transition-Smoke: Öffnen und Schließen nutzt `data-state="open"`/`"closing"` mit kurzer visueller Transition; unter `prefers-reduced-motion: reduce` ist keine dekorative Animation aktiv.
+- Footer-/Changelog-Smoke: Footer zeigt nur aktuelle Buildnummer plus Datum und verlinkt auf `/changelog`; die Changelog-Seite rendert die vollständige vorhandene Release-Historie mit nativen `details`-/`summary`-Einträgen.
+- Detail-Feedback-Smoke: Bewertungsfeedback wird inline gesendet, Erfolg oder Fehler erhält Fokus, Status ist als `status`/`alert` wahrnehmbar und der No-JS-Redirect-Fallback bleibt erhalten.
 - kleiner Reflow-Smoke-Test auf den Kernrouten bei `320 CSS-Pixeln`, damit offensichtliches horizontales Overflow früh auffällt
 - gezielter Mobile-Viewport-Smoke bei `390 CSS-Pixeln` und `430 CSS-Pixeln`: Menü im Viewport, opake Menüfläche, gemeinsame Content-Breite von Header/Menü/Main, Touch-Ziel-Höhen und entdichtete Kartenaktionen
 - verschärfter Mobile-Bounds-Smoke bei `320`, `390` und `430 CSS-Pixeln`: zentrale Cards, Formulare, WCAG-Matrix, Status-Badges, Footer-Releasebereiche und Navigation müssen mit ihrer Bounding-Box innerhalb des Viewports bleiben
@@ -172,12 +175,13 @@ Die folgenden Schritte sind der feste manuelle Prüfpfad für `null-noise`. Er e
 
 ### Info- und Legal-Routen
 
-- Routen: `/erklaerung`, `/bedienung`, `/barrierefreiheit`, `/kontakt`, `/datenschutz`, `/impressum`
+- Routen: `/erklaerung`, `/bedienung`, `/barrierefreiheit`, `/kontakt`, `/datenschutz`, `/impressum`, `/changelog`
 - per Tastatur: Header, mobile Navigation, Inhaltslinks und Footer-Links bleiben erreichbar
 - Reflow: lange Überschriften und Rechtstexte bleiben bei kleiner Breite lesbar
 - Kontrast: Notizen, Definitionslisten und Meta-Texte dürfen nicht nur knapp über Animation/Opacity lesbar sein
 - Mobile: Kartenabstände und Footer dürfen nicht an Außenkanten kleben
-- Mobile-Menü: geöffnetes Menü bleibt links/rechts im Viewport, zeigt keine helle Randspalte und trennt aktive Route sichtbar vom Tastatur-Fokus
+- Mobile-Menü: geöffnetes Menü ist vollflächig, scroll-lockt die Seite, hält Fokus in der Navigation, zeigt keine helle Randspalte, trennt aktive Route sichtbar vom Tastatur-Fokus und animiert nur, wenn Reduced Motion nicht aktiv ist
+- Changelog: vollständige Release-Historie bleibt per Tastatur und Screenreader über native `details`-/`summary`-Elemente erreichbar
 
 ### Route `/kontakt`
 
@@ -227,9 +231,9 @@ Die folgenden Schritte sind der feste manuelle Prüfpfad für `null-noise`. Er e
 Auf localhost prüfen:
 
 - Light Mode
-- Dark Mode
+- Dark-Präferenz ohne automatischen Themewechsel
 - Reduced Motion
-- Dark Mode plus Reduced Motion
+- Dark-Präferenz plus Reduced Motion
 - Forced Colors/Windows High Contrast in Microsoft Edge unter Windows
 - Forced Colors plus Reduced Motion
 - Edge/macOS-Forced-Colors-Smoke auf `/suche?view=grid&tone=calm&avoidPeaks=true` bei `430 x 932 CSS-Pixel`
@@ -252,7 +256,7 @@ Dabei prüfen: Hintergrund, Text, Links/besuchte Links, Fokus/Skip-Link, aktive 
 
 Vor einem Beta-Release oder Deploy sollten mindestens diese Schritte laufen:
 
-1. sichtbare Release Notes und Footer-Metadaten in `src/lib/release-info.ts` aktualisieren
+1. sichtbare Release Notes, `/changelog` und Footer-Metadaten in `src/lib/release-info.ts` aktualisieren
 2. Doku-Übergabe synchronisieren: `docs/00-current/*`, diese Datei und die passenden `docs/llm-upload/*`
 3. relevante Footer-/Changelog-Tests anpassen, wenn sichtbare Texte geändert wurden
 4. `git status --short` und `git diff --name-only` prüfen
