@@ -6,7 +6,7 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 - lokaler Branch: `null-noise`
 - lokaler Projektpfad: `/Users/deresjot/Library/CloudStorage/Dropbox/_PRIVAT/Code/git-webdev/null-noise`
-- Stand: Mobile-Brand-/Changelog-Dokumentationspass vom 20. Juni 2026 baut auf dem Motion-/Forced-Colors-/UI-Flow-Pass vom 20. Juni 2026, dem Forced-Colors-Display-Pass vom 19. Juni 2026 und dem Production-Launch vom 14. Juni 2026 auf; Commit- und Deployment-Details stehen in der jeweiligen Übergabe.
+- Stand: Mobile-Calm-Feedback-Pass vom 21. Juni 2026 baut auf dem Mobile-Brand-/Changelog-Dokumentationspass vom 20. Juni 2026, dem Motion-/Forced-Colors-/UI-Flow-Pass vom 20. Juni 2026, dem Forced-Colors-Display-Pass vom 19. Juni 2026 und dem Production-Launch vom 14. Juni 2026 auf; Commit- und Deployment-Details stehen in der jeweiligen Übergabe.
 - kanonische öffentliche Adresse: https://www.null-noise.de
 - Apex-Domain: https://null-noise.de leitet in Vercel per `308 Permanent Redirect` auf https://www.null-noise.de weiter
 - technische Vercel-Projektadresse: https://null-noise.vercel.app bleibt Production-verbunden, ist aber nicht kanonisch
@@ -20,6 +20,14 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
 
 ## Letzte lokale Arbeitsblöcke
 
+- Mobile-Calm-Feedback-Pass 21. Juni 2026:
+  - null-noise wird in Manifest und UX-Doku explizit als ruhiges, mobile-first Bewertungsportal statt als klassischer Streaming-Katalog beschrieben.
+  - Mobile Typografie, Footer-Rhythmus, Detail-Top-Abstand und Result-Cards wurden auf Lesbarkeit, Orientierung und Touch-Bedienbarkeit beruhigt.
+  - Statusmeldungen nutzen ein gemeinsames System mit Icon, Statuskopf, Rahmenlogik und Text; Farbe bleibt unterstützend, nicht allein bedeutungstragend.
+  - Der schnelle Rückkanal zur eigenen Wahrnehmung nutzt geführte Auswahlkarten mit sichtbarem Auswahlzustand und Inline-Status. Das längere Detailformular bleibt sekundär.
+  - Aktionsicons nutzen eine einheitliche Lucide-basierte Sprache, inklusive `Zurücknehmen` in der lokalen Ablage.
+  - Lokale Checks: `npm run lint` und `npm run test:a11y` bestanden; `npm run test:unit` bleibt ohne `NULL_NOISE_TEST_DATABASE_URL` blockiert.
+  - Release Notes stehen lokal auf `0.8.4-mobile-calm-feedback.20260621`.
 - Mobile-Brand-/Changelog-Dokumentationspass 20. Juni 2026:
   - Release Notes und Changelog sind aus dem Footer auf die eigene Route `/changelog` ausgelagert. Die Seite rendert die vorhandenen Release-Metadaten als dynamische Dokumentation mit nativen `details`-/`summary`-Elementen.
   - Der Footer zeigt nur noch die kompakte aktuelle Build-Zeile mit Buildnummer und Datum sowie einen Link zur vollständigen Changelog-Seite.

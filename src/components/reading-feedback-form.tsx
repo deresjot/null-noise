@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent, type RefObject } from "react";
+import { CircleAlert, CircleCheck, CircleX, Info, Leaf, Shuffle, Waves } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { RatingFormGuard } from "./rating-form-guard";
@@ -19,10 +20,32 @@ type ReadingFeedbackFormProps = {
 };
 
 const feedbackChoices = [
-  { label: "Eher ruhig", value: "calmer" },
-  { label: "Eher wechselhaft", value: "match" },
-  { label: "Eher intensiv", value: "stronger" },
+  {
+    label: "Eher ruhig",
+    value: "calmer",
+    text: "Für mich fühlte es sich leichter an.",
+    Icon: Leaf,
+  },
+  {
+    label: "Eher wechselhaft",
+    value: "match",
+    text: "Die Einordnung passt ungefähr.",
+    Icon: Shuffle,
+  },
+  {
+    label: "Eher intensiv",
+    value: "stronger",
+    text: "Für mich war es dichter oder lauter.",
+    Icon: Waves,
+  },
 ] as const;
+
+const statusIconByTone = {
+  neutral: Info,
+  success: CircleCheck,
+  warning: CircleAlert,
+  error: CircleX,
+} as const;
 
 const feedbackStatusByCode: Record<string, FeedbackStatus> = {
   success: {
@@ -81,6 +104,7 @@ export function ReadingFeedbackForm({
   const [submittedStatus, setSubmittedStatus] = useState<FeedbackStatus | null>(null);
   const [focusStatusNonce, setFocusStatusNonce] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const status = submittedStatus ?? initialStatus;
 
   useEffect(() => {
@@ -135,6 +159,9 @@ export function ReadingFeedbackForm({
       <div className="reading-feedback-copy">
         <h3 id="reading-feedback-heading">{heading}</h3>
         <p className="field-note">{intro}</p>
+        <p className="field-note reading-feedback-guidance">
+          Ein Fingertipp reicht. Du kannst deine Wahrnehmung später wieder ändern.
+        </p>
       </div>
 
       <form
@@ -149,38 +176,70 @@ export function ReadingFeedbackForm({
         <RatingFormGuard />
 
         <div className="reading-feedback-actions" role="group" aria-label={intro}>
-          {feedbackChoices.map((choice) => (
+          {feedbackChoices.map((choice) => {
+            const ChoiceIcon = choice.Icon;
+
+            return (
             <button
               key={choice.value}
               className="quiet-button reading-feedback-button"
+              data-selected={selectedChoice === choice.value ? "true" : "false"}
               disabled={isSubmitting}
               name="feedback"
+              aria-pressed={selectedChoice === choice.value}
               type="submit"
               value={choice.value}
+              onClick={() => setSelectedChoice(choice.value)}
             >
-              {choice.label}
+              <span className="reading-feedback-choice-icon" aria-hidden="true">
+                <ChoiceIcon size={22} strokeWidth={2.25} />
+              </span>
+              <span className="reading-feedback-choice-copy">
+                <span className="reading-feedback-choice-label">{choice.label}</span>
+                <span className="reading-feedback-choice-text">{choice.text}</span>
+              </span>
             </button>
-          ))}
+            );
+          })}
         </div>
       </form>
 
-      {status ? (
-        <div
-          ref={statusRef}
-          className="panel status-panel status-panel-inline reading-feedback-status"
-          data-tone={status.tone}
-          role={status.tone === "error" ? "alert" : "status"}
-          aria-live={status.tone === "error" ? "assertive" : "polite"}
-          aria-atomic="true"
-          tabIndex={-1}
-        >
+      {status ? <ReadingFeedbackStatus status={status} statusRef={statusRef} /> : null}
+    </section>
+  );
+}
+
+function ReadingFeedbackStatus({
+  status,
+  statusRef,
+}: {
+  status: FeedbackStatus;
+  statusRef: RefObject<HTMLDivElement | null>;
+}) {
+  const StatusIcon = statusIconByTone[status.tone];
+
+  return (
+    <div
+      ref={statusRef}
+      className="panel status-panel status-panel-inline reading-feedback-status"
+      data-tone={status.tone}
+      role={status.tone === "error" ? "alert" : "status"}
+      aria-live={status.tone === "error" ? "assertive" : "polite"}
+      aria-atomic="true"
+      tabIndex={-1}
+    >
+      <div className="status-panel-head">
+        <span className="status-panel-icon" aria-hidden="true">
+          <StatusIcon size={22} strokeWidth={2.3} />
+        </span>
+        <div className="status-panel-copy">
           <p className="status-panel-kicker">
             {status.tone === "error" ? "Fehler" : status.tone === "success" ? "Erfolg" : "Hinweis"}
           </p>
           <h4 className="status-panel-title">{status.title}</h4>
-          <p className="status-panel-text">{status.text}</p>
         </div>
-      ) : null}
-    </section>
+      </div>
+      <p className="status-panel-text">{status.text}</p>
+    </div>
   );
 }

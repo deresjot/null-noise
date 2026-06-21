@@ -1,8 +1,8 @@
 # UX-Prinzipien für reduzierte kognitive Last
 
-Stand: 20. Juni 2026
+Stand: 21. Juni 2026
 
-`null-noise` ist kein klassisches Entertainment-Produkt. Die Oberfläche soll nicht fesseln, sondern entlasten. Diese Datei beschreibt die UX-Prinzipien dafür.
+`null-noise` ist kein klassischer Streaming-Katalog, sondern ein ruhiges Bewertungsportal für die erste Reiz-Einordnung von Filmen und Serien. Die Oberfläche soll nicht fesseln, sondern entlasten. Diese Datei beschreibt die UX-Prinzipien dafür.
 
 ## Ziel
 
@@ -70,6 +70,17 @@ Die Oberfläche soll sich ruhig verhalten.
 - Meta-Elemente dürfen nicht wie Eingabefelder wirken, wenn sie nicht editierbar sind
 - Echte Steuerung soll als Steuerung lesbar sein: Umschalter, View-Toggles und Refresh-Aktionen brauchen sichtbare Affordance auch ohne Hover
 
+### Joy of Use ohne UI-Lärm
+
+Wertigkeit entsteht durch verständliche Reaktion, gute Haptik und ruhige Übergänge, nicht durch Spektakel.
+
+- Mobile ist der primäre Nutzungskontext
+- kleine Motion darf Interaktionen bestätigen und Orientierung stützen
+- `prefers-reduced-motion` bleibt verbindlich und schaltet dekorative Bewegung ab
+- Icons, Farben, Rahmen, Statusköpfe und Text arbeiten zusammen als Leitsystem
+- Farbe oder Icon allein darf nie die einzige Information tragen
+- Touch-Aktionen sollen sich wie ein natürlicher Fingertipp anfühlen, nicht wie Formularverwaltung
+
 ### Ruhige Ladezustände
 
 Ladezustände sind nur fuer echte Wartezeiten gedacht. Sie dürfen vorhandene Orientierung nicht ersetzen und sollen keine zusätzliche Reizlast erzeugen.
@@ -97,8 +108,18 @@ Die mobile Suche darf nicht nur overflow-frei sein, sondern muss die knappe Brei
 - leere Query-URLs bleiben ein Browse-/Discovery-Zustand, kein kaputter Zwischenzustand
 - mobile Menüs sind vollflächige Navigationsebenen mit klarer Fokusführung, nicht lose über Inhalt schwebende Zusatzboxen
 - mobile Brand-Lockups behalten zwischen geschlossenem Header und geöffnetem Menü dieselbe visuelle Größe, Grundlinie und Nähe zwischen Icon-Logo und Wortmarke
-- Result-Cards nutzen den Content-Gutter aus, halten Poster sekundär und lassen Actions mit Text sichtbar
-- Footer-Information bleibt sekundär und kompakt; die vollständige Release-Historie gehört auf `/changelog`, nicht dauerhaft in den Footer
+- Result-Cards nutzen den Content-Gutter aus, halten Poster, Titel, erste Einschätzung, lokalen Status und Aktionen klar getrennt und lassen Actions mit Text sichtbar
+- Footer-Information bleibt sekundär, aber lesbar und bewusst gestaltet; die vollständige Release-Historie gehört auf `/changelog`, nicht dauerhaft in den Footer
+
+### Rückmeldung als Wahrnehmung
+
+Die lokale Einschätzung soll nicht wie ein Verwaltungsformular wirken. Nach dem Lesen der Einschätzung soll die Person mit einem Fingertipp sagen können: `Ja, so habe ich das erlebt` oder `Nein, für mich war das anders`.
+
+- schnelle Rückmeldung sitzt im Lesefluss direkt nach der ersten Einschätzung und Begründung
+- große Auswahlkarten ersetzen dort klassische kleine Radio-Controls
+- Auswahl, Speichern, Fehler und spätere Änderung haben sichtbare Zustände
+- das längere Vier-Fragen-Formular bleibt eine spätere Detailkorrektur, nicht der primäre Mobile-Einstieg
+- Screenreader, Tastatur und Fokuszustände bleiben gleichwertig zur Touch-Bedienung
 
 ### Sekundärinfos bleiben sekundär
 

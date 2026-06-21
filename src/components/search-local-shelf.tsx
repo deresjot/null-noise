@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { RotateCcw, X } from "lucide-react";
 import { useLayoutEffect, useMemo, useState } from "react";
 
 import {
@@ -126,30 +127,9 @@ function PocketList({
               >
                 <span className="search-local-shelf-remove-icon" aria-hidden="true">
                   {removeKind === "remembered" ? (
-                    <svg fill="none" height="18" viewBox="0 0 24 24" width="18">
-                      <path
-                        d="M6 6l12 12M18 6 6 18"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeWidth="2.2"
-                      />
-                    </svg>
+                    <X size={19} strokeWidth={2.25} />
                   ) : (
-                    <svg fill="none" height="18" viewBox="0 0 24 24" width="18">
-                      <path
-                        d="M9 8H5v4"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2.2"
-                      />
-                      <path
-                        d="M5.5 11.5A7 7 0 1 0 8 6.2"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeWidth="2.2"
-                      />
-                    </svg>
+                    <RotateCcw size={19} strokeWidth={2.25} />
                   )}
                 </span>
                 <span>{removeLabel}</span>

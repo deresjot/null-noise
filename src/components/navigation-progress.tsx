@@ -76,15 +76,17 @@ function restoreReloadFocusAfterHydration() {
     });
 
   let attempt = 0;
+  let restoredCount = 0;
   const restore = () => {
     const target = getFocusables().find((element) => getSignature(element) === saved.signature);
 
     if (target instanceof HTMLElement) {
       target.focus({ preventScroll: false });
+      restoredCount += 1;
     }
 
     attempt += 1;
-    if (attempt < 12) {
+    if (attempt < 80 && restoredCount < 20) {
       window.setTimeout(restore, 100);
     }
   };

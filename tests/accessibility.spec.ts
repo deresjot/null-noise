@@ -616,7 +616,7 @@ test("footer exposes compact build metadata and links to the changelog", async (
 
   const buildLine = page.locator("footer .build-line");
 
-  await expect(buildLine).toHaveText(/Build 0\.8\.4-mobile-brand-changelog\.20260620 · 2026-06-20/);
+  await expect(buildLine).toHaveText(/Build 0\.8\.4-mobile-calm-feedback\.20260621 · 2026-06-21/);
   await expect(buildLine).not.toContainText("Motion, Forced Colors and UI flow pass");
   await expect(page.locator("footer .release-note")).toHaveCount(0);
   await expect(page.locator("footer").getByRole("link", { name: "Release Notes / Changelog" })).toHaveAttribute(
@@ -632,8 +632,9 @@ test("changelog page exposes the full release history", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Release Notes / Changelog" })).toBeVisible();
   const releaseNotes = page.locator(".changelog-page .release-note");
   expect(await releaseNotes.count()).toBeGreaterThan(20);
-  await expect(releaseNotes.first()).toContainText("mobile-brand-changelog.20260620");
-  await expect(releaseNotes.first()).toContainText("Mobile brand and changelog documentation pass");
+  await expect(releaseNotes.first()).toContainText("mobile-calm-feedback.20260621");
+  await expect(releaseNotes.first()).toContainText("Mobile calm feedback and readability pass");
+  await expect(page.locator(".changelog-page")).toContainText("Mobile brand and changelog documentation pass");
   await expect(page.locator(".changelog-page")).toContainText("Mobile title detail layout");
 
   const oldestRelease = releaseNotes.last();

@@ -39,7 +39,7 @@ Inclusive Components ist für `null-noise` vor allem eine Pattern-Referenz. Die 
 
 - Disclosure: primäre Erklärungen bleiben sichtbar, sekundäre Vertiefungen dürfen über native `details` und `summary` offengelegt werden
 - Karten und Trefferlisten: Ergebnisse bleiben semantische Listen mit Überschrift und aussagekräftigem Link statt rein visuell klickbarer Container
-- Hinweise und Status: Status wird in Klartext kommuniziert; Live-Regionen kommen nur bei echten dynamischen Statuswechseln zum Einsatz
+- Hinweise und Status: Status wird in Klartext kommuniziert und zusätzlich über Icon, Statuskopf, Rahmen und Tonalität unterschieden; Live-Regionen kommen nur bei echten dynamischen Statuswechseln zum Einsatz
 - Menüs: Seitennavigation bleibt eine Liste von Links und wird nicht als ARIA-Menu nachgebaut
 - Hilfen: Wenn Zusatzhilfe später punktuell gebraucht wird, ist ein explizites Toggletip-Muster denkbar; klassische Tooltip-Muster auf Hover-Basis sind für `null-noise` ausgeschlossen
 
@@ -159,13 +159,14 @@ Die erste Basis folgt dieser Strategie bereits:
 - `ExplanationPanel`: direkt sichtbare Erklärung statt versteckter Tooltip-Mechanik
 - `ReadingEvidenceDetails`: nativer `details`-/`summary`-Block für die Frage `Worauf basiert das?`, damit Vertiefung im Produkt erklärbar bleibt, ohne neue Custom-Accordion-Logik aufzubauen
 - `ReadingDecisionSupport`: kleiner Entscheidungsblock mit `Passt das gerade?`, `Im Vergleich zu …` und `Könnte kippen, weil …`; bleibt ein normaler Informationsblock statt eines neuen Widgets oder KPI-Moduls
-- `ReadingFeedbackForm`: kleiner, anonymer Rückkanal mit echten `button`-Elementen; JavaScript sendet inline, fokussiert Erfolg oder Fehler und hält den serverseitigen Redirect-Fallback für No-JS erhalten
+- `ReadingFeedbackForm`: kleiner, anonymer Rückkanal als geführte Auswahlkarten statt formularhaftem Block; JavaScript sendet inline, fokussiert Erfolg oder Fehler und hält den serverseitigen Redirect-Fallback für No-JS erhalten
 - `DetailFollowupSection`: kleiner Folgeempfehlungsbereich auf Detailseiten mit normaler Überschrift und derselben Tile-Sprache wie in Suche/Browse statt neuer Empfehlungs-Widgetlogik
 - `TitlePocketActions`: lokales `Merken` und `Schon gesehen` über echte Buttons mit sichtbarem Text statt Icon-only-Merken oder impliziter Watchlist-Mimik
 - `SearchLocalShelf`: kleiner lokaler Abschnitt auf `/suche` für gemerkte und gesehene Titel; bleibt semantische Listen- und Formularstruktur statt Client-seitiger Board- oder Drawer-Mechanik. Der mobile Toggle `Schon gesehene Titel hier ausblenden` muss mit Checkbox und Label sichtbar zusammenbleiben und sauber umbrechen.
 - `Home Hero`: `Was passt gerade?` plus kurze Erklärung macht den Zweck von Null Noise beim Einstieg sichtbar; Suche bleibt der primäre Pfad, Richtungskacheln bleiben sekundär.
 - Spike-Detailseiten: visuelle Beruhigung wurde über Hierarchie und Verdichtung gelöst (Spaltengewichtung, kompaktere Followup-Karten, ruhigere Provider-Einbindung) statt über neue Widgets, zusätzliche Interaktionsmodi oder zweite Darstellungssysteme
 - `Inline-Status statt Toast`: kleine Rückmeldungen wie `Für später gemerkt.` oder `Neue Auswahl, gleicher Rahmen.` bleiben direkt am betroffenen Bereich und werden nicht als globale Notification-Mechanik aufgebaut
+- `Motion als Wertigkeit`: kurze Übergänge dürfen Touch-Interaktionen und Statuswechsel ruhiger spürbar machen. Reduced Motion und Forced Colors bleiben späte Kaskaden-Grenzen; Bedeutung muss immer auch über Text, Struktur und Fokuszustand erfassbar sein.
 - `SiteNavigation`: Mobile Navigation ist eine vollflächige Navigationsebene mit nativer Linkliste, Schließen-Button, Escape-Handling, Scroll-Lock, inertem Seiteninhalt, Fokusfalle und Fokus-Rückkehr zum Menübutton. Geschlossener Header und geöffnetes Menü teilen dieselben mobilen Brand-Proportionen; die Open-/Close-Transition läuft nur außerhalb von Reduced Motion.
 - `/changelog`: Release-Historie ist eine eigene Dokumentationsroute und rendert Release-Metadaten mit nativen `details`-/`summary`-Elementen. Der Footer bleibt bewusst kompakt und zeigt nur aktuelle Buildnummer, Datum und Link zur Historie.
 - `Search-Browse-Intro`: Ansicht und `Neu mischen` sind als kleine, aber klar lesbare Aktionsblöcke umgesetzt; Meta-Beschriftung und Steuerung bleiben sichtbar getrennt

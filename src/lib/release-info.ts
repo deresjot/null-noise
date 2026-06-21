@@ -1,12 +1,25 @@
 import packageJson from "../../package.json";
 
 export const currentBuild = {
-  version: `${packageJson.version}-mobile-brand-changelog.20260620`,
-  label: "Mobile brand and changelog documentation pass",
-  releasedAt: "2026-06-20",
+  version: `${packageJson.version}-mobile-calm-feedback.20260621`,
+  label: "Mobile calm feedback and readability pass",
+  releasedAt: "2026-06-21",
 };
 
 export const releaseNotes = [
+  {
+    version: `${packageJson.version}-mobile-calm-feedback.20260621`,
+    label: "Mobile calm feedback and readability pass",
+    releasedAt: "2026-06-21",
+    entries: [
+      "Mobile typography, footer rhythm and detail-page spacing were rebalanced for readability and calmer orientation on small screens.",
+      "Status messages now use a shared feedback system with icon, status heading, tone-specific border and text structure instead of relying on color alone.",
+      "Quick reading feedback now behaves like guided choice cards with clearer copy, selected state, inline confirmation and keyboard-visible focus.",
+      "Mobile result cards now have stronger poster, title, reading and action hierarchy with larger touch targets and more breathing room.",
+      "Action icons were moved to one Lucide-based icon language, including the local Zurücknehmen action.",
+      "The manifest and UX documentation now describe null-noise as a calm mobile-first Bewertungsportal, with motion, icons and color used as accessible guidance rather than decoration alone.",
+    ],
+  },
   {
     version: `${packageJson.version}-mobile-brand-changelog.20260620`,
     label: "Mobile brand and changelog documentation pass",

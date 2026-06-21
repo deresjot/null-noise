@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "null-noise",
     short_name: "null-noise",
     description:
-      "Eine ruhige Entscheidungshilfe für Filme und Serien: erste Einschätzung, grobe Reizwirkung und klare Auswahl ohne Konto oder Tracking.",
+      "Ein ruhiges Bewertungsportal für Filme und Serien: erste Reiz-Einschätzung, eigene Wahrnehmung mit einem Fingertipp und klare Orientierung ohne Konto oder Tracking.",
     lang: "de",
     start_url: "/",
     scope: "/",

@@ -1,3 +1,5 @@
+import { CircleAlert, CircleCheck, CircleX, Info } from "lucide-react";
+
 interface StatusPanelProps {
   title: string;
   text: string;
@@ -14,6 +16,13 @@ const toneLabels = {
   error: "Fehler",
 } as const;
 
+const toneIcons = {
+  neutral: Info,
+  success: CircleCheck,
+  warning: CircleAlert,
+  error: CircleX,
+} as const;
+
 export function StatusPanel({
   title,
   text,
@@ -25,6 +34,7 @@ export function StatusPanel({
   const HeadingTag = headingAs;
   const role = tone === "error" ? "alert" : "status";
   const liveMode = tone === "error" ? "assertive" : "polite";
+  const StatusIcon = toneIcons[tone];
 
   return (
     <div
@@ -36,8 +46,15 @@ export function StatusPanel({
       aria-live={liveMode}
       aria-atomic="true"
     >
-      <p className="status-panel-kicker">{toneLabels[tone]}</p>
-      <HeadingTag className="status-panel-title">{title}</HeadingTag>
+      <div className="status-panel-head">
+        <span className="status-panel-icon" aria-hidden="true">
+          <StatusIcon size={22} strokeWidth={2.3} />
+        </span>
+        <div className="status-panel-copy">
+          <p className="status-panel-kicker">{toneLabels[tone]}</p>
+          <HeadingTag className="status-panel-title">{title}</HeadingTag>
+        </div>
+      </div>
       <p className="status-panel-text">{text}</p>
     </div>
   );

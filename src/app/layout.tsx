@@ -139,7 +139,7 @@ const focusRestoreScript = `
     } catch {}
   };
 
-  const restoreFocus = (attempt = 0) => {
+  const restoreFocus = (attempt = 0, restoredCount = 0) => {
     if (!isRestoringReloadFocus) return;
 
     let saved = null;
@@ -149,7 +149,15 @@ const focusRestoreScript = `
       saved = null;
     }
 
-    if (!saved || typeof saved.index !== "number") return;
+    if (!saved || typeof saved.index !== "number") {
+      if (attempt < 80) {
+        window.setTimeout(() => restoreFocus(attempt + 1, restoredCount), 100);
+        return;
+      }
+
+      isRestoringReloadFocus = false;
+      return;
+    }
 
     const focusables = getFocusables();
     const exactMatch = focusables.find((element) => getSignature(element) === saved.signature);
@@ -158,16 +166,16 @@ const focusRestoreScript = `
 
     if (target instanceof HTMLElement) {
       target.focus({ preventScroll: false });
-      if (attempt < 10) {
-        window.setTimeout(() => restoreFocus(attempt + 1), 100);
+      if (restoredCount < 20) {
+        window.setTimeout(() => restoreFocus(attempt + 1, restoredCount + 1), 100);
         return;
       }
       isRestoringReloadFocus = false;
       return;
     }
 
-    if (attempt < 60) {
-      window.setTimeout(() => restoreFocus(attempt + 1), 100);
+    if (attempt < 80) {
+      window.setTimeout(() => restoreFocus(attempt + 1, restoredCount), 100);
       return;
     }
 
