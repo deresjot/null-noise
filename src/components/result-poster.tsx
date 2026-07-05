@@ -31,6 +31,7 @@ export function ResultPoster({
           priority={priority}
           sizes={resolvedSizes}
           src={src}
+          unoptimized
         />
       ) : (
         <div
