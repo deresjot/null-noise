@@ -10,6 +10,7 @@ import { siteName } from "@/lib/constants";
 import { getMetadataBase } from "@/lib/runtime-config";
 
 import "./globals.css";
+import "./mobile-system.css";
 
 const headingFont = Fredoka({
   subsets: ["latin"],

@@ -70,13 +70,25 @@ export async function POST(request: NextRequest) {
   }
 
   const { mediaType, q, returnPath, sourceId } = parsed.data;
-  const sourceKey = createTitleExternalLookupKey("tmdb", sourceId);
-  const ipHash = hashClientAddress(
-    extractClientAddress({
-      forwardedFor: request.headers.get("x-forwarded-for"),
-      realIp: request.headers.get("x-real-ip"),
-    }),
-  );
+
+  if (!arePublicWritesEnabled()) {
+    return NextResponse.redirect(buildReturnRedirect(request, q, "inactive", returnPath), 303);
+  }
+
+  let sourceKey: string;
+  let ipHash: string;
+
+  try {
+    sourceKey = createTitleExternalLookupKey("tmdb", sourceId);
+    ipHash = hashClientAddress(
+      extractClientAddress({
+        forwardedFor: request.headers.get("x-forwarded-for"),
+        realIp: request.headers.get("x-real-ip"),
+      }),
+    );
+  } catch {
+    return NextResponse.redirect(buildReturnRedirect(request, q, "unavailable", returnPath), 303);
+  }
 
   try {
     const existingSeed = findStoredLocalTitleSeedByExternal(
@@ -93,10 +105,6 @@ export async function POST(request: NextRequest) {
     }
   } catch {
     return NextResponse.redirect(buildReturnRedirect(request, q, "unavailable", returnPath), 303);
-  }
-
-  if (!arePublicWritesEnabled()) {
-    return NextResponse.redirect(buildReturnRedirect(request, q, "inactive", returnPath), 303);
   }
 
   try {

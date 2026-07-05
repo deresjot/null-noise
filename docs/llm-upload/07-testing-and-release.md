@@ -4,6 +4,30 @@ Stand: 20. Juni 2026
 
 Diese Datei beschreibt, wie `null-noise` Accessibility testet und wo die Grenzen der Automatisierung liegen.
 
+## Visueller Regression-Fix 5. Juli 2026
+
+- Card-Regression prüft Grid und Liste bei 320/390/430/1440 CSS-Pixeln auf Kartenbegrenzung, Überlagerung, lange Inhalte, Touch-Ziele und eine praktisch nutzbare Statusbreite von mindestens 120 CSS-Pixeln.
+- Desktop-Regression prüft die zweispaltige Übersicht/Filter-Zeile, vollbreite Ergebnisgruppen darunter und mindestens drei responsive Kartenspalten bei 1440 CSS-Pixeln.
+- Hero-Regression prüft bei 1440 CSS-Pixeln drei bis vier Claim-Zeilen und höchstens 64 CSS-Pixel Abstand zwischen Hero und Footer. Direct Starts enthalten keinen separaten Pfeil mehr.
+- 15 Full-Page-Screenshots wurden außerhalb des Repositories für `/`, `/suche`, `/suche?q=Arrival` bei 320/390/430/1440/1920 CSS-Pixeln erzeugt und visuell geprüft. Das sichtbare schwarze `N` ist der Next.js-Dev-Tools-Launcher und nicht Teil der Production-UI.
+- Bestanden: Lint, Build, Unit (18 Dateien / 99 Tests), Axe-Core (6 Tests), A11y (66 Tests), WCAG 2.2 AA (5 bestanden / 1 erwartungsgemäß übersprungen) und `git diff --check`.
+
+## Manueller UI-Befund-Pass 5. Juli 2026
+
+- Ergebnis-Card-Regression prüft CTA, Poster, Einschätzung, Footer und lokale Aktionen mit langen Inhalten in Karten- und Listenansicht bei 320, 390 und 430 CSS-Pixeln einschließlich Touch-Zielhöhe und Clipping.
+- Direct-Start-Regression prüft drei getrennte Zustandsattribute, sichtbare Zeichen und unterschiedliche Rahmenmuster; Forced Colors behält Struktur und aktiven Zustand.
+- Der externe Detailpfad prüft `Lokal anlegen` als nativen POST-Formularbereich mit eindeutigem Button und genau einer kurzen TMDb-Erklärung, ohne im Test zu submitten.
+- Die Startseite prüft den Claim genau einmal als `h1`; 320 CSS-Pixel, 200 Prozent Text, Text-Spacing, Reduced Motion, Forced Colors und Dark-Präferenz ohne Themewechsel blieben stabil.
+- Bestanden: `npm run lint`, `npm run build`, `npm run test:unit` (18 Dateien / 99 Tests), `npm run test:axe-core` (6 Tests), `npm run test:a11y` (64 Tests), `npm run test:wcag22-aa` (5 bestanden / 1 erwartungsgemäß übersprungen) und `git diff --check`.
+
+## Lokaler Deploy-Sicherheits-Pass 5. Juli 2026
+
+- `src/app/mobile-system.css` und sein Import in `src/app/layout.tsx` gehören zum vorgesehenen Diff-Scope.
+- Der Read-only-Titelimport wird vor Salt-/Hash-, Rate-Limit- und Datenbankzugriff beendet; aktivierte Writes ohne Salt liefern einen kontrollierten Fehler ohne DB-Mutation.
+- Die Service-Worker-Aktivierung behält den aktuellen Cache, entfernt nur ältere eigene `null-noise-*`-Caches und lässt fremde Cache-Namen bestehen. Das lokale Unregister-Verhalten bleibt erhalten.
+- Das Impressum bleibt für die geschlossene Beta unverändert und ist für diesen technischen Pass kein Blocker.
+- Gezielte Unit-Regressionen decken die drei Import-Konfigurationsfälle sowie Production- und Localhost-Cache-Aktivierung ab.
+
 ## Live-Abschluss 14. Juni 2026
 
 - Production ist live auf `https://null-noise-3evwpfel5-deresjots-projects.vercel.app`, aliased auf `https://www.null-noise.de`; Apex `https://null-noise.de/` redirectet per `308` auf die www-Domain.
@@ -280,6 +304,8 @@ Optional, wenn der Umfang es rechtfertigt:
 - `npx playwright test`
 
 ## Letzter lokaler Stand vor Übergabe
+
+Beta-UI-Hardening vom 5. Juli 2026: Release-Kandidat `0.8.5-beta-ui-hardening.20260705`; Lint, Production-Build, 99 Unit-Tests mit separater Testdatenbank, 6 direkte axe-core-Tests, 66 A11y-Tests, WCAG-2.2-AA-Matrix und `git diff --check` bestanden.
 
 Postgres-Vorbereitung vom 14. Juni 2026: lokal vorbereitet, nicht committed, nicht gepusht, nicht deployed.
 

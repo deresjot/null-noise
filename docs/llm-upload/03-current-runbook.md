@@ -2,6 +2,9 @@
 
 ## Lokaler Kontext
 
+- Vorgesehener aktueller Diff-Scope umfasst `src/app/mobile-system.css` und dessen Import in `src/app/layout.tsx`.
+- Der Read-only-Importpfad muss vor Salt-/Hash-, Rate-Limit- und Datenbankzugriff mit `import=inactive` enden; der Service Worker darf bei Aktivierung nur veraltete eigene `null-noise-*`-Caches löschen.
+- Das Impressum bleibt für die geschlossene Beta unverändert und ist in diesem Arbeitsstand kein technischer Deploy-Blocker.
 - Pfad: `/Users/deresjot/Library/CloudStorage/Dropbox/_PRIVAT/Code/git-webdev/null-noise`
 - Branch: `null-noise`
 - Archiv-Worktree: `/Users/deresjot/Library/CloudStorage/Dropbox/_PRIVAT/Code/git-webdev/_archive/null-noise-v0-green-ui`

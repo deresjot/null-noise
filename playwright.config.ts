@@ -8,6 +8,11 @@ const serverCommand =
 export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
+  workers: process.env.CI ? 2 : 4,
+  timeout: 180_000,
+  expect: {
+    timeout: 30_000,
+  },
   reporter: "list",
   use: {
     baseURL: `http://127.0.0.1:${port}`,

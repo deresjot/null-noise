@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function KontaktPage() {
   return (
-    <section className="section-stack">
+    <section className="section-stack page-layout contact-page">
       <div className="section-header">
         <p className="eyebrow">Kontakt</p>
         <h1>Kontakt</h1>
@@ -30,7 +30,10 @@ export default function KontaktPage() {
         </p>
       </div>
 
-      <section className="panel section-stack" aria-labelledby="contact-privacy-heading">
+      <section
+        className="panel section-stack content-surface"
+        aria-labelledby="contact-privacy-heading"
+      >
         <h2 id="contact-privacy-heading">Datensparsamkeit</h2>
         <p>
           Das Formular fragt nur nach deiner Nachricht und optional nach einer E-Mail-Adresse für
@@ -44,7 +47,10 @@ export default function KontaktPage() {
         </ul>
       </section>
 
-      <section className="panel section-stack" aria-labelledby="contact-form-heading">
+      <section
+        className="panel section-stack content-surface content-surface-emphasis"
+        aria-labelledby="contact-form-heading"
+      >
         <h2 id="contact-form-heading">Nachricht schreiben</h2>
         <p className="field-note">
           Deine Nachricht wird per E-Mail weitergeleitet. Ohne E-Mail-Adresse ist keine direkte Antwort

@@ -490,30 +490,33 @@ export default async function MetadataSpikeDetailPage({
               </Link>
             </p>
           ) : canCreateLocalTitle ? (
-            <form
-              action="/api/local-titles"
-              className="external-import-form detail-callout-action"
-              method="post"
-            >
-              <input type="hidden" name="source" value={item.externalSource} />
-              <input type="hidden" name="mediaType" value={item.mediaType} />
-              <input type="hidden" name="sourceId" value={String(item.sourceId)} />
-              <input type="hidden" name="q" value={query} />
-              <input type="hidden" name="returnPath" value={returnPath} />
-              <button className="secondary-button-link result-card-action-link" type="submit">
-                Lokal anlegen
-              </button>
-            </form>
+            <section className="external-import-action-panel" aria-labelledby="external-import-heading">
+              <h3 id="external-import-heading">Lokal anlegen</h3>
+              <p>
+                TMDb liefert die Basisdaten. null-noise erstellt daraus anschließend eine
+                vorsichtige erste Einschätzung.
+              </p>
+              <form
+                action="/api/local-titles"
+                className="external-import-form detail-callout-action"
+                method="post"
+              >
+                <input type="hidden" name="source" value={item.externalSource} />
+                <input type="hidden" name="mediaType" value={item.mediaType} />
+                <input type="hidden" name="sourceId" value={String(item.sourceId)} />
+                <input type="hidden" name="q" value={query} />
+                <input type="hidden" name="returnPath" value={returnPath} />
+                <button className="primary-button external-import-submit" type="submit">
+                  Lokal anlegen
+                </button>
+              </form>
+            </section>
           ) : item.externalSource !== "tmdb" ? (
             <p className="field-note">Direktes Anlegen gibt es hier nur für TMDb-Titel.</p>
           ) : (
             <p className="field-note">Diese Instanz bleibt gerade lesend. Nur ansehen geht trotzdem.</p>
           )}
-          <p className="field-note">{state.message}</p>
-          <p className="field-note">
-            Basisdaten von {formatMetadataSpikeSource(item.externalSource)}. Die lokale Seite kommt
-            erst danach.
-          </p>
+          {!canCreateLocalTitle ? <p className="field-note">{state.message}</p> : null}
         </aside>
       </header>
 

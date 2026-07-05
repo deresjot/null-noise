@@ -1,14 +1,30 @@
 import packageJson from "../../package.json";
 
+const previousVersion = "0.8.4";
+
 export const currentBuild = {
-  version: `${packageJson.version}-mobile-calm-feedback.20260621`,
-  label: "Mobile calm feedback and readability pass",
-  releasedAt: "2026-06-21",
+  version: packageJson.version,
+  label: "Beta UI hardening and deploy safeguards",
+  releasedAt: "2026-07-05",
 };
 
 export const releaseNotes = [
   {
-    version: `${packageJson.version}-mobile-calm-feedback.20260621`,
+    version: packageJson.version,
+    label: "Beta UI hardening and deploy safeguards",
+    releasedAt: "2026-07-05",
+    entries: [
+      "The new homepage claim and calmer responsive hero provide a clear first anchor without excessive desktop height.",
+      "Search results and cards now use robust responsive layouts with full-width action and local-status zones across grid and list views.",
+      "Direct-start categories are complete native link surfaces with redundant color, marker and border treatments.",
+      "External title details present Lokal anlegen as one clear native form action with concise TMDb context.",
+      "Read-only title imports stop before salt, hashing, rate limiting and database access; missing write configuration fails without mutation.",
+      "Service-worker activation removes only outdated null-noise caches and leaves foreign cache names untouched.",
+      "Expanded UI, accessibility, viewport, focus, cache and write-safety regression tests cover the hardened beta release.",
+    ],
+  },
+  {
+    version: `${previousVersion}-mobile-calm-feedback.20260621`,
     label: "Mobile calm feedback and readability pass",
     releasedAt: "2026-06-21",
     entries: [
@@ -21,7 +37,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-mobile-brand-changelog.20260620`,
+    version: `${previousVersion}-mobile-brand-changelog.20260620`,
     label: "Mobile brand and changelog documentation pass",
     releasedAt: "2026-06-20",
     entries: [
@@ -34,7 +50,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-motion-forced-colors-ui.20260620`,
+    version: `${previousVersion}-motion-forced-colors-ui.20260620`,
     label: "Motion, Forced Colors and UI flow pass",
     releasedAt: "2026-06-20",
     entries: [
@@ -48,7 +64,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-forced-colors.20260619`,
+    version: `${previousVersion}-forced-colors.20260619`,
     label: "Forced Colors display pass",
     releasedAt: "2026-06-19",
     entries: [
@@ -60,7 +76,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-mobile-ios-focus.20260614`,
+    version: `${previousVersion}-mobile-ios-focus.20260614`,
     label: "Mobile iOS focus and safe-area pass",
     releasedAt: "2026-06-14",
     entries: [
@@ -72,7 +88,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-content-canonical-refresh.20260614`,
+    version: `${previousVersion}-content-canonical-refresh.20260614`,
     label: "Content and canonical refresh",
     releasedAt: "2026-06-14",
     entries: [
@@ -84,7 +100,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-production-launch.20260614`,
+    version: `${previousVersion}-production-launch.20260614`,
     label: "Production launch",
     releasedAt: "2026-06-14",
     entries: [
@@ -98,7 +114,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-postgres-prep.20260614`,
+    version: `${previousVersion}-postgres-prep.20260614`,
     label: "Postgres preparation",
     releasedAt: "2026-06-14",
     entries: [
@@ -112,7 +128,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-image-cache-costs.20260613`,
+    version: `${previousVersion}-image-cache-costs.20260613`,
     label: "Image cache cost controls",
     releasedAt: "2026-06-13",
     entries: [
@@ -124,7 +140,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-preview-gate-mobile-polish.20260613`,
+    version: `${previousVersion}-preview-gate-mobile-polish.20260613`,
     label: "Preview gate and mobile polish",
     releasedAt: "2026-06-13",
     entries: [
@@ -136,7 +152,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-mobile-search-repair.20260613`,
+    version: `${previousVersion}-mobile-search-repair.20260613`,
     label: "Mobile search repair",
     releasedAt: "2026-06-13",
     entries: [
@@ -148,7 +164,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-quiet-loading.20260613`,
+    version: `${previousVersion}-quiet-loading.20260613`,
     label: "Quiet loading states",
     releasedAt: "2026-06-13",
     entries: [
@@ -160,7 +176,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-production-domain.20260613`,
+    version: `${previousVersion}-production-domain.20260613`,
     label: "Production domain switch",
     releasedAt: "2026-06-13",
     entries: [
@@ -172,7 +188,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-contact-smtp-mailbox.20260607`,
+    version: `${previousVersion}-contact-smtp-mailbox.20260607`,
     label: "SMTP mailbox switch",
     releasedAt: "2026-06-07",
     entries: [
@@ -184,7 +200,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-mobile-layout.20260606`,
+    version: `${previousVersion}-mobile-layout.20260606`,
     label: "Mobile layout stabilization",
     releasedAt: "2026-06-06",
     entries: [
@@ -196,7 +212,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-contact-send.20260606`,
+    version: `${previousVersion}-contact-send.20260606`,
     label: "Privacy-first contact sending",
     releasedAt: "2026-06-06",
     entries: [
@@ -212,7 +228,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-wcag-lighthouse.20260605`,
+    version: `${previousVersion}-wcag-lighthouse.20260605`,
     label: "WCAG and Lighthouse polish",
     releasedAt: "2026-06-05",
     entries: [
@@ -226,7 +242,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-header.20260605`,
+    version: `${previousVersion}-header.20260605`,
     label: "Header navigation boundary",
     releasedAt: "2026-06-05",
     entries: [
@@ -237,7 +253,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-pwa.20260530`,
+    version: `${previousVersion}-pwa.20260530`,
     label: "PWA and offline baseline",
     releasedAt: "2026-05-30",
     entries: [
@@ -251,7 +267,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-detail-mobile.20260525`,
+    version: `${previousVersion}-detail-mobile.20260525`,
     label: "Mobile title detail layout",
     releasedAt: "2026-05-25",
     entries: [
@@ -262,7 +278,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-cards.20260524`,
+    version: `${previousVersion}-cards.20260524`,
     label: "Result card clarity",
     releasedAt: "2026-05-24",
     entries: [
@@ -272,7 +288,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-discovery.20260524`,
+    version: `${previousVersion}-discovery.20260524`,
     label: "Situational discovery UX",
     releasedAt: "2026-05-24",
     entries: [
@@ -284,7 +300,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-evidence.20260524`,
+    version: `${previousVersion}-evidence.20260524`,
     label: "Evidence calibration and browse diversity",
     releasedAt: "2026-05-24",
     entries: [
@@ -297,7 +313,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-mobile.20260524`,
+    version: `${previousVersion}-mobile.20260524`,
     label: "Mobile viewport and card repair",
     releasedAt: "2026-05-24",
     entries: [
@@ -309,7 +325,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-mobile.20260523`,
+    version: `${previousVersion}-mobile.20260523`,
     label: "Mobile navigation, search and accessibility wording",
     releasedAt: "2026-05-23",
     entries: [
@@ -325,7 +341,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-joy.20260522`,
+    version: `${previousVersion}-joy.20260522`,
     label: "Product states and calmer software feel",
     releasedAt: "2026-05-22",
     entries: [
@@ -338,7 +354,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-mobile.20260517`,
+    version: `${previousVersion}-mobile.20260517`,
     label: "Mobile header, motion and detail layout hardening",
     releasedAt: "2026-05-17",
     entries: [
@@ -355,7 +371,7 @@ export const releaseNotes = [
     ],
   },
   {
-    version: `${packageJson.version}-mobile.20260515`,
+    version: `${previousVersion}-mobile.20260515`,
     label: "Mobile orientation, navigation and terminology pass",
     releasedAt: "2026-05-15",
     entries: [

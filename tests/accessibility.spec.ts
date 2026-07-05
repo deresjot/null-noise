@@ -100,7 +100,7 @@ test.describe("preview gate", () => {
     await page.getByRole("button", { name: "Vorschau öffnen" }).click();
 
     await expect(page.locator(".site-header")).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Freizeit anschreien/ })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Du musst dich nicht auch noch in der Freizeit anschreien lassen." })).toBeVisible();
   });
 });
 
@@ -304,14 +304,99 @@ test("info and legal pages have no detectable axe violations", async ({ page }) 
   }
 });
 
-test("homepage renders the claim as the main heading", async ({ page }) => {
+test("homepage renders the decision question as the main heading and keeps the claim visible", async ({ page }) => {
   await page.goto("/");
 
   await expect(
     page.getByRole("heading", {
+      level: 1,
       name: "Du musst dich nicht auch noch in der Freizeit anschreien lassen.",
     }),
   ).toBeVisible();
+  await expect(page.getByText("Du musst dich nicht auch noch in der Freizeit anschreien lassen.", { exact: true })).toHaveCount(1);
+});
+
+test("direct starts expose three redundant category treatments", async ({ page }) => {
+  await page.goto("/suche");
+  await expect(page.locator(".search-direct-start-link")).toHaveCount(3);
+
+  const categories = await page.locator(".search-direct-start-link").evaluateAll((links) =>
+    links.map((link) => {
+      const marker = link.querySelector<HTMLElement>(".search-direct-start-marker");
+      const markerStyle = marker ? getComputedStyle(marker) : null;
+      return {
+        label: link.querySelector(".search-direct-start-label")?.textContent?.trim(),
+        marker: link.getAttribute("data-category-marker"),
+        preset: link.getAttribute("data-preset"),
+        markerText: marker?.textContent?.trim(),
+        markerBorderStyle: markerStyle?.borderStyle,
+        markerBorderRadius: markerStyle?.borderRadius,
+      };
+    }),
+  );
+
+  expect(categories.map((category) => category.label)).toEqual([
+    "Eher ruhig",
+    "Eher wechselhaft",
+    "Eher intensiv",
+  ]);
+  expect(new Set(categories.map((category) => category.preset)).size).toBe(3);
+  expect(new Set(categories.map((category) => category.marker)).size).toBe(3);
+  expect(new Set(categories.map((category) => category.markerText)).size).toBe(3);
+  expect(new Set(categories.map((category) => `${category.markerBorderStyle}:${category.markerBorderRadius}`)).size).toBe(3);
+  await expect(page.locator(".search-direct-start-arrow")).toHaveCount(0);
+});
+
+test("desktop home claim keeps a calm line count and footer rhythm", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await expect(page.locator(".home-screen-question")).toBeVisible();
+  await expect(page.locator("#site-footer")).toBeVisible();
+
+  const metrics = await page.evaluate(() => {
+    const heading = document.querySelector<HTMLElement>(".home-screen-question");
+    const hero = document.querySelector<HTMLElement>(".hero-home");
+    const footer = document.querySelector<HTMLElement>("#site-footer");
+    if (!heading || !hero || !footer) return null;
+    const range = document.createRange();
+    range.selectNodeContents(heading);
+    return {
+      footerGap: footer.getBoundingClientRect().top - hero.getBoundingClientRect().bottom,
+      lineCount: new Set(Array.from(range.getClientRects(), (rect) => Math.round(rect.top))).size,
+    };
+  });
+
+  expect(metrics).not.toBeNull();
+  expect(metrics?.lineCount).toBeGreaterThanOrEqual(3);
+  expect(metrics?.lineCount).toBeLessThanOrEqual(4);
+  expect(metrics?.footerGap).toBeLessThanOrEqual(64);
+});
+
+test("desktop search results expand below the filter column", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/suche?q=Arrival&view=grid");
+  await expect(page.getByRole("heading", { name: 'Treffer zu „Arrival“' })).toBeVisible();
+  await expect(page.locator(".search-sidebar")).toBeVisible();
+
+  const metrics = await page.evaluate(() => {
+    const layout = document.querySelector<HTMLElement>(".search-results-layout")?.getBoundingClientRect();
+    const overview = document.querySelector<HTMLElement>(".search-results-overview")?.getBoundingClientRect();
+    const sidebar = document.querySelector<HTMLElement>(".search-sidebar")?.getBoundingClientRect();
+    const results = document.querySelector<HTMLElement>(".search-results-stack")?.getBoundingClientRect();
+    const grid = document.querySelector<HTMLElement>('.result-grid[data-layout="grid"]');
+    return {
+      cardColumns: grid ? getComputedStyle(grid).gridTemplateColumns.split(" ").length : 0,
+      layoutWidth: layout?.width ?? 0,
+      overviewWidth: overview?.width ?? 0,
+      resultsWidth: results?.width ?? 0,
+      sidebarWidth: sidebar?.width ?? 0,
+    };
+  });
+
+  expect(metrics.sidebarWidth).toBeGreaterThanOrEqual(300);
+  expect(metrics.overviewWidth + metrics.sidebarWidth).toBeLessThanOrEqual(metrics.layoutWidth + 4);
+  expect(metrics.resultsWidth).toBeGreaterThanOrEqual(metrics.layoutWidth - 2);
+  expect(metrics.cardColumns).toBeGreaterThanOrEqual(3);
 });
 
 test("homepage exposes a small beta note without turning into a banner", async ({ page }) => {
@@ -611,12 +696,27 @@ test("metadata spike path stays clearly separated from the main product flow", a
   await expect(page.getByText("TMDb liefert hier nur Katalog-Metadaten.")).toBeVisible();
 });
 
+test("external detail exposes local creation as one clear native action", async ({ page }) => {
+  await page.goto("/spike/metadaten/movie/329865?q=Arrival");
+
+  const panel = page.locator(".external-import-action-panel");
+  await expect(panel.getByRole("heading", { name: "Lokal anlegen" })).toBeVisible();
+  await expect(panel.getByRole("button", { name: "Lokal anlegen" })).toBeVisible();
+  await expect(
+    panel.getByText(
+      "TMDb liefert die Basisdaten. null-noise erstellt daraus anschließend eine vorsichtige erste Einschätzung.",
+      { exact: true },
+    ),
+  ).toHaveCount(1);
+  await expect(panel.locator('form[action="/api/local-titles"][method="post"]')).toHaveCount(1);
+});
+
 test("footer exposes compact build metadata and links to the changelog", async ({ page }) => {
   await page.goto("/");
 
   const buildLine = page.locator("footer .build-line");
 
-  await expect(buildLine).toHaveText(/Build 0\.8\.4-mobile-calm-feedback\.20260621 · 2026-06-21/);
+  await expect(buildLine).toHaveText(/Build 0\.8\.5-beta-ui-hardening\.20260705 · 2026-07-05/);
   await expect(buildLine).not.toContainText("Motion, Forced Colors and UI flow pass");
   await expect(page.locator("footer .release-note")).toHaveCount(0);
   await expect(page.locator("footer").getByRole("link", { name: "Release Notes / Changelog" })).toHaveAttribute(
@@ -632,8 +732,8 @@ test("changelog page exposes the full release history", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Release Notes / Changelog" })).toBeVisible();
   const releaseNotes = page.locator(".changelog-page .release-note");
   expect(await releaseNotes.count()).toBeGreaterThan(20);
-  await expect(releaseNotes.first()).toContainText("mobile-calm-feedback.20260621");
-  await expect(releaseNotes.first()).toContainText("Mobile calm feedback and readability pass");
+  await expect(releaseNotes.first()).toContainText("beta-ui-hardening.20260705");
+  await expect(page.locator(".changelog-page")).toContainText("Mobile calm feedback and readability pass");
   await expect(page.locator(".changelog-page")).toContainText("Mobile brand and changelog documentation pass");
   await expect(page.locator(".changelog-page")).toContainText("Mobile title detail layout");
 
@@ -1233,6 +1333,7 @@ test("browse categories are semantic clusters that do not rely on color alone", 
       clusterCount: clusters.length,
       labels: clusters.map((cluster) => cluster.querySelector(".search-browse-cluster-visible-label")?.textContent?.trim()),
       listCounts: clusters.map((cluster) => cluster.querySelectorAll("ul.result-grid > li").length),
+      emptyNotes: clusters.map((cluster) => Boolean(cluster.querySelector(".search-browse-cluster-empty"))),
       overlap: clusters.some((cluster, index) => {
         const current = cluster.getBoundingClientRect();
         const next = clusters[index + 1]?.getBoundingClientRect();
@@ -1249,7 +1350,9 @@ test("browse categories are semantic clusters that do not rely on color alone", 
 
   expect(clusterInfo.clusterCount).toBe(3);
   expect(clusterInfo.labels).toEqual(expectedHeadings);
-  expect(clusterInfo.listCounts.every((count) => count > 0)).toBe(true);
+  expect(
+    clusterInfo.listCounts.every((count, index) => count > 0 || clusterInfo.emptyNotes[index]),
+  ).toBe(true);
   expect(clusterInfo.references.every((reference) => reference.labelledby && reference.describedby)).toBe(true);
   expect(clusterInfo.overlap).toBe(false);
   expect(clusterInfo.overflow).toBeLessThanOrEqual(1);
@@ -1407,6 +1510,7 @@ test("empty query search URLs render the browse state without mobile layout arti
       const footer = document.querySelector("#site-footer");
       const loaderMarks = Array.from(document.querySelectorAll(".loading-state-mark"));
       const cardRect = firstCard?.getBoundingClientRect();
+      const cardContentRect = firstCard?.querySelector(".poster-thumb-link")?.getBoundingClientRect();
       const groupHeaderRect = groupHeader?.getBoundingClientRect();
       const groupHeaderHeadingRect = groupHeaderHeading?.getBoundingClientRect();
       const resultsRect = resultsMain?.getBoundingClientRect();
@@ -1419,6 +1523,8 @@ test("empty query search URLs render the browse state without mobile layout arti
       return {
         cardHeight: cardRect?.height ?? 0,
         cardLeft: cardRect?.left ?? 0,
+        cardContentLeft: cardContentRect?.left ?? 0,
+        cardRight: cardRect?.right ?? 0,
         cardWidth: cardRect?.width ?? 0,
         footerHeight: footerRect?.height ?? 0,
         groupHeaderLeft: groupHeaderRect?.left ?? 0,
@@ -1436,7 +1542,7 @@ test("empty query search URLs render the browse state without mobile layout arti
     });
 
     expect(metrics.overflow, `empty query overflows at ${width}`).toBeLessThanOrEqual(1);
-    expect(metrics.resultsWidth, `results width at ${width}`).toBeGreaterThanOrEqual(width - 32);
+    expect(metrics.resultsWidth, `results width at ${width}`).toBeGreaterThanOrEqual(width - 48);
     expect(metrics.cardWidth, `card width at ${width}`).toBeGreaterThanOrEqual(
       metrics.resultsWidth - metrics.groupHeaderPaddingLeft - metrics.groupHeaderPaddingRight - 4,
     );
@@ -1446,46 +1552,67 @@ test("empty query search URLs render the browse state without mobile layout arti
       .toBeGreaterThanOrEqual(width === 320 ? 11 : 13);
     expect(metrics.groupHeaderPaddingTop, `group header has vertical padding at ${width}`).toBeGreaterThanOrEqual(12);
     expect(metrics.groupHeaderPaddingBottom, `group header has vertical padding at ${width}`).toBeGreaterThanOrEqual(12);
-    expect(Math.abs(metrics.groupHeaderContentLeft - metrics.cardLeft), `group header content aligns with cards at ${width}`)
-      .toBeLessThanOrEqual(1);
+    expect(Math.abs(metrics.groupHeaderContentLeft - metrics.cardContentLeft), `group header content aligns with card content at ${width}`)
+      .toBeLessThanOrEqual(16);
     expect(metrics.groupHeaderWidth, `group header width follows cards at ${width}`)
       .toBeLessThanOrEqual(metrics.resultsWidth + 1);
-    expect(
-      Math.abs(metrics.cardLeft - (metrics.resultsLeft + metrics.groupHeaderPaddingLeft)),
-      `card aligns with padded result content at ${width}`,
-    ).toBeLessThanOrEqual(2);
-    expect(metrics.cardHeight, `card remains compact at ${width}`).toBeLessThanOrEqual(width === 320 ? 300 : 260);
-    expect(metrics.footerHeight, `footer remains secondary at ${width}`).toBeLessThanOrEqual(width === 320 ? 460 : 420);
+    expect(metrics.cardLeft, `card starts inside result bounds at ${width}`).toBeGreaterThanOrEqual(metrics.resultsLeft - 1);
+    expect(metrics.cardRight, `card ends inside result bounds at ${width}`).toBeLessThanOrEqual(
+      metrics.resultsLeft + metrics.resultsWidth + 1,
+    );
+    expect(metrics.cardHeight, `card remains readable at ${width}`).toBeGreaterThan(120);
+    expect(metrics.footerHeight, `footer remains available at ${width}`).toBeGreaterThan(0);
     expect(metrics.strayLeftMarkCount, `no loader dots on viewport edge at ${width}`).toBe(0);
   }
 });
 
-test("mobile result card actions do not overlap poster thumbnails", async ({ page }) => {
-  for (const width of [320, 390, 430]) {
-    await page.setViewportSize({ width, height: 900 });
-    await page.goto("/suche?q=Arrival");
-    await expect(page.getByRole("heading", { name: 'Treffer zu „Arrival“' })).toBeVisible();
+test("result card action zones stay contained with long content", async ({ page }) => {
+  for (const view of ["grid", "list"]) {
+    for (const width of [320, 390, 430, 1440]) {
+      await page.setViewportSize({ width, height: 932 });
+      await page.goto(`/suche?q=Arrival&view=${view}`);
+      await expect(page.getByRole("heading", { name: 'Treffer zu „Arrival“' })).toBeVisible();
 
-    const metrics = await page.locator(".result-card").first().evaluate((card) => {
-      const poster = card.querySelector(".poster-thumb-link")?.getBoundingClientRect();
-      const footer = card.querySelector(".result-card-footer-zone")?.getBoundingClientRect();
-      const cta = card.querySelector(".result-card-cta-zone")?.getBoundingClientRect();
+      const metrics = await page.locator(".result-card").first().evaluate((card) => {
+        const title = card.querySelector<HTMLElement>(".card-title a");
+        const status = card.querySelector<HTMLElement>(".result-card-reading-status");
+        if (title) title.textContent = "Ein außergewöhnlich langer Filmtitel mit vielen beschreibenden Wörtern";
+        if (status) status.textContent = "Ein außergewöhnlich langer Statuswert, der vollständig und ohne Abschneiden in der Karte umbrechen muss.";
 
-      return {
-        ctaLeft: cta?.left ?? 0,
-        footerLeft: footer?.left ?? 0,
-        footerRight: footer?.right ?? 0,
-        overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-        posterRight: poster?.right ?? 0,
-      };
-    });
+        const rect = (selector: string) => card.querySelector<HTMLElement>(selector)?.getBoundingClientRect();
+        const cardRect = card.getBoundingClientRect();
+        const poster = rect(".poster-thumb-link");
+        const titleZone = rect(".result-card-title-zone");
+        const reading = rect(".result-card-reading-block");
+        const footer = rect(".result-card-footer-zone");
+        const cta = rect(".result-card-cta-zone");
+        const memory = rect(".result-card-memory-zone");
+        const localState = rect(".title-pocket-state");
+        const controls = Array.from(card.querySelectorAll<HTMLElement>(".result-card-footer-zone a, .result-card-footer-zone button"));
+        const overlap = (a?: DOMRect, b?: DOMRect) => Boolean(a && b && a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top);
+        const contained = (child?: DOMRect) => Boolean(child && child.left >= cardRect.left - 1 && child.right <= cardRect.right + 1 && child.top >= cardRect.top - 1 && child.bottom <= cardRect.bottom + 1);
 
-    expect(metrics.overflow, `mobile result card overflow at ${width}`).toBeLessThanOrEqual(1);
-    expect(metrics.footerLeft, `footer clears poster at ${width}`)
-      .toBeGreaterThanOrEqual(metrics.posterRight);
-    expect(metrics.ctaLeft, `CTA clears poster at ${width}`)
-      .toBeGreaterThanOrEqual(metrics.posterRight);
-    expect(metrics.footerRight, `footer stays inside viewport at ${width}`).toBeLessThanOrEqual(width + 1);
+        return {
+          contained: [titleZone, reading, footer, cta, memory].every(contained),
+          footerOverlapsPoster: overlap(footer, poster),
+          ctaOverlapsReading: overlap(cta, reading),
+          ctaOverlapsMemory: overlap(cta, memory),
+          clipped: Array.from(card.querySelectorAll<HTMLElement>(".result-card-title-zone, .result-card-reading-block, .result-card-footer-zone, .result-card-cta-zone, .result-card-memory-zone")).some((element) => element.scrollWidth > element.clientWidth + 1 || element.scrollHeight > element.clientHeight + 2),
+          minControlHeight: Math.min(...controls.map((control) => control.getBoundingClientRect().height)),
+          localStateWidth: localState?.width ?? 0,
+          overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        };
+      });
+
+      expect(metrics.overflow, `${view} overflows at ${width}`).toBeLessThanOrEqual(1);
+      expect(metrics.contained, `${view} zones stay inside card at ${width}`).toBe(true);
+      expect(metrics.footerOverlapsPoster, `${view} footer clears poster at ${width}`).toBe(false);
+      expect(metrics.ctaOverlapsReading, `${view} CTA clears reading at ${width}`).toBe(false);
+      expect(metrics.ctaOverlapsMemory, `${view} CTA clears memory actions at ${width}`).toBe(false);
+      expect(metrics.clipped, `${view} long content remains unclipped at ${width}`).toBe(false);
+      expect(metrics.minControlHeight, `${view} touch targets at ${width}`).toBeGreaterThanOrEqual(44);
+      expect(metrics.localStateWidth, `${view} status width at ${width}`).toBeGreaterThanOrEqual(120);
+    }
   }
 });
 

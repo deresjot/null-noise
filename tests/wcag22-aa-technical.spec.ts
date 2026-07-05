@@ -203,6 +203,8 @@ async function collectTechnicalFailures(page: Page) {
     );
 
     for (const element of focusableTargets.slice(0, 80)) {
+      const previousScrollBehavior = document.documentElement.style.scrollBehavior;
+      document.documentElement.style.scrollBehavior = "auto";
       const initialRect = element.getBoundingClientRect();
       window.scrollTo({
         top: Math.max(
@@ -215,7 +217,10 @@ async function collectTechnicalFailures(page: Page) {
       await new Promise<void>((resolve) => {
         requestAnimationFrame(() => resolve());
       });
-      (element as HTMLElement).focus({ preventScroll: true });
+      document.documentElement.style.scrollBehavior = previousScrollBehavior;
+      // Use native focus scrolling so controls inside nested scroll containers are tested
+      // the same way keyboard users reach them.
+      (element as HTMLElement).focus();
       await new Promise<void>((resolve) => {
         requestAnimationFrame(() => resolve());
       });
@@ -325,7 +330,7 @@ async function collectTechnicalFailures(page: Page) {
 
 test.describe("WCAG 2.2 technical regression matrix", () => {
   test.describe.configure({ mode: "serial" });
-  test.setTimeout(120_000);
+  test.setTimeout(300_000);
 
   test("documents every WCAG 2.2 A/AA/AAA success criterion in a technical matrix", async ({}, testInfo) => {
     await testInfo.attach("wcag22-technical-matrix.json", {

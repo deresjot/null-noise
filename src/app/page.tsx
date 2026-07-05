@@ -1,14 +1,16 @@
 import Link from "next/link";
 
 import { SearchForm } from "@/components/search-form";
-import { siteClaim } from "@/lib/constants";
 import { getBetaNoteText } from "@/lib/runtime-config";
 
 export default async function HomePage() {
   const betaNote = getBetaNoteText().replace(/^(Beta\.\s*)+/u, "");
 
   return (
-    <section className="home-page hero hero-home mobile-command-screen" aria-labelledby="home-hero-heading">
+    <section
+      className="home-page hero hero-home mobile-command-screen page-layout"
+      aria-labelledby="home-hero-heading"
+    >
       <div className="hero-home-stage home-hero-stage">
         <div className="hero-copy hero-copy-home">
           <div className="hero-copy-intro">
@@ -16,14 +18,16 @@ export default async function HomePage() {
               <p className="eyebrow hero-kicker-badge">null-noise</p>
               <p className="hero-kicker-note hero-kicker-badge">Beta</p>
             </div>
-            <h2 className="home-screen-question">Was passt gerade?</h2>
+            <h1 className="home-screen-question" id="home-hero-heading">
+              Du musst dich nicht auch noch in der Freizeit anschreien lassen.
+            </h1>
             <p className="lead hero-purpose-text">
               Null Noise ordnet Filme und Serien danach ein, wie ruhig, wechselhaft oder intensiv
               sie wirken können. So findest du schneller etwas, das gerade zu deiner Stimmung,
               Energie und Aufmerksamkeit passt – ohne Bewertungen, Rankings oder Social-Druck.
             </p>
             <section className="home-onboarding" aria-labelledby="home-onboarding-heading">
-              <h3 id="home-onboarding-heading">Kurz gesagt</h3>
+              <h2 id="home-onboarding-heading">Kurz gesagt</h2>
               <ol>
                 <li>Filme oder Serien suchen.</li>
                 <li>
@@ -37,7 +41,6 @@ export default async function HomePage() {
                 <Link href="/erklaerung">Wie funktioniert null-noise?</Link>
               </p>
             </section>
-            <h1 id="home-hero-heading">{siteClaim}</h1>
             <p className="lead hero-home-context">Titel suchen oder erst eine Richtung wählen.</p>
           </div>
         </div>

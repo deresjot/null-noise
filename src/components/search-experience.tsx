@@ -484,8 +484,8 @@ export function SearchExperience({ initialState }: { initialState: SearchPageSta
   const searchReturnPath = buildSearchPath(filters);
   const browseSections = state.browseMetadataState?.kind === "success" ? state.browseMetadataState.sections : [];
   const activeBrowseSectionId = getActiveBrowseSectionId(filters);
-  const visibleBrowseSections = browseSections.filter(
-    (section) => section.items.length > 0 && isBrowseSectionVisible(section.id, filters),
+  const visibleBrowseSections = browseSections.filter((section) =>
+    isBrowseSectionVisible(section.id, filters),
   );
   const browseRefreshPath = `${buildSearchPath(filters, {
     mix: state.nextBrowseMix,
@@ -701,13 +701,20 @@ export function SearchExperience({ initialState }: { initialState: SearchPageSta
                               {section.description}
                             </p>
                           </header>
-                          <ExternalResultList
-                            displayMode={state.resultDisplayMode}
-                            items={section.items.slice(0, 4)}
-                            localTitleByExternalKey={{}}
-                            query=""
-                            writesEnabled={state.writesEnabled && !state.localTitleLookupUnavailable}
-                          />
+                          {section.items.length ? (
+                            <ExternalResultList
+                              displayMode={state.resultDisplayMode}
+                              items={section.items.slice(0, 4)}
+                              localTitleByExternalKey={{}}
+                              query=""
+                              writesEnabled={state.writesEnabled && !state.localTitleLookupUnavailable}
+                            />
+                          ) : (
+                            <p className="field-note search-browse-cluster-empty">
+                              In dieser Richtung sind im aktuellen Mix gerade keine Titel. Die
+                              Kategorie bleibt zur Orientierung sichtbar.
+                            </p>
+                          )}
                         </section>
                       ))}
                     </div>

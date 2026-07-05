@@ -73,6 +73,8 @@ function buildBrowsePath(filters: SearchFilters): string {
 type BrowsePreset = {
   id: string;
   label: string;
+  marker: string;
+  markerLabel: string;
   filters: Partial<Pick<SearchFilters, "tone" | "avoidPeaks" | "avoidDensity">>;
 };
 
@@ -80,16 +82,22 @@ const browsePresets: BrowsePreset[] = [
   {
     id: "calm",
     label: "Eher ruhig",
+    marker: "≈",
+    markerLabel: "gleichmäßig",
     filters: { tone: "calm" },
   },
   {
     id: "balanced",
     label: "Eher wechselhaft",
+    marker: "↕",
+    markerLabel: "wechselnd",
     filters: { tone: "balanced" },
   },
   {
     id: "intense",
     label: "Eher intensiv",
+    marker: "✦",
+    markerLabel: "verdichtet",
     filters: { tone: "intense" },
   },
 ];
@@ -128,13 +136,14 @@ function SearchDirectStarts({ filters }: { filters: SearchFilters }) {
                 aria-current={isActive ? "page" : undefined}
                 className="search-direct-start-link"
                 data-active={isActive ? "true" : "false"}
+                data-category-marker={preset.markerLabel}
                 data-preset={preset.id}
                 href={buildBrowsePresetPath(filters, preset.filters)}
               >
-                <span className="search-direct-start-label">{preset.label}</span>
-                <span aria-hidden="true" className="search-direct-start-arrow">
-                  →
+                <span aria-hidden="true" className="search-direct-start-marker">
+                  {preset.marker}
                 </span>
+                <span className="search-direct-start-label">{preset.label}</span>
               </Link>
             </li>
           );

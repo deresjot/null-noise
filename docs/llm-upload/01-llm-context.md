@@ -2,9 +2,12 @@
 
 ## Aktueller Arbeitsstand
 
+- Visueller Regression-Fix vom 5. Juli 2026: Grid-Card-Footer sind wieder einspaltige, vollbreite Bereiche; lokale Statuszeilen kollabieren nicht mehr. Desktop-Suchergebnisse nutzen unterhalb von Übersicht und Filterspalte die gesamte begrenzte Inhaltsbreite mit responsivem Karten-Grid. Der Startseiten-Claim steht bei 1440 CSS-Pixeln in vier Zeilen ohne künstliche Seitenhöhe. Direct Starts sind je eine zusammenhängende Linkfläche ohne separaten Pfeil. Das schwarze `N` auf lokalen Screenshots wurde als Next.js-Dev-Tools-Launcher identifiziert und ist kein App-/Production-Element. Vollständige Testmatrix bestanden.
+- Manueller UI-Befund-Pass vom 5. Juli 2026: Ergebnis-Cards nutzen belastbare Grid-Bereiche für Poster, Titel, Einschätzung und umbrechende Footer-Aktionen; die Direct-Start-Kategorien unterscheiden sich redundant über Tokens, Zeichen und Rahmenmuster; `Lokal anlegen` ist ein klarer nativer Formular-Aktionsbereich mit einmaliger Erklärung; die Startseiten-`h1` lautet `Du musst dich nicht auch noch in der Freizeit anschreien lassen.`. Lint, Build, Unit-, Axe-, A11y- und WCAG-2.2-AA-Läufe bestanden.
+- Lokaler Deploy-Sicherheits-Pass vom 5. Juli 2026: `src/app/mobile-system.css` gehört zusammen mit dem Import in `src/app/layout.tsx` zum vorgesehenen Diff-Scope. Der Read-only-Titelimport prüft deaktivierte Writes vor Salt, Hashing, Rate Limiting und Datenbankzugriff. Der Service Worker löscht bei Aktivierung nur eigene veraltete `null-noise-*`-Caches. Das Impressum bleibt für die geschlossene Beta bewusst unverändert und ist in diesem Pass kein technischer Blocker.
 - aktiver lokaler Arbeitsbranch: `null-noise`
 - aktueller Stand: Mobile-Calm-Feedback-Pass vom 21. Juni 2026 baut auf dem Mobile-Brand-/Changelog-Dokumentationspass vom 20. Juni 2026, dem Motion-/Forced-Colors-/UI-Flow-Pass vom 20. Juni 2026, dem Forced-Colors-Display-Pass vom 19. Juni 2026 und dem Production-Launch vom 14. Juni 2026 auf; Commit- und Deployment-Details stehen in der jeweiligen Übergabe.
-- Release-Metadaten stehen auf `0.8.4-mobile-calm-feedback.20260621`
+- Release-Metadaten stehen auf `0.8.5-beta-ui-hardening.20260705`
 - Preview-Gate ist clientseitig vorgeschaltet: Teaser-Landingpage mit Logo, Projektbeschreibung und Passwortfeld; Phrase ist `preview`, keine Security-Grenze
 - kanonische öffentliche Adresse: https://www.null-noise.de
 - Apex-Domain: https://null-noise.de leitet in Vercel per `308 Permanent Redirect` auf https://www.null-noise.de weiter
