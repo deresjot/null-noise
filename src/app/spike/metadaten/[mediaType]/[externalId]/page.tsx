@@ -371,8 +371,10 @@ export default async function MetadataSpikeDetailPage({
 
       <header className="detail-hero">
         <div className="detail-hero-copy">
-          <p className="eyebrow">{`${formatMediaType(item.mediaType)} · ${item.releaseYear ?? "Jahr offen"}`}</p>
-          <h1>{item.title}</h1>
+          <div className="detail-hero-heading">
+            <p className="eyebrow">{`${formatMediaType(item.mediaType)} · ${item.releaseYear ?? "Jahr offen"}`}</p>
+            <h1>{item.title}</h1>
+          </div>
           <div className="detail-hero-poster detail-hero-poster-mobile" aria-label={`Titelbild zu ${item.title}`}>
             <ResultPoster
               priority
@@ -448,14 +450,6 @@ export default async function MetadataSpikeDetailPage({
         </div>
 
         <aside className="detail-callout-panel" aria-labelledby="detail-spike-heading">
-          <div className="detail-callout-poster" aria-label={`Titelbild zu ${item.title}`}>
-            <ResultPoster
-              priority
-              src={getTmdbPosterProxyPath(item.posterPath, "w780")}
-              title={item.title}
-              variant="detail"
-            />
-          </div>
           <p className="eyebrow">Stand heute</p>
           <h2 id="detail-spike-heading">Worauf das gerade ruht</h2>
           <p className="confidence-callout-eyebrow">{confidencePresentation.eyebrow}</p>

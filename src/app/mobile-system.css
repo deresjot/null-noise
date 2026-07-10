@@ -652,10 +652,47 @@ textarea,
   padding: 0;
 }
 
+.metadata-detail-page .detail-hero-copy {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "heading"
+    "poster"
+    "reading"
+    "basis"
+    "lead";
+  gap: var(--space-3);
+}
+
+.metadata-detail-page .detail-hero-heading {
+  grid-area: heading;
+}
+
+.metadata-detail-page .detail-hero-poster-mobile {
+  grid-area: poster;
+}
+
+.metadata-detail-page .detail-hero-copy > .detail-reading-block {
+  grid-area: reading;
+}
+
+.metadata-detail-page .detail-hero-copy > .detail-reading-followups {
+  grid-area: basis;
+}
+
+.metadata-detail-page .detail-hero-copy > .lead {
+  grid-area: lead;
+}
+
 .detail-hero h1,
-.metadata-detail-page .detail-hero-copy > h1 {
+.metadata-detail-page .detail-hero-heading > h1 {
   max-width: 13ch;
   font-size: clamp(2.55rem, 12vw, 4rem);
+}
+
+.metadata-detail-page .detail-hero-heading {
+  display: grid;
+  gap: var(--space-2);
 }
 
 .detail-hero-rail {
@@ -672,6 +709,7 @@ textarea,
 
 .detail-hero-poster,
 .metadata-detail-page .detail-hero-poster-mobile {
+  display: grid;
   width: min(100%, 14rem);
   justify-self: start;
 }
@@ -912,6 +950,48 @@ textarea,
   .detail-hero-rail > .detail-hero-poster,
   .detail-hero-rail > .detail-callout-panel {
     grid-area: auto;
+  }
+
+  .metadata-detail-page .detail-hero {
+    grid-template-areas: none;
+    align-items: start;
+  }
+
+  .metadata-detail-page .detail-hero-copy {
+    display: contents;
+  }
+
+  .metadata-detail-page .detail-hero-copy > .detail-hero-heading,
+  .metadata-detail-page .detail-hero-copy > .detail-reading-block,
+  .metadata-detail-page .detail-hero-copy > .detail-reading-followups,
+  .metadata-detail-page .detail-hero-copy > .lead {
+    grid-column: 1;
+  }
+
+  .metadata-detail-page .detail-hero-copy > .detail-hero-heading {
+    grid-row: 1;
+  }
+
+  .metadata-detail-page .detail-hero-copy > .detail-reading-block {
+    grid-row: 2;
+  }
+
+  .metadata-detail-page .detail-hero-copy > .detail-reading-followups {
+    grid-row: 3;
+  }
+
+  .metadata-detail-page .detail-hero-copy > .lead {
+    grid-row: 4;
+  }
+
+  .metadata-detail-page .detail-hero-poster-mobile {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .metadata-detail-page .detail-callout-panel {
+    grid-column: 2;
+    grid-row: 2 / span 3;
   }
 
   .detail-grid {

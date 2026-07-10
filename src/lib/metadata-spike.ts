@@ -288,7 +288,7 @@ type ImdbDetailMapping =
 
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 const WATCHMODE_BASE_URL = "https://api.watchmode.com/v1";
-export const tmdbPosterSizes = ["w185", "w342", "w500", "w780", "original"] as const;
+export const tmdbPosterSizes = ["w185", "w342", "w500", "w780"] as const;
 
 export type TmdbPosterSize = (typeof tmdbPosterSizes)[number];
 

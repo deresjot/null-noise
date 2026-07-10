@@ -1,8 +1,17 @@
 # Testing und Release für null-noise
 
-Stand: 20. Juni 2026
+Stand: 10. Juli 2026
 
 Diese Datei beschreibt, wie `null-noise` Accessibility testet und wo die Grenzen der Automatisierung liegen.
+
+## Accessibility-/Poster-Performance-Pass 10. Juli 2026
+
+- Suchvorschläge prüfen genau eine knappe `role="status"`-Meldung ohne verschachtelte äußere Live-Region. Der Kontakt-Zeichenzähler bleibt über `aria-describedby` verfügbar, kündigt aber nicht mehr jeden Tastendruck live an.
+- Die Posterdiagnose auf `/suche?q=Arrival` ergab bei 430 und 1440 CSS-Pixeln jeweils ausschließlich sechs eindeutige `w342`-Requests. Externe Details fordern genau eine `w780`-Quelle an; responsive Next-Image-Varianten entstehen wegen der bestehenden `unoptimized`-Kosten-Notbremse nicht.
+- Der Posterproxy akzeptiert nur `w185`, `w342`, `w500` und `w780`; `original` und verschachtelte Pfade werden vor einem Upstream-Request abgewiesen. Poster-Binärdaten werden weiterhin weder in Datenbank, Local Storage noch Repository gespeichert. Der Service Worker cached Poster weiterhin nicht.
+- Die externe Detailseite rendert genau eine priorisierte `w780`-Posterinstanz; CSS hält sie mobil direkt nach der `h1` und desktop in der rechten Spalte. Alt-Text, feste Seitenverhältnisse, Fallbacks und Layoutstabilität bleiben erhalten.
+- Bestanden: `npm run lint`, `npm run build`, gezielt `npx vitest run src/lib/metadata-spike.test.ts src/app/api/poster/tmdb/[...path]/route.test.ts --maxWorkers=1` (2 Dateien / 21 Tests), gezielte Playwright-Regressionen, `npm run test:axe-core` (6 Tests), `npm run test:a11y` (67 Tests), `npm run test:wcag22-aa` (5 bestanden / 1 explorativer AAA-Test übersprungen) und `git diff --check`.
+- Blockiert: `npm run test:unit` stoppt ohne `NULL_NOISE_TEST_DATABASE_URL` vor Migration und Vitest. Keine ENV- oder Datenbankänderung wurde vorgenommen.
 
 ## Visueller Regression-Fix 5. Juli 2026
 

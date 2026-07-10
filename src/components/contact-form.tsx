@@ -216,7 +216,6 @@ export function ContactForm() {
           id="contact-message-counter"
           className="contact-message-counter"
           data-ready={messageLengthReady && !tooManyCharacters}
-          aria-live="polite"
         >
           {tooManyCharacters
             ? `${messageLength} von maximal 3000 Zeichen. Bitte kürzen.`

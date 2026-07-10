@@ -18,9 +18,9 @@ function resolvePosterRequest(pathSegments: string[]): {
   const hasExplicitSize = tmdbPosterSizes.includes(firstSegment as TmdbPosterSize);
   const size = hasExplicitSize ? (firstSegment as TmdbPosterSize) : "w342";
   const posterSegments = hasExplicitSize ? pathSegments.slice(1) : pathSegments;
-  const joinedPath = posterSegments.join("/");
+  const joinedPath = posterSegments[0];
 
-  if (!joinedPath || joinedPath.includes("..")) {
+  if (posterSegments.length !== 1 || !joinedPath || joinedPath.includes("..")) {
     return null;
   }
 

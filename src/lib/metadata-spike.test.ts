@@ -11,6 +11,7 @@ import {
   mapTmdbSearchPayload,
   searchImdbMetadata,
   searchTmdbMetadata,
+  tmdbPosterSizes,
 } from "./metadata-spike";
 
 function getBrowseScore(item: {
@@ -35,6 +36,7 @@ describe("metadata spike mapping", () => {
     expect(getTmdbPosterProxyPath("/arrival.jpg")).toBe("/api/poster/tmdb/arrival.jpg");
     expect(getTmdbPosterProxyPath("/arrival.jpg", "w780")).toBe("/api/poster/tmdb/w780/arrival.jpg");
     expect(getTmdbPosterProxyPath(null)).toBeNull();
+    expect(tmdbPosterSizes).not.toContain("original");
   });
 
   it("maps a successful TMDB search response to the minimal internal model", () => {

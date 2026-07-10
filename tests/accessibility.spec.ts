@@ -538,6 +538,8 @@ test("search field can show TMDb-based suggestions while typing", async ({ page 
   await suggestionsResponse;
 
   await expect(page.locator(".search-suggestions-label")).toHaveText("Vorschläge");
+  await expect(page.locator(".search-suggestions[aria-live]")).toHaveCount(0);
+  await expect(page.locator(".search-suggestions-status[role='status']")).toHaveCount(1);
   await expect(page.getByRole("button", { name: /Arrival/ })).toBeVisible();
 });
 
@@ -898,6 +900,7 @@ test("contact page uses a privacy-first native form with clear labels and status
   await expect(message).toHaveAttribute("minlength", "10");
   await expect(message).toHaveAttribute("maxlength", "3000");
   await expect(message).toHaveAttribute("aria-describedby", "contact-message-help contact-message-counter");
+  await expect(page.locator("#contact-message-counter")).not.toHaveAttribute("aria-live", /.+/);
   await expect(page.locator("#contact-message-counter")).toContainText("Noch 10 Zeichen fehlen.");
 
   await submit.click();
@@ -1661,6 +1664,21 @@ test("mobile detail posters sit directly below the title heading", async ({ page
         .toBeLessThanOrEqual(metrics.readingTop);
     }
   }
+});
+
+test("external detail prioritizes only one bounded TMDb poster source", async ({ page }) => {
+  await page.setViewportSize({ width: 430, height: 900 });
+  await page.goto("/spike/metadaten/series/4313");
+
+  const detailPosters = page.locator("img[src*='/api/poster/tmdb/w780/']");
+  await expect(detailPosters).toHaveCount(1);
+  await expect(page.locator("img[src*='/api/poster/tmdb/w780/']:not([loading='lazy'])")).toHaveCount(1);
+
+  const sources = await detailPosters.evaluateAll((images) =>
+    images.map((image) => image.getAttribute("src")),
+  );
+  expect(new Set(sources).size).toBe(1);
+  expect(sources[0]).not.toContain("/original/");
 });
 
 test("search local shelf keeps remembered and seen cards readable", async ({ page }) => {

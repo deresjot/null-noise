@@ -198,7 +198,7 @@ export function SearchQueryField({
       />
 
       {shouldShowSuggestions ? (
-        <div className="search-suggestions" aria-live="polite">
+        <div className="search-suggestions">
           {statusMessage ? (
             <p id={statusId} className="field-note search-suggestions-status" role="status">
               {statusMessage}
