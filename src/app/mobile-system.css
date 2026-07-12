@@ -851,22 +851,27 @@ textarea,
   .search-results-layout {
     grid-template-columns: minmax(0, 1fr) minmax(20rem, 22rem);
     grid-template-areas:
-      "overview sidebar"
-      "results results";
+      "main sidebar";
+    align-items: start;
     gap: clamp(1.75rem, 3vw, 2.5rem);
   }
 
-  .search-results-main,
+  .search-results-main {
+    grid-area: main;
+    display: grid;
+    align-content: start;
+    gap: var(--section-gap);
+  }
+
   .search-browse-state {
-    display: contents;
+    display: grid;
+    align-content: start;
+    gap: var(--section-gap);
   }
 
-  .search-results-overview {
-    grid-area: overview;
-  }
-
+  .search-results-overview,
   .search-results-stack {
-    grid-area: results;
+    grid-area: auto;
     min-width: 0;
   }
 

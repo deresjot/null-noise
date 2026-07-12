@@ -372,7 +372,7 @@ test("desktop home claim keeps a calm line count and footer rhythm", async ({ pa
   expect(metrics?.footerGap).toBeLessThanOrEqual(64);
 });
 
-test("desktop search results expand below the filter column", async ({ page }) => {
+test("desktop search keeps results in a broad main column beside the filter column", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/suche?q=Arrival&view=grid");
   await expect(page.getByRole("heading", { name: 'Treffer zu „Arrival“' })).toBeVisible();
@@ -381,12 +381,14 @@ test("desktop search results expand below the filter column", async ({ page }) =
   const metrics = await page.evaluate(() => {
     const layout = document.querySelector<HTMLElement>(".search-results-layout")?.getBoundingClientRect();
     const overview = document.querySelector<HTMLElement>(".search-results-overview")?.getBoundingClientRect();
+    const main = document.querySelector<HTMLElement>(".search-results-main")?.getBoundingClientRect();
     const sidebar = document.querySelector<HTMLElement>(".search-sidebar")?.getBoundingClientRect();
     const results = document.querySelector<HTMLElement>(".search-results-stack")?.getBoundingClientRect();
     const grid = document.querySelector<HTMLElement>('.result-grid[data-layout="grid"]');
     return {
       cardColumns: grid ? getComputedStyle(grid).gridTemplateColumns.split(" ").length : 0,
       layoutWidth: layout?.width ?? 0,
+      mainWidth: main?.width ?? 0,
       overviewWidth: overview?.width ?? 0,
       resultsWidth: results?.width ?? 0,
       sidebarWidth: sidebar?.width ?? 0,
@@ -394,9 +396,11 @@ test("desktop search results expand below the filter column", async ({ page }) =
   });
 
   expect(metrics.sidebarWidth).toBeGreaterThanOrEqual(300);
-  expect(metrics.overviewWidth + metrics.sidebarWidth).toBeLessThanOrEqual(metrics.layoutWidth + 4);
-  expect(metrics.resultsWidth).toBeGreaterThanOrEqual(metrics.layoutWidth - 2);
-  expect(metrics.cardColumns).toBeGreaterThanOrEqual(3);
+  expect(metrics.mainWidth).toBeGreaterThan(metrics.sidebarWidth * 2);
+  expect(metrics.overviewWidth).toBeGreaterThanOrEqual(metrics.mainWidth - 2);
+  expect(metrics.resultsWidth).toBeGreaterThanOrEqual(metrics.mainWidth - 2);
+  expect(metrics.mainWidth + metrics.sidebarWidth).toBeLessThanOrEqual(metrics.layoutWidth + 4);
+  expect(metrics.cardColumns).toBeGreaterThanOrEqual(2);
 });
 
 test("homepage exposes a small beta note without turning into a banner", async ({ page }) => {
@@ -718,7 +722,7 @@ test("footer exposes compact build metadata and links to the changelog", async (
 
   const buildLine = page.locator("footer .build-line");
 
-  await expect(buildLine).toHaveText(/Build 0\.8\.5-beta-ui-hardening\.20260705 · 2026-07-05/);
+  await expect(buildLine).toHaveText(/Build 0\.8\.5-search-layout-regression\.20260712 · 2026-07-12/);
   await expect(buildLine).not.toContainText("Motion, Forced Colors and UI flow pass");
   await expect(page.locator("footer .release-note")).toHaveCount(0);
   await expect(page.locator("footer").getByRole("link", { name: "Release Notes / Changelog" })).toHaveAttribute(
@@ -734,7 +738,7 @@ test("changelog page exposes the full release history", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Release Notes / Changelog" })).toBeVisible();
   const releaseNotes = page.locator(".changelog-page .release-note");
   expect(await releaseNotes.count()).toBeGreaterThan(20);
-  await expect(releaseNotes.first()).toContainText("beta-ui-hardening.20260705");
+  await expect(releaseNotes.first()).toContainText("search-layout-regression.20260712");
   await expect(page.locator(".changelog-page")).toContainText("Mobile calm feedback and readability pass");
   await expect(page.locator(".changelog-page")).toContainText("Mobile brand and changelog documentation pass");
   await expect(page.locator(".changelog-page")).toContainText("Mobile title detail layout");

@@ -4,13 +4,24 @@ const previousVersion = "0.8.4";
 
 export const currentBuild = {
   version: packageJson.version,
-  label: "Beta UI hardening and deploy safeguards",
-  releasedAt: "2026-07-05",
+  label: "Search desktop layout regression fix",
+  releasedAt: "2026-07-12",
 };
 
 export const releaseNotes = [
   {
     version: packageJson.version,
+    label: "Search desktop layout regression fix",
+    releasedAt: "2026-07-12",
+    entries: [
+      "Browse and search results now stay in a real broad desktop main column beside the bounded filter sidebar instead of flattening into the outer grid.",
+      "The search heading starts without the artificial empty area previously created by a sidebar-sized grid row.",
+      "Grid views render multiple useful card columns on wide viewports while list views use the full main-column width and mobile stays single-column.",
+      "Versioned full-page Playwright baselines and bounding-box assertions now cover browse/results, list/grid, seven viewport sizes, sidebar containment and rendered card columns.",
+    ],
+  },
+  {
+    version: "0.8.5-beta-ui-hardening.20260705",
     label: "Beta UI hardening and deploy safeguards",
     releasedAt: "2026-07-05",
     entries: [

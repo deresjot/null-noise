@@ -1,6 +1,6 @@
 {
   "name": "null-noise",
-  "version": "0.8.5-beta-ui-hardening.20260705",
+  "version": "0.8.5-search-layout-regression.20260712",
   "private": true,
   "description": "Barrierearmes MVP-Grundgeruest fuer null-noise",
   "scripts": {
@@ -15,6 +15,7 @@
     "lint": "eslint .",
     "test:unit": "node --import tsx prisma/require-test-database-url.ts && DATABASE_URL=$NULL_NOISE_TEST_DATABASE_URL NULL_NOISE_SKIP_LEGACY_IMPORT=true prisma migrate deploy && DATABASE_URL=$NULL_NOISE_TEST_DATABASE_URL NULL_NOISE_SKIP_LEGACY_IMPORT=true vitest run --maxWorkers=1",
     "test:a11y": "playwright test tests/accessibility.spec.ts tests/axe-core-direct.spec.ts",
+    "test:visual": "playwright test tests/search-layout.visual.spec.ts",
     "test:wcag22-aa": "WCAG22_SCOPE=aa playwright test tests/wcag22-aa-technical.spec.ts",
     "test:wcag22-aaa": "WCAG22_SCOPE=aaa playwright test tests/wcag22-aa-technical.spec.ts",
     "test:axe-core": "playwright test tests/axe-core-direct.spec.ts",

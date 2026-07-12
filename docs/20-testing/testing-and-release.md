@@ -4,6 +4,14 @@ Stand: 10. Juli 2026
 
 Diese Datei beschreibt, wie `null-noise` Accessibility testet und wo die Grenzen der Automatisierung liegen.
 
+## Desktop-Suchlayout-Regression-Fix 12. Juli 2026
+
+- Root Cause: `display: contents` entfernte ab `64rem` `.search-results-main` und `.search-browse-state` als Layoutboxen. Overview und Ergebnisstack wurden direkte Kinder des äußeren Grids; die hohe Sidebar streckte dessen erste Zeile und damit die Overview, während Ergebnisse in eine separate Vollbreitenzeile rutschten.
+- Fix: Das äußere Grid enthält wieder eine echte breite Hauptspalte und eine begrenzte 20–22rem-Sidebar. Overview und Ergebnisstack bleiben gemeinsam in der Hauptspalte; Grid- und Listenansichten nutzen deren volle Breite.
+- `npm run test:visual` prüft `/suche`, `?view=grid`, `?view=list` und `?q=Arrival` bei 320×800, 390×844, 430×932, 1024×768, 1280×900, 1440×1000 und 1920×1080 über Bounding-Boxes, Abstände, Breitenverhältnisse, Kartenreihen, Overflow, Clipping und Sidebar-Begrenzung.
+- Acht versionierte Full-Page-Baselines decken Browse/Suchergebnis, Liste/Grid sowie 390, 1440 und 1920 CSS-Pixel ab. Posterbilder werden maskiert, damit die Referenzen Layout statt wechselnder externer Bilddaten bewerten.
+- Der Vorher-Zustand wurde zusätzlich außerhalb des Repositories über alle Browse-Viewports dokumentiert. Die finalen versionierten Baselines wurden manuell auf Leerfläche, Spaltenverhältnis, Kartenanordnung, Footer und Mobile-Reflow geprüft.
+
 ## Accessibility-/Poster-Performance-Pass 10. Juli 2026
 
 - Suchvorschläge prüfen genau eine knappe `role="status"`-Meldung ohne verschachtelte äußere Live-Region. Der Kontakt-Zeichenzähler bleibt über `aria-describedby` verfügbar, kündigt aber nicht mehr jeden Tastendruck live an.
