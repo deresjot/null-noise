@@ -14,7 +14,7 @@ Die App soll Menschen unterstützen, die sich schnell überfordert fühlen. Das 
 
 Jede zentrale Ansicht braucht eine klare Leitfrage.
 
-- Startseite: Wonach willst du schauen?
+- Startseite: Welche der drei Richtungen macht neugierig?
 - Suche: Was passt grob in den aktuellen Rahmen?
 - Detailseite: Passt das gerade?
 
@@ -58,6 +58,7 @@ Deshalb gelten für Browse, Suche und Alternativen:
 - Alternativen werden als Gegengewichte formuliert: ruhiger, dichter oder leichter
 - keine Rankings, Toplisten, Prozentwerte oder scheinpräzise Reizwerte
 - keine Social-, Profil- oder Tracking-Logik
+- auf der Startseite genau drei gleichwertige Fundstücke statt eines endlosen Feeds
 
 ### Vorhersehbare Interaktion
 
@@ -69,6 +70,8 @@ Die Oberfläche soll sich ruhig verhalten.
 - kein UI, das erst beim Klicken erklärt, was es eigentlich tut
 - Meta-Elemente dürfen nicht wie Eingabefelder wirken, wenn sie nicht editierbar sind
 - Echte Steuerung soll als Steuerung lesbar sein: Umschalter, View-Toggles und Refresh-Aktionen brauchen sichtbare Affordance auch ohne Hover
+- Eine automatische Fokuswiederherstellung darf nur einmal erfolgen und danach keinen neu gesetzten Nutzerfokus zurückholen
+- Ansichten haben eindeutige, kontextbezogene Seitentitel; Suche und Titeldetails benennen ihren aktuellen Inhalt
 
 ### Joy of Use ohne UI-Lärm
 
@@ -99,6 +102,10 @@ Die Standardoberfläche muss in heller Darstellung, bei systemweiter Dark-Präfe
 - wichtige Zustände zusätzlich über Text, Struktur, Rahmen oder Position
 - aktive Navigation, Buttons und Filter zeigen Auswahl über das ganze Control, nicht über eine kleine Fläche nur hinter der Beschriftung
 - Cluster sind echte Inhaltsbereiche mit Überschrift, sichtbarem Label, Beschreibung und Listenstruktur
+- native Links, Buttons und Suchfelder in Shared Shell und Startseite sind explizite Tabstops; Safari/VoiceOver und Tastatur erreichen dadurch dieselben Interaktionspunkte in Dokumentreihenfolge
+- der Tastaturfokus bleibt kontrastreich und kompakt, überdeckt keine Nachbarinhalte und verschiebt oder animiert das fokussierte Element nicht; bei großen Link-Karten liegt der Ring innerhalb der Kartenfläche
+- redundante Bilder innerhalb bereits vollständig benannter Links sind dekorativ, statt denselben Titel im Screenreader doppelt anzusagen
+- Autofokus darf keine einleitende Überschrift oder Erklärung überspringen
 - Schatten, Farbe und Bewegung dürfen nie die einzige Gruppierung oder Statusinformation sein
 
 ### Mobile Suchdichte
@@ -161,8 +168,9 @@ Für `null-noise` heißt das:
 
 ## Konkrete Folgen für Hero und Sucheinstieg
 
-- Die Startseite beschreibt den Dienst kurz und direkt statt mit einer generischen Platzhalterformel.
-- Der Hero-Hinweis benennt Suche, grobe Reiz-Einordnung und ruhigere Auswahl in Alltagssprache.
+- Die Startseite beginnt mit einer kurzen Einladung zum Streifzug statt mit einer langen Anleitung.
+- Drei Fundstücke machen `Eher ruhig`, `Eher wechselhaft` und `Eher intensiv` unmittelbar erfahrbar.
+- Suche bleibt direkt erreichbar, steht auf der Startseite aber nach der offenen Discovery.
 - Browse-Steuerung trennt sichtbare Meta-Texte klar von klickbaren Aktionen.
 - Browse-Mixes bleiben Einstiegshilfen und werden nicht zu persönlichen Empfehlungen.
 

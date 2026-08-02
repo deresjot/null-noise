@@ -10,7 +10,7 @@ export function ResultCardActionIcon({ name }: ResultCardActionIconProps) {
     className: "result-card-action-icon",
     focusable: false,
     size: 20,
-    strokeWidth: 2.25,
+    strokeWidth: 2.8,
   } as const;
 
   if (name === "remember") {

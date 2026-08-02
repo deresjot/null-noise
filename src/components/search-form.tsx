@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ToneFaceIcon } from "@/components/tone-face-icon";
 import type { ChangeEvent } from "react";
 
 import type { SearchFilters } from "@/lib/types";
@@ -10,7 +11,7 @@ import { SearchQueryField } from "./search-query-field";
 interface SearchFormProps {
   action: string;
   filters: SearchFilters;
-  variant?: "default" | "compact" | "hero" | "stage";
+  variant?: "default" | "compact" | "hero" | "home" | "stage";
   submitLabel?: string;
 }
 
@@ -140,9 +141,10 @@ function SearchDirectStarts({ filters }: { filters: SearchFilters }) {
                 data-preset={preset.id}
                 href={buildBrowsePresetPath(filters, preset.filters)}
               >
-                <span aria-hidden="true" className="search-direct-start-marker">
-                  {preset.marker}
-                </span>
+                <ToneFaceIcon
+                  className="search-direct-start-marker"
+                  tone={preset.id === "calm" ? "quiet" : preset.id === "balanced" ? "balanced" : "intense"}
+                />
                 <span className="search-direct-start-label">{preset.label}</span>
               </Link>
             </li>
@@ -235,6 +237,28 @@ export function SearchForm({
   submitLabel = "Suchen",
 }: SearchFormProps) {
   const browsePath = buildBrowsePath(filters);
+
+  if (variant === "home") {
+    return (
+      <form
+        action={action}
+        aria-label="Titelsuche"
+        className="search-form"
+        data-variant="home"
+        role="search"
+      >
+        <SearchQueryField
+          defaultValue={filters.q}
+          explicitTabStop
+          label="Film oder Serie"
+          placeholder={titlePlaceholder}
+        />
+        <button className="primary-button search-submit-button" tabIndex={0} type="submit">
+          {submitLabel}
+        </button>
+      </form>
+    );
+  }
 
   if (variant === "hero") {
     return (

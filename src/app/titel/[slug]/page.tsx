@@ -47,8 +47,10 @@ type DetailPageProps = {
 
 export async function generateMetadata({ params }: DetailPageProps): Promise<Metadata> {
   const { slug } = await params;
+  const { data: title } = await getTitleBySlugState(slug);
 
   return {
+    title: title?.external.title ?? "Titeldetails",
     alternates: {
       canonical: `/titel/${slug}`,
     },

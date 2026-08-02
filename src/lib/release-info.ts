@@ -4,13 +4,26 @@ const previousVersion = "0.8.4";
 
 export const currentBuild = {
   version: packageJson.version,
-  label: "Search desktop layout regression fix",
-  releasedAt: "2026-07-12",
+  label: "Accessible beta experience refresh",
+  releasedAt: "2026-08-02",
 };
 
 export const releaseNotes = [
   {
     version: packageJson.version,
+    label: "Accessible beta experience refresh",
+    releasedAt: "2026-08-02",
+    entries: [
+      "The preview gate now introduces null-noise with a controllable layered gradient-orb animation while Reduced Motion keeps an equivalent calm static composition.",
+      "The homepage leads with three finite discovery picks before direct title search, without adding a feed, ranking, profile or tracking behavior.",
+      "Quiet, variable and intense categories now share one coherent face-icon language, consistent icon bases and redundant green, yellow and red treatments across entry points and feedback choices.",
+      "Search, navigation, status feedback, focus behavior and responsive result layouts received a broad visual and interaction polish while retaining native semantics and keyboard access.",
+      "External metadata details now keep title, first reading and the full-width desktop poster in a compact two-column hero without overflow or poster-driven empty space.",
+      "Expanded Playwright, axe-core, WCAG 2.2, security-header, focus, reflow and responsive regression coverage protects the refreshed beta experience.",
+    ],
+  },
+  {
+    version: "0.8.5-search-layout-regression.20260712",
     label: "Search desktop layout regression fix",
     releasedAt: "2026-07-12",
     entries: [

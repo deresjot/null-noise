@@ -48,7 +48,7 @@ export function StatusPanel({
     >
       <div className="status-panel-head">
         <span className="status-panel-icon" aria-hidden="true">
-          <StatusIcon size={22} strokeWidth={2.3} />
+          <StatusIcon size={22} strokeWidth={2.8} />
         </span>
         <div className="status-panel-copy">
           <p className="status-panel-kicker">{toneLabels[tone]}</p>

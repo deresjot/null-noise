@@ -87,20 +87,39 @@ test.describe("preview gate", () => {
   test("shows the teaser landing page and unlocks with preview", async ({ page }) => {
     await page.goto("/");
 
-    await expect(page.getByRole("heading", { name: "Private Vorschau" })).toBeVisible();
-    await expect(page.getByText("Eine ruhige Entscheidungshilfe für Filme und Serien")).toBeVisible();
-    await expect(page.getByLabel("Passwort")).toBeFocused();
+    await expect(page.getByRole("heading", { name: "Was passt heute in deinen Kopf?" })).toBeVisible();
+    await expect(page.getByText("null-noise hilft dir, Filme und Serien")).toBeVisible();
+    await expect(page.getByLabel("Passwort zur Vorschau")).not.toBeFocused();
     await expect(page.locator(".site-header")).toHaveCount(0);
 
-    await page.getByLabel("Passwort").fill("nope");
+    await page.getByLabel("Passwort zur Vorschau").fill("nope");
     await page.getByRole("button", { name: "Vorschau öffnen" }).click();
     await expect(page.locator(".preview-gate-error")).toHaveText("Das Passwort passt gerade nicht.");
 
-    await page.getByLabel("Passwort").fill("preview");
+    await page.getByLabel("Passwort zur Vorschau").fill("preview");
     await page.getByRole("button", { name: "Vorschau öffnen" }).click();
 
     await expect(page.locator(".site-header")).toBeVisible();
-    await expect(page.getByRole("heading", { level: 1, name: "Du musst dich nicht auch noch in der Freizeit anschreien lassen." })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Drei Richtungen. Schau, was neugierig macht." })).toBeVisible();
+  });
+
+  test("keeps the intro controllable and static with reduced motion", async ({ page }) => {
+    await page.goto("/");
+
+    const motionButton = page.getByRole("button", { name: "Animation pausieren" });
+    await expect(motionButton).toBeVisible();
+    await motionButton.click();
+    await expect(page.locator(".preview-gate")).toHaveAttribute("data-motion", "paused");
+    await expect(page.getByRole("button", { name: "Animation fortsetzen" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.reload();
+    await expect(page.getByRole("button", { name: "Animation pausieren" })).toBeHidden();
+    await expect(page.locator(".preview-signal-orbit").first()).toHaveCSS("animation-name", "none");
+    await expect(page.getByLabel("Passwort zur Vorschau")).toBeVisible();
   });
 });
 
@@ -207,7 +226,7 @@ test("homepage has no detectable axe violations", async ({ page }) => {
   await expectNoAxeViolations(page, "/", "home", async () => {
     await expect(
       page.getByRole("heading", {
-        name: "Du musst dich nicht auch noch in der Freizeit anschreien lassen.",
+        name: "Drei Richtungen. Schau, was neugierig macht.",
       }),
     ).toBeVisible();
   });
@@ -304,16 +323,119 @@ test("info and legal pages have no detectable axe violations", async ({ page }) 
   }
 });
 
-test("homepage renders the decision question as the main heading and keeps the claim visible", async ({ page }) => {
+test("homepage leads with discovery and keeps the product claim visible", async ({ page }) => {
   await page.goto("/");
 
   await expect(
     page.getByRole("heading", {
       level: 1,
-      name: "Du musst dich nicht auch noch in der Freizeit anschreien lassen.",
+      name: "Drei Richtungen. Schau, was neugierig macht.",
     }),
   ).toBeVisible();
+  await expect(page.locator(".home-fundstueck-card")).toHaveCount(3);
+  await expect(page.locator(".home-fundstueck-card img:not([alt=''])")).toHaveCount(0);
+  await expect(page.getByText("Eher ruhig", { exact: true })).toBeVisible();
+  await expect(page.getByText("Eher wechselhaft", { exact: true })).toBeVisible();
+  await expect(page.getByText("Eher intensiv", { exact: true })).toBeVisible();
   await expect(page.getByText("Du musst dich nicht auch noch in der Freizeit anschreien lassen.", { exact: true })).toHaveCount(1);
+});
+
+test("page titles identify search and detail context", async ({ page }) => {
+  const cases = [
+    { path: "/", expected: /null-noise – Filme und Serien ruhiger auswählen/ },
+    { path: "/suche", expected: /Suche und stöbern/ },
+    { path: "/suche?q=Arrival", expected: /Suche nach „Arrival“/ },
+    { path: "/titel/mondfenster", expected: /Mondfenster/ },
+    { path: "/spike/metadaten/movie/329865?q=Arrival", expected: /Arrival/ },
+  ];
+  const titles: string[] = [];
+
+  for (const item of cases) {
+    await page.goto(item.path);
+    await expect(page).toHaveTitle(item.expected);
+    titles.push(await page.title());
+  }
+
+  expect(new Set(titles).size).toBe(titles.length);
+});
+
+test("homepage and shared shell expose explicit Safari tab stops", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Drei Fundstücke. Drei Richtungen." })).toBeVisible();
+
+  const tabStops = await page
+    .locator(
+      "header a[href], header button:not([disabled]), #main-content a[href], #main-content button:not([disabled]), #main-content input:not([type='hidden']), footer a[href]",
+    )
+    .evaluateAll((elements) =>
+      elements.map((element) => ({
+        label:
+          element.getAttribute("aria-label") ??
+          element.textContent?.replace(/\s+/g, " ").trim() ??
+          (element as HTMLInputElement).name,
+        tabIndex: element.getAttribute("tabindex"),
+      })),
+    );
+
+  expect(tabStops.length).toBeGreaterThanOrEqual(20);
+  expect(tabStops.every((stop) => stop.tabIndex === "0")).toBe(true);
+  expect(tabStops.map((stop) => stop.label)).toEqual(
+    expect.arrayContaining([
+      "Zum Inhalt springen",
+      "Null Noise – Startseite",
+      "Menü öffnen",
+      "Mehr Fundstücke",
+      "Suchen",
+      "Wie funktioniert null-noise?",
+      "Alle Richtungen ansehen",
+    ]),
+  );
+});
+
+test("focus indicators stay compact and do not move focused controls", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Drei Fundstücke. Drei Richtungen." })).toBeVisible();
+
+  const firstCardLink = page.locator(".home-fundstueck-link").first();
+  await firstCardLink.focus();
+  const cardStyles = await firstCardLink.evaluate((link) => {
+    const linkStyle = getComputedStyle(link);
+    const card = link.closest<HTMLElement>(".home-fundstueck-card");
+    const cardStyle = card ? getComputedStyle(card) : null;
+
+    return {
+      cardOutlineOffset: cardStyle?.outlineOffset,
+      cardOutlineWidth: cardStyle?.outlineWidth,
+      cardTransform: cardStyle?.transform,
+      linkOutlineWidth: linkStyle.outlineWidth,
+    };
+  });
+
+  expect(cardStyles).toEqual({
+    cardOutlineOffset: "-4px",
+    cardOutlineWidth: "3px",
+    cardTransform: "none",
+    linkOutlineWidth: "0px",
+  });
+
+  const searchButton = page.getByRole("button", { name: "Suchen" });
+  await searchButton.focus();
+  const controlStyles = await searchButton.evaluate((button) => {
+    const style = getComputedStyle(button);
+    return {
+      boxShadow: style.boxShadow,
+      outlineOffset: style.outlineOffset,
+      outlineWidth: style.outlineWidth,
+      transform: style.transform,
+    };
+  });
+
+  expect(controlStyles.outlineWidth).toBe("3px");
+  expect(controlStyles.outlineOffset).toBe("1px");
+  expect(controlStyles.boxShadow).toContain("1px");
+  expect(controlStyles.transform).toBe("none");
 });
 
 test("direct starts expose three redundant category treatments", async ({ page }) => {
@@ -324,13 +446,16 @@ test("direct starts expose three redundant category treatments", async ({ page }
     links.map((link) => {
       const marker = link.querySelector<HTMLElement>(".search-direct-start-marker");
       const markerStyle = marker ? getComputedStyle(marker) : null;
+      const linkStyle = getComputedStyle(link);
       return {
+        backgroundColor: linkStyle.backgroundColor,
+        borderColor: linkStyle.borderColor,
+        borderLeftColor: linkStyle.borderLeftColor,
         label: link.querySelector(".search-direct-start-label")?.textContent?.trim(),
         marker: link.getAttribute("data-category-marker"),
         preset: link.getAttribute("data-preset"),
-        markerText: marker?.textContent?.trim(),
-        markerBorderStyle: markerStyle?.borderStyle,
-        markerBorderRadius: markerStyle?.borderRadius,
+        tone: marker?.getAttribute("data-tone"),
+        markerColor: markerStyle?.color,
       };
     }),
   );
@@ -342,12 +467,15 @@ test("direct starts expose three redundant category treatments", async ({ page }
   ]);
   expect(new Set(categories.map((category) => category.preset)).size).toBe(3);
   expect(new Set(categories.map((category) => category.marker)).size).toBe(3);
-  expect(new Set(categories.map((category) => category.markerText)).size).toBe(3);
-  expect(new Set(categories.map((category) => `${category.markerBorderStyle}:${category.markerBorderRadius}`)).size).toBe(3);
+  expect(categories.map((category) => category.tone)).toEqual(["quiet", "balanced", "intense"]);
+  expect(new Set(categories.map((category) => category.markerColor)).size).toBe(3);
+  expect(new Set(categories.map((category) => category.backgroundColor)).size).toBe(3);
+  expect(new Set(categories.map((category) => category.borderColor)).size).toBe(3);
+  expect(new Set(categories.map((category) => category.borderLeftColor)).size).toBe(3);
   await expect(page.locator(".search-direct-start-arrow")).toHaveCount(0);
 });
 
-test("desktop home claim keeps a calm line count and footer rhythm", async ({ page }) => {
+test("desktop home discovery heading keeps a calm line count and footer rhythm", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   await expect(page.locator(".home-screen-question")).toBeVisible();
@@ -355,7 +483,7 @@ test("desktop home claim keeps a calm line count and footer rhythm", async ({ pa
 
   const metrics = await page.evaluate(() => {
     const heading = document.querySelector<HTMLElement>(".home-screen-question");
-    const hero = document.querySelector<HTMLElement>(".hero-home");
+    const hero = document.querySelector<HTMLElement>(".home-discovery-page");
     const footer = document.querySelector<HTMLElement>("#site-footer");
     if (!heading || !hero || !footer) return null;
     const range = document.createRange();
@@ -409,24 +537,49 @@ test("homepage exposes a small beta note without turning into a banner", async (
   await expect(page.getByText(/^Beta\./).first()).toBeVisible();
 });
 
-test("mobile homepage explains the first visit context without a modal", async ({ page }) => {
+test("mobile homepage places the finite discovery before direct search", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 900 });
   await page.goto("/");
 
-  const onboarding = page.locator(".home-onboarding");
+  const discovery = page.locator(".home-discovery-stage");
+  const search = page.locator(".home-search-surface");
 
-  await expect(page.getByRole("heading", { name: "Kurz gesagt" })).toBeVisible();
-  await expect(onboarding.getByText("Filme oder Serien suchen.")).toBeVisible();
-  await expect(onboarding.getByText("Eher ruhig")).toBeVisible();
-  await expect(onboarding.getByText("Eher wechselhaft")).toBeVisible();
-  await expect(onboarding.getByText("Eher intensiv")).toBeVisible();
-  await expect(onboarding.getByText("Keine Qualitätswertung, keine objektive Messung.")).toBeVisible();
-  await expect(
-    onboarding.getByRole("link", { name: "Wie funktioniert null-noise?" }),
-  ).toHaveAttribute("href", "/erklaerung");
-  await expect(page.getByRole("heading", { name: "Richtung starten", level: 2 })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Ohne Titel stöbern", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Drei Fundstücke. Drei Richtungen." })).toBeVisible();
+  await expect(discovery.locator(".home-fundstueck-card")).toHaveCount(3);
+  await expect(discovery.getByText("Eher ruhig", { exact: true })).toBeVisible();
+  await expect(discovery.getByText("Eher wechselhaft", { exact: true })).toBeVisible();
+  await expect(discovery.getByText("Eher intensiv", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Schon einen Titel im Kopf?" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Wie funktioniert null-noise?" })).toHaveAttribute("href", "/erklaerung");
+
+  const discoveryBox = await discovery.boundingBox();
+  const searchBox = await search.boundingBox();
+  expect(discoveryBox?.y ?? Number.POSITIVE_INFINITY).toBeLessThan(searchBox?.y ?? 0);
   await expect(page.getByRole("dialog")).toHaveCount(0);
+});
+
+test("homepage discovery stays static with reduced motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+
+  const cards = page.locator(".home-fundstueck-card");
+  await expect(cards).toHaveCount(3);
+
+  const motionStyles = await cards.evaluateAll((elements) =>
+    elements.map((element) => {
+      const style = getComputedStyle(element);
+      return {
+        transform: style.transform,
+        transitionDuration: style.transitionDuration,
+      };
+    }),
+  );
+
+  expect(motionStyles).toEqual([
+    { transform: "none", transitionDuration: "0s" },
+    { transform: "none", transitionDuration: "0s" },
+    { transform: "none", transitionDuration: "0s" },
+  ]);
 });
 
 test("search page exposes a visible results heading", async ({ page }) => {
@@ -660,17 +813,24 @@ test("keyboard users can reach and use the skip link", async ({ page }) => {
 
 test("reload restores focus to the previously active control on the same page", async ({ page }) => {
   await page.setViewportSize({ width: 430, height: 900 });
-  await page.goto("/suche?q=Mythbusters");
-  await expect(page.getByRole("heading", { name: 'Treffer zu „Mythbusters“' })).toBeVisible();
+  await page.goto("/erklaerung");
+  await expect(page.getByRole("heading", { name: "null-noise verstehen und benutzen" })).toBeVisible();
 
-  const detailsLink = page.locator(".result-card-cta-button").first();
-  await detailsLink.focus();
-  await expect(detailsLink).toBeFocused();
+  const disclosure = page.locator("summary").filter({ hasText: "Warum keine versteckten Tooltips?" });
+  await disclosure.focus();
+  await expect(disclosure).toBeFocused();
 
-  await page.reload({ waitUntil: "networkidle" });
-  await expect(page.getByRole("heading", { name: 'Treffer zu „Mythbusters“' })).toBeVisible();
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "null-noise verstehen und benutzen" })).toBeVisible();
 
-  await expect(page.locator(".result-card-cta-button").first()).toBeFocused();
+  await expect(
+    page.locator("summary").filter({ hasText: "Warum keine versteckten Tooltips?" }),
+  ).toBeFocused();
+
+  const brandLink = page.getByRole("link", { name: "Null Noise – Startseite" });
+  await brandLink.focus();
+  await page.waitForTimeout(350);
+  await expect(brandLink).toBeFocused();
 });
 
 test("explanation page uses native disclosure for deeper help", async ({ page }) => {
@@ -722,7 +882,7 @@ test("footer exposes compact build metadata and links to the changelog", async (
 
   const buildLine = page.locator("footer .build-line");
 
-  await expect(buildLine).toHaveText(/Build 0\.8\.5-search-layout-regression\.20260712 · 2026-07-12/);
+  await expect(buildLine).toHaveText(/Build 0\.8\.6-beta-experience\.20260802 · 2026-08-02/);
   await expect(buildLine).not.toContainText("Motion, Forced Colors and UI flow pass");
   await expect(page.locator("footer .release-note")).toHaveCount(0);
   await expect(page.locator("footer").getByRole("link", { name: "Release Notes / Changelog" })).toHaveAttribute(
@@ -738,7 +898,8 @@ test("changelog page exposes the full release history", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Release Notes / Changelog" })).toBeVisible();
   const releaseNotes = page.locator(".changelog-page .release-note");
   expect(await releaseNotes.count()).toBeGreaterThan(20);
-  await expect(releaseNotes.first()).toContainText("search-layout-regression.20260712");
+  await expect(releaseNotes.first()).toContainText("0.8.6-beta-experience.20260802");
+  await expect(releaseNotes.first()).toContainText("Accessible beta experience refresh");
   await expect(page.locator(".changelog-page")).toContainText("Mobile calm feedback and readability pass");
   await expect(page.locator(".changelog-page")).toContainText("Mobile brand and changelog documentation pass");
   await expect(page.locator(".changelog-page")).toContainText("Mobile title detail layout");
@@ -834,6 +995,25 @@ test("mobile navigation returns focus to the menu button after Escape", async ({
 
 test("detail feedback submits in place and focuses success or error status", async ({ page }) => {
   await page.goto("/titel/mondfenster");
+
+  const feedbackIcons = page.locator(".reading-feedback-choice-icon");
+  await expect(feedbackIcons).toHaveCount(3);
+
+  const feedbackIconShapes = await feedbackIcons.evaluateAll((icons) =>
+    icons.map((icon) => {
+      const styles = window.getComputedStyle(icon);
+
+      return {
+        width: styles.width,
+        height: styles.height,
+        borderRadius: styles.borderRadius,
+        borderWidth: styles.borderWidth,
+        borderStyle: styles.borderStyle,
+      };
+    }),
+  );
+
+  expect(new Set(feedbackIconShapes.map((shape) => JSON.stringify(shape))).size).toBe(1);
 
   const initialUrl = page.url();
   await page.route("**/api/title-feedback", async (route) => {
@@ -1774,11 +1954,11 @@ test("search local shelf keeps remembered and seen cards readable", async ({ pag
   await expect(page.locator(".search-local-shelf-grid")).toHaveAttribute("data-groups", "1");
 });
 
-test("mobile search menu opens as a full-screen navigation mode", async ({ page }) => {
+test("mobile menu opens as a full-screen navigation mode", async ({ page }) => {
   for (const width of [320, 390, 430]) {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto("/suche?q=&tone=all&kind=all");
-    await expect(page.getByRole("heading", { name: "Noch kein Titel im Kopf?" })).toBeVisible();
+    await page.goto("/erklaerung");
+    await expect(page.getByRole("heading", { name: "null-noise verstehen und benutzen" })).toBeVisible();
 
     const menuButton = page.getByRole("button", { name: "Menü öffnen" });
     for (let index = 0; index < 10; index += 1) {
@@ -1801,8 +1981,8 @@ test("mobile search menu opens as a full-screen navigation mode", async ({ page 
     });
 
     expect(buttonFocus.outlineStyle).toBe("solid");
-    expect(buttonFocus.outlineWidth).toBe("2px");
-    expect(buttonFocus.outlineOffset).toBe("2px");
+    expect(buttonFocus.outlineWidth).toBe("3px");
+    expect(buttonFocus.outlineOffset).toBe("1px");
 
     const closedHeaderState = await page.evaluate(() => {
       const header = document.querySelector(".site-header .header-inner")?.getBoundingClientRect();
@@ -2000,7 +2180,7 @@ test("core routes keep central mobile surfaces inside 320, 390 and 430 CSS pixel
       path: "/",
       ready: () =>
         page.getByRole("heading", {
-          name: "Du musst dich nicht auch noch in der Freizeit anschreien lassen.",
+          name: "Drei Richtungen. Schau, was neugierig macht.",
         }),
     },
     {
@@ -2060,7 +2240,7 @@ test("core routes stay stable at common mobile widths with reduced motion", asyn
       path: "/",
       ready: () =>
         page.getByRole("heading", {
-          name: "Du musst dich nicht auch noch in der Freizeit anschreien lassen.",
+          name: "Drei Richtungen. Schau, was neugierig macht.",
         }),
     },
     {
@@ -2118,7 +2298,7 @@ test("core routes stay stable at common mobile widths with reduced motion", asyn
     await page.goto("/");
     await expect(
       page.getByRole("heading", {
-        name: "Du musst dich nicht auch noch in der Freizeit anschreien lassen.",
+        name: "Drei Richtungen. Schau, was neugierig macht.",
       }),
     ).toBeVisible();
     await page.getByRole("button", { name: "Menü öffnen" }).click();
@@ -2153,7 +2333,7 @@ test.describe("iPhone Pro Max mobile layout", () => {
     await page.goto("/");
     await expect(
       page.getByRole("heading", {
-        name: "Du musst dich nicht auch noch in der Freizeit anschreien lassen.",
+        name: "Drei Richtungen. Schau, was neugierig macht.",
       }),
     ).toBeVisible();
 

@@ -69,6 +69,7 @@ npm run test:a11y
 npm run test:wcag22-aa
 npm run test:wcag22-aaa
 npx playwright test
+PLAYWRIGHT_BROWSER=webkit npx playwright test <relevante Tests>
 git diff --check
 ```
 
@@ -84,6 +85,17 @@ npx playwright test
 ```
 
 Der vollständige Playwright-Lauf bestand mit 35 bestandenen Tests und 2 skipped TMDb-Live-Fallback-Tests. Vor einem späteren Push/Deploy trotzdem Status, Diff-Scope, Secrets/Artefakte und ggf. Live-/Preview-Bedingungen erneut prüfen.
+
+## Allgemeiner Accessibility-Check
+
+- Landmarken, Überschriften, Formularlabels, Listen, echte Links/Buttons und kontextbezogene Seitentitel prüfen.
+- Alle Interaktionen ohne Maus in logischer Reihenfolge bedienen; Sprunglinks, Escape-Verhalten, Fokusfallen und Rückkehrfokus einschließen.
+- Fokus darf nicht verdeckt sein, Nachbarinhalte überlagern oder Controls bewegen. Reload-Fokus wird nur einmal wiederhergestellt; eine anschließende Fokusaktion muss bestehen bleiben.
+- Dynamische Zustände, Fehler und Erfolge knapp und ohne konkurrierende Live-Regionen ankündigen.
+- Informationsbilder benötigen passende Alternativtexte; redundante Bilder in vollständig beschrifteten Links bleiben dekorativ.
+- Reflow bei 320 CSS-Pixeln als automatisiertes 400-Prozent-Zoom-Äquivalent prüfen; echten Browserzoom bis 400 Prozent zusätzlich manuell testen.
+- Safari mit VoiceOver, Edge unter Windows High Contrast und mindestens einen Touch-Screenreader manuell testen und Ergebnis als bestanden, fehlgeschlagen, nicht geprüft oder nicht vorhanden festhalten.
+- Kernfunktionen mit deaktiviertem JavaScript als Progressive-Enhancement-Prüfung untersuchen. Das clientseitige Preview-Gate ist dabei eine bekannte Vorschaugrenze und keine Sicherheitsgrenze.
 
 ## Security-/Privacy-Checks
 
@@ -156,8 +168,17 @@ Tests, mobile Viewports 390px/430px und danach die Vercel-Deploy-Bereitschaft.
 - Burger-Menü öffnet und schließt per Button, Link-Klick und Escape; Fokus bleibt sichtbar
 - Burger-Menü enthält mobil nur Start, Suche und Erklärung/Hilfe; Barrierefreiheit, Datenschutz und Impressum stehen im Footer
 - Burger-Menü liegt sichtbar über Seiteninhalt, Ergebnisgruppen und Detailkarten
-- Startseite enthält kurze Erklärung unter `Was passt gerade?`
-- Suche bleibt primärer Einstieg; Richtungskacheln bleiben sekundär
+- Startseite führt mit `Drei Richtungen. Schau, was neugierig macht.`
+- genau drei gleichwertige Fundstücke erscheinen vor der direkten Suche
+- Fundstücke zeigen Richtung und Text zusätzlich zu Farbe, Poster und Zeichen
+- bei fehlenden TMDb-Daten bleiben drei sichtbare Richtungslinks erhalten
+- Suche bleibt direkt erreichbar und folgt auf der Startseite dem Streifzug
+- Safari/VoiceOver und der normale Tastaturpfad erreichen Sprunglinks, Brand, Menü, drei Fundstücke, Suche, Vertiefungslinks und Footer in derselben Dokumentreihenfolge
+- der Fokusindikator bleibt kompakt und kontrastreich, liegt bei großen Link-Karten innen und bewegt das fokussierte Control nicht
+- nach einmaliger Reload-Fokuswiederherstellung bleibt ein anschließend aktiv fokussiertes Control fokussiert
+- Startseite, Suche mit und ohne Query sowie lokale und externe Detailseiten haben unterscheidbare, kontextbezogene Seitentitel
+- das Preview-Gate startet bei Überschrift und Erklärung, statt per Autofokus direkt in das Passwortfeld zu springen
+- Poster in vollständig beschrifteten Startseitenlinks werden vom Screenreader nicht doppelt angesagt
 - `Ohne Titel stöbern` / `Auswahl zeigen` wirkt als Button-CTA mit Icon, nicht wie ein schwacher Textlink
 - `Richtung starten` hat ausreichend Innenabstand; die drei Richtungen sind nicht nur über Farbe unterscheidbar
 - sichtbare Richtungskacheln/Labels: `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv`

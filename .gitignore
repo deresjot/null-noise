@@ -12,6 +12,7 @@ pnpm-debug.log*
 playwright-report
 test-results
 *.tsbuildinfo
+.eslintcache
 .DS_Store
 coverage
 dist

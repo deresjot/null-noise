@@ -322,6 +322,8 @@ Optional, wenn der Umfang es rechtfertigt:
 
 ## Letzter lokaler Stand vor Übergabe
 
+Beta-Experience-Release-Kandidat vom 2. August 2026: `0.8.6-beta-experience.20260802`; Lint, Production-Build, 72 Accessibility-/axe-Tests, WCAG-2.2-AA mit 6 bestandenen und einem planmäßig übersprungenen explorativen AAA-Fall, 11 visuelle Tests und 2 Security-Header-Tests bestanden. Der finale E2E-Lauf bestätigte 88 Tests und 3 planmäßige Skips. Ein unter hoher paralleler Last verlorener Klick vor abgeschlossener Preview-Gate-Hydration wurde durch den nativen deaktivierten Initialzustand des Controls behoben; der betroffene Test bestand anschließend fünfmal wiederholt. Der Unit-Lauf wurde ohne gesetzte separate `NULL_NOISE_TEST_DATABASE_URL` vor Migration und Testausführung sicher blockiert. `git diff --check` und Artefakt-/Secret-Prüfung sind grün; der Live-Smoke folgt nach Veröffentlichung. Manuelle echte Safari-/VoiceOver-, Windows-High-Contrast- und Geräteprüfungen bleiben außerhalb der automatisierten Freigabegrenze ausdrücklich offen.
+
 Beta-UI-Hardening vom 5. Juli 2026: Release-Kandidat `0.8.5-beta-ui-hardening.20260705`; Lint, Production-Build, 99 Unit-Tests mit separater Testdatenbank, 6 direkte axe-core-Tests, 66 A11y-Tests, WCAG-2.2-AA-Matrix und `git diff --check` bestanden.
 
 Postgres-Vorbereitung vom 14. Juni 2026: lokal vorbereitet, nicht committed, nicht gepusht, nicht deployed.

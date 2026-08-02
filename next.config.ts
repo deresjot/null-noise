@@ -9,12 +9,13 @@ const nextConfig: NextConfig = {
   },
   reactStrictMode: true,
   async headers() {
+    const isDevelopment = process.env.NODE_ENV === "development";
     const scriptSrc =
-      process.env.NODE_ENV === "development"
+      isDevelopment
         ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
         : "script-src 'self' 'unsafe-inline'";
     const connectSrc =
-      process.env.NODE_ENV === "development"
+      isDevelopment
         ? "connect-src 'self' ws://localhost:* ws://127.0.0.1:*"
         : "connect-src 'self'";
     const securityHeaders = [
@@ -34,7 +35,7 @@ const nextConfig: NextConfig = {
           "manifest-src 'self'",
           "worker-src 'self'",
           "frame-src 'none'",
-          "upgrade-insecure-requests",
+          ...(isDevelopment ? [] : ["upgrade-insecure-requests"]),
         ].join("; "),
       },
       {

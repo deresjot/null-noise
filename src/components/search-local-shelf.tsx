@@ -127,9 +127,9 @@ function PocketList({
               >
                 <span className="search-local-shelf-remove-icon" aria-hidden="true">
                   {removeKind === "remembered" ? (
-                    <X size={19} strokeWidth={2.25} />
+                    <X size={19} strokeWidth={2.8} />
                   ) : (
-                    <RotateCcw size={19} strokeWidth={2.25} />
+                    <RotateCcw size={19} strokeWidth={2.8} />
                   )}
                 </span>
                 <span>{removeLabel}</span>

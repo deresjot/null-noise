@@ -115,16 +115,7 @@ const focusRestoreScript = `
     element.textContent ? element.textContent.trim().replace(/\\s+/g, " ").slice(0, 80) : "",
   ].join("|");
 
-  const isReload = () => {
-    const navigation = performance.getEntriesByType("navigation")[0];
-    return navigation ? navigation.type === "reload" : performance.navigation?.type === 1;
-  };
-
-  let isRestoringReloadFocus = isReload();
-
   const saveFocus = (event) => {
-    if (isRestoringReloadFocus) return;
-
     const target = event.target;
     if (!(target instanceof HTMLElement) || !target.matches(focusableSelector)) return;
 
@@ -140,62 +131,7 @@ const focusRestoreScript = `
     } catch {}
   };
 
-  const restoreFocus = (attempt = 0, restoredCount = 0) => {
-    if (!isRestoringReloadFocus) return;
-
-    let saved = null;
-    try {
-      saved = JSON.parse(sessionStorage.getItem(storageKeyPrefix + getRouteKey()) || "null");
-    } catch {
-      saved = null;
-    }
-
-    if (!saved || typeof saved.index !== "number") {
-      if (attempt < 80) {
-        window.setTimeout(() => restoreFocus(attempt + 1, restoredCount), 100);
-        return;
-      }
-
-      isRestoringReloadFocus = false;
-      return;
-    }
-
-    const focusables = getFocusables();
-    const exactMatch = focusables.find((element) => getSignature(element) === saved.signature);
-    const fallback = focusables[saved.index];
-    const target = exactMatch || (attempt >= 60 ? fallback : null);
-
-    if (target instanceof HTMLElement) {
-      target.focus({ preventScroll: false });
-      if (restoredCount < 20) {
-        window.setTimeout(() => restoreFocus(attempt + 1, restoredCount + 1), 100);
-        return;
-      }
-      isRestoringReloadFocus = false;
-      return;
-    }
-
-    if (attempt < 80) {
-      window.setTimeout(() => restoreFocus(attempt + 1, restoredCount), 100);
-      return;
-    }
-
-    isRestoringReloadFocus = false;
-  };
-
   document.addEventListener("focusin", saveFocus);
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => window.requestAnimationFrame(restoreFocus), {
-      once: true,
-    });
-  } else {
-    window.requestAnimationFrame(restoreFocus);
-  }
-
-  window.addEventListener("load", () => window.setTimeout(() => restoreFocus(0), 250), {
-    once: true,
-  });
 })();
 `;
 

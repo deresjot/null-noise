@@ -1,94 +1,82 @@
 import Link from "next/link";
 
+import { HomeDiscovery } from "@/components/home-discovery";
 import { SearchForm } from "@/components/search-form";
+import { browseTmdbMetadata } from "@/lib/metadata-spike";
 import { getBetaNoteText } from "@/lib/runtime-config";
+
+const homeFilters = {
+  q: "",
+  tone: "all" as const,
+  kind: "all" as const,
+  avoidPeaks: false,
+  avoidDensity: false,
+};
 
 export default async function HomePage() {
   const betaNote = getBetaNoteText().replace(/^(Beta\.\s*)+/u, "");
+  const browseState = await browseTmdbMetadata(
+    homeFilters,
+    "stable:all:all:allow-peaks:allow-density",
+  );
 
   return (
     <section
-      className="home-page hero hero-home mobile-command-screen page-layout"
+      className="home-page home-discovery-page page-layout"
       aria-labelledby="home-hero-heading"
     >
-      <div className="hero-home-stage home-hero-stage">
-        <div className="hero-copy hero-copy-home">
-          <div className="hero-copy-intro">
-            <div className="hero-kicker-row">
-              <p className="eyebrow hero-kicker-badge">null-noise</p>
-              <p className="hero-kicker-note hero-kicker-badge">Beta</p>
-            </div>
-            <h1 className="home-screen-question" id="home-hero-heading">
-              Du musst dich nicht auch noch in der Freizeit anschreien lassen.
-            </h1>
-            <p className="lead hero-purpose-text">
-              Null Noise ordnet Filme und Serien danach ein, wie ruhig, wechselhaft oder intensiv
-              sie wirken können. So findest du schneller etwas, das gerade zu deiner Stimmung,
-              Energie und Aufmerksamkeit passt – ohne Bewertungen, Rankings oder Social-Druck.
-            </p>
-            <section className="home-onboarding" aria-labelledby="home-onboarding-heading">
-              <h2 id="home-onboarding-heading">Kurz gesagt</h2>
-              <ol>
-                <li>Filme oder Serien suchen.</li>
-                <li>
-                  Eine grobe erste Einschätzung lesen: <strong>Eher ruhig</strong>,{" "}
-                  <strong>Eher wechselhaft</strong> oder <strong>Eher intensiv</strong>.
-                </li>
-                <li>Dann entscheiden, ob der Titel gerade passt.</li>
-              </ol>
-              <p>
-                Keine Qualitätswertung, keine objektive Messung.{" "}
-                <Link href="/erklaerung">Wie funktioniert null-noise?</Link>
-              </p>
-            </section>
-            <p className="lead hero-home-context">Titel suchen oder erst eine Richtung wählen.</p>
-          </div>
+      <header className="home-discovery-hero">
+        <div className="home-discovery-kicker-row">
+          <p className="eyebrow">null-noise</p>
+          <p className="home-discovery-beta">Beta</p>
         </div>
+        <h1 className="home-screen-question" id="home-hero-heading">
+          Drei Richtungen. Schau, was neugierig macht.
+        </h1>
+        <p className="lead home-discovery-lead">
+          Filme und Serien fühlen sich unterschiedlich an. Starte mit einem Fundstück – eher
+          ruhig, wechselhaft oder intensiv.
+        </p>
+      </header>
 
-        <section
-          className="search-module-surface hero-home-searchdeck home-search-deck"
-          aria-labelledby="home-search-heading"
-        >
-          <div className="hero-search-head">
-            <h2 id="home-search-heading">Suche</h2>
-            <p className="field-note hero-search-note">Titel suchen oder erst eine Richtung wählen.</p>
-          </div>
+      <HomeDiscovery state={browseState} />
 
+      <div className="home-entry-grid">
+        <section className="home-search-surface" aria-labelledby="home-search-heading">
+          <p className="eyebrow">Direkter Weg</p>
+          <h2 id="home-search-heading">Schon einen Titel im Kopf?</h2>
+          <p className="field-note">Dann spring direkt zur ersten Einschätzung.</p>
           <SearchForm
             action="/suche"
-            filters={{
-              q: "",
-              tone: "all",
-              kind: "all",
-              avoidPeaks: false,
-              avoidDensity: false,
-            }}
+            filters={homeFilters}
             submitLabel="Suchen"
-            variant="hero"
+            variant="home"
           />
-          <section className="home-checkin-zone" aria-labelledby="home-checkin-heading">
-            <h3 id="home-checkin-heading">Ohne Titel starten</h3>
-            <p className="field-note">Tertiär, wenn du keinen Suchbegriff hast.</p>
-            <nav className="home-checkin-actions" aria-label="Schneller Einstieg">
-              <Link className="home-checkin-action" href="/suche?tone=calm#results-heading">
-                Eher ruhig starten
-              </Link>
-              <Link className="home-checkin-action" href="/suche#results-heading">
-                Einfach stöbern
-              </Link>
-              <a className="home-checkin-action" href="#home-search-heading">
-                Direkt suchen
-              </a>
-            </nav>
-          </section>
         </section>
 
-        <div className="hero-home-meta">
-          <p className="field-note hero-beta-note">{`Beta. ${betaNote}`}</p>
-          <Link className="secondary-link" href="/erklaerung">
-            Skalen kurz lesen
+        <section className="home-purpose-surface" aria-labelledby="home-purpose-heading">
+          <p className="eyebrow">Warum null-noise?</p>
+          <h2 id="home-purpose-heading">
+            Du musst dich nicht auch noch in der Freizeit anschreien lassen.
+          </h2>
+          <p>
+            Null Noise gibt eine grobe erste Einschätzung, wie ruhig, wechselhaft oder intensiv ein
+            Titel wirken kann. Ohne Bewertungen, Rankings oder Social-Druck.
+          </p>
+          <p className="field-note">
+            Keine objektive Messung. Unsicherheit bleibt sichtbar.
+          </p>
+          <Link className="secondary-link" href="/erklaerung" tabIndex={0}>
+            Wie funktioniert null-noise?
           </Link>
-        </div>
+        </section>
+      </div>
+
+      <div className="home-discovery-meta">
+        <p className="field-note">{`Beta. ${betaNote}`}</p>
+        <Link className="secondary-link" href="/suche#results-heading" tabIndex={0}>
+          Alle Richtungen ansehen
+        </Link>
       </div>
     </section>
   );

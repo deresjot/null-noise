@@ -24,6 +24,7 @@ type SearchSuggestionResponse =
 
 interface SearchQueryFieldProps {
   defaultValue: string;
+  explicitTabStop?: boolean;
   label?: string;
   placeholder?: string;
 }
@@ -41,6 +42,7 @@ function formatSuggestionMeta(item: SearchSuggestionItem): string {
 
 export function SearchQueryField({
   defaultValue,
+  explicitTabStop = false,
   label = "Titel",
   placeholder = "z. B. Arrival, The Bear oder Past Lives",
 }: SearchQueryFieldProps) {
@@ -185,6 +187,7 @@ export function SearchQueryField({
         id={inputId}
         name="q"
         type="search"
+        tabIndex={explicitTabStop ? 0 : undefined}
         value={query}
         placeholder={placeholder}
         autoComplete="off"

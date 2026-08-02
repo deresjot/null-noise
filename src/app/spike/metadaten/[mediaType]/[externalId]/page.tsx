@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 
 import { DetailFollowupSection } from "@/components/detail-followup-section";
 import { LetterboxdPanel } from "@/components/letterboxd-panel";
@@ -40,6 +41,29 @@ type MetadataSpikeDetailPageProps = {
   params: Promise<{ mediaType: string; externalId: string }>;
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
+
+export async function generateMetadata({
+  params,
+}: MetadataSpikeDetailPageProps): Promise<Metadata> {
+  const resolvedParams = await params;
+  const parsed = parseSpikeDetailParams(resolvedParams);
+  const canonical = `/spike/metadaten/${resolvedParams.mediaType}/${resolvedParams.externalId}`;
+
+  if (!parsed) {
+    return {
+      title: "Titeldetails",
+      alternates: { canonical },
+    };
+  }
+
+  const state = await getMetadataDetail(parsed);
+
+  return {
+    title: state.kind === "success" ? state.item.title : "Titeldetails",
+    alternates: { canonical },
+    openGraph: { url: canonical },
+  };
+}
 
 function formatMediaType(mediaType: "movie" | "series"): string {
   return mediaType === "movie" ? "Film" : "Serie";
@@ -371,9 +395,34 @@ export default async function MetadataSpikeDetailPage({
 
       <header className="detail-hero">
         <div className="detail-hero-copy">
-          <div className="detail-hero-heading">
-            <p className="eyebrow">{`${formatMediaType(item.mediaType)} · ${item.releaseYear ?? "Jahr offen"}`}</p>
-            <h1>{item.title}</h1>
+          <div className="detail-hero-primary">
+            <div className="detail-hero-heading">
+              <p className="eyebrow">{`${formatMediaType(item.mediaType)} · ${item.releaseYear ?? "Jahr offen"}`}</p>
+              <h1>{item.title}</h1>
+            </div>
+            <section className="detail-reading-block" aria-label="Erste Einschätzung">
+              <p className="detail-reading-kicker">Erste Einschätzung</p>
+              <p className="detail-hero-tendency">{tendency.label}</p>
+              <SearchToneScale
+                caption="Eher ruhig bis eher intensiv"
+                emphasis="hero"
+                mode={aggregatePresentation.state}
+                note={tendency.text}
+                showCaption={false}
+                showValueLabel={false}
+                value={tendency.tone}
+                valueLabel={tendency.label}
+              />
+              <p className="field-note detail-reading-basis">{aggregatePresentation.basis}</p>
+              <p className="field-note detail-hero-status">
+                <strong>{aggregatePresentation.label}.</strong> {aggregatePresentation.text}
+              </p>
+              <p className="field-note detail-reading-explain-link">
+                <a href="#reading-basis">Worauf basiert das?</a>{" "}
+                <span aria-hidden="true">·</span>{" "}
+                <a href="/erklaerung">Wie funktioniert die erste Einschätzung?</a>
+              </p>
+            </section>
           </div>
           <div className="detail-hero-poster detail-hero-poster-mobile" aria-label={`Titelbild zu ${item.title}`}>
             <ResultPoster
@@ -383,29 +432,6 @@ export default async function MetadataSpikeDetailPage({
               variant="detail"
             />
           </div>
-          <section className="detail-reading-block" aria-label="Erste Einschätzung">
-            <p className="detail-reading-kicker">Erste Einschätzung</p>
-            <p className="detail-hero-tendency">{tendency.label}</p>
-            <SearchToneScale
-              caption="Eher ruhig bis eher intensiv"
-              emphasis="hero"
-              mode={aggregatePresentation.state}
-              note={tendency.text}
-              showCaption={false}
-              showValueLabel={false}
-              value={tendency.tone}
-              valueLabel={tendency.label}
-            />
-            <p className="field-note detail-reading-basis">{aggregatePresentation.basis}</p>
-            <p className="field-note detail-hero-status">
-              <strong>{aggregatePresentation.label}.</strong> {aggregatePresentation.text}
-            </p>
-            <p className="field-note detail-reading-explain-link">
-              <a href="#reading-basis">Worauf basiert das?</a>{" "}
-              <span aria-hidden="true">·</span>{" "}
-              <a href="/erklaerung">Wie funktioniert die erste Einschätzung?</a>
-            </p>
-          </section>
           <div className="detail-reading-followups" id="reading-basis">
             <ReadingDecisionSupport
               cautions={{

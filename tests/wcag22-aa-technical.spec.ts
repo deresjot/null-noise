@@ -7,7 +7,7 @@ const axeSource = axe.source;
 const wcag22Scope = process.env.WCAG22_SCOPE === "aaa" ? "aaa" : "aa";
 
 const coreRoutes = [
-  { path: "/", heading: "Du musst dich nicht auch noch in der Freizeit anschreien lassen." },
+  { path: "/", heading: "Drei Richtungen. Schau, was neugierig macht." },
   { path: "/suche", heading: "Noch kein Titel im Kopf?" },
   { path: "/suche?q=Arrival", heading: 'Treffer zu „Arrival“' },
   { path: "/suche?q=Predator", heading: 'Treffer zu „Predator“' },
@@ -496,6 +496,50 @@ test.describe("WCAG 2.2 technical regression matrix", () => {
     }
 
     await testInfo.attach("wcag22-aa-reflow-route-findings.json", {
+      body: JSON.stringify(routeFindings, null, 2),
+      contentType: "application/json",
+    });
+
+    expect(routeFindings.flatMap((finding) => finding.failures)).toEqual([]);
+  });
+
+  test("keeps representative routes usable at the 320px equivalent of 400 percent zoom", async ({
+    page,
+  }, testInfo) => {
+    const representativeRoutes = coreRoutes.filter((route) =>
+      ["/", "/suche", "/titel/mondfenster", "/kontakt"].includes(route.path),
+    );
+    const routeFindings: RouteFinding[] = [];
+
+    await page.setViewportSize({ width: 320, height: 900 });
+
+    for (const route of representativeRoutes) {
+      await gotoReady(page, route);
+      const failures = await page.evaluate(async () => {
+        const localFailures: string[] = [];
+        const overflow = document.documentElement.scrollWidth - document.documentElement.clientWidth;
+        if (overflow > 1) {
+          localFailures.push(`320px zoom-equivalent horizontal overflow ${overflow}px`);
+        }
+
+        const heading = document.querySelector("h1");
+        if (!heading || heading.getBoundingClientRect().width <= 0) {
+          const headingRect = heading?.getBoundingClientRect();
+          localFailures.push(
+            `320px zoom-equivalent hides the page heading (rect ${headingRect?.width ?? "missing"}x${headingRect?.height ?? "missing"}, display ${heading ? getComputedStyle(heading).display : "missing"})`,
+          );
+        }
+
+        return localFailures;
+      });
+
+      routeFindings.push({
+        path: `${route.path} @ 320px zoom equivalent`,
+        failures: failures.map((failure) => `${route.path}: ${failure}`),
+      });
+    }
+
+    await testInfo.attach("wcag22-aa-400-percent-zoom-findings.json", {
       body: JSON.stringify(routeFindings, null, 2),
       contentType: "application/json",
     });

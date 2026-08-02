@@ -163,13 +163,14 @@ Die erste Basis folgt dieser Strategie bereits:
 - `DetailFollowupSection`: kleiner Folgeempfehlungsbereich auf Detailseiten mit normaler Überschrift und derselben Tile-Sprache wie in Suche/Browse statt neuer Empfehlungs-Widgetlogik
 - `TitlePocketActions`: lokales `Merken` und `Schon gesehen` über echte Buttons mit sichtbarem Text statt Icon-only-Merken oder impliziter Watchlist-Mimik
 - `SearchLocalShelf`: kleiner lokaler Abschnitt auf `/suche` für gemerkte und gesehene Titel; bleibt semantische Listen- und Formularstruktur statt Client-seitiger Board- oder Drawer-Mechanik. Der mobile Toggle `Schon gesehene Titel hier ausblenden` muss mit Checkbox und Label sichtbar zusammenbleiben und sauber umbrechen.
-- `Home Hero`: `Was passt gerade?` plus kurze Erklärung macht den Zweck von Null Noise beim Einstieg sichtbar; Suche bleibt der primäre Pfad, Richtungskacheln bleiben sekundär.
+- `HomeDiscovery`: drei gleichwertige, postergeführte Fundstücke aus den vorhandenen Browse-Kategorien; normale Liste, Artikel und Links statt Carousel, Feed oder Custom-Widget. Bei fehlenden TMDb-Daten bleiben die drei Richtungslinks als stabiler Fallback sichtbar.
+- `Home Search`: die native Titelsuche bleibt direkt erreichbar, folgt auf der Startseite aber dem endlichen Streifzug.
 - Spike-Detailseiten: visuelle Beruhigung wurde über Hierarchie und Verdichtung gelöst (Spaltengewichtung, kompaktere Followup-Karten, ruhigere Provider-Einbindung) statt über neue Widgets, zusätzliche Interaktionsmodi oder zweite Darstellungssysteme
 - `Inline-Status statt Toast`: kleine Rückmeldungen wie `Für später gemerkt.` oder `Neue Auswahl, gleicher Rahmen.` bleiben direkt am betroffenen Bereich und werden nicht als globale Notification-Mechanik aufgebaut
 - `Motion als Wertigkeit`: kurze Übergänge dürfen Touch-Interaktionen und Statuswechsel ruhiger spürbar machen. Reduced Motion und Forced Colors bleiben späte Kaskaden-Grenzen; Bedeutung muss immer auch über Text, Struktur und Fokuszustand erfassbar sein.
 - `SiteNavigation`: Mobile Navigation ist eine vollflächige Navigationsebene mit nativer Linkliste, Schließen-Button, Escape-Handling, Scroll-Lock, inertem Seiteninhalt, Fokusfalle und Fokus-Rückkehr zum Menübutton. Geschlossener Header und geöffnetes Menü teilen dieselben mobilen Brand-Proportionen; die Open-/Close-Transition läuft nur außerhalb von Reduced Motion.
 - `/changelog`: Release-Historie ist eine eigene Dokumentationsroute und rendert Release-Metadaten mit nativen `details`-/`summary`-Elementen. Der Footer bleibt bewusst kompakt und zeigt nur aktuelle Buildnummer, Datum und Link zur Historie.
-- `Search-Browse-Intro`: Ansicht und `Neu mischen` sind als kleine, aber klar lesbare Aktionsblöcke umgesetzt; Meta-Beschriftung und Steuerung bleiben sichtbar getrennt
+- `Search-Browse-Intro`: Ansicht und `Neue Fundstücke` sind als kleine, aber klar lesbare Aktionsblöcke umgesetzt; Meta-Beschriftung und Steuerung bleiben sichtbar getrennt
 - `Erklärungsseite`: native Disclosure-Muster für vertiefende Informationen statt Custom-Accordion
 
 ## Wann wir später doch eine externe Bibliothek prüfen

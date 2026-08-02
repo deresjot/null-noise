@@ -188,11 +188,12 @@ export function SiteNavigation() {
         aria-label={isMenuOpen ? "Menü schließen" : "Menü öffnen"}
         className="mobile-menu-toggle"
         data-open={isMenuOpen ? "true" : "false"}
+        tabIndex={0}
         type="button"
         onClick={() => (isMenuOpen ? closeMenuWithFocusReturn() : openMenu())}
       >
         <span className="mobile-menu-toggle-icon" aria-hidden="true">
-          {isMenuOpen ? <X size={18} strokeWidth={2.2} /> : <Menu size={18} strokeWidth={2.2} />}
+          {isMenuOpen ? <X size={18} strokeWidth={2.8} /> : <Menu size={18} strokeWidth={2.8} />}
         </span>
         <span>{isMenuOpen ? "Schließen" : "Menü"}</span>
       </button>
@@ -207,6 +208,7 @@ export function SiteNavigation() {
                   aria-current={active ? "page" : undefined}
                   data-active={active ? "true" : "false"}
                   href={item.href}
+                  tabIndex={0}
                 >
                   {item.label}
                 </a>
@@ -226,7 +228,12 @@ export function SiteNavigation() {
       >
         <div className="mobile-navigation-panel">
           <div className="mobile-navigation-head">
-            <Link aria-label="Null Noise – Startseite" className="mobile-navigation-brand" href="/">
+            <Link
+              aria-label="Null Noise – Startseite"
+              className="mobile-navigation-brand"
+              href="/"
+              tabIndex={0}
+            >
               <span className="mobile-navigation-brand-image-frame" aria-hidden="true">
                 <img
                   alt=""
@@ -246,8 +253,13 @@ export function SiteNavigation() {
                 />
               </span>
             </Link>
-            <button className="mobile-navigation-close" type="button" onClick={closeMenuWithFocusReturn}>
-              <X aria-hidden="true" size={18} strokeWidth={2.2} />
+            <button
+              className="mobile-navigation-close"
+              tabIndex={0}
+              type="button"
+              onClick={closeMenuWithFocusReturn}
+            >
+              <X aria-hidden="true" size={18} strokeWidth={2.8} />
               <span>Schließen</span>
             </button>
           </div>
@@ -263,6 +275,7 @@ export function SiteNavigation() {
                     aria-current={active ? "page" : undefined}
                     data-active={active ? "true" : "false"}
                     href={item.href}
+                    tabIndex={0}
                     onClick={closeMenu}
                   >
                     <span className="mobile-nav-link-copy">
@@ -273,7 +286,7 @@ export function SiteNavigation() {
                         </span>
                       ) : null}
                     </span>
-                    <ArrowRight aria-hidden="true" size={19} strokeWidth={2.1} />
+                    <ArrowRight aria-hidden="true" size={19} strokeWidth={2.8} />
                   </a>
                 </li>
               );

@@ -6,18 +6,18 @@ export function SiteHeader() {
   return (
     <header className="site-header mobile-app-shell">
       <nav aria-label="Sprunglinks" className="skip-links">
-        <a className="skip-link" href="#top-menu">
+        <a className="skip-link" href="#top-menu" tabIndex={0}>
           Zum Top-Menü springen
         </a>
-        <a className="skip-link" href="#main-content">
+        <a className="skip-link" href="#main-content" tabIndex={0}>
           Zum Inhalt springen
         </a>
-        <a className="skip-link" href="#site-footer">
+        <a className="skip-link" href="#site-footer" tabIndex={0}>
           Zum Footer springen
         </a>
       </nav>
       <div className="shell header-inner">
-        <a aria-label="Null Noise – Startseite" className="brand" href="/">
+        <a aria-label="Null Noise – Startseite" className="brand" href="/" tabIndex={0}>
           <span className="brand-image-frame" aria-hidden="true">
             <img
               alt=""

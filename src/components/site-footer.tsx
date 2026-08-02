@@ -11,19 +11,19 @@ export function SiteFooter() {
             <strong>{`Build ${currentBuild.version}`}</strong>
             {` · ${currentBuild.releasedAt}`}
           </p>
-          <Link className="footer-changelog-link" href="/changelog">
+          <Link className="footer-changelog-link" href="/changelog" tabIndex={0}>
             Release Notes / Changelog
           </Link>
           <nav className="mobile-experiment-footer-links" aria-label="Produktnavigation">
-            <Link href="/">Start</Link>
-            <Link href="/suche">Suche</Link>
-            <Link href="/erklaerung">Erklärung und Hilfe</Link>
+            <Link href="/" tabIndex={0}>Start</Link>
+            <Link href="/suche" tabIndex={0}>Suche</Link>
+            <Link href="/erklaerung" tabIndex={0}>Erklärung und Hilfe</Link>
           </nav>
           <nav className="mobile-experiment-footer-legal-links" aria-label="Rechtliches">
-            <Link href="/barrierefreiheit">Barrierefreiheit</Link>
-            <Link href="/kontakt">Kontakt</Link>
-            <Link href="/datenschutz">Datenschutz</Link>
-            <Link href="/impressum">Impressum</Link>
+            <Link href="/barrierefreiheit" tabIndex={0}>Barrierefreiheit</Link>
+            <Link href="/kontakt" tabIndex={0}>Kontakt</Link>
+            <Link href="/datenschutz" tabIndex={0}>Datenschutz</Link>
+            <Link href="/impressum" tabIndex={0}>Impressum</Link>
           </nav>
         </div>
       </div>
@@ -39,15 +39,15 @@ export function SiteFooter() {
           </div>
 
           <div className="footer-link-cloud" aria-label="Direkt erreichbar">
-            <Link href="/">Start</Link>
-            <Link href="/suche">Suche</Link>
-            <Link href="/erklaerung">Erklärung und Hilfe</Link>
+            <Link href="/" tabIndex={0}>Start</Link>
+            <Link href="/suche" tabIndex={0}>Suche</Link>
+            <Link href="/erklaerung" tabIndex={0}>Erklärung und Hilfe</Link>
           </div>
           <div className="footer-legal-links" aria-label="Rechtliches">
-            <Link href="/barrierefreiheit">Barrierefreiheit</Link>
-            <Link href="/kontakt">Kontakt</Link>
-            <Link href="/datenschutz">Datenschutz</Link>
-            <Link href="/impressum">Impressum</Link>
+            <Link href="/barrierefreiheit" tabIndex={0}>Barrierefreiheit</Link>
+            <Link href="/kontakt" tabIndex={0}>Kontakt</Link>
+            <Link href="/datenschutz" tabIndex={0}>Datenschutz</Link>
+            <Link href="/impressum" tabIndex={0}>Impressum</Link>
           </div>
 
           <div className="footer-meta-runway">
@@ -56,7 +56,7 @@ export function SiteFooter() {
               {` · ${currentBuild.releasedAt}`}
             </p>
             <p className="field-note">Private Beta. Reiz-Einschätzungen bleiben vorläufig.</p>
-            <Link className="footer-changelog-link" href="/changelog">
+            <Link className="footer-changelog-link" href="/changelog" tabIndex={0}>
               Release Notes / Changelog
             </Link>
           </div>

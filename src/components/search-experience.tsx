@@ -18,6 +18,7 @@ import { LoadingState } from "@/components/loading-state";
 import { ResultList } from "@/components/result-list";
 import { SearchForm } from "@/components/search-form";
 import { SearchLocalShelf } from "@/components/search-local-shelf";
+import { ToneFaceIcon } from "@/components/tone-face-icon";
 import { StatusPanel } from "@/components/status-panel";
 import type { MetadataSpikeBrowseSectionId } from "@/lib/metadata-spike";
 import type { SearchPageState } from "@/lib/search-page-state";
@@ -661,7 +662,7 @@ export function SearchExperience({ initialState }: { initialState: SearchPageSta
                       <div className="search-action-block">
                         <p className="search-actions-label">Auswahl</p>
                         <Link className="secondary-button-link search-browse-refresh" href={browseRefreshPath}>
-                          Neu mischen
+                          Neue Fundstücke
                         </Link>
                       </div>
                     ) : null}
@@ -695,7 +696,10 @@ export function SearchExperience({ initialState }: { initialState: SearchPageSta
                         >
                           <header className="search-results-group-header">
                             <p className="eyebrow">Orientierungskategorie</p>
-                            <p className="search-browse-cluster-visible-label">{section.title}</p>
+                            <p className="search-browse-cluster-visible-label">
+                              <ToneFaceIcon tone={section.id === "quiet" ? "quiet" : section.id === "balanced" ? "balanced" : "intense"} />
+                              {section.title}
+                            </p>
                             <h2 id={`browse-${section.id}-heading`}>{section.title}</h2>
                             <p className="field-note" id={`browse-${section.id}-description`}>
                               {section.description}

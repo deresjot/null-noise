@@ -2,6 +2,8 @@
 
 ## Aktueller Arbeitsstand
 
+- Release-Kandidat vom 2. August 2026: `0.8.6-beta-experience.20260802` bündelt das kontrollierbare Gradient-Orb-Intro, die Discovery-first-Startseite, eine konsistente lokale Kategorien-Iconografie, Ampelfarben, visuell präzisere Zustände sowie den kompakten externen Detail-Hero mit vollbreitem Desktopposter. Reduced Motion, Forced Colors, Tastaturfluss und native Semantik bleiben verbindlich. Lint, Production-Build, 72 Accessibility-/axe-Tests, WCAG-2.2-AA, 11 visuelle Tests und 2 Security-Header-Tests sind grün. Der finale E2E-Lauf bestätigte 88 Tests und 3 planmäßige Skips; der einzige unter Parallelbelastung sichtbare Vor-Hydration-Klickverlust am Intro-Control ist behoben und mit fünf Wiederholungen abgesichert. Unit-Tests bleiben ohne gesetzte separate `NULL_NOISE_TEST_DATABASE_URL` sicher vor Datenbankzugriff blockiert.
+- Discovery-first-Startseitenpass vom 31. Juli 2026: Die Startseite führt mit `Drei Richtungen. Schau, was neugierig macht.` und genau drei gleichwertigen TMDb-Fundstücken. Die vorhandenen Browse-Kategorien, Posterroute und Detailpfade werden wiederverwendet; bei fehlenden externen Daten bleiben drei Richtungslinks sichtbar. Suche folgt auf der Startseite dem endlichen Streifzug. Kein Feed, Ranking, Tracking oder Personalisierung; noch nicht committed, gepusht oder deployed.
 - Desktop-Suchlayout-Regression-Fix vom 12. Juli 2026: Die ab `64rem` gesetzten `display: contents`-Regeln hatten Hauptspalte und Browse-Container aus dem Grid entfernt. Dadurch streckte die hohe Filterspalte die gemeinsame erste Grid-Zeile und erzeugte die große Leerfläche oberhalb von `Noch kein Titel im Kopf?`; Ergebnisgruppen lagen anschließend in einer separaten Vollbreitenzeile. Suche und Browse nutzen jetzt wieder eine echte breite Hauptspalte neben der begrenzten Sidebar. Eine neue Playwright-Matrix prüft vier Suchzustände in sieben Viewports geometrisch; acht versionierte Full-Page-Baselines decken Browse/Suchergebnisse sowie Listen-/Kartenansichten ab.
 - Accessibility-/Poster-Performance-Pass vom 10. Juli 2026: Suchvorschläge nutzen nur noch eine Status-Live-Region; der beschriebene Kontakt-Zeichenzähler meldet nicht mehr jeden Tastendruck live. Kartenposter fordern weiterhin ausschließlich `w342`, Detailposter `w780` an. `original` und verschachtelte Posterpfade sind im Proxy nicht mehr zulässig. Die externe Detailseite rendert statt zweier responsiv versteckter Instanzen genau ein priorisiertes `w780`-Poster und positioniert es mobil nach der `h1`, desktop weiter in der rechten Spalte. Lint, Build, gezielte Unit-/Playwright-Tests, Axe, A11y, WCAG-2.2-AA-Technikmatrix und `git diff --check` bestanden; der vollständige Unit-Lauf blieb ohne `NULL_NOISE_TEST_DATABASE_URL` sicher blockiert.
 - Visueller Regression-Fix vom 5. Juli 2026: Grid-Card-Footer sind wieder einspaltige, vollbreite Bereiche; lokale Statuszeilen kollabieren nicht mehr. Desktop-Suchergebnisse nutzen unterhalb von Übersicht und Filterspalte die gesamte begrenzte Inhaltsbreite mit responsivem Karten-Grid. Der Startseiten-Claim steht bei 1440 CSS-Pixeln in vier Zeilen ohne künstliche Seitenhöhe. Direct Starts sind je eine zusammenhängende Linkfläche ohne separaten Pfeil. Das schwarze `N` auf lokalen Screenshots wurde als Next.js-Dev-Tools-Launcher identifiziert und ist kein App-/Production-Element. Vollständige Testmatrix bestanden.
@@ -9,7 +11,7 @@
 - Lokaler Deploy-Sicherheits-Pass vom 5. Juli 2026: `src/app/mobile-system.css` gehört zusammen mit dem Import in `src/app/layout.tsx` zum vorgesehenen Diff-Scope. Der Read-only-Titelimport prüft deaktivierte Writes vor Salt, Hashing, Rate Limiting und Datenbankzugriff. Der Service Worker löscht bei Aktivierung nur eigene veraltete `null-noise-*`-Caches. Das Impressum bleibt für die geschlossene Beta bewusst unverändert und ist in diesem Pass kein technischer Blocker.
 - aktiver lokaler Arbeitsbranch: `null-noise`
 - aktueller Stand: Mobile-Calm-Feedback-Pass vom 21. Juni 2026 baut auf dem Mobile-Brand-/Changelog-Dokumentationspass vom 20. Juni 2026, dem Motion-/Forced-Colors-/UI-Flow-Pass vom 20. Juni 2026, dem Forced-Colors-Display-Pass vom 19. Juni 2026 und dem Production-Launch vom 14. Juni 2026 auf; Commit- und Deployment-Details stehen in der jeweiligen Übergabe.
-- Release-Metadaten stehen auf `0.8.5-search-layout-regression.20260712`
+- Release-Metadaten stehen auf `0.8.6-beta-experience.20260802`
 - Preview-Gate ist clientseitig vorgeschaltet: Teaser-Landingpage mit Logo, Projektbeschreibung und Passwortfeld; Phrase ist `preview`, keine Security-Grenze
 - kanonische öffentliche Adresse: https://www.null-noise.de
 - Apex-Domain: https://null-noise.de leitet in Vercel per `308 Permanent Redirect` auf https://www.null-noise.de weiter
@@ -164,6 +166,8 @@
 
 ## Discovery-Stand
 
+- Die Startseite zeigt einen endlichen Streifzug aus genau drei gleichwertigen Fundstücken, je eines pro sichtbarer Orientierungskategorie.
+- Fundstücke sind normale Listenartikel und Links, kein Carousel, personalisierter Feed oder Gamification-System.
 - Discovery fragt situativ: passt das gerade, wäre das zu viel, oder lieber vormerken?
 - Browse-Cluster nutzen die gleichwertigen Kategorien `Eher ruhig`, `Eher wechselhaft` und `Eher intensiv`.
 - Die Cluster sind keine Skala, kein Ranking und keine Ampel: Überschrift, sichtbares Label, Beschreibung, Containergrenze, Abstand und Listenstruktur tragen die Bedeutung auch ohne Farbe.
@@ -231,9 +235,9 @@
 - Darstellungsmodi sind lokal zu prüfen: Light, Dark-Präferenz ohne Themewechsel, Reduced Motion, Reduced Motion plus Dark-Präferenz, Forced Colors, Forced Colors plus Reduced Motion, 320/390/430x932 CSS-Pixel und 200/400 Prozent Zoom
 - Edge/macOS-Forced-Colors-Smoke fuer die aktuelle Korrektur: `/suche?view=grid&tone=calm&avoidPeaks=true` bei `430 x 932` CSS-Pixeln; Windows High Contrast in Microsoft Edge unter Windows bleibt separat manuell zu bestaetigen.
 - Opacity-Fades wurden aus Entry-Animationen entfernt, damit A11y-Kontrast-Scans nicht während halbtransparenter Texte fehlschlagen
-- Startseite erklärt jetzt direkt unter `Was passt gerade?`, wofür Null Noise gedacht ist
+- Startseite führt mit `Drei Richtungen. Schau, was neugierig macht.` und erklärt den Zweck nach dem Streifzug knapp weiter
 - Header-Branding zeigt auf Mobile und Desktop Icon-Logo plus Wortmarke; die Brand sitzt links innerhalb der Contentbreite und nicht end-to-end am Viewport. Auf Mobile haben Icon-Frame und Wortmarken-Frame dieselbe Höhe.
-- Suche bleibt primärer Einstieg; Richtungskacheln bleiben sekundär
+- Auf der Startseite ist der endliche Streifzug primär; die Suche bleibt direkt danach erreichbar
 - Richtungskacheln, Ergebnisgruppen, Filter und Karten nutzen konsistent `Eher ruhig`, `Eher wechselhaft`, `Eher intensiv`
 - mobile Ergebnislisten, Merken-/Gesehen-Bereich und Toggle wurden gegen abgeschnittene Texte und horizontale Überläufe stabilisiert
 - Ergebnis-Karten zeigen `Details` mobil als eigene volle CTA-Zeile; `Merken` und `Gesehen?` bleiben darunter als ruhige Touch-Ziele mit mehr Abstand
@@ -242,8 +246,8 @@
 - mobile Header-Blur reduziert / desktop-begrenzt
 - Card-/Panel-Schatten mobil reduziert
 - leere Posterflächen mobil kompakt
-- Home-Einstiege mobil priorisiert: Suche primär, Richtungsstart sekundär
-- Mobile Bedienlogik wurde app-näher gemacht: Suche bleibt primär, Richtungs-/Situationsstart bleibt sekundär, ohne neue Produktlogik oder neue Navigation als Feature
+- Home-Einstiege mobil priorisiert: drei Fundstücke zuerst, direkte Titelsuche danach
+- Mobile Discovery bleibt eine normale vertikale Lesereihenfolge ohne Carousel, versteckte Gesten oder zweite Paralleloberfläche
 - Footer mobil beruhigt
 - Preview ist bereit, echter iPhone-Check bleibt wegen Vercel-SSO/Deployment-Protection manuell mit Login nötig
 

@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 interface ResultPosterProps {
+  decorative?: boolean;
   priority?: boolean;
   sizes?: string;
   title: string;
@@ -9,6 +10,7 @@ interface ResultPosterProps {
 }
 
 export function ResultPoster({
+  decorative = false,
   title,
   src,
   priority = false,
@@ -25,7 +27,7 @@ export function ResultPoster({
     <div className={`poster-thumb-frame poster-thumb-frame-${variant}`}>
       {src ? (
         <Image
-          alt={`Poster zu ${title}`}
+          alt={decorative ? "" : `Poster zu ${title}`}
           className={`poster-thumb-image poster-thumb-image-${variant}`}
           fill
           priority={priority}
@@ -35,9 +37,10 @@ export function ResultPoster({
         />
       ) : (
         <div
-          aria-label={`Kein Poster verfügbar für ${title}`}
+          aria-hidden={decorative ? "true" : undefined}
+          aria-label={decorative ? undefined : `Kein Poster verfügbar für ${title}`}
           className={`poster-thumb-fallback poster-thumb-fallback-${variant}`}
-          role="img"
+          role={decorative ? undefined : "img"}
         >
           <span aria-hidden="true" className="poster-thumb-fallback-mark">
             NN

@@ -76,17 +76,28 @@ function restoreReloadFocusAfterHydration() {
     });
 
   let attempt = 0;
-  let restoredCount = 0;
+  let cancelled = false;
+  const cancelPendingRestore = () => {
+    cancelled = true;
+  };
+
+  document.addEventListener("focusin", cancelPendingRestore, { once: true });
+
   const restore = () => {
+    if (cancelled) {
+      return;
+    }
+
     const target = getFocusables().find((element) => getSignature(element) === saved.signature);
 
     if (target instanceof HTMLElement) {
+      document.removeEventListener("focusin", cancelPendingRestore);
       target.focus({ preventScroll: false });
-      restoredCount += 1;
+      return;
     }
 
     attempt += 1;
-    if (attempt < 80 && restoredCount < 20) {
+    if (attempt < 80) {
       window.setTimeout(restore, 100);
     }
   };

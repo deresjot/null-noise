@@ -96,6 +96,20 @@ Folgen daraus:
 - keine aggressive Bewegung
 - auf Karten darf die erste Einschätzung eher als ruhige Vorschau funktionieren als als zweite Erklärungsebene
 
+## Spielerische Discovery ohne Gamification
+
+Neugier und Freude an der Nutzung sind ausdrücklich erlaubt. Sie entstehen durch starke
+Gestaltung, eine endliche Auswahl und verständliche Reaktionen, nicht durch Bindungsmechaniken.
+
+Darum darf die Startseite drei gleichwertige Fundstücke aus den sichtbaren Kategorien zeigen.
+Dabei gilt:
+
+- keine Streaks, Punkte, Belohnungsschleifen oder künstliche Verknappung
+- kein endloser oder personalisierter Feed
+- keine versteckten oder überraschenden Karteninteraktionen
+- Fundstücke bleiben normale Links und Artikel mit sichtbarer Kategorie
+- Suche bleibt direkt erreichbar, folgt auf der Startseite aber der offenen Discovery
+
 ## Referenzprojekt statt Feature-Sammlung
 
 `null-noise` soll ein belastbares Referenzprojekt für digitale Barrierefreiheit, nachvollziehbare Entscheidungen und testbare Web-UX sein. Neue Features werden deshalb nicht an Neuheit gemessen, sondern an diesen Fragen:

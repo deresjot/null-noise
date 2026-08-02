@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent, type RefObject } from "react";
-import { CircleAlert, CircleCheck, CircleX, Info, Leaf, Shuffle, Waves } from "lucide-react";
+import { CircleAlert, CircleCheck, CircleX, Info } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { RatingFormGuard } from "./rating-form-guard";
+import { ToneFaceIcon } from "./tone-face-icon";
 
 type FeedbackStatus = {
   title: string;
@@ -24,19 +25,19 @@ const feedbackChoices = [
     label: "Eher ruhig",
     value: "calmer",
     text: "Für mich fühlte es sich leichter an.",
-    Icon: Leaf,
+    tone: "quiet",
   },
   {
     label: "Eher wechselhaft",
     value: "match",
     text: "Die Einordnung passt ungefähr.",
-    Icon: Shuffle,
+    tone: "balanced",
   },
   {
     label: "Eher intensiv",
     value: "stronger",
     text: "Für mich war es dichter oder lauter.",
-    Icon: Waves,
+    tone: "intense",
   },
 ] as const;
 
@@ -177,8 +178,6 @@ export function ReadingFeedbackForm({
 
         <div className="reading-feedback-actions" role="group" aria-label={intro}>
           {feedbackChoices.map((choice) => {
-            const ChoiceIcon = choice.Icon;
-
             return (
             <button
               key={choice.value}
@@ -192,7 +191,7 @@ export function ReadingFeedbackForm({
               onClick={() => setSelectedChoice(choice.value)}
             >
               <span className="reading-feedback-choice-icon" aria-hidden="true">
-                <ChoiceIcon size={22} strokeWidth={2.25} />
+                <ToneFaceIcon tone={choice.tone} />
               </span>
               <span className="reading-feedback-choice-copy">
                 <span className="reading-feedback-choice-label">{choice.label}</span>
@@ -230,7 +229,7 @@ function ReadingFeedbackStatus({
     >
       <div className="status-panel-head">
         <span className="status-panel-icon" aria-hidden="true">
-          <StatusIcon size={22} strokeWidth={2.3} />
+          <StatusIcon size={22} strokeWidth={2.8} />
         </span>
         <div className="status-panel-copy">
           <p className="status-panel-kicker">

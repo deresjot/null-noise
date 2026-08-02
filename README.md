@@ -6,7 +6,7 @@ Der kurze Einstieg für aktuelle Arbeit steht in [docs/00-current/llm-context.md
 
 ## 1. Product Framing
 
-`null-noise` hilft Menschen bei der Frage, ob ein Film oder eine Serie für ihre persönliche sensorische Belastbarkeit passend ist. Das MVP verspricht keine objektive Messung, sondern strukturierte, nachvollziehbare Einschätzungen entlang eines kleinen Audio-Modells mit drei Achsen: Grundlautstärke, plötzliche Spitzen und Belastungsdichte.
+`null-noise` hilft Menschen bei der Frage, ob ein Film oder eine Serie für ihre persönliche sensorische Belastbarkeit passend ist. Die Beta verspricht keine objektive Messung, sondern strukturierte, nachvollziehbare Einschätzungen entlang eines kleinen Audio-Modells mit drei Achsen: Grundlautstärke, plötzliche Spitzen und Belastungsdichte. Der Einstieg verbindet eine endliche Auswahl aus drei Richtungen mit einer weiterhin direkt erreichbaren Titelsuche.
 
 Die Produktthese ist doppelt:
 
@@ -27,7 +27,7 @@ Das Produkt positioniert sich bewusst zwischen klassischer Titelsuche und Access
 
 Primare Seitenstruktur im MVP:
 
-- `/`: Einführung, direkte Suche, Kurzerklärung, Privacy- und Accessibility-Versprechen
+- `/`: kontrollierbares Beta-Intro, drei endliche Discovery-Fundstücke, direkte Suche sowie Privacy- und Accessibility-Versprechen
 - `/suche`: Ergebnisliste mit Filtern für ruhige oder intensivere Titel
 - `/titel/[slug]`: Detailseite mit Reizprofil, Erläuterung, Confidence und Transparenzdaten
 - `/erklaerung`: Bedeutung der Skalen, Grenzen des Modells, Umgang mit Unsicherheit

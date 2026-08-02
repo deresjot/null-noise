@@ -129,7 +129,7 @@ test("direct axe-core scan stays clean on home", async ({ page }) => {
   await expectNoDirectAxeViolations(page, "/", "home", async () => {
     await expect(
       page.getByRole("heading", {
-        name: "Du musst dich nicht auch noch in der Freizeit anschreien lassen.",
+        name: "Drei Richtungen. Schau, was neugierig macht.",
       }),
     ).toBeVisible();
   });

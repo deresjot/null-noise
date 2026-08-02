@@ -4,6 +4,7 @@ const port = Number(process.env.PLAYWRIGHT_PORT ?? "3000");
 const serverCommand =
   process.env.PLAYWRIGHT_SERVER_COMMAND ??
   `npm run dev -- --hostname 127.0.0.1 --port ${port}`;
+const useWebKit = process.env.PLAYWRIGHT_BROWSER === "webkit";
 
 export default defineConfig({
   testDir: "./tests",
@@ -35,8 +36,8 @@ export default defineConfig({
   },
   projects: [
     {
-      name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      name: useWebKit ? "webkit" : "chromium",
+      use: { ...devices[useWebKit ? "Desktop Safari" : "Desktop Chrome"] },
     },
   ],
 });
