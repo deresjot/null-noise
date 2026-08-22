@@ -882,7 +882,7 @@ test("footer exposes compact build metadata and links to the changelog", async (
 
   const buildLine = page.locator("footer .build-line");
 
-  await expect(buildLine).toHaveText(/Build 0\.8\.6-beta-experience\.20260802 · 2026-08-02/);
+  await expect(buildLine).toHaveText(/Build 0\.8\.6-domain-cleanup\.20260822 · 2026-08-22/);
   await expect(buildLine).not.toContainText("Motion, Forced Colors and UI flow pass");
   await expect(page.locator("footer .release-note")).toHaveCount(0);
   await expect(page.locator("footer").getByRole("link", { name: "Release Notes / Changelog" })).toHaveAttribute(
@@ -898,8 +898,9 @@ test("changelog page exposes the full release history", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Release Notes / Changelog" })).toBeVisible();
   const releaseNotes = page.locator(".changelog-page .release-note");
   expect(await releaseNotes.count()).toBeGreaterThan(20);
-  await expect(releaseNotes.first()).toContainText("0.8.6-beta-experience.20260802");
-  await expect(releaseNotes.first()).toContainText("Accessible beta experience refresh");
+  await expect(releaseNotes.first()).toContainText("0.8.6-domain-cleanup.20260822");
+  await expect(releaseNotes.first()).toContainText("Domain and contact cleanup");
+  await expect(page.locator(".changelog-page")).toContainText("Accessible beta experience refresh");
   await expect(page.locator(".changelog-page")).toContainText("Mobile calm feedback and readability pass");
   await expect(page.locator(".changelog-page")).toContainText("Mobile brand and changelog documentation pass");
   await expect(page.locator(".changelog-page")).toContainText("Mobile title detail layout");

@@ -1,8 +1,17 @@
 # Testing und Release für null-noise
 
-Stand: 10. Juli 2026
+Stand: 22. August 2026
 
 Diese Datei beschreibt, wie `null-noise` Accessibility testet und wo die Grenzen der Automatisierung liegen.
+
+## Live-Abschluss 22. August 2026
+
+- Commit `638d4e3` entfernt die frühere Custom-Domain und die nicht mehr existierende öffentliche Projekt-Mailbox aus Code, Tests, ENV-Beispielen und kanonischer Dokumentation.
+- `https://null-noise.vercel.app` ist die einzige Vercel-Domain, kanonische Production-Adresse sowie Ziel von Canonical- und OpenGraph-Metadaten.
+- `NEXT_PUBLIC_SITE_URL` und die serverseitige Kontaktziel-Konfiguration wurden in Vercel aktualisiert; Kontakt, Impressum, Datenschutz und Barrierefreiheit enthalten keine öffentlichen `mailto:`-Links.
+- Die Git-Verknüpfung wurde vom früheren Repository-Namen auf `deresjot/null-noise` korrigiert; Preview und anschließender Production-Build waren `READY`.
+- Live geprüft wurden Startseite, Kontakt, Impressum, Datenschutz und Barrierefreiheit: korrekte route-spezifische Canonicals, keine veraltete Domain und keine frühere Projekt-Mailbox im HTML.
+- Lokal bestanden `npm run lint`, `npm run build`, die sechs direkt betroffenen Unit-Tests, zwei gezielte Release-/Changelog-Playwright-Tests sowie `git diff --check`; Datenbankmigrationen und Production-Writes waren nicht Teil dieses Abschlusses.
 
 ## Desktop-Suchlayout-Regression-Fix 12. Juli 2026
 

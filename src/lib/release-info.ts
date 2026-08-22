@@ -4,13 +4,26 @@ const previousVersion = "0.8.4";
 
 export const currentBuild = {
   version: packageJson.version,
-  label: "Accessible beta experience refresh",
-  releasedAt: "2026-08-02",
+  label: "Domain and contact cleanup",
+  releasedAt: "2026-08-22",
 };
 
 export const releaseNotes = [
   {
     version: packageJson.version,
+    label: "Domain and contact cleanup",
+    releasedAt: "2026-08-22",
+    entries: [
+      "The canonical public address is now the stable null-noise.vercel.app production URL without a separate custom-domain dependency.",
+      "Visible project-mailbox links were removed from contact, imprint, privacy and accessibility pages; public contact now stays on the data-minimal form path.",
+      "Canonical and Open Graph metadata, runtime fallbacks, environment examples, tests and current documentation now share the same Vercel address.",
+      "The server-side contact recipient and sender remain environment-only technical configuration and are not exposed as public contact links.",
+      "The Vercel project was reconnected to the renamed deresjot/null-noise repository, and the cleanup commit was promoted to Production.",
+      "Live checks confirmed the public URL and the affected legal, contact and accessibility routes without stale domain or mailbox references.",
+    ],
+  },
+  {
+    version: "0.8.6-beta-experience.20260802",
     label: "Accessible beta experience refresh",
     releasedAt: "2026-08-02",
     entries: [
