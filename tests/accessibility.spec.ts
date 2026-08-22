@@ -2165,11 +2165,11 @@ test("accessibility page is reachable and explains the current testing scope", a
     "href",
     "/kontakt",
   );
-  await expect(contactPanel).toContainText("hallo@null-noise.de");
-  await expect(contactPanel.getByRole("link", { name: "hallo@null-noise.de" })).toHaveAttribute(
+  await expect(contactPanel.getByRole("link", { name: "Kontaktformular" })).toHaveAttribute(
     "href",
-    "mailto:hallo@null-noise.de",
+    "/kontakt",
   );
+  await expect(contactPanel.locator('a[href^="mailto:"]')).toHaveCount(0);
 });
 
 test("core routes keep central mobile surfaces inside 320, 390 and 430 CSS pixels", async ({

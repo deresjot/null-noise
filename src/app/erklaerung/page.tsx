@@ -24,7 +24,7 @@ export default function ExplanationPage() {
           Filme und Serien grob nach ihrer vermuteten Reizwirkung einzuordnen.
         </p>
         <p className="field-note">
-          Kanonische Live-Adresse ist <a href={publicSiteUrl}>www.null-noise.de</a>. Die Vorschau
+          Kanonische Live-Adresse ist <a href={publicSiteUrl}>null-noise.vercel.app</a>. Die Vorschau
           ist aktuell noch mit einer einfachen privaten Vorschaltseite versehen.
         </p>
       </div>
@@ -70,9 +70,9 @@ export default function ExplanationPage() {
       <section className="panel section-stack" aria-labelledby="live-heading">
         <h2 id="live-heading">Was ist der aktuelle Stand?</h2>
         <p>
-          Die öffentliche Adresse ist <a href={publicSiteUrl}>www.null-noise.de</a>. Die Apex-Domain
-          null-noise.de leitet dauerhaft auf diese www-Adresse weiter. Die Vercel-Projektadresse
-          bleibt nur ein technischer Hintergrundpfad und ist nicht die öffentliche kanonische Adresse.
+          Die öffentliche und kanonische Adresse ist{" "}
+          <a href={publicSiteUrl}>null-noise.vercel.app</a>. Eine separate Custom-Domain wird
+          aktuell nicht verwendet.
         </p>
         <p>
           Die App läuft auf Vercel mit Prisma Postgres für den lokalen Titelstand und stille

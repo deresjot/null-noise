@@ -23,11 +23,10 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
   - Statusmeldungen nutzen ein gemeinsames System mit Icon, Statuskopf, Rahmenlogik und Text; Farbe bleibt unterstützend, nicht allein bedeutungstragend.
   - Der schnelle Rückkanal zur eigenen Wahrnehmung nutzt geführte Auswahlkarten mit sichtbarem Auswahlzustand und Inline-Status. Das längere Detailformular bleibt sekundär.
   - Aktionsicons nutzen eine einheitliche Lucide-basierte Sprache, inklusive `Zurücknehmen` in der lokalen Ablage.
-- kanonische öffentliche Adresse: https://www.null-noise.de
-- Apex-Domain: https://null-noise.de leitet in Vercel per `308 Permanent Redirect` auf https://www.null-noise.de weiter
-- technische Vercel-Projektadresse: https://null-noise.vercel.app bleibt Production-verbunden, ist aber nicht kanonisch
-- DNS bei hosting.de: `null-noise.de A 216.198.79.1`, `www.null-noise.de CNAME 8bb5d957d3dbq7.vercel-dns-017.com`
-- Production-Deployment ist `READY`: `https://null-noise-3evwpfel5-deresjots-projects.vercel.app`, aliased auf `https://www.null-noise.de`
+- kanonische öffentliche Adresse: https://null-noise.vercel.app
+- eine separate Custom-Domain wird aktuell nicht verwendet
+- `https://null-noise.vercel.app` ist mit Production verbunden und die kanonische Adresse
+- Production-Deployment ist `READY` und über `https://null-noise.vercel.app` erreichbar
 - Preview-Deploys werden nach Push per Vercel CLI erzeugt; konkrete URLs stehen in der jeweiligen Übergabe und im Vercel-Inspect
 - Hinweis: Preview ist `READY`, aber Vercel Deployment Protection/SSO ist aktiv; ohne Login kommt `401`
 - v0/grüne UI liegt im Archiv-Worktree und wird nicht bearbeitet
@@ -75,7 +74,7 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
   - `9701747 fix: skip catalog bootstrap when seeds exist`: vorhandener Seed-Katalog mit Aggregaten wird beim Cold Start erkannt, statt erneut vollständig upserted zu werden.
   - `b128190 chore: log catalog bootstrap failures`: nicht-sensitives Runtime-Logging fuer Katalog-Bootstrap-Fehlertypen ergänzt; keine ENV- oder Secret-Werte werden geloggt.
   - `cc5ee52 fix: generate prisma client during build`: `npm run build` führt vor `next build` immer `prisma generate` aus, damit Vercel keinen veralteten SQLite-Prisma-Client aus dem Cache nutzt.
-  - Live-Deploy: `https://null-noise-3evwpfel5-deresjots-projects.vercel.app` ist `READY` und auf `https://www.null-noise.de` aliased; `https://null-noise.de/` redirectet per `308` auf die www-Domain.
+  - Live-Deploy: `https://null-noise-3evwpfel5-deresjots-projects.vercel.app` ist `READY`; die stabile öffentliche Adresse ist `https://null-noise.vercel.app`.
   - Live-Smoke: `/`, `/suche`, `/suche?q=Arrival`, `/titel/mondfenster`, `/kontakt`, `/datenschutz`, `/impressum`, `/api/titles`, `/api/titles/mondfenster`, `/api/search/suggestions?q=Arrival` und `/api/search/page-state?q=Arrival` liefern erwartete 200er-Signale.
   - Schreib-Smoke live: langsamer Rating-Submit auf `/titel/mondfenster` endete mit `rating=success`; direkter Folgesubmit endete fachlich mit `rating=too-fast`, nicht mit `rating=error`.
   - Kontakt-Smoke: `/kontakt` und Formular sichtbar; keine echte Mail gesendet.
@@ -130,16 +129,16 @@ Diese Datei ist der kurze Arbeitsstand. Die gesamte Doku ist auf 10 Markdown-Dat
   - Kontakt-Submit zeigt `Nachricht wird gesendet`, behält Duplicate-Submit-Schutz und nutzt keine künstliche Verzögerung
   - Route-Loading fuer App-Shell, Titel-Detail und Metadaten-Spike ist vorhanden; der alte Spike-Text `Externe Metadaten werden serverseitig geprüft` ist nicht mehr die sichtbare Hauptüberschrift
   - Motion bleibt dekorativ und wird unter `prefers-reduced-motion` deaktiviert; Status-Text bleibt sichtbar
-  - Impressum verweist auf `www.null-noise.de` und `hallo@null-noise.de`; die fehlende ladungsfähige Anschrift bleibt als rechtlich zu prüfende Grenze dokumentiert
+  - Impressum verweist auf `null-noise.vercel.app` und das Kontaktformular; die fehlende ladungsfähige Anschrift bleibt als rechtlich zu prüfende Grenze dokumentiert
   - damalige Release Notes: `0.8.4-quiet-loading.20260613`; aktueller Abschluss ist `0.8.4-preview-gate-mobile-polish.20260613`
 - Wochenend-Abschluss / SMTP-Kontakt 7. Juni 2026:
-  - Domain-Umstellung am 13. Juni 2026: sichtbare allgemeine Kontaktadresse ist `hallo@null-noise.de`; `NEXT_PUBLIC_SITE_URL` zeigt auf `https://www.null-noise.de`; `null-noise.vercel.app` ist nur noch technische Vercel-Adresse
+  - Domain-Bereinigung am 22. August 2026: `NEXT_PUBLIC_SITE_URL` zeigt auf `https://null-noise.vercel.app`; eine separate Custom-Domain und eine sichtbare allgemeine E-Mail-Adresse werden nicht mehr verwendet
   - Kontaktanfragen werden nicht mehr in `/admin/kontakt`, Datei, Datenbank, temporärem Vercel-Speicher oder Blob abgelegt
   - `POST /api/contact` sendet serverseitig per Nodemailer/SMTP; `CONTACT_TO_EMAIL` kommt nur aus der Server-Env
   - technische Absenderadresse ist `mail@sebastianjansen.com`; Formular-E-Mail wird nur als Reply-To genutzt
   - Pflichtnachricht, optionale E-Mail, Mindestlänge 10 Zeichen, Zeichenzähler, Honeypot, Body-Limit und leichtes Rate-Limit bleiben aktiv
   - Datenschutz, `.env.example`, LLM-Doku, Release Notes und Kontakt-/A11y-Tests sind auf SMTP synchronisiert
-  - benoetigte Env Vars: `NEXT_PUBLIC_SITE_URL=https://www.null-noise.de`, `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=hallo@null-noise.de`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`, `NULL_NOISE_RATE_LIMIT_SALT=<set-secret>`, `TMDB_READ_ACCESS_TOKEN=<set-secret>`
+  - benoetigte Env Vars: `NEXT_PUBLIC_SITE_URL=https://null-noise.vercel.app`, `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=mail@sebastianjansen.com`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`, `NULL_NOISE_RATE_LIMIT_SALT=<set-secret>`, `TMDB_READ_ACCESS_TOKEN=<set-secret>`
   - Live-Smoke: `/`, `/kontakt`, `/datenschutz`, `/impressum` erreichbar; Kontaktformular zeigte Erfolgsmeldung; mobile Breiten 320/390/430 ohne horizontalen Overflow
   - damaliger Release-Notes-Stand: `0.8.4-production-domain.20260613`
   - offen fuer naechste Woche: bestehende Hydration-/LCP-Warnungen separat bewerten und entscheiden, ob `tools/` ins Projekt gehoert oder lokal bleibt

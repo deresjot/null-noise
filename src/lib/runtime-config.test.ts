@@ -44,7 +44,7 @@ describe("runtime config", () => {
     process.env.VERCEL_PROJECT_PRODUCTION_URL = "null-noise.vercel.app";
     delete process.env.VERCEL_URL;
 
-    expect(getSiteUrl()).toBe("https://www.null-noise.de");
+    expect(getSiteUrl()).toBe("https://null-noise.vercel.app");
   });
 
   it("keeps writes enabled locally by default but disables them in production", () => {

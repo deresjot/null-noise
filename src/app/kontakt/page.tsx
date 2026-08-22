@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { ContactForm } from "@/components/contact-form";
-import { publicContactEmail, siteName } from "@/lib/constants";
+import { siteName } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: `Kontakt | ${siteName}`,
@@ -25,9 +25,7 @@ export default function KontaktPage() {
           Schreib eine kurze Nachricht, wenn dir etwas auffällt oder du eine Rückmeldung zu
           null-noise geben möchtest.
         </p>
-        <p className="field-note">
-          Sichtbare Kontaktadresse: <a href={`mailto:${publicContactEmail}`}>{publicContactEmail}</a>.
-        </p>
+        <p className="field-note">Nutze dafür bitte das Kontaktformular auf dieser Seite.</p>
       </div>
 
       <section

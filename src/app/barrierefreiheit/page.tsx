@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { publicContactEmail, publicSiteUrl, siteName } from "@/lib/constants";
+import { publicSiteUrl, siteName } from "@/lib/constants";
 import {
   wcag22AaTechnicalMatrix,
   wcagTechnicalStatusLabels,
@@ -62,7 +62,7 @@ export default function BarrierefreiheitPage() {
         </p>
         <p className="field-note">
           Dieser Stand bezieht sich auf die kanonische Live-Adresse{" "}
-          <a href={publicSiteUrl}>www.null-noise.de</a>.
+          <a href={publicSiteUrl}>null-noise.vercel.app</a>.
         </p>
       </div>
 
@@ -266,10 +266,6 @@ export default function BarrierefreiheitPage() {
           Hinweise auf Barrieren oder unklare Bedienwege sind willkommen. Nutze dafür das
           {" "}
           <a href="/kontakt">Kontaktformular</a>
-          {" "}
-          oder schreibe direkt an
-          {" "}
-          <a href={`mailto:${publicContactEmail}`}>{publicContactEmail}</a>
           .
         </p>
       </section>

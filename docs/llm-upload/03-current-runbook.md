@@ -105,9 +105,9 @@ Vor Commit/Deploy:
 - keine `.env*`, API-Keys, Tokens, lokalen Datenbankdateien, Screenshots, ZIPs oder Recovery-Dateien committen
 - Secret-Werte nie in Doku, Logs, Testausgaben oder PR-Beschreibungen schreiben
 - Vercel-ENV manuell prüfen: Secrets nur serverseitig, keine unnötigen `NEXT_PUBLIC_` Variablen
-- Domain-Umstellung vor Deploy prüfen: `www.null-noise.de` ist kanonische Production-Domain, `null-noise.de` leitet per `308 Permanent Redirect` auf `https://www.null-noise.de` weiter, DNS bei hosting.de nutzt `null-noise.de A 216.198.79.1` und `www.null-noise.de CNAME 8bb5d957d3dbq7.vercel-dns-017.com`
+- Domain-Konfiguration vor Deploy prüfen: `null-noise.vercel.app` ist die kanonische Production-Adresse; es besteht keine Abhängigkeit von einer separaten Custom-Domain
 - `NULL_NOISE_RATE_LIMIT_SALT` in Production setzen, bevor öffentliche Writes/Feedback aktiv sind
-- Vercel-Env in Production prüfen: `NEXT_PUBLIC_SITE_URL=https://www.null-noise.de`, `CONTACT_TO_EMAIL=hallo@null-noise.de`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`, `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `NULL_NOISE_RATE_LIMIT_SALT=<set-secret>`, `TMDB_READ_ACCESS_TOKEN=<set-secret>`
+- Vercel-Env in Production prüfen: `NEXT_PUBLIC_SITE_URL=https://null-noise.vercel.app`, `CONTACT_TO_EMAIL=mail@sebastianjansen.com`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`, `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `NULL_NOISE_RATE_LIMIT_SALT=<set-secret>`, `TMDB_READ_ACCESS_TOKEN=<set-secret>`
 - Vercel Environment Variables gelten nicht rückwirkend für alte Deployments; nach ENV-Anpassungen oder Codeänderungen ist ein neuer Production-Deploy nötig
 - Kontaktanfragen werden per SMTP verschickt; keine Adminroute, keine Datenbank, keine temporäre Datei und kein Blob-Speicher fuer Kontaktanfragen verwenden
 - `TMDB_READ_ACCESS_TOKEN` serverseitig halten; keine externen API-Keys im Client-Bundle
@@ -120,9 +120,8 @@ Vor Commit/Deploy:
 Nach Deploy:
 
 - echte Production-Header/CSP prüfen
-- `https://www.null-noise.de` aufrufen und Metadata/OpenGraph über die neue kanonische URL prüfen
-- `https://null-noise.de` muss per 308 auf `https://www.null-noise.de` weiterleiten
-- `https://null-noise.vercel.app` darf höchstens als technische, nicht-kanonische Vercel-Projektadresse laden
+- `https://null-noise.vercel.app` aufrufen und Metadata/OpenGraph über die neue kanonische URL prüfen
+- Canonical- und OpenGraph-URLs müssen direkt auf `https://null-noise.vercel.app` zeigen
 - API-Cache-Header für JSON-Routen prüfen
 - schreibende Live-Routen nur mit erwarteten Origin-/Rate-Limit-/Cookie-Regeln testen
 - Vercel Preview und Production getrennt prüfen

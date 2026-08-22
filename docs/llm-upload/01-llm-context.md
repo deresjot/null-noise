@@ -13,11 +13,10 @@
 - aktueller Stand: Mobile-Calm-Feedback-Pass vom 21. Juni 2026 baut auf dem Mobile-Brand-/Changelog-Dokumentationspass vom 20. Juni 2026, dem Motion-/Forced-Colors-/UI-Flow-Pass vom 20. Juni 2026, dem Forced-Colors-Display-Pass vom 19. Juni 2026 und dem Production-Launch vom 14. Juni 2026 auf; Commit- und Deployment-Details stehen in der jeweiligen Übergabe.
 - Release-Metadaten stehen auf `0.8.6-beta-experience.20260802`
 - Preview-Gate ist clientseitig vorgeschaltet: Teaser-Landingpage mit Logo, Projektbeschreibung und Passwortfeld; Phrase ist `preview`, keine Security-Grenze
-- kanonische öffentliche Adresse: https://www.null-noise.de
-- Apex-Domain: https://null-noise.de leitet in Vercel per `308 Permanent Redirect` auf https://www.null-noise.de weiter
-- technische Vercel-Projektadresse: https://null-noise.vercel.app bleibt Production-verbunden, ist aber nicht kanonisch
-- DNS bei hosting.de: `null-noise.de A 216.198.79.1`, `www.null-noise.de CNAME 8bb5d957d3dbq7.vercel-dns-017.com`
-- Production-Deployment ist `READY`: `https://null-noise-3evwpfel5-deresjots-projects.vercel.app`, aliased auf `https://www.null-noise.de`
+- kanonische öffentliche Adresse: https://null-noise.vercel.app
+- eine separate Custom-Domain wird aktuell nicht verwendet
+- `https://null-noise.vercel.app` ist mit Production verbunden und die kanonische Adresse
+- Production-Deployment ist `READY` und über `https://null-noise.vercel.app` erreichbar
 - Preview-Deploys werden nach Push per Vercel CLI erzeugt; konkrete URLs stehen in der jeweiligen Übergabe und im Vercel-Inspect
 - Preview-Hinweis: Deployment Protection/SSO ist aktiv; ohne Vercel-Login kommt `401`
 - Vercel Image Optimization Usage beobachten: TMDb-Poster sollen wenige Varianten erzeugen, `minimumCacheTTL` steht lokal auf 31 Tagen, Detailposter nutzen `w780` statt `original`, Kartenposter melden realistische Thumbnail-`sizes`.
@@ -36,7 +35,7 @@
   - `cc5ee52 fix: generate prisma client during build`
 - Ursache des Live-Katalogfehlers: Vercel nutzte aus dem Build-Cache noch einen Prisma Client mit SQLite-Provider. `npm run build` führt jetzt `prisma generate && next build` aus.
 - Katalog-Bootstrap wurde entschärft: Wenn alle erwarteten Seed-Titel samt Aggregaten vorhanden sind, wird die Seed-Transaktion beim Cold Start übersprungen.
-- Live-Smoke auf `https://www.null-noise.de`: Kernseiten, Katalog-APIs und TMDb-APIs liefern erwartete 200er-Signale.
+- Live-Smoke auf `https://null-noise.vercel.app`: Kernseiten, Katalog-APIs und TMDb-APIs liefern erwartete 200er-Signale.
 - Schreib-Smoke live: langsamer Rating-Submit auf `/titel/mondfenster` ergab `rating=success`; direkter Folgesubmit ergab `rating=too-fast`, nicht `rating=error`.
 - Kontakt-Smoke: Formular sichtbar; keine echte Mail gesendet.
 - Keine ENV geändert, keine Migration ausgeführt, keine Secret-Werte ausgegeben.
@@ -73,7 +72,7 @@
 - Such-Soft-Navigation lässt vorhandene Ergebnisse stehen, nutzt `aria-busy` und eine einzige knappe Live-Statusmeldung; der Ergebnisbereich selbst ist kein breites Live-Region-Ziel mehr.
 - Kontakt-Submit bleibt gegen Doppel-Submit geschützt und zeigt `Nachricht wird gesendet`, ohne künstliche Verzögerung.
 - Loader-Motion ist rein dekorativ und wird unter `prefers-reduced-motion` deaktiviert; Textstatus bleibt sichtbar.
-- Das Impressum zeigt `www.null-noise.de` und `hallo@null-noise.de`; die ladungsfähige Anschrift bleibt als rechtlich zu prüfende Grenze offen.
+- Das Impressum zeigt `null-noise.vercel.app` und verweist für Kontakt auf das Formular; die ladungsfähige Anschrift bleibt als rechtlich zu prüfende Grenze offen.
 
 ## Produktkern
 
@@ -126,7 +125,7 @@
 - `/kontakt` nutzt ein natives, lokal und serverseitig validiertes Formular ohne Captcha, Tracking oder Profiling; Nachricht ist Pflicht, E-Mail ist optional und wird nur als Antwortadresse genutzt
 - `POST /api/contact` sendet serverseitig ueber SMTP; Absender ist `CONTACT_FROM_EMAIL`, Zieladresse kommt nur aus `CONTACT_TO_EMAIL`
 - technische Absenderadresse ist `mail@sebastianjansen.com`; `CONTACT_FROM_EMAIL` muss auf diese Adresse zeigen
-- benoetigte Kontakt-Env: `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=hallo@null-noise.de`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`, `NULL_NOISE_RATE_LIMIT_SALT=<set-secret>`
+- benoetigte Kontakt-Env: `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=mail@sebastianjansen.com`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`, `NULL_NOISE_RATE_LIMIT_SALT=<set-secret>`
 - keine Kontaktanfragen in Adminbereich, Datenbank, temporärer Datei oder Vercel Blob speichern
 - Production ohne SMTP-Konfiguration zeigt einen Versandfehler statt falscher Erfolgsmeldung
 - keine Supabase-Integration im aktuellen Code; keine RLS-/Service-Role-Themen im Live-Stand, solange Supabase nicht eingeführt wird
@@ -139,7 +138,7 @@
 - LocalStorage bleibt browserlokal für Merkliste/Schon-gesehen-Status und wird nicht serverseitig synchronisiert
 - serverseitige DB-/API-/Rate-Limit-Module sind lokal mit `server-only` markiert
 - Vercel-ENV muss vor Deploy manuell geprüft werden; Secret-Werte nie in Doku, Logs oder Client-Bundles ausgeben
-- Domain-Umstellung: `NEXT_PUBLIC_SITE_URL=https://www.null-noise.de` und `CONTACT_TO_EMAIL=hallo@null-noise.de` in Vercel Production setzen; `CONTACT_FROM_EMAIL` bleibt `mail@sebastianjansen.com`, solange `SMTP_USER=mail@sebastianjansen.com` ist
+- Domain-Bereinigung: `NEXT_PUBLIC_SITE_URL=https://null-noise.vercel.app`; `CONTACT_TO_EMAIL` und `CONTACT_FROM_EMAIL` bleiben rein serverseitige technische Konfiguration und werden nicht öffentlich angezeigt
 - nach Deploy echte Production-Header/CSP und Live-API-Routen prüfen; lokale Tests sind keine Production-Garantie
 
 ## Evidence-Modell

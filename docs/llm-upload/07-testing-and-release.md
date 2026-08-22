@@ -47,7 +47,7 @@ Diese Datei beschreibt, wie `null-noise` Accessibility testet und wo die Grenzen
 
 ## Live-Abschluss 14. Juni 2026
 
-- Production ist live auf `https://null-noise-3evwpfel5-deresjots-projects.vercel.app`, aliased auf `https://www.null-noise.de`; Apex `https://null-noise.de/` redirectet per `308` auf die www-Domain.
+- Production ist live auf `https://null-noise-3evwpfel5-deresjots-projects.vercel.app`; die stabile öffentliche Adresse ist `https://null-noise.vercel.app`.
 - Finaler gepushter Stand: `cc5ee52 fix: generate prisma client during build`.
 - Hotfix-Ursache: Vercel verwendete aus dem Build-Cache einen alten Prisma Client mit SQLite-Provider. Das Build-Script läuft jetzt als `prisma generate && next build`.
 - Katalog-Bootstrap ist cold-start-schonender: vorhandene Seed-Titel mit Aggregaten werden erkannt, bevor die Seed-Transaktion gestartet wird.
@@ -378,14 +378,13 @@ Loader-/Impressums-Wartung vom 13. Juni 2026: im Preview-Gate-/Mobile-Polish-Abs
 - Such-Soft-Navigation meldet Pending über eine knappe Live-Statusmeldung und einen sichtbaren Inline-Status, ohne den Ergebnisbereich als breite Live-Region zu verwenden
 - Kontakt-Submit zeigt einen ruhigen Sendestatus, bleibt gegen Doppel-Submit geschützt und erzeugt keine künstliche Wartezeit
 - Route-Loading fuer App-Shell, Titel-Detail und Metadaten-Spike ist vorhanden
-- Impressum zeigt die kanonische Domain `www.null-noise.de` und die sichtbare Kontaktadresse `hallo@null-noise.de`; die ladungsfähige Anschrift bleibt rechtlich zu prüfen
+- Impressum zeigt die kanonische Domain `null-noise.vercel.app` und verweist für Kontakt auf das Formular; die ladungsfähige Anschrift bleibt rechtlich zu prüfen
 - lokale Abschlusschecks fuer diesen Stand werden nach Doku-Sync ausgeführt und in der Übergabe dokumentiert
 
 Produktionsdomain-Umstellung vom 13. Juni 2026: lokal umgesetzt, gepusht und nach Vercel Production deployt.
 
-- Domain-Stand: `https://www.null-noise.de` ist kanonisch; `https://null-noise.de` leitet in Vercel per `308 Permanent Redirect` auf `https://www.null-noise.de`; `https://null-noise.vercel.app` bleibt nur technische, nicht-kanonische Vercel-Projektadresse
-- DNS bei hosting.de: `null-noise.de A 216.198.79.1`; `www.null-noise.de CNAME 8bb5d957d3dbq7.vercel-dns-017.com`
-- Production-Env: `NEXT_PUBLIC_SITE_URL=https://www.null-noise.de`, `CONTACT_TO_EMAIL=hallo@null-noise.de`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`, `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `NULL_NOISE_RATE_LIMIT_SALT=<set-secret>`, `TMDB_READ_ACCESS_TOKEN=<set-secret>`
+- Domain-Stand: `https://null-noise.vercel.app` ist die kanonische und öffentliche Production-Adresse; eine separate Custom-Domain wird nicht verwendet
+- Production-Env: `NEXT_PUBLIC_SITE_URL=https://null-noise.vercel.app`, `CONTACT_TO_EMAIL=mail@sebastianjansen.com`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`, `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `NULL_NOISE_RATE_LIMIT_SALT=<set-secret>`, `TMDB_READ_ACCESS_TOKEN=<set-secret>`
 - Vercel Environment Variables gelten nicht rückwirkend für alte Deployments; nach ENV-Anpassungen oder Codeänderungen ist ein neuer Production-Deploy nötig
 - Kontaktformular: serverseitiger SMTP-Versand per Nodemailer; keine Adminroute, keine Datenbank, keine temporäre Datei und kein Blob-Speicher fuer Kontaktanfragen
 - Datenschutz: Nachricht und optionale E-Mail werden zur Bearbeitung verarbeitet; keine IP-/User-Agent-Ablage fuer Kontaktanfragen

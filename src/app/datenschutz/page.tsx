@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 
-import { publicContactEmail, publicSiteUrl, siteName } from "@/lib/constants";
+import Link from "next/link";
+
+import { publicSiteUrl, siteName } from "@/lib/constants";
 import { arePublicWritesEnabled } from "@/lib/runtime-config";
 
 export const metadata: Metadata = {
@@ -28,7 +30,7 @@ export default function DatenschutzPage() {
         </p>
         <p className="field-note">
           Diese Hinweise beziehen sich auf die kanonische öffentliche Adresse{" "}
-          <a href={publicSiteUrl}>www.null-noise.de</a>.
+          <a href={publicSiteUrl}>null-noise.vercel.app</a>.
         </p>
       </div>
 
@@ -114,7 +116,7 @@ export default function DatenschutzPage() {
           </p>
           <p>Betreiber: Sebastian Jansen</p>
           <p>
-            Kontakt: <a href={`mailto:${publicContactEmail}`}>{publicContactEmail}</a>
+            Kontakt: <Link href="/kontakt">Kontaktformular</Link>
           </p>
         </section>
       </div>

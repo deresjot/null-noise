@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 
-import { publicContactEmail, publicSiteUrl, siteName } from "@/lib/constants";
+import Link from "next/link";
+
+import { publicSiteUrl, siteName } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: `Impressum | ${siteName}`,
@@ -23,8 +25,8 @@ export default function ImpressumPage() {
           erprobt digitale Barrierefreiheit, ruhige Web-UX und nachvollziehbare Reiz-Einordnung.
         </p>
         <p className="field-note">
-          Kanonische öffentliche Adresse ist <a href={publicSiteUrl}>www.null-noise.de</a>; die
-          Apex-Domain leitet auf diese Adresse weiter.
+          Kanonische öffentliche Adresse ist{" "}
+          <a href={publicSiteUrl}>null-noise.vercel.app</a>.
         </p>
       </div>
 
@@ -50,13 +52,13 @@ export default function ImpressumPage() {
             <div>
               <dt>Kontakt</dt>
               <dd>
-                <a href={`mailto:${publicContactEmail}`}>{publicContactEmail}</a>
+                <Link href="/kontakt">Kontaktformular</Link>
               </dd>
             </div>
             <div>
               <dt>Web</dt>
               <dd>
-                <a href={publicSiteUrl}>www.null-noise.de</a>
+                <a href={publicSiteUrl}>null-noise.vercel.app</a>
               </dd>
             </div>
             <div>

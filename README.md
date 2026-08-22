@@ -276,8 +276,8 @@ Für einen ersten ehrlichen Vercel-Deploy gilt bewusst:
 - Build Command: Standard-Next.js (`npm run build`)
 - Start Command: Standard-Next.js (`npm run start`)
 - erforderlich für den öffentlichen MVP: `TMDB_READ_ACCESS_TOKEN`
-- erforderlich für die kanonische Production-Adresse: `NEXT_PUBLIC_SITE_URL=https://www.null-noise.de`, damit Metadata, Open Graph und Canonical-URLs auf die öffentliche Domain zeigen
-- Kontaktformular-Env in Production: `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=hallo@null-noise.de`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`, `NULL_NOISE_RATE_LIMIT_SALT=<set-secret>`
+- erforderlich für die kanonische Production-Adresse: `NEXT_PUBLIC_SITE_URL=https://null-noise.vercel.app`, damit Metadata, Open Graph und Canonical-URLs auf die öffentliche Domain zeigen
+- Kontaktformular-Env in Production: `SMTP_HOST=mail.hosting.de`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=mail@sebastianjansen.com`, `SMTP_PASSWORD=<set-secret>`, `CONTACT_TO_EMAIL=mail@sebastianjansen.com`, `CONTACT_FROM_EMAIL=mail@sebastianjansen.com`, `NULL_NOISE_RATE_LIMIT_SALT=<set-secret>`
 - optional: `DATABASE_URL`, wenn lokaler Katalog, Seed-Daten oder spätere Schreibpfade wirklich gebraucht werden
 - ohne `DATABASE_URL` bleibt die Instanz bewusst read-only und stützt sich für Suche und Detail auf den externen TMDb-Pfad
 - `NULL_NOISE_ENABLE_WRITES` sollte für die erste öffentliche Beta nicht gesetzt oder explizit `false` sein

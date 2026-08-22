@@ -116,9 +116,9 @@ export const releaseNotes = [
     label: "Content and canonical refresh",
     releasedAt: "2026-06-14",
     entries: [
-      "Route-specific canonical metadata now points search, detail, contact, legal and help pages to their own www.null-noise.de URLs instead of the home page.",
+      "Route-specific canonical metadata now points search, detail, contact, legal and help pages to their own public URLs instead of the home page.",
       "The explanation page now describes the current live address, Vercel hosting, Prisma Postgres data path, server-side TMDb reads and SMTP contact boundary.",
-      "The accessibility page now references www.null-noise.de, the current WCAG 2.2 AA technical test path and the remaining manual/device-review boundary.",
+      "The accessibility page now references the public production address, the current WCAG 2.2 AA technical test path and the remaining manual/device-review boundary.",
       "Privacy, contact and imprint copy now reflect the private preview gate, visible contact address, server-side SMTP contact handling and canonical www domain.",
       "No product logic, database schema, environment variables or write behavior changed in this content pass.",
     ],
@@ -128,7 +128,7 @@ export const releaseNotes = [
     label: "Production launch",
     releasedAt: "2026-06-14",
     entries: [
-      "The current Production deployment is live on www.null-noise.de with the apex domain redirecting permanently to the www domain.",
+      "The Production deployment was launched with a separate custom-domain setup that was later retired.",
       "The Vercel build now runs prisma generate before next build so the deployed Prisma Client matches the PostgreSQL schema instead of a cached SQLite client.",
       "Catalog bootstrap now skips the seed transaction when the expected seed titles and aggregates already exist, reducing cold-start write pressure.",
       "Live smoke covered core routes, catalog APIs, TMDb search APIs and the private preview gate.",
@@ -196,7 +196,7 @@ export const releaseNotes = [
       "Search result updates keep existing content in place, expose one concise live status and avoid a second broad live region around the results.",
       "The contact form keeps duplicate-submit protection and shows a calm sending state without adding artificial delay.",
       "Loading motion stays decorative and is disabled under prefers-reduced-motion while status text remains visible.",
-      "The imprint copy now references the canonical null-noise.de domain and keeps the missing legal address as an explicit review boundary.",
+      "The imprint copy now references the canonical public address and keeps the missing legal address as an explicit review boundary.",
     ],
   },
   {
@@ -204,11 +204,11 @@ export const releaseNotes = [
     label: "Production domain switch",
     releasedAt: "2026-06-13",
     entries: [
-      "The canonical public address is now www.null-noise.de via NEXT_PUBLIC_SITE_URL.",
-      "The apex domain null-noise.de redirects permanently to the www domain in Vercel.",
-      "Visible legal and accessibility contact copy now uses hallo@null-noise.de.",
+      "The canonical public address moved to a separate custom domain via NEXT_PUBLIC_SITE_URL at this release stage.",
+      "The former apex domain redirected permanently to its www variant in Vercel.",
+      "Visible legal and accessibility contact copy used a project mailbox at this release stage.",
       "The contact form remains server-side SMTP through environment variables; no secrets or SMTP credentials are exposed in client code.",
-      "The Vercel project address null-noise.vercel.app remains only a technical non-canonical project address.",
+      "The Vercel project address remained only a technical non-canonical address at this release stage.",
     ],
   },
   {

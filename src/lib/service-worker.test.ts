@@ -39,7 +39,7 @@ async function activateServiceWorker(hostname: string, cacheNames: string[]) {
 
 describe("service worker cache activation", () => {
   it("keeps the current and foreign caches while deleting old null-noise caches", async () => {
-    const result = await activateServiceWorker("www.null-noise.de", [
+    const result = await activateServiceWorker("null-noise.vercel.app", [
       "null-noise-pwa-v1",
       "null-noise-pwa-v2",
       "another-app-cache",
